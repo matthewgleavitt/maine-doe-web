@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Communications Portal | Maine DOE</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#0e1c2a;color:#e2e8f0;height:100vh;overflow:hidden}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideRight{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useCallback} = React;
+
+const I=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const icons={
+  home:["M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z","M9 22V12h6v10"],
+  globe:["M12 22a10 10 0 100-20 10 10 0 000 20z","M2 12h20","M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"],
+  bar:["M12 20V10","M18 20V4","M6 20v-6"],
+  file:["M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z","M14 2v6h6"],
+  book:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"],
+  layers:["M12 2L2 7l10 5 10-5-10-5z","M2 17l10 5 10-5","M2 12l10 5 10-5"],
+  wrench:["M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"],
+  copy:["M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2","M15 2H9a1 1 0 00-1 1v2a1 1 0 001 1h6a1 1 0 001-1V3a1 1 0 00-1-1z"],
+  folder:["M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"],
+  cal:["M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z","M16 2v4","M8 2v4","M3 10h18"],
+  video:["M23 7l-7 5 7 5V7z","M14 5H3a2 2 0 00-2 2v10a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2z"],
+  menu:["M3 12h18","M3 6h18","M3 18h18"],
+  x:["M18 6L6 18","M6 6l12 12"],
+  arrow:["M5 12h14","M12 5l7 7-7 7"],
+  ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
+  back:["M19 12H5","M12 19l-7-7 7-7"],
+  clip:["M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2","M9 5a2 2 0 002 2h2a2 2 0 002-2","M9 5a2 2 0 012-2h2a2 2 0 012 2"],
+  mail:["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"],
+};
+
+const C={navy:'#0c1926',navyMid:'#162d44',navyLight:'#1e3a56',
+  teal:'#42c3f7',tealDk:'#2da8d8',green:'#34d399',greenDk:'#16a34a',
+  wh:'#ffffff',txt:'#e2e8f0',txtSec:'#94a3b8',txtMute:'#64748b',
+  border:'rgba(255,255,255,0.08)',red:'#ef4444'};
+
+// ── Sidebar sections ──
+const navItems=[
+  {id:'home',label:'Home',icon:icons.home,href:'welcome.html'},
+  {id:'dashboard',label:'Dashboard',icon:["M10 3H3v7h7V3z","M21 3h-7v7h7V3z","M21 14h-7v7h7v-7z","M10 14H3v7h7v-7z"]},
+  {id:'brand',label:'Brand Guide',icon:icons.layers,href:'brandguide.html'},
+  {id:'commsfiles',label:'Comms Files',icon:icons.folder,external:'https://stateofmaine.sharepoint.com/teams/DOETeam/Shared%20Documents/Communications'},
+  {id:'engine',label:'EnGiNE',icon:icons.globe,href:'engine.html'},
+  {id:'events',label:'Events',icon:icons.cal,href:'events-tracker.html'},
+  {id:'publications',label:'Publications',icon:icons.mail,href:'publications.html'},
+  {id:'templates',label:'Templates',icon:icons.copy,href:'templates.html'},
+  {id:'website',label:'Website',icon:icons.globe},
+  {id:'workflows',label:'Workflows',icon:icons.clip,external:'https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039'},
+  {id:'youtube',label:'YouTube',icon:icons.video,href:'youtube-tracker.html'},
+];
+
+// ── Website sub-modules ──
+const webModules=[
+  {id:'analytics',label:'Analytics Dashboard',icon:icons.bar,href:'analytics-dashboard.html',
+    desc:'Live GA4 page views, file downloads, and traffic insights across maine.gov/doe.',
+    color:'#274f73',gradient:'linear-gradient(135deg,#274f73,#1e3a56)',status:'live',
+    features:['Live GA4','Historic data','Page views','File downloads'],
+    stat:null,statLabel:'page views in the last 30 days',statKey:'pageViews'},
+  {id:'pages',label:'Page Explorer',icon:icons.book,href:'page-explorer.html',
+    desc:'Browse all pages with owners, last edit dates, and content audit status.',
+    color:'#274f73',gradient:'linear-gradient(135deg,#274f73,#1e3a56)',status:'live',
+    features:['Page owners','Audit status','Edit tracking','Search & filter'],
+    stat:null,statLabel:'pages',statKey:'totalPages'},
+  {id:'files',label:'File Manager',icon:icons.file,href:'file-manager.html',
+    desc:'Browse every file in Drupal with page owners, download stats, and batch deletion requests.',
+    color:'#274f73',gradient:'linear-gradient(135deg,#274f73,#1e3a56)',status:'live',
+    features:['Live inventory','Server scanning','Batch delete','Page owners'],
+    stat:null,statLabel:'files tracked',statKey:'totalFiles'},
+  {id:'tools',label:'Tools & Workflows',icon:icons.wrench,
+    desc:'WCAG remediator, alt text reviewer, dead link checker, orphan file finder, and workflow docs.',
+    color:'#274f73',gradient:'linear-gradient(135deg,#274f73,#1e3a56)',status:'soon',
+    features:['WCAG Remediator','Alt Text Reviewer','Dead Links','Orphan Finder'],
+    stat:'6',statLabel:'tools'},
+];
+
+// ── Dashboard cards (top-level overview) ──
+const dashCards=[
+  {id:'website',label:'Website',icon:icons.globe,
+    desc:'Analytics, page explorer, file manager, and tools for maine.gov/doe.',
+    color:'#42c3f7',gradient:'linear-gradient(135deg,#42c3f7,#2da8d8)',status:'live',
+    features:['Analytics','Pages','Files','Tools'],stat:'4',statLabel:'modules'},
+  {id:'brand',label:'Brand Guide',icon:icons.layers,href:'brandguide.html',
+    desc:'Colors, typography, voice & tone — the complete Maine DOE brand guide.',
+    color:'#c084fc',gradient:'linear-gradient(135deg,#c084fc,#a855f7)',status:'live',
+    features:['Colors','Typography','Voice & tone','Logos'],stat:'9',statLabel:'sections'},
+  {id:'templates',label:'Templates',icon:icons.copy,href:'templates.html',
+    desc:'Official presentation, letterhead, and design templates for all DOE staff.',
+    color:'#f472b6',gradient:'linear-gradient(135deg,#f472b6,#ec4899)',status:'live',
+    features:['Design','Documents','Presentations'],stat:'—',statLabel:'templates'},
+  {id:'commsfiles',label:'Comms Files',icon:icons.folder,external:'https://stateofmaine.sharepoint.com/teams/DOETeam/Shared%20Documents/Communications',
+    desc:'Shared communications files, templates, and assets on SharePoint.',
+    color:'#65a30d',gradient:'linear-gradient(135deg,#84cc16,#65a30d)',status:'live',
+    features:['SharePoint','Shared folders','Team assets'],stat:'—',statLabel:'open in SharePoint'},
+  {id:'engine',label:'EnGiNE',icon:icons.globe,href:'engine.html',
+    desc:'Maine\'s professional learning platform — courses, contact hours, and the communications orientation.',
+    color:'#0891b2',gradient:'linear-gradient(135deg,#42c3f7,#0891b2)',status:'live',
+    features:['Course catalog','Contact hours','Comms orientation','Course requests']},
+  {id:'events',label:'Events',icon:icons.cal,href:'events-tracker.html',
+    desc:'Submit and track DOE calendar event requests for the Professional Development calendar.',
+    color:'#f59e0b',gradient:'linear-gradient(135deg,#f59e0b,#d97706)',status:'live',
+    features:['Submit events','Track status','Calendar check'],stat:'—',statLabel:'submissions'},
+  {id:'publications',label:'Publications',icon:icons.mail,href:'publications.html',
+    desc:'Mailchimp newsletter analytics — open rates, click rates, and campaign performance.',
+    color:'#8b5cf6',gradient:'linear-gradient(135deg,#8b5cf6,#6d28d9)',status:'live',
+    features:['Open rates','Click rates','Campaign history','Engagement']},
+  {id:'workflows',label:'Workflows',icon:icons.clip,external:'https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039',
+    desc:'Active communications workflow requests in Dynamics 365.',
+    color:'#6366f1',gradient:'linear-gradient(135deg,#6366f1,#4f46e5)',status:'live',
+    features:['Newsroom articles','Priority notices','Media advisories'],stat:'—',statLabel:'open in Dynamics'},
+  {id:'youtube',label:'YouTube',icon:icons.video,href:'youtube-tracker.html',
+    desc:'Submit, track, and manage video uploads for the DOE YouTube channel.',
+    color:'#ef4444',gradient:'linear-gradient(135deg,#ef4444,#dc2626)',status:'live',
+    features:['Submit videos','Track status','SharePoint files'],stat:'—',statLabel:'submissions'},
+];
+
+function statusBadge(s){
+  const cfg={live:{bg:'rgba(52,211,153,0.12)',border:'rgba(52,211,153,0.3)',color:'#34d399',dot:true,text:'Live'},
+    soon:{bg:'rgba(129,140,248,0.1)',border:'rgba(129,140,248,0.25)',color:'#818cf8',text:'Coming soon'},
+    blocked:{bg:'rgba(239,68,68,0.1)',border:'rgba(239,68,68,0.25)',color:'#f87171',text:'Blocked'}};
+  const c=cfg[s]||cfg.soon;
+  return <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:11,fontWeight:700,padding:'4px 12px',borderRadius:20,
+    background:c.bg,border:`1.5px solid ${c.border}`,color:c.color}}>
+    {c.dot&&<span style={{width:6,height:6,borderRadius:'50%',background:c.color,animation:'pulse 2s infinite'}}/>}
+    {c.text}
+  </span>;
+}
+
+function ModuleCard({m,onClick,hovered,onHover,onLeave,delay=0,headerStyle}){
+  const blocked=m.status==='blocked';
+  const hov=hovered;
+  return(
+    <div onMouseEnter={onHover} onMouseLeave={onLeave} onClick={()=>{if(!blocked&&onClick)onClick();}}
+      style={{
+        background:'#ffffff',borderRadius:16,overflow:'hidden',
+        border:`2.5px solid ${m.color}${hov&&!blocked?'':'45'}`,
+        boxShadow:hov&&!blocked?`0 12px 40px ${m.color}20, 0 4px 12px rgba(0,0,0,0.06)`:'0 4px 16px rgba(0,0,0,0.06)',
+        opacity:blocked?.45:1,cursor:blocked?'default':'pointer',
+        transition:'all 0.25s ease',transform:hov&&!blocked?'translateY(-3px)':'none',
+        animation:`fadeUp 0.4s ease ${delay}s both`,
+      }}>
+      {headerStyle?
+        <div style={{padding:'16px 20px',background:m.gradient,display:'flex',alignItems:'center',gap:12}}>
+          <div style={{width:36,height:36,borderRadius:10,background:'rgba(255,255,255,0.15)',
+            display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            <I d={m.icon} size={18} color="#ffffff"/>
+          </div>
+          <h3 style={{fontSize:16,fontWeight:700,color:'#ffffff',flex:1,lineHeight:1.2,margin:0}}>{m.label}</h3>
+          {statusBadge(m.status)}
+        </div>
+      :<>
+        <div style={{height:6,background:m.gradient}}/>
+        <div style={{padding:'22px 24px 6px'}}>
+          <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:14}}>
+            <div style={{width:44,height:44,borderRadius:13,background:m.gradient,
+              display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,
+              boxShadow:`0 5px 18px ${m.color}30`}}>
+              <I d={m.icon} size={21} color="#ffffff"/>
+            </div>
+            <h3 style={{fontSize:17,fontWeight:700,color:'#182b3c',flex:1,lineHeight:1.2,margin:0}}>{m.label}</h3>
+            {statusBadge(m.status)}
+          </div>
+        </div>
+      </>}
+      <div style={{padding:headerStyle?'16px 20px 18px':'0 24px 20px'}}>
+        <p style={{fontSize:13,color:'#334155',lineHeight:1.65,marginBottom:16,fontWeight:500}}>{m.desc}</p>
+        {(m.stat||m.statLabel)&&<div style={{display:'flex',alignItems:'center',gap:14,marginBottom:16,
+          padding:'12px 18px',borderRadius:12,background:`${m.color}0a`,border:`2px solid ${m.color}25`}}>
+          <span style={{fontSize:28,fontWeight:800,color:m.color,lineHeight:1}}>{m.stat||'—'}</span>
+          <span style={{fontSize:12,fontWeight:600,color:'#334155'}}>{m.statLabel}</span>
+          {!blocked&&<span style={{marginLeft:'auto',fontSize:12,fontWeight:700,
+            color:hov?'#ffffff':m.color,background:hov?m.color:'transparent',
+            padding:hov?'4px 12px':'0',borderRadius:8,
+            transition:'all 0.2s',
+            display:'flex',alignItems:'center',gap:4}}>
+            {m.external?'Open ↗':m.status==='live'?'Open →':'View →'}
+          </span>}
+        </div>}
+        {!m.stat&&!m.statLabel&&!blocked&&<div style={{display:'flex',alignItems:'center',justifyContent:'center',
+          padding:'10px 18px',borderRadius:10,marginBottom:12,
+          background:hov?m.color:`${m.color}0a`,border:`2px solid ${m.color}25`,
+          transition:'all 0.2s'}}>
+          <span style={{fontSize:13,fontWeight:700,color:hov?'#ffffff':m.color,
+            display:'flex',alignItems:'center',gap:6,transition:'all 0.2s'}}>
+            {m.external?'Open ↗':'Open →'}
+          </span>
+        </div>}
+        {m.features&&<div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+          {m.features.map((f,j)=>(
+            <span key={j} style={{fontSize:11,fontWeight:600,padding:'5px 13px',borderRadius:20,
+              background:'#f1f5f9',color:'#334155',border:'1.5px solid #dfe6ee'}}>{f}</span>
+          ))}
+        </div>}
+      </div>
+    </div>
+  );
+}
+
+function Portal(){
+  const [section,setSection]=useState('home');
+  const [webSub,setWebSub]=useState(null);
+  const [sbOpen,setSbOpen]=useState(true);
+  const [mob,setMob]=useState(false);
+  const [hovCard,setHovCard]=useState(null);
+  const [queueStatus,setQueueStatus]=useState({}); // {youtube: {pending:0,total:0}, events: {...}}
+  const [modQueue,setModQueue]=useState([]);
+  const [webStats,setWebStats]=useState({pageViews:'—',totalPages:'—',totalFiles:'—'});
+
+  const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
+
+  useEffect(()=>{
+    const ck=()=>{const m=window.innerWidth<860;setMob(m);if(m)setSbOpen(false);};
+    ck();window.addEventListener('resize',ck);return()=>window.removeEventListener('resize',ck);
+  },[]);
+
+  // Fetch queue status for sidebar indicators
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const r=await fetch(SCRIPT_URL+'?type=youtube');
+        const j=await r.json();
+        if(j.rows){
+          const pending=j.rows.filter(s=>s.status!=='Complete').length;
+          setQueueStatus(prev=>({...prev,youtube:{pending,total:j.rows.length}}));
+        }
+      }catch(e){}
+      try{
+        const r=await fetch(SCRIPT_URL+'?type=events');
+        const j=await r.json();
+        if(j.rows){
+          const pending=j.rows.filter(s=>s.status!=='Complete').length;
+          setQueueStatus(prev=>({...prev,events:{pending,total:j.rows.length}}));
+        }
+      }catch(e){}
+      // Fetch moderation queue
+      try{
+        const r=await fetch('https://www.maine.gov/doe/api/moderation?_='+Date.now());
+        const j=await r.json();
+        if(Array.isArray(j)){
+          const parsed=j.map(item=>{
+            const titleMatch=(item.title||'').match(/>([^<]+)</);
+            const hrefMatch=(item.title||'').match(/href="([^"]+)"/);
+            const nameMatch=(item.name||'').match(/content="([^"]+)"/)||(item.name||'').match(/>([^<…]+)/);
+            const dateMatch=(item.changed||'').match(/title="([^"]+)"/);
+            return{
+              title:titleMatch?titleMatch[1].replace(/&amp;/g,'&'):item.title||'',
+              href:hrefMatch?'https://www.maine.gov'+hrefMatch[1].replace(/\/revisions\/\d+\/view/,'/edit'):'',
+              author:nameMatch?nameMatch[1]:'',
+              date:dateMatch?dateMatch[1]:'',
+              state:item.moderation_state||'',
+            };
+          });
+          setModQueue(parsed);
+          setQueueStatus(prev=>({...prev,website:{pending:parsed.length,total:parsed.length}}));
+        }
+      }catch(e){}
+      // Fetch web stats (cached counts)
+      try{
+        const r=await fetch(SCRIPT_URL+'?type=web_stats');
+        const j=await r.json();
+        setWebStats({
+          pageViews:j.pageViews||'—',
+          totalPages:j.totalPages||'—',
+          totalFiles:j.totalFiles||'—',
+        });
+      }catch(e){}
+    })();
+  },[]);
+
+  const nav=useCallback((id)=>{
+    const item=navItems.find(n=>n.id===id)||dashCards.find(n=>n.id===id);
+    if(item?.external){window.open(item.external,'_blank');return;}
+    setSection(id);
+    setWebSub(null);
+    if(mob)setSbOpen(false);
+  },[mob]);
+
+  // Determine what's showing
+  const activeNav=navItems.find(n=>n.id===section);
+  const activeWebMod=webSub?webModules.find(m=>m.id===webSub):null;
+  const iframeUrl=section==='home'?'welcome.html':section==='brand'?'brandguide.html':section==='youtube'?'youtube-tracker.html':section==='events'?'events-tracker.html':section==='templates'?'templates.html':section==='publications'?'publications.html':section==='engine'?'engine.html':activeWebMod?.href||null;
+  const showIframe=(section==='home')||(section==='brand')||(section==='youtube')||(section==='events')||(section==='templates')||(section==='publications')||(section==='engine')||activeWebMod?.href;
+
+  // Title for header
+  const headerTitle=activeWebMod?activeWebMod.label:section==='website'?'Website':section==='dashboard'?'Communications Portal':activeNav?.label||'';
+
+  return(
+    <div style={{display:'flex',height:'100vh',overflow:'hidden',background:C.navy}}>
+      {mob&&sbOpen&&<div onClick={()=>setSbOpen(false)} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.6)',zIndex:40,backdropFilter:'blur(8px)'}}/>}
+
+      {/* ── Sidebar ── */}
+      <aside style={{
+        width:sbOpen?230:64,flexShrink:0,
+        background:'linear-gradient(180deg,#0a1520 0%,#0e1c2a 50%,#101f30 100%)',
+        display:'flex',flexDirection:'column',transition:'width 0.25s ease',overflow:'hidden',zIndex:50,
+        borderRight:`1px solid ${C.border}`,
+        ...(mob?{position:'fixed',left:sbOpen?0:-240,top:0,bottom:0,width:230}:{}),
+      }}>
+        <div style={{padding:sbOpen?'20px 18px 16px':'20px 12px 16px',borderBottom:`1px solid ${C.border}`,display:'flex',alignItems:'center',gap:12,minHeight:64}}>
+          <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,#42c3f7,#34d399)',
+            display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontSize:14,fontWeight:800,color:C.navy,
+            boxShadow:'0 4px 16px rgba(66,195,247,0.3)'}}>ME</div>
+          {sbOpen&&<div style={{animation:'slideRight 0.2s ease'}}>
+            <div style={{fontSize:13,fontWeight:700,color:C.wh,letterSpacing:.2}}>Communications</div>
+            <div style={{fontSize:10,color:C.txtMute,fontWeight:500}}>Maine DOE Portal</div>
+          </div>}
+        </div>
+
+        <nav style={{flex:1,padding:'14px 8px',overflowY:'auto'}}>
+          {navItems.map(m=>{
+            const a=section===m.id;
+            const blocked=m.status==='blocked';
+            const q=queueStatus[m.id];
+            const dotColor=q?(q.pending>0?'#f59e0b':'#34d399'):null;
+            return <div key={m.id} onClick={()=>nav(m.id)}
+              style={{display:'flex',alignItems:'center',gap:11,
+                padding:sbOpen?'10px 14px':'10px 0',justifyContent:sbOpen?'flex-start':'center',
+                borderRadius:10,marginBottom:2,cursor:'pointer',position:'relative',
+                background:a?'rgba(66,195,247,0.08)':'transparent',
+                opacity:blocked?.4:1,transition:'all 0.15s'}}
+              onMouseEnter={e=>{if(!a)e.currentTarget.style.background='rgba(255,255,255,0.03)';}}
+              onMouseLeave={e=>{if(!a)e.currentTarget.style.background=a?'rgba(66,195,247,0.08)':'transparent';}}>
+              {a&&<div style={{position:'absolute',left:0,top:7,bottom:7,width:3,borderRadius:2,
+                background:'linear-gradient(180deg,#42c3f7,#34d399)',boxShadow:'0 0 10px rgba(66,195,247,0.4)'}}/>}
+              <I d={m.icon} size={19} color={a?C.teal:C.txtMute}/>
+              {sbOpen&&<span style={{fontSize:13,fontWeight:a?600:500,color:a?C.wh:C.txtSec,flex:1}}>{m.label}</span>}
+              {sbOpen&&m.external&&<I d={icons.ext} size={12} color={C.txtMute}/>}
+              {dotColor&&<div style={{width:8,height:8,borderRadius:'50%',background:dotColor,
+                boxShadow:`0 0 6px ${dotColor}80`,flexShrink:0,
+                ...(sbOpen?{}:{position:'absolute',top:6,right:6})}}
+                title={q.pending>0?`${q.pending} pending`:'All clear'}/>}
+            </div>;
+          })}
+        </nav>
+
+        {sbOpen&&<div style={{padding:'14px 18px',borderTop:`1px solid ${C.border}`,fontSize:10,color:C.txtMute,lineHeight:1.6}}>
+          Maine Department of Education<br/><span style={{opacity:.5}}>Website & Technology</span>
+        </div>}
+      </aside>
+
+      {/* ── Main ── */}
+      <main style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',
+        background:section==='website'?'#f3f6f9':section==='brand'?'#f3f0f8':section==='templates'?'#fdf2f6':section==='commsfiles'?'#fefce8':section==='youtube'?'#fef2f2':section==='events'?'#fffbeb':section==='publications'?'#f5f3ff':section==='engine'?'#f0f9ff':'#eee6df'}}>
+        <header style={{height:56,padding:'0 24px',display:'flex',alignItems:'center',gap:14,
+          background:'#ffffff',borderBottom:`2px solid ${section==='website'?'#e2e8f0':section==='brand'?'#ddd6ee':section==='templates'?'#f0d6e4':section==='commsfiles'?'#ede9c8':section==='youtube'?'#f0d4d4':section==='events'?'#ede5c4':section==='publications'?'#ddd6f0':section==='engine'?'#c8e6f4':'#d4ccc4'}`,flexShrink:0,boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+          <button onClick={()=>setSbOpen(!sbOpen)} style={{background:'none',border:'none',cursor:'pointer',padding:4,borderRadius:6,display:'flex'}}>
+            <I d={sbOpen&&mob?icons.x:icons.menu} size={20} color="#182b3c"/>
+          </button>
+
+          {/* Breadcrumbs */}
+          {section==='website'&&webSub&&<div style={{display:'flex',alignItems:'center',gap:8,flex:1}}>
+            <span onClick={()=>setSection('home')} style={{fontSize:13,fontWeight:500,color:'#94a3b8',cursor:'pointer'}}>Portal</span>
+            <span style={{color:'#cbd5e1',fontSize:11}}>›</span>
+            <span onClick={()=>setWebSub(null)} style={{fontSize:13,fontWeight:600,color:'#42c3f7',cursor:'pointer'}}>Website</span>
+            <span style={{color:'#cbd5e1',fontSize:11}}>›</span>
+            <span style={{fontSize:16,fontWeight:700,color:'#182b3c'}}>{activeWebMod?.label}</span>
+          </div>}
+          {section==='website'&&!webSub&&<div style={{display:'flex',alignItems:'center',gap:8,flex:1}}>
+            <span onClick={()=>setSection('home')} style={{fontSize:13,fontWeight:500,color:'#94a3b8',cursor:'pointer'}}>Portal</span>
+            <span style={{color:'#cbd5e1',fontSize:11}}>›</span>
+            <span style={{fontSize:16,fontWeight:700,color:'#182b3c'}}>Website</span>
+          </div>}
+          {!['home','dashboard','website'].includes(section)&&<div style={{display:'flex',alignItems:'center',gap:8,flex:1}}>
+            <span onClick={()=>setSection('home')} style={{fontSize:13,fontWeight:500,color:'#94a3b8',cursor:'pointer'}}>Portal</span>
+            <span style={{color:'#cbd5e1',fontSize:11}}>›</span>
+            <span style={{fontSize:16,fontWeight:700,color:'#182b3c'}}>{activeNav?.label}</span>
+          </div>}
+          {section==='home'&&<h1 style={{fontSize:16,fontWeight:700,color:'#182b3c',flex:1}}>Communications Portal</h1>}
+          {section==='dashboard'&&<div style={{display:'flex',alignItems:'center',gap:8,flex:1}}>
+            <span onClick={()=>setSection('home')} style={{fontSize:13,fontWeight:500,color:'#94a3b8',cursor:'pointer'}}>Portal</span>
+            <span style={{color:'#cbd5e1',fontSize:11}}>›</span>
+            <span style={{fontSize:16,fontWeight:700,color:'#182b3c'}}>Dashboard</span>
+          </div>}
+
+          {showIframe&&<a href={iframeUrl} target="_blank" rel="noopener noreferrer"
+            style={{display:'flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,color:'#42c3f7',textDecoration:'none',
+              padding:'6px 14px',borderRadius:8,border:'1.5px solid rgba(66,195,247,0.3)',background:'rgba(66,195,247,0.06)'}}>
+            <I d={icons.ext} size={13} color="#42c3f7"/> Open in new tab
+          </a>}
+        </header>
+
+        <div style={{flex:1,overflow:'hidden'}}>
+
+          {/* ── HOME (iframe) ── */}
+          {section==='home'&&(
+            <iframe src="welcome.html" style={{width:'100%',height:'100%',border:'none'}} title="Welcome"/>
+          )}
+
+          {/* ── DASHBOARD ── */}
+          {section==='dashboard'&&<div style={{height:'100%',overflowY:'auto'}}>
+
+            {/* Hero with background image */}
+            <div style={{position:'relative',overflow:'hidden',minHeight:280}}>
+              {/* Background image - replace URL with your uploaded image */}
+              <div style={{position:'absolute',inset:0,
+                backgroundImage:'url(https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/hero-bg.jpg)',
+                backgroundSize:'cover',backgroundPosition:'center 40%',filter:'blur(2px) brightness(0.35)',transform:'scale(1.05)'}}/>
+              {/* Gradient overlay */}
+              <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,rgba(12,25,38,0.85),rgba(22,45,68,0.7))'}}/>
+              {/* Grid pattern */}
+              <div style={{position:'absolute',inset:0,pointerEvents:'none',
+                backgroundImage:'linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)',
+                backgroundSize:'60px 60px',opacity:.5}}/>
+
+              <div style={{position:'relative',zIndex:1,maxWidth:1060,margin:'0 auto',padding:'48px 28px 44px'}}>
+                <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:20}}>
+                  <div style={{width:56,height:56,borderRadius:16,background:'linear-gradient(135deg,#42c3f7,#34d399)',
+                    display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,fontWeight:800,color:'#0c1926',
+                    boxShadow:'0 8px 32px rgba(66,195,247,0.3)',letterSpacing:'-0.5px'}}>ME</div>
+                  <div>
+                    <div style={{fontSize:11,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',color:'#42c3f7',marginBottom:4,display:'flex',alignItems:'center',gap:8}}>
+                      <span style={{width:16,height:2,background:'#42c3f7',borderRadius:1}}/>Maine DOE
+                    </div>
+                    <h1 style={{fontSize:'clamp(28px,3.5vw,36px)',fontWeight:800,color:'#ffffff',lineHeight:1.1,letterSpacing:'-0.02em'}}>
+                      Communications <span style={{background:'linear-gradient(135deg,#42c3f7,#34d399)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Portal</span>
+                    </h1>
+                  </div>
+                </div>
+                <p style={{fontSize:15,color:'#cbd5e1',lineHeight:1.7,maxWidth:520,fontWeight:500}}>
+                  Your one-stop hub for analytics, brand resources, templates, and communications workflows.
+                </p>
+              </div>
+            </div>
+
+            <div style={{maxWidth:1060,margin:'0 auto',padding:'28px 28px 60px'}}>
+
+              {/* Module cards */}
+              <h3 style={{fontSize:14,fontWeight:700,color:'#182b3c',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
+                <span style={{width:16,height:2,background:'#42c3f7',borderRadius:1}}/>Quick Access
+              </h3>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:18}}>
+                {dashCards.map((m,i)=>(
+                  <ModuleCard key={m.id} m={m} delay={i*0.07}
+                    hovered={hovCard===m.id}
+                    onHover={()=>setHovCard(m.id)} onLeave={()=>setHovCard(null)}
+                    onClick={()=>nav(m.id)}/>
+                ))}
+              </div>
+              <div style={{textAlign:'center',padding:'40px 0 0',fontSize:11,color:'#64748b',fontWeight:500}}>
+                Maine Department of Education · Website & Technology
+              </div>
+            </div>
+          </div>}
+
+          {/* ── WEBSITE MINI PORTAL ── */}
+          {section==='website'&&!webSub&&<div style={{height:'100%',overflowY:'auto'}}>
+            <div style={{maxWidth:1060,margin:'0 auto',padding:'0 28px'}}>
+              <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:32,marginBottom:28,position:'relative',overflow:'hidden'}}>
+                <div style={{position:'absolute',inset:0,pointerEvents:'none',
+                  backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',
+                  backgroundSize:'60px 60px',maskImage:'radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)',WebkitMaskImage:'radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)'}}/>
+                <div style={{position:'relative',zIndex:1}}>
+                  <div style={{fontSize:11,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',color:'#42c3f7',marginBottom:12,display:'flex',alignItems:'center',gap:10}}>
+                    <span style={{width:20,height:2,background:'#42c3f7',borderRadius:1}}/>maine.gov/doe
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:16}}>
+                    <div style={{width:48,height:48,borderRadius:14,background:'linear-gradient(135deg,#274f73,#1e3a56)',
+                      display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 6px 20px rgba(39,79,115,0.3)'}}>
+                      <I d={icons.globe} size={24} color="#ffffff"/>
+                    </div>
+                    <div>
+                      <h2 style={{fontSize:24,fontWeight:800,color:'#ffffff',margin:0}}>Website</h2>
+                      <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Analytics, pages, files, and tools</p>
+                    </div>
+                  </div>
+                  <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+                    <a href="https://www.maine.gov/doe" target="_blank" rel="noopener noreferrer"
+                      style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,
+                        background:'linear-gradient(135deg,#274f73,#1e3a56)',color:'#fff',textDecoration:'none',
+                        fontSize:13,fontWeight:700,boxShadow:'0 4px 16px rgba(39,79,115,0.3)',border:'1.5px solid rgba(255,255,255,0.1)'}}>
+                      <I d={icons.ext} size={16} color="#42c3f7"/> Visit maine.gov/doe
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:18,paddingBottom:24}}>
+                {webModules.map((m,i)=>{
+                  const dynStat=m.statKey?webStats[m.statKey]:m.stat;
+                  return <ModuleCard key={m.id} m={{...m,stat:dynStat||m.stat}} delay={i*0.07}
+                    headerStyle={true}
+                    hovered={hovCard===m.id}
+                    onHover={()=>setHovCard(m.id)} onLeave={()=>setHovCard(null)}
+                    onClick={()=>{if(m.href)setWebSub(m.id);}}/>;
+                })}
+              </div>
+
+              {/* Moderation Queue */}
+              {modQueue.length>0&&<div style={{background:'#ffffff',borderRadius:14,border:'2.5px solid #274f7345',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:40}}>
+                <div style={{padding:'16px 20px',background:'#182b3c',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:10}}>
+                    <div style={{width:8,height:8,borderRadius:'50%',background:'#f59e0b',animation:'pulse 2s infinite'}}/>
+                    <h3 style={{fontSize:15,fontWeight:700,color:'#42c3f7',margin:0}}>Pending Approvals</h3>
+                    <span style={{fontSize:12,fontWeight:700,color:'#f59e0b',background:'rgba(245,158,11,0.15)',padding:'2px 10px',borderRadius:12,border:'1px solid rgba(245,158,11,0.3)'}}>{modQueue.length}</span>
+                  </div>
+                  <a href="https://www.maine.gov/doe/admin/content/moderated" target="_blank" rel="noopener noreferrer"
+                    style={{fontSize:12,fontWeight:600,color:'#42c3f7',textDecoration:'none',display:'flex',alignItems:'center',gap:4}}>
+                    Open in Drupal <I d={icons.ext} size={12} color="#42c3f7"/>
+                  </a>
+                </div>
+                <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+                  <thead><tr style={{background:'#f8fafc'}}>
+                    <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Page</th>
+                    <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Author</th>
+                    <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Submitted</th>
+                    <th style={{padding:'10px 16px',textAlign:'center',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Status</th>
+                  </tr></thead>
+                  <tbody>
+                    {modQueue.map((item,i)=>(
+                      <tr key={i} style={{borderBottom:`1px solid #f1f5f9`}}>
+                        <td style={{padding:'12px 16px',fontWeight:600,color:'#182b3c'}}>
+                          {item.href?<a href={item.href} target="_blank" rel="noopener noreferrer" style={{color:'#274f73',textDecoration:'none'}}
+                            onMouseEnter={e=>e.currentTarget.style.color='#42c3f7'}
+                            onMouseLeave={e=>e.currentTarget.style.color='#274f73'}>{item.title}</a>:item.title}
+                        </td>
+                        <td style={{padding:'12px 16px'}}>
+                          {item.author?<span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 10px',borderRadius:8,
+                            background:'#274f730a',border:'1px solid #274f7318',fontSize:12,fontWeight:600,color:'#274f73'}}>
+                            {item.author.split('@')[0].split('.').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')}
+                          </span>:<span style={{fontSize:12,color:'#94a3b8'}}>—</span>}
+                        </td>
+                        <td style={{padding:'12px 16px',color:'#475569',fontWeight:500,fontSize:12,whiteSpace:'nowrap'}}>{item.date}</td>
+                        <td style={{padding:'12px 16px',textAlign:'center'}}>
+                          <span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'4px 12px',borderRadius:20,fontSize:11,fontWeight:700,
+                            background:'#fef3c7',color:'#92400e',border:'1.5px solid #fcd34d'}}>
+                            {item.state}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>}
+            </div>
+          </div>}
+
+          {/* ── WEBSITE SUB-TOOL (iframe) ── */}
+          {section==='website'&&webSub&&activeWebMod?.href&&(
+            <iframe src={activeWebMod.href} style={{width:'100%',height:'100%',border:'none'}} title={activeWebMod.label}/>
+          )}
+
+          {/* ── BRAND GUIDE (iframe) ── */}
+          {section==='brand'&&(
+            <iframe src="brandguide.html" style={{width:'100%',height:'100%',border:'none'}} title="Brand Guide"/>
+          )}
+
+          {/* ── YOUTUBE TRACKER (iframe) ── */}
+          {section==='youtube'&&(
+            <iframe src="youtube-tracker.html" style={{width:'100%',height:'100%',border:'none'}} title="YouTube Tracker"/>
+          )}
+
+          {/* ── EVENTS TRACKER (iframe) ── */}
+          {section==='events'&&(
+            <iframe src="events-tracker.html" style={{width:'100%',height:'100%',border:'none'}} title="Events Tracker"/>
+          )}
+
+          {/* ── TEMPLATES (iframe) ── */}
+          {section==='templates'&&(
+            <iframe src="templates.html" style={{width:'100%',height:'100%',border:'none'}} title="Templates"/>
+          )}
+
+          {/* ── PUBLICATIONS (iframe) ── */}
+          {section==='publications'&&(
+            <iframe src="publications.html" style={{width:'100%',height:'100%',border:'none'}} title="Publications"/>
+          )}
+
+          {/* ── ENGINE (iframe) ── */}
+          {section==='engine'&&(
+            <iframe src="engine.html" style={{width:'100%',height:'100%',border:'none'}} title="EnGiNE"/>
+          )}
+
+        </div>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Portal/>);
+</script>
+</body>
+</html>

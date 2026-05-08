@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Guide | Maine DOE Communications Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500;transition:color .15s}
+.portal-bar .crumb a:hover{color:#42c3f7}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><span class="current">Brand Guide</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState} = React;
+
+const I=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const B={navy:'#182b3c',navyMid:'#274f73',teal:'#42c3f7',tealDk:'#2da8d8',
+  wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',
+  border:'#a8bdd0',warm:'#eee6df',red:'#8a2e13',green:'#16a34a'};
+
+const tabs=[
+  {id:'colors',label:'Colors',icon:["M12 2L2 7l10 5 10-5-10-5z","M2 17l10 5 10-5","M2 12l10 5 10-5"]},
+  {id:'type',label:'Typography',icon:["M4 7V4h16v3","M9 20h6","M12 4v16"]},
+  {id:'voice',label:'Voice & Tone',icon:["M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"]},
+  {id:'language',label:'Language',icon:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"]},
+  {id:'logos',label:'Logos',icon:["M12 2L2 7l10 5 10-5-10-5z","M2 17l10 5 10-5","M2 12l10 5 10-5"]},
+  {id:'images',label:'Images',icon:["M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z","M8.5 10a1.5 1.5 0 100-3 1.5 1.5 0 000 3z","M21 15l-5-5L5 21"]},
+  {id:'email',label:'Email',icon:["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"]},
+  {id:'links',label:'Links',icon:["M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71","M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"]},
+];
+
+function Pill({children,color}){return <span style={{display:'inline-block',padding:'3px 12px',borderRadius:20,fontSize:11,fontWeight:700,
+  background:color?`${color}12`:'#f1f5f9',color:color||B.txtSec,border:`1px solid ${color?color+'25':'#e2e8f0'}`}}>{children}</span>}
+
+function Card({children,style,accent}){return <div style={{background:B.wh,borderRadius:14,padding:'20px 22px',
+  border:`2px solid ${B.border}30`,boxShadow:'0 2px 10px rgba(0,0,0,0.04)',
+  borderLeft:accent?`4px solid ${accent}`:undefined,...style}}>{children}</div>}
+
+function SectionHead({title,sub}){return <div style={{marginBottom:20}}>
+  <h3 style={{fontSize:20,fontWeight:800,color:B.navy,marginBottom:6,letterSpacing:'-0.01em'}}>{title}</h3>
+  {sub&&<p style={{fontSize:14,color:B.txtMute,lineHeight:1.6,fontWeight:500}}>{sub}</p>}
+</div>}
+
+function Tip({children,type}){
+  const warn=type==='warn';
+  return <div style={{display:'flex',gap:10,padding:'14px 18px',borderRadius:12,marginBottom:16,fontSize:13,lineHeight:1.6,fontWeight:500,
+    background:warn?'#fef3c714':'rgba(66,195,247,0.06)',border:`1.5px solid ${warn?'#f59e0b30':'rgba(66,195,247,0.2)'}`,
+    borderLeft:`4px solid ${warn?'#f59e0b':B.teal}`,color:B.txtSec}}>
+    <I d={warn?["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 8v4","M12 16h.01"]:["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 16v-4","M12 8h.01"]} size={18} color={warn?'#f59e0b':B.teal} style={{flexShrink:0,marginTop:1}}/>
+    <div>{children}</div>
+  </div>}
+
+function ColorSwatch({hex,label,rgb,cmyk,primary}){
+  const [copied,setCopied]=useState(false);
+  const light=hex==='#eee6df'||hex==='#42c3f7';
+  return <div onClick={()=>{navigator.clipboard.writeText(hex);setCopied(true);setTimeout(()=>setCopied(false),1500);}}
+    style={{width:160,cursor:'pointer',transition:'transform 0.15s'}}
+    onMouseEnter={e=>e.currentTarget.style.transform='translateY(-2px)'}
+    onMouseLeave={e=>e.currentTarget.style.transform='none'}>
+    <div style={{height:80,borderRadius:12,background:hex,border:light?`2px solid ${B.border}30`:'none',
+      display:'flex',alignItems:'flex-end',justifyContent:'flex-end',padding:8,
+      boxShadow:`0 4px 16px ${hex}30`}}>
+      {copied&&<span style={{fontSize:10,fontWeight:700,color:light?B.navy:'#fff',background:'rgba(255,255,255,0.3)',padding:'2px 8px',borderRadius:6}}>Copied!</span>}
+    </div>
+    <div style={{marginTop:8}}>
+      {primary&&<Pill color={B.teal}>Primary</Pill>}
+      {!primary&&<Pill>Secondary</Pill>}
+      <div style={{fontSize:15,fontWeight:700,color:B.navy,margin:'6px 0 2px'}}>{label}</div>
+      <div style={{fontSize:11,color:B.txtMute,fontWeight:600,fontFamily:'monospace'}}>{hex}</div>
+      <div style={{fontSize:10,color:B.txtMute,marginTop:2}}>RGB: {rgb}</div>
+      {cmyk&&<div style={{fontSize:10,color:B.txtMute}}>CMYK: {cmyk}</div>}
+    </div>
+  </div>}
+
+function BrandGuide(){
+  const [tab,setTab]=useState('colors');
+
+  return(
+    <div style={{maxWidth:1100,margin:'0 auto',padding:'0 28px'}}>
+      {/* Hero banner */}
+      <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:'32px 32px 28px',marginBottom:28,position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',inset:0,pointerEvents:'none',
+          backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',
+          backgroundSize:'60px 60px',maskImage:'radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)',WebkitMaskImage:'radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)'}}/>
+        <div style={{position:'relative',zIndex:1}}>
+          <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:14}}>
+            <div style={{width:44,height:44,borderRadius:12,background:'linear-gradient(135deg,#c084fc,#a855f7)',
+              display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 16px rgba(192,132,252,0.3)'}}>
+              <I d={["M12 2L2 7l10 5 10-5-10-5z","M2 17l10 5 10-5","M2 12l10 5 10-5"]} size={22} color="#fff"/>
+            </div>
+            <div>
+              <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0}}>Brand Resources</h1>
+              <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Maine DOE Communications Portal</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab bar */}
+      <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:28,padding:'0 4px'}}>
+        {tabs.map(t=>{
+          const active=tab===t.id;
+          return <button key={t.id} onClick={()=>setTab(t.id)}
+            style={{display:'flex',alignItems:'center',gap:6,padding:'9px 16px',borderRadius:10,fontSize:13,fontWeight:600,cursor:'pointer',
+              border:active?`2px solid ${B.teal}`:`2px solid #c2cdd8`,
+              background:active?B.navy:B.wh,color:active?B.teal:B.txtSec,
+              boxShadow:active?'0 2px 8px rgba(24,43,60,0.2)':'0 1px 3px rgba(0,0,0,0.04)',
+              transition:'all 0.15s'}}>
+            <I d={t.icon} size={14} color={active?B.teal:B.txtMute}/> {t.label}
+          </button>;
+        })}
+      </div>
+
+      {/* Content */}
+      <div key={tab} style={{animation:'fadeIn 0.3s ease',paddingBottom:60}}>
+
+        {/* ── COLORS ── */}
+        {tab==='colors'&&<div>
+          <SectionHead title="Color usage" sub="Three primary and three secondary colors. Primary colors are most prominent; secondary are accents."/>
+          <Card style={{marginBottom:20}}>
+            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:16}}>Primary colors</h4>
+            <div style={{display:'flex',gap:24,flexWrap:'wrap'}}>
+              <ColorSwatch hex="#182b3c" label="Dark Navy" rgb="24 - 43 - 60" cmyk="90 - 74 - 51 - 54" primary/>
+              <ColorSwatch hex="#274f73" label="Mid Blue" rgb="39 - 79 - 115" cmyk="91 - 69 - 33 - 17" primary/>
+              <ColorSwatch hex="#6d8ba6" label="Steel Blue" rgb="109 - 139 - 166" cmyk="62 - 38 - 23 - 1" primary/>
+            </div>
+          </Card>
+          <Card style={{marginBottom:20}}>
+            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:16}}>Secondary colors</h4>
+            <div style={{display:'flex',gap:24,flexWrap:'wrap'}}>
+              <ColorSwatch hex="#8a2e13" label="Rust Red" rgb="138 - 46 - 19" cmyk="29 - 89 - 100 - 31"/>
+              <ColorSwatch hex="#eee6df" label="Warm White" rgb="238 - 230 - 223" cmyk="6 - 8 - 10 - 0"/>
+              <ColorSwatch hex="#42c3f7" label="Teal" rgb="66 - 195 - 247" cmyk="60 - 3 - 0 - 0"/>
+            </div>
+          </Card>
+          <Tip>Teal (#42c3f7) is a <strong>secondary/accent color</strong> — use it for borders, divider strips, and hover states, not as a dominant background.</Tip>
+        </div>}
+
+        {/* ── TYPOGRAPHY ── */}
+        {tab==='type'&&<div>
+          <SectionHead title="Typography (fonts)" sub="Four primary font types for all graphics, promotional materials, and digital spaces."/>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:16,marginBottom:20}}>
+            {[{pill:'Body text',name:'Calibri',family:'Calibri, sans-serif',desc:'Emails, letters, body text. Sans-serif for accessibility.',preview:'The quick brown fox jumps over the lazy dog.'},
+              {pill:'Headers & graphics',name:'Century Gothic',family:'"Century Gothic", sans-serif',desc:'Primary font for graphics and promotional materials.',preview:'THE QUICK BROWN FOX'},
+              {pill:'Headers & graphics',name:'League Spartan',family:'"League Spartan", sans-serif',desc:'Used alongside Century Gothic. Free on Google Fonts.',preview:'THE QUICK BROWN FOX',download:'https://fonts.google.com/specimen/League+Spartan'},
+              {pill:'PowerPoint headers',name:'Montserrat Black',family:'"Montserrat", sans-serif',desc:'Used for PowerPoint presentation headers.',preview:'THE QUICK BROWN FOX',weight:900}].map((f,i)=>(
+              <Card key={i}><Pill>{f.pill}</Pill>
+                <div style={{fontSize:28,fontWeight:f.weight||700,color:B.navy,margin:'12px 0 4px',fontFamily:f.family}}>{f.name}</div>
+                <div style={{fontSize:15,fontFamily:f.family,fontWeight:f.weight||400,color:B.txtSec,margin:'0 0 8px',lineHeight:1.5}}>{f.preview}</div>
+                <div style={{fontSize:14,fontFamily:f.family,fontWeight:f.weight||400,color:B.txtMute,margin:'0 0 8px',lineHeight:1.5}}>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>abcdefghijklmnopqrstuvwxyz<br/>0123456789</div>
+                <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:0}}>{f.desc}</p>
+                {f.download&&<a href={f.download} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:10,fontSize:12,fontWeight:700,color:'#42c3f7',textDecoration:'none',padding:'6px 12px',borderRadius:8,border:'1.5px solid #42c3f730',background:'#42c3f708'}}>
+                  <I d={["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"]} size={14} color="#42c3f7"/> Download font
+                </a>}
+              </Card>
+            ))}
+          </div>
+          <Card>
+            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Web-specific fonts</h4>
+            {[{p:'Maine.gov (Drupal)',n:'Pre-set. Do not copy-paste from Word — it injects unwanted formatting.'},
+              {p:'Newsroom (WordPress)',n:'Lato body. Century Gothic / League Spartan for banner graphics.'},
+              {p:'Email blasts (Mailchimp)',n:'Arial body. Century Gothic / League Spartan for banner graphics.'}].map((x,i)=>(
+              <div key={i} style={{display:'flex',gap:16,fontSize:13,padding:'10px 0',borderBottom:`1px solid ${B.border}20`}}>
+                <span style={{fontWeight:700,minWidth:180,color:B.navy}}>{x.p}</span>
+                <span style={{color:B.txtMute}}>{x.n}</span>
+              </div>
+            ))}
+          </Card>
+        </div>}
+
+        {/* ── VOICE & TONE ── */}
+        {tab==='voice'&&<div>
+          <SectionHead title="Brand voice" sub="Our voice connects to the values in our vision and mission. Consistent across all communications."/>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
+            <Card accent="#16a34a">
+              <h4 style={{fontSize:15,fontWeight:700,color:'#16a34a',margin:'0 0 14px',display:'flex',alignItems:'center',gap:8}}>
+                <I d={["M22 11.08V12a10 10 0 11-5.93-9.14","M22 4L12 14.01l-3-3"]} size={18} color="#16a34a"/> Always
+              </h4>
+              {['Clear, conversational, and human','Helpful and solution-oriented','Friendly yet professional','Kind, compassionate, and respectful',
+                'Optimistic yet grounded','Inclusive','Student-, educator-, and school-centered','Creative and innovative (when appropriate)'].map((x,i)=>(
+                <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:14,color:B.navy,fontWeight:500}}>{x}</div>
+              ))}
+            </Card>
+            <Card accent={B.red}>
+              <h4 style={{fontSize:15,fontWeight:700,color:B.red,margin:'0 0 14px',display:'flex',alignItems:'center',gap:8}}>
+                <I d={["M18 6L6 18","M6 6l12 12"]} size={18} color={B.red}/> Never
+              </h4>
+              {['Overly punitive, harsh, critical, or negative','Bureaucratic','Using lots of words when fewer will do','Jargony','Exclusive'].map((x,i)=>(
+                <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:14,color:B.navy,fontWeight:500}}>{x}</div>
+              ))}
+            </Card>
+          </div>
+        </div>}
+
+        {/* ── LANGUAGE ── */}
+        {tab==='language'&&<div>
+          <SectionHead title="Language guidelines" sub="Refer to AP Stylebook for anything not listed. Contact Chloe Teboe for guidance."/>
+          <Card style={{marginBottom:16}}>
+            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Referring to the Maine DOE</h4>
+            {[{l:'Initial',t:'"the Maine Department of Education (DOE)"'},{l:'Subsequent',t:'"the Maine DOE" or "the department" (lowercase)'},{l:'Never',t:'"MDOE"',bad:true}].map((r,i)=>(
+              <div key={i} style={{display:'flex',gap:12,fontSize:13,padding:'6px 0',alignItems:'center'}}>
+                <span style={{fontWeight:700,color:r.bad?B.red:B.navy,minWidth:90}}>{r.l}:</span>
+                <code style={{background:'#f1f5f9',padding:'3px 10px',borderRadius:6,color:B.txtSec,fontSize:12,fontWeight:600}}>{r.t}</code>
+              </div>
+            ))}
+          </Card>
+          <Card style={{marginBottom:16}}>
+            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Commonly-used conventions</h4>
+            {['Oxford comma — always','One space after a period (not two)','Spell out numbers under 10 (e.g., "five")','Dates: January 1, 2025 (not January 1st)',
+              'Times: 10:30 a.m., 1 p.m., noon, midnight','MSAD 28, RSU 40 (no #)','pre-K (hyphenated, lowercase p)'].map((x,i)=>(
+              <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:13,color:B.navy,fontWeight:500}}>{x}</div>
+            ))}
+          </Card>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}}>
+            <Card accent="#16a34a">
+              <h4 style={{fontSize:13,fontWeight:700,color:B.navy,marginBottom:12}}>Hyphenate</h4>
+              {['Cost-effective','Federally-funded','In-state','Limited-period','Low-income','One-time','State-owned','In-person'].map((w,i)=>
+                <div key={i} style={{fontSize:13,color:B.navy,padding:'4px 0',fontWeight:500}}>{w}</div>)}
+            </Card>
+            <Card accent={B.red}>
+              <h4 style={{fontSize:13,fontWeight:700,color:B.navy,marginBottom:12}}>Do not hyphenate</h4>
+              {['Departmentwide','Ongoing','Statewide','Wellbeing'].map((w,i)=>
+                <div key={i} style={{fontSize:13,color:B.navy,padding:'4px 0',fontWeight:500}}>{w}</div>)}
+            </Card>
+          </div>
+          <Card>
+            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Inclusive language</h4>
+            {[{y:'"schools across Maine"',n:'"Maine schools"'},{y:'"school administrative unit (SAU)"',n:'"district"'},
+              {y:'"individuals with a vested interest"',n:'"stakeholder"'},{y:'"Maine\'s education workforce"',n:'"the field"'}].map((r,i)=>(
+              <div key={i} style={{display:'flex',gap:16,padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:13,fontWeight:500}}>
+                <span style={{flex:1,color:'#16a34a'}}>✓ {r.y}</span>
+                <span style={{flex:1,color:B.red}}>✗ {r.n}</span>
+              </div>
+            ))}
+          </Card>
+        </div>}
+
+        {/* ── LOGOS ── */}
+        {tab==='logos'&&<div>
+          <SectionHead title="Logos" sub="Think of a logo like a flag. The Maine DOE logo must always be used."/>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:16,marginBottom:20}}>
+            {[{t:'Official logo (primary)',d:'All official documents, letters, contracts, forms, presentations, and digital spaces.',p:true},
+              {t:'Informal logo (primary)',d:'When official doesn\'t fit, square orientation works better, or when scaled very small.',p:true},
+              {t:'Office/team logos (secondary)',d:'Must be approved by Comms Team. Must use Maine DOE colors/fonts and appear alongside a primary logo.'}].map((x,i)=>(
+              <Card key={i}><Pill color={x.p?B.teal:undefined}>{x.p?'Primary':'Secondary'}</Pill>
+                <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'10px 0 6px'}}>{x.t}</h4>
+                <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:0}}>{x.d}</p>
+              </Card>
+            ))}
+          </div>
+          <Card>
+            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Rules for all logos</h4>
+            {['Primary logo required on all official documents, presentations, and digital spaces',
+              'Secondary logos must appear alongside a primary logo','Never stretch, distort, or blur',
+              'Don\'t scale down so small words can\'t be read','Don\'t change coloring without Comms Team approval',
+              'Must have transparent background and high-resolution versions','Use on backgrounds with enough contrast'].map((r,i)=>(
+              <div key={i} style={{padding:'8px 0 8px 14px',borderBottom:`1px solid ${B.border}15`,borderLeft:`3px solid ${B.teal}30`,fontSize:13,color:B.navy,fontWeight:500,marginBottom:4}}>{r}</div>
+            ))}
+          </Card>
+          <Tip>All logos are in the <strong>DOE Team Logos & Images SharePoint folder</strong>.</Tip>
+        </div>}
+
+        {/* ── IMAGES ── */}
+        {tab==='images'&&<div>
+          <SectionHead title="Graphics & images" sub="Standards for website, social media, and promotional images."/>
+          <Card style={{marginBottom:16}}>
+            {[{r:'All images should be real photographs — no cartoons or clipart.',n:'Exception: icons. Contact Comms Team for custom icons.'},
+              {r:'High resolution required.',n:'If pixelated, find another. Max 1920×1280 to avoid slow loads.'},
+              {r:'Never distort images.',n:'Resize proportionally.'}].map((x,i)=>(
+              <div key={i} style={{padding:'12px 0',borderBottom:i<2?`1px solid ${B.border}15`:'none'}}>
+                <div style={{fontSize:14,fontWeight:600,color:B.navy}}>{x.r}</div>
+                <div style={{fontSize:12,color:B.txtMute,marginTop:4,fontWeight:500}}>{x.n}</div>
+              </div>
+            ))}
+          </Card>
+          <Card>
+            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Copyright-compliant sources</h4>
+            <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+              {[{n:'Pexels',u:'https://www.pexels.com/'},{n:'Pixabay',u:'https://pixabay.com/'},{n:'Unsplash',u:'https://unsplash.com/'}].map((s,i)=>(
+                <a key={i} href={s.u} target="_blank" rel="noopener noreferrer"
+                  style={{display:'flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,border:`2px solid ${B.border}30`,
+                    textDecoration:'none',color:B.navy,fontSize:14,fontWeight:600,background:B.wh,transition:'all 0.15s'}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor=B.teal;e.currentTarget.style.transform='translateY(-1px)';}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor=`${B.border}30`;e.currentTarget.style.transform='none';}}>
+                  <I d={["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"]} size={14} color={B.teal}/> {s.n}
+                </a>
+              ))}
+            </div>
+          </Card>
+        </div>}
+
+        {/* ── EMAIL ── */}
+        {tab==='email'&&<div>
+          <SectionHead title="Email signature policy" sub="All staff must follow official formatting for email signatures and out-of-office messages."/>
+          <Card style={{marginBottom:16}}>
+            {['12pt, Calibri, black font','Lead with Maine DOE logo, then team logo if applicable',
+              'No quotes, backgrounds, or extra info','One additional link allowed after Maine DOE Newsroom (pipe-separated)'].map((r,i)=>(
+              <div key={i} style={{fontSize:13,color:B.navy,padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontWeight:500,
+                paddingLeft:14,borderLeft:`3px solid ${B.teal}30`}}>• {r}</div>
+            ))}
+          </Card>
+          <Card>
+            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Example</h4>
+            <div style={{padding:24,background:'#f8fafc',borderRadius:12,fontFamily:'Calibri,sans-serif',fontSize:13,lineHeight:1.9,color:'#000',border:`1px solid ${B.border}20`}}>
+              <div style={{borderTop:`2px solid ${B.navyMid}`,width:200,marginBottom:16}}/>
+              <strong>Matthew Leavitt</strong> (He/Him)<br/>Website & Technology Coordinator<br/>Maine Department of Education<br/>
+              23 State House Station<br/>Augusta, Maine 04333-0023<br/>
+              <strong>Email:</strong> <span style={{color:B.teal}}>matthew.g.leavitt@maine.gov</span><br/>
+              <strong>Phone:</strong> 207-355-4615<br/>
+              <span style={{color:B.teal}}>Maine DOE</span> | <span style={{color:B.teal}}>Facebook</span> | <span style={{color:B.teal}}>Instagram</span> | <span style={{color:B.teal}}>Maine DOE Newsroom</span>
+            </div>
+          </Card>
+        </div>}
+
+        {/* ── LINKS ── */}
+        {tab==='links'&&<div>
+          <SectionHead title="Links" sub="Key rules for using links on the website, newsletters, and other spaces."/>
+          <Card>{[
+            {r:'Vet all links',d:'Check accuracy. Avoid for-profit articles or resources.'},
+            {r:'Always use HTTPS',d:'Ensures a secure connection for visitors.'},
+            {r:'Don\'t copy from Outlook',d:'Click the link first, copy from browser address bar.'},
+            {r:'Use descriptive text',d:'Don\'t use "click here" or "link."'},
+            {r:'Keep URLs short',d:'Use URL shortening tools for long links.'},
+            {r:'QR codes for print only',d:'Not for digital. Canva has a generator.'},
+            {r:'Hyperlink full descriptions',d:'Link meaningful phrases, not bare URLs.'},
+            {r:'Disclaimer for external resources',d:'"Organizations and resources included are for reference only."'},
+          ].map((x,i)=><div key={i} style={{padding:'12px 0',borderBottom:`1px solid ${B.border}15`}}>
+            <div style={{fontSize:14,fontWeight:700,color:B.navy}}>{x.r}</div>
+            <div style={{fontSize:13,color:B.txtMute,marginTop:4,lineHeight:1.5,fontWeight:500}}>{x.d}</div>
+          </div>)}</Card>
+        </div>}
+
+        {/* ── COMMS TEAM ── */}
+      </div>
+
+      <div style={{textAlign:'center',padding:'0 0 40px',fontSize:12,color:B.txtMute,fontWeight:500}}>
+        Maine Department of Education · Website & Technology · Communications Portal
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<BrandGuide/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

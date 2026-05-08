@@ -1,0 +1,23 @@
+# Mac system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor folders
+.vscode/
+.idea/
+*.swp
+
+# Dependencies (if any)
+node_modules/
+
+# Environment files (anything sensitive)
+.env
+.env.local
+
+# Logs
+*.log
+
+# Backups
+*.bak
+*~

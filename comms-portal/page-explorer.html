@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page Explorer | Maine DOE Communications Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><a href="index.html">Website</a><span class="sep">›</span><span class="current">Page Explorer</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useMemo,useCallback} = React;
+
+const Sv=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const ic={
+  book:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"],
+  search:"M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",
+  x:["M18 6L6 18","M6 6l12 12"],
+  ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
+  edit:["M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7","M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"],
+  spin:["M12 2v4","M12 18v4","M4.93 4.93l2.83 2.83","M16.24 16.24l2.83 2.83","M2 12h4","M18 12h4"],
+  up:["M12 19V5","M5 12l7-7 7 7"],
+  down:["M12 5v14","M19 12l-7 7-7-7"],
+  refresh:["M23 4v6h-6","M1 20v-6h6","M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"],
+  users:["M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2","M9 11a4 4 0 100-8 4 4 0 000 8z"],
+  globe:["M12 22a10 10 0 100-20 10 10 0 000 20z","M2 12h20"],
+};
+
+const B={navy:'#182b3c',navyMid:'#274f73',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',green:'#16a34a'};
+const API_BASE='https://www.maine.gov/doe/jsonapi';
+
+const NODE_TYPES=[
+  {type:'multi_column_page',label:'Basic Template page'},
+  {type:'article',label:'Article'},
+  {type:'web_guide',label:'Web Guide'},
+  {type:'instructional_page',label:'Instructional page'},
+  {type:'home_page',label:'Home page'},
+];
+
+function ownerName(email){
+  if(!email||!email.includes('@'))return'';
+  return email.split('@')[0].split('.').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+}
+
+function formatDate(iso){
+  if(!iso)return'—';
+  const d=new Date(iso);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function daysAgo(iso){
+  if(!iso)return 999;
+  return Math.floor((Date.now()-new Date(iso).getTime())/86400000);
+}
+
+function App(){
+  const [pages,setPages]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [progress,setProgress]=useState({loaded:0,phase:'Connecting to Drupal...',types:0,totalTypes:NODE_TYPES.length});
+  const [search,setSearch]=useState('');
+  const [ownerFilter,setOwnerFilter]=useState('');
+  const [typeFilter,setTypeFilter]=useState('');
+  const [sort,setSort]=useState({field:'changed',dir:'desc'});
+  const [visibleCount,setVisibleCount]=useState(100);
+
+  const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
+
+  const fetchAllPages=useCallback(async()=>{
+    // Try cached data from Apps Script first
+    try{
+      setProgress({loaded:0,phase:'Loading from cache...',types:0,totalTypes:1});
+      const r=await fetch(SCRIPT_URL+'?type=drupal_pages');
+      const j=await r.json();
+      if(j.pages&&j.pages.length>0){
+        const mapped=j.pages.map(p=>({...p,fullUrl:p.path?'https://www.maine.gov'+p.path:''}));
+        setPages(mapped);
+        setLoading(false);
+        console.log(`Page Explorer: loaded ${mapped.length} pages from cache (${j.cachedAt})`);
+        return;
+      }
+    }catch(e){console.log('Cache miss, fetching from Drupal directly');}
+
+    // Fallback: fetch directly from Drupal JSON:API
+    const allPages=[];
+    let typesDone=0;
+
+    for(const nt of NODE_TYPES){
+      setProgress({loaded:allPages.length,phase:`Loading ${nt.label}...`,types:typesDone,totalTypes:NODE_TYPES.length});
+      let url=`${API_BASE}/node/${nt.type}?fields[node--${nt.type}]=title,path,field_page_owner_email,changed,created,drupal_internal__nid,status&page[limit]=50&sort=-changed`;
+      let pageNum=0;
+      try{
+        while(url&&pageNum<100){
+          const r=await fetch(url.replace(/^http:/,'https:'));
+          const j=await r.json();
+          if(j.data) j.data.forEach(n=>{
+            const path=n.attributes?.path?.alias||'';
+            const email=n.attributes?.field_page_owner_email||'';
+            allPages.push({
+              nid:n.attributes?.drupal_internal__nid||'',
+              title:n.attributes?.title||'Untitled',
+              path:path?'/doe'+path:'',
+              fullUrl:path?'https://www.maine.gov/doe'+path:'',
+              owner:ownerName(email),
+              ownerEmail:email,
+              changed:n.attributes?.changed||'',
+              created:n.attributes?.created||'',
+              published:n.attributes?.status!==false,
+              type:nt.label,
+              typeKey:nt.type,
+            });
+          });
+          setProgress({loaded:allPages.length,phase:`Loading ${nt.label}... ${allPages.length.toLocaleString()} pages`,types:typesDone,totalTypes:NODE_TYPES.length});
+          url=j.links?.next?.href||null;
+          pageNum++;
+          if(pageNum%5===0)await new Promise(r=>setTimeout(r,0));
+        }
+      }catch(e){console.error(`Failed fetching ${nt.type}:`,e);}
+      typesDone++;
+    }
+
+    setPages(allPages);
+    setLoading(false);
+    console.log(`Page Explorer: loaded ${allPages.length} pages from Drupal directly`);
+    try{fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'save_stats',totalPages:String(allPages.length)})})}catch(e){}
+  },[]);
+
+  useEffect(()=>{fetchAllPages();},[fetchAllPages]);
+
+  // Derived data
+  const owners=useMemo(()=>[...new Set(pages.map(p=>p.owner).filter(Boolean))].sort(),[pages]);
+  const types=useMemo(()=>[...new Set(pages.map(p=>p.type).filter(Boolean))].sort(),[pages]);
+
+  const filtered=useMemo(()=>{
+    let r=pages;
+    if(search){const q=search.toLowerCase();r=r.filter(p=>p.title.toLowerCase().includes(q)||p.path.toLowerCase().includes(q)||p.owner.toLowerCase().includes(q)||p.ownerEmail.toLowerCase().includes(q));}
+    if(ownerFilter==='__none')r=r.filter(p=>!p.owner);
+    else if(ownerFilter)r=r.filter(p=>p.owner===ownerFilter);
+    if(typeFilter)r=r.filter(p=>p.type===typeFilter);
+    return r;
+  },[pages,search,ownerFilter,typeFilter]);
+
+  const sorted=useMemo(()=>{
+    const s=[...filtered];
+    const {field,dir}=sort;
+    s.sort((a,b)=>{
+      let va=a[field]||'',vb=b[field]||'';
+      if(field==='nid'){va=parseInt(va)||0;vb=parseInt(vb)||0;}
+      if(typeof va==='string')va=va.toLowerCase();
+      if(typeof vb==='string')vb=vb.toLowerCase();
+      if(va<vb)return dir==='asc'?-1:1;
+      if(va>vb)return dir==='asc'?1:-1;
+      return 0;
+    });
+    return s;
+  },[filtered,sort]);
+
+  const visible=useMemo(()=>sorted.slice(0,visibleCount),[sorted,visibleCount]);
+
+  function toggleSort(field){
+    setSort(prev=>prev.field===field?{field,dir:prev.dir==='asc'?'desc':'asc'}:{field,dir:'desc'});
+  }
+
+  // Stats
+  const stats=useMemo(()=>{
+    const stale=pages.filter(p=>daysAgo(p.changed)>180).length;
+    const noOwner=pages.filter(p=>!p.owner).length;
+    const unpub=pages.filter(p=>!p.published).length;
+    return{total:pages.length,stale,noOwner,unpub};
+  },[pages]);
+
+  function SortHeader({field,label,align}){
+    const active=sort.field===field;
+    return <th onClick={()=>toggleSort(field)} style={{padding:'12px 14px',textAlign:align||'left',fontWeight:700,cursor:'pointer',
+      userSelect:'none',whiteSpace:'nowrap',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em',
+      color:active?B.teal:'#94a3b8',transition:'color 0.15s'}}>
+      <span style={{display:'inline-flex',alignItems:'center',gap:4}}>
+        {label}
+        {active&&<Sv d={sort.dir==='asc'?ic.up:ic.down} size={12} color={B.teal}/>}
+      </span>
+    </th>;
+  }
+
+  if(loading) return <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:'80vh',gap:16}}>
+    <Sv d={ic.spin} size={28} color={B.teal} style={{animation:'spin 1s linear infinite'}}/>
+    <span style={{color:B.txtSec,fontSize:15,fontWeight:600}}>{progress.phase}</span>
+    <div style={{width:240,height:6,borderRadius:3,background:'#e2e8f0',overflow:'hidden'}}>
+      <div style={{height:'100%',borderRadius:3,background:`linear-gradient(90deg,${B.teal},#34d399)`,
+        width:`${(progress.types/progress.totalTypes)*100}%`,transition:'width 0.3s ease'}}/>
+    </div>
+    <span style={{color:B.txtMute,fontSize:12,fontWeight:500}}>{progress.loaded.toLocaleString()} pages loaded · {progress.types}/{progress.totalTypes} content types</span>
+  </div>;
+
+  return <div style={{maxWidth:1400,margin:'0 auto',padding:'0 28px',animation:'fadeIn 0.3s ease'}}>
+
+    {/* Hero */}
+    <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:32,marginBottom:24,position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',inset:0,pointerEvents:'none',backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
+      <div style={{position:'relative',zIndex:1}}>
+        <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:14}}>
+          <div style={{width:48,height:48,borderRadius:14,background:'linear-gradient(135deg,#274f73,#1e3a56)',
+            display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 16px rgba(39,79,115,0.3)'}}>
+            <Sv d={ic.book} size={24} color="#fff"/>
+          </div>
+          <div>
+            <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0}}>Page Explorer</h1>
+            <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Browse, search, and audit all maine.gov/doe pages</p>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+          <a href="https://www.maine.gov/doe" target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.12)',color:'#e2e8f0',textDecoration:'none',fontSize:12,fontWeight:600}}>
+            <Sv d={ic.globe} size={14} color="#94a3b8"/> Visit maine.gov/doe
+          </a>
+          <button onClick={()=>{setLoading(true);setPages([]);setVisibleCount(100);fetchAllPages();}}
+            style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.12)',color:'#e2e8f0',fontSize:12,fontWeight:600,cursor:'pointer'}}>
+            <Sv d={ic.refresh} size={14} color="#94a3b8"/> Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {/* Stats */}
+    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:20}}>
+      {[
+        {l:'Total Pages',v:stats.total,c:B.navyMid},
+        {l:'Stale (6+ months)',v:stats.stale,c:stats.stale>0?'#f59e0b':'#16a34a'},
+        {l:'No Owner',v:stats.noOwner,c:stats.noOwner>0?'#ef4444':'#16a34a'},
+        {l:'Unpublished',v:stats.unpub,c:'#94a3b8'},
+      ].map((m,i)=>(
+        <div key={i} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}30`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+          <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:700,letterSpacing:.4,marginBottom:4,display:'flex',alignItems:'center',gap:5}}>
+            <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
+          </div>
+          <div style={{fontSize:28,fontWeight:800,color:B.navy,lineHeight:1}}>{m.v.toLocaleString()}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* Filters */}
+    <div style={{display:'flex',gap:8,marginBottom:16,flexWrap:'wrap'}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}30`,flex:1,minWidth:250}}>
+        <Sv d={ic.search} size={16} color={B.txtMute}/>
+        <input type="text" placeholder="Search by title, path, or owner..." value={search} onChange={e=>{setSearch(e.target.value);setVisibleCount(100);}}
+          style={{border:'none',outline:'none',flex:1,fontSize:14,color:B.txt,fontWeight:500,background:'transparent'}}/>
+        {search&&<span onClick={()=>setSearch('')} style={{cursor:'pointer'}}><Sv d={ic.x} size={14} color={B.txtMute}/></span>}
+      </div>
+      <select value={ownerFilter} onChange={e=>{setOwnerFilter(e.target.value);setVisibleCount(100);}}
+        style={{padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:13,fontFamily:'inherit',color:ownerFilter?B.txt:B.txtMute,background:B.wh,cursor:'pointer',outline:'none',minWidth:180}}>
+        <option value="">All owners ({owners.length})</option>
+        <option value="__none">— No owner —</option>
+        {owners.map(o=><option key={o} value={o}>{o}</option>)}
+      </select>
+      <select value={typeFilter} onChange={e=>{setTypeFilter(e.target.value);setVisibleCount(100);}}
+        style={{padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:13,fontFamily:'inherit',color:typeFilter?B.txt:B.txtMute,background:B.wh,cursor:'pointer',outline:'none',minWidth:180}}>
+        <option value="">All types</option>
+        {types.map(t=><option key={t} value={t}>{t}</option>)}
+      </select>
+      {(search||ownerFilter||typeFilter)&&<button onClick={()=>{setSearch('');setOwnerFilter('');setTypeFilter('');setVisibleCount(100);}}
+        style={{padding:'10px 14px',borderRadius:10,border:`2px solid #ef444440`,background:'#ef44440a',color:'#ef4444',fontSize:13,fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',gap:4}}>
+        <Sv d={ic.x} size={14} color="#ef4444"/> Clear
+      </button>}
+    </div>
+
+    {/* Results count */}
+    <div style={{fontSize:13,color:B.txtSec,fontWeight:600,marginBottom:10}}>
+      {sorted.length===pages.length?`${pages.length.toLocaleString()} pages`:`${sorted.length.toLocaleString()} of ${pages.length.toLocaleString()} pages`}
+      {sort.field!=='changed'&&` · sorted by ${sort.field}`}
+    </div>
+
+    {/* Table */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
+      <div style={{overflowX:'auto'}}>
+        <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+          <thead><tr style={{background:B.navy,color:'#fff'}}>
+            <SortHeader field="title" label="Page"/>
+            <SortHeader field="owner" label="Owner"/>
+            <SortHeader field="type" label="Type"/>
+            <SortHeader field="changed" label="Last Updated"/>
+            <SortHeader field="created" label="Created"/>
+            <th style={{padding:'12px 14px',textAlign:'center',fontWeight:700,fontSize:11,textTransform:'uppercase',letterSpacing:'.03em',color:'#94a3b8'}}>Actions</th>
+          </tr></thead>
+          <tbody>
+            {visible.map((p,i)=>{
+              const age=daysAgo(p.changed);
+              const stale=age>180;
+              const veryStale=age>365;
+              return <tr key={p.nid+'-'+i} style={{borderBottom:`1px solid ${B.border}15`}}
+                onMouseEnter={e=>e.currentTarget.style.background=`${B.teal}06`}
+                onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={{padding:'12px 14px',maxWidth:350}}>
+                  <div style={{fontWeight:600,color:B.txt,marginBottom:2}}>
+                    <a href={p.fullUrl} target="_blank" rel="noopener noreferrer" style={{color:B.navyMid,textDecoration:'none'}}
+                      onMouseEnter={e=>e.currentTarget.style.color=B.teal}
+                      onMouseLeave={e=>e.currentTarget.style.color=B.navyMid}>{p.title}</a>
+                  </div>
+                  <div style={{fontSize:11,color:B.txtMute,fontFamily:'monospace',fontWeight:500}}>{p.path}</div>
+                </td>
+                <td style={{padding:'12px 14px'}}>
+                  {p.owner?<span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 10px',borderRadius:8,
+                    background:`${B.navyMid}0a`,border:`1px solid ${B.navyMid}18`,fontSize:12,fontWeight:600,color:B.navyMid}}>
+                    <Sv d={ic.users} size={11} color={B.navyMid}/>{p.owner}
+                  </span>:<span style={{fontSize:12,color:'#ef4444',fontWeight:600}}>No owner</span>}
+                </td>
+                <td style={{padding:'12px 14px'}}>
+                  <span style={{fontSize:11,fontWeight:600,padding:'3px 10px',borderRadius:16,background:'#f1f5f9',color:B.txtSec,border:'1px solid #e2e8f0'}}>{p.type}</span>
+                </td>
+                <td style={{padding:'12px 14px',whiteSpace:'nowrap'}}>
+                  <span style={{fontSize:12,fontWeight:600,color:veryStale?'#ef4444':stale?'#f59e0b':B.txtSec}}>{formatDate(p.changed)}</span>
+                  {stale&&<div style={{fontSize:10,fontWeight:700,color:veryStale?'#ef4444':'#f59e0b',marginTop:2}}>{age} days ago</div>}
+                </td>
+                <td style={{padding:'12px 14px',whiteSpace:'nowrap',fontSize:12,color:B.txtMute,fontWeight:500}}>{formatDate(p.created)}</td>
+                <td style={{padding:'12px 14px',textAlign:'center'}}>
+                  <div style={{display:'flex',gap:6,justifyContent:'center'}}>
+                    <a href={`https://www.maine.gov/doe/node/${p.nid}/edit`} target="_blank" rel="noopener noreferrer"
+                      style={{display:'inline-flex',alignItems:'center',gap:3,padding:'4px 10px',borderRadius:6,border:`1.5px solid ${B.border}30`,
+                        background:B.wh,color:B.navyMid,textDecoration:'none',fontSize:11,fontWeight:700}}
+                      onMouseEnter={e=>{e.currentTarget.style.borderColor=B.teal;e.currentTarget.style.color=B.teal;}}
+                      onMouseLeave={e=>{e.currentTarget.style.borderColor=`${B.border}30`;e.currentTarget.style.color=B.navyMid;}}>
+                      <Sv d={ic.edit} size={11} color="currentColor"/> Edit
+                    </a>
+                    <a href={p.fullUrl} target="_blank" rel="noopener noreferrer"
+                      style={{display:'inline-flex',alignItems:'center',gap:3,padding:'4px 10px',borderRadius:6,border:`1.5px solid ${B.border}30`,
+                        background:B.wh,color:B.navyMid,textDecoration:'none',fontSize:11,fontWeight:700}}
+                      onMouseEnter={e=>{e.currentTarget.style.borderColor=B.teal;e.currentTarget.style.color=B.teal;}}
+                      onMouseLeave={e=>{e.currentTarget.style.borderColor=`${B.border}30`;e.currentTarget.style.color=B.navyMid;}}>
+                      <Sv d={ic.ext} size={11} color="currentColor"/> View
+                    </a>
+                  </div>
+                </td>
+              </tr>;
+            })}
+            {visible.length===0&&<tr><td colSpan={6} style={{padding:40,textAlign:'center',color:B.txtMute}}>No pages found.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Load more */}
+    {visibleCount<sorted.length&&<div style={{textAlign:'center',marginBottom:30}}>
+      <button onClick={()=>setVisibleCount(v=>v+100)}
+        style={{padding:'10px 28px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.navyMid,fontSize:13,fontWeight:700,cursor:'pointer'}}>
+        Show more ({Math.min(100,sorted.length-visibleCount)} more of {sorted.length.toLocaleString()})
+      </button>
+    </div>}
+
+    <div style={{textAlign:'center',padding:'10px 0 30px',fontSize:12,color:B.txtMute,fontWeight:500}}>
+      Maine Department of Education · Communications Portal · Page Explorer
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

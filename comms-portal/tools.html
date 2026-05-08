@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tools | Maine DOE Communications Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1)}
+.portal-bar img{height:28px;object-fit:contain}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/maine-doe-logo.png" alt="Maine DOE"/><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><a href="index.html" onclick="parent.postMessage({section:'website'},'*');return false;">Website</a><span class="sep">›</span><span class="current">Tools</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState} = React;
+
+const Sv=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const B={navy:'#182b3c',teal:'#42c3f7',green:'#34d399',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',red:'#ef4444'};
+
+const ic={
+  ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
+  check:["M9 12l2 2 4-4","M12 22a10 10 0 100-20 10 10 0 000 20z"],
+  image:["M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z","M8.5 10a1.5 1.5 0 100-3 1.5 1.5 0 000 3z","M21 15l-5-5L5 21"],
+  link:["M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71","M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"],
+  trash:["M3 6h18","M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"],
+  search:"M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",
+  shield:["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"],
+  book:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"],
+};
+
+const BASE='https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/';
+
+const tools=[
+  {name:'WCAG Auto-Remediator',desc:'Automatically fix common WCAG accessibility issues across Drupal pages — empty headings, link contrast, table scopes, iframe titles, and more.',
+    icon:ic.shield,color:'#10b981',href:BASE+'wcag-remediator.html',tag:'Accessibility'},
+  {name:'Alt Text Reviewer',desc:'Review and update image alt text across your pages. Flags missing, generic, or overly long alt text for quick fixes.',
+    icon:ic.image,color:'#8b5cf6',href:BASE+'alt-text-reviewer.html',tag:'Accessibility'},
+  {name:'Dead Link Triage',desc:'View and triage broken links found by the automated scanner. Filter by page owner, link type, and severity.',
+    icon:ic.link,color:'#ef4444',href:BASE+'dead-link-triage.html',tag:'Content Quality'},
+  {name:'Image Cleanup',desc:'Find oversized images, unused uploads, and duplicates. Optimize file sizes and clean up the media library.',
+    icon:ic.image,color:'#f59e0b',href:BASE+'image-cleanup.html',tag:'Maintenance'},
+  {name:'File Orphan Finder',desc:'Detect files in Drupal that aren\'t referenced by any page — candidates for cleanup or deletion.',
+    icon:ic.trash,color:'#ef4444',href:BASE+'file-orphan-finder.html',tag:'Maintenance'},
+  {name:'Web Editor Resource Center',desc:'Guides, documentation, and training materials for Drupal content editors.',
+    icon:ic.book,color:'#274f73',href:'https://www.maine.gov/doe/about/webeditors',tag:'Training'},
+];
+
+function App(){
+  const [hov,setHov]=useState(null);
+
+  return <div style={{maxWidth:1060,margin:'0 auto',padding:'28px 28px 60px',animation:'fadeIn 0.3s ease'}}>
+    <div style={{marginBottom:28}}>
+      <div style={{fontSize:11,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',color:B.teal,marginBottom:6,display:'flex',alignItems:'center',gap:8}}>
+        <span style={{width:16,height:2,background:B.teal,borderRadius:1}}/>Admin tools
+      </div>
+      <h1 style={{fontSize:26,fontWeight:800,color:B.navy,letterSpacing:'-0.02em',marginBottom:6}}>Website Tools</h1>
+      <p style={{fontSize:14,color:B.txtMute,fontWeight:500,maxWidth:500}}>Accessibility remediation, content quality checks, and maintenance utilities for maine.gov/doe.</p>
+    </div>
+
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:18}}>
+      {tools.map((t,i)=>{
+        const h=hov===i;
+        return <a key={i} href={t.href} target="_blank" rel="noopener noreferrer"
+          style={{background:B.wh,borderRadius:14,border:`2.5px solid ${h?t.color+'60':B.border+'30'}`,
+            padding:'22px 22px 20px',textDecoration:'none',display:'flex',flexDirection:'column',gap:12,
+            transition:'all 0.15s',transform:h?'translateY(-2px)':'none',
+            boxShadow:h?`0 8px 24px ${t.color}15`:'0 2px 12px rgba(0,0,0,0.04)'}}
+          onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)}>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <div style={{width:40,height:40,borderRadius:12,background:`${t.color}12`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <Sv d={t.icon} size={20} color={t.color}/>
+            </div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:16,fontWeight:700,color:B.navy}}>{t.name}</div>
+              <span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:10,background:`${t.color}12`,color:t.color,border:`1px solid ${t.color}25`}}>{t.tag}</span>
+            </div>
+            <Sv d={ic.ext} size={16} color={h?t.color:B.border}/>
+          </div>
+          <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:0,fontWeight:500}}>{t.desc}</p>
+        </a>;
+      })}
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

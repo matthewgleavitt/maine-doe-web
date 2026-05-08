@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Tracker | Maine DOE Communications Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><span class="current">YouTube Tracker</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useMemo} = React;
+
+const Sv=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const ic={
+  video:["M23 7l-7 5 7 5V7z","M14 5H3a2 2 0 00-2 2v10a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2z"],
+  upload:["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M17 8l-5-5-5 5","M12 3v12"],
+  folder:["M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"],
+  ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
+  clock:["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 6v6l4 2"],
+  check:["M22 11.08V12a10 10 0 11-5.93-9.14","M22 4L12 14.01l-3-3"],
+  tick:["M20 6L9 17l-5-5"],
+  play:["M5 3l14 9-14 9V3z"],
+  search:"M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",
+  x:["M18 6L6 18","M6 6l12 12"],
+  spin:["M12 2v4","M12 18v4","M4.93 4.93l2.83 2.83","M16.24 16.24l2.83 2.83","M2 12h4","M18 12h4"],
+};
+
+const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',green:'#16a34a'};
+const API='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
+const SP='https://stateofmaine.sharepoint.com/:f:/r/teams/DOETeam/Shared%20Documents/Communications/YouTube%20Uploads?csf=1&web=1&e=GLuU3e';
+
+const ST={Received:{bg:'#dbeafe',color:'#1e40af',border:'#93c5fd'},Processing:{bg:'#fef3c7',color:'#92400e',border:'#fcd34d'},Complete:{bg:'#d1fae5',color:'#065f46',border:'#6ee7b7'}};
+
+function Input({label,required,children}){
+  return <div style={{marginBottom:14}}>
+    <label style={{display:'block',fontSize:12,fontWeight:700,color:B.navy,marginBottom:5,textTransform:'uppercase',letterSpacing:'.03em'}}>{label}{required&&' *'}</label>
+    {children}
+  </div>;
+}
+
+function Field({value,onChange,placeholder,type,onFocus,onBlur}){
+  const s={width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:B.txt,outline:'none',background:B.wh};
+  const f=e=>e.currentTarget.style.borderColor=B.teal;
+  const b=e=>e.currentTarget.style.borderColor=`${B.border}30`;
+  if(type==='textarea') return <textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={{...s,resize:'vertical',minHeight:100}} onFocus={f} onBlur={b}/>;
+  return <input type={type||'text'} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={f} onBlur={b}/>;
+}
+
+function App(){
+  const [data,setData]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [err,setErr]=useState(null);
+  const [search,setSearch]=useState('');
+  const [filter,setFilter]=useState('');
+  const [expanded,setExpanded]=useState(null);
+  const [showForm,setShowForm]=useState(false);
+  const [submitting,setSubmitting]=useState(false);
+  const [submitMsg,setSubmitMsg]=useState(null);
+  const [completeModal,setCompleteModal]=useState(null);
+  const [completing,setCompleting]=useState(false);
+  const emptyForm={requestor:'',email:'',team:'',title:'',description:'',mediaType:'',playlist:'',privacy:'Public',engine:'No',engineCourse:'',notes:'',proofread:false};
+  const [form,setForm]=useState(emptyForm);
+  const uf=(k,v)=>setForm(p=>({...p,[k]:v}));
+
+  async function load(){
+    try{const r=await fetch(API+'?type=youtube');const j=await r.json();setData(j.rows||[]);}
+    catch(e){setErr(e.message);}
+    setLoading(false);
+  }
+  useEffect(()=>{load();},[]);
+
+  const stats=useMemo(()=>({
+    total:data.length,
+    received:data.filter(s=>s.status==='Received').length,
+    processing:data.filter(s=>s.status==='Processing').length,
+    complete:data.filter(s=>s.status==='Complete').length,
+  }),[data]);
+
+  const filtered=useMemo(()=>{
+    let r=data;
+    if(search){const q=search.toLowerCase();r=r.filter(s=>(s.title||'').toLowerCase().includes(q)||(s.requestor||'').toLowerCase().includes(q)||(s.team||'').toLowerCase().includes(q));}
+    if(filter)r=r.filter(s=>s.status===filter);
+    return r;
+  },[data,search,filter]);
+
+  async function handleSubmit(){
+    if(!form.requestor||!form.title||!form.email){setSubmitMsg({ok:false,t:'Name, email, and video title are required.'});return;}
+    if(!form.proofread){setSubmitMsg({ok:false,t:'Please acknowledge that you have proofread all content.'});return;}
+    setSubmitting(true);setSubmitMsg(null);
+    try{
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'youtube_submit',...form})});
+      const j=await r.json();
+      if(j.success){
+        const now=new Date();
+        const newRow={
+          requestor:form.requestor,email:form.email,team:form.team,
+          title:form.title,description:form.description,mediaType:form.mediaType,
+          playlist:form.playlist,privacy:form.privacy,engine:form.engine,
+          engineCourse:form.engineCourse,notes:form.notes,
+          status:'Received',
+          date:now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+        };
+        setData(prev=>[newRow,...prev]);
+        setSubmitMsg({ok:true,t:'Video submitted successfully!'});
+        setForm(emptyForm);
+        setTimeout(()=>{setShowForm(false);setSubmitMsg(null);},1500);
+      }
+      else setSubmitMsg({ok:false,t:j.error||'Something went wrong.'});
+    }catch(e){setSubmitMsg({ok:false,t:e.message});}
+    setSubmitting(false);
+  }
+
+  async function handleComplete(){
+    if(!completeModal?.url)return;
+    setCompleting(true);
+    try{
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'youtube_complete',title:completeModal.title,requestor:completeModal.requestor,youtubeUrl:completeModal.url})});
+      const j=await r.json();
+      if(j.success&&j.email){
+        const subj=encodeURIComponent('Your video is now on YouTube: '+completeModal.title);
+        const body=encodeURIComponent('Hi '+(j.name||completeModal.requestor)+',\r\n\r\nYour video "'+completeModal.title+'" is now on YouTube and can be viewed here:\r\n\r\n'+completeModal.url+'\r\n\r\nPlease review and let me know if there are any edits needed.\r\n\r\nThanks,\r\nMatt Leavitt\r\nWebsite & Technology Coordinator\r\nMaine Department of Education');
+        const a=document.createElement('a');a.href='mailto:'+encodeURIComponent(j.email)+'?subject='+subj+'&body='+body;a.click();
+      }
+      await load();setCompleteModal(null);
+    }catch(e){console.error(e);}
+    setCompleting(false);
+  }
+
+  if(loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'80vh',gap:12}}>
+    <Sv d={ic.spin} size={24} color={B.teal} style={{animation:'spin 1s linear infinite'}}/><span style={{color:B.txtSec,fontSize:14,fontWeight:600}}>Loading submissions...</span>
+  </div>;
+
+  return <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px',animation:'fadeIn 0.3s ease'}}>
+
+    {/* ── HERO ── */}
+    <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:'32px',marginBottom:28,position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',inset:0,pointerEvents:'none',backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
+      <div style={{position:'relative',zIndex:1}}>
+        <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:20}}>
+          <div style={{width:48,height:48,borderRadius:14,background:'linear-gradient(135deg,#ef4444,#dc2626)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 16px rgba(239,68,68,0.3)'}}>
+            <Sv d={ic.video} size={24} color="#fff"/>
+          </div>
+          <div>
+            <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0}}>YouTube Tracker</h1>
+            <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Submit, track, and manage video uploads</p>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+          <button onClick={()=>setShowForm(true)} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'linear-gradient(135deg,#ef4444,#dc2626)',color:'#fff',border:'none',fontSize:14,fontWeight:700,boxShadow:'0 4px 16px rgba(239,68,68,0.3)',cursor:'pointer'}}>
+            <Sv d={ic.upload} size={18} color="#fff"/> Submit New Video
+          </button>
+          <a href={SP} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
+            <Sv d={ic.folder} size={18} color="#94a3b8"/> Video Files Folder
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* ── STATS ── */}
+    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
+      {[{l:'Total',v:stats.total,c:B.teal,f:''},{l:'Received',v:stats.received,c:'#3b82f6',f:'Received'},{l:'Processing',v:stats.processing,c:'#f59e0b',f:'Processing'},{l:'Complete',v:stats.complete,c:'#16a34a',f:'Complete'}].map((m,i)=>(
+        <div key={i} onClick={()=>setFilter(filter===m.f?'':m.f)} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${filter===m.f||(m.f===''&&!filter)?m.c+'50':B.border+'30'}`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)',cursor:'pointer',transition:'all 0.15s'}}>
+          <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:700,letterSpacing:.4,marginBottom:4,display:'flex',alignItems:'center',gap:5}}>
+            <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
+          </div>
+          <div style={{fontSize:28,fontWeight:800,color:B.navy,lineHeight:1}}>{m.v}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* ── SEARCH ── */}
+    <div style={{display:'flex',gap:8,marginBottom:14}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}30`,flex:1}}>
+        <Sv d={ic.search} size={16} color={B.txtMute}/>
+        <input type="text" placeholder="Search by title, requestor, or team..." value={search} onChange={e=>setSearch(e.target.value)} style={{border:'none',outline:'none',flex:1,fontSize:14,color:B.txt,fontWeight:500,background:'transparent'}}/>
+        {search&&<span onClick={()=>setSearch('')} style={{cursor:'pointer'}}><Sv d={ic.x} size={14} color={B.txtMute}/></span>}
+      </div>
+    </div>
+
+    <div style={{fontSize:13,color:B.txtSec,fontWeight:600,marginBottom:10}}>{filtered.length} submission{filtered.length!==1?'s':''}{filter&&` — ${filter}`}</div>
+
+    {/* ── TABLE ── */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:40}}>
+      <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+        <thead><tr style={{background:B.navy,color:'#fff'}}>
+          {['Date','Video Title','Requestor','Team','Status',''].map((h,i)=>(
+            <th key={i} style={{padding:'12px 16px',fontWeight:700,textAlign:i===4?'center':'left',fontSize:12}}>{h}</th>
+          ))}
+        </tr></thead>
+        <tbody>
+          {filtered.map((s,i)=>{
+            const st=ST[s.status]||ST.Received;
+            const isExp=expanded===i;
+            return <React.Fragment key={i}>
+              <tr style={{borderBottom:isExp?'none':`1px solid ${B.border}20`,cursor:'pointer'}} onClick={()=>setExpanded(isExp?null:i)}
+                onMouseEnter={e=>e.currentTarget.style.background=`${B.teal}06`} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={{padding:'14px 16px',fontSize:12,color:B.txtMute,whiteSpace:'nowrap',fontWeight:500}}>{s.date}</td>
+                <td style={{padding:'14px 16px',fontWeight:600,color:B.txt}}>
+                  {s.title}
+                  {s.engine&&<span style={{marginLeft:8,fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'#dbeafe',color:'#1e40af',border:'1px solid #93c5fd'}}>EnGiNE</span>}
+                </td>
+                <td style={{padding:'14px 16px',color:B.txtSec,fontWeight:500}}>{s.requestor}</td>
+                <td style={{padding:'14px 16px',color:B.txtSec,fontWeight:500,fontSize:12}}>{s.team}</td>
+                <td style={{padding:'14px 16px',textAlign:'center'}}>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'4px 14px',borderRadius:20,fontSize:11,fontWeight:700,background:st.bg,color:st.color,border:`1.5px solid ${st.border}`}}>
+                    {s.status==='Complete'&&<Sv d={ic.check} size={12} color={st.color}/>}
+                    {s.status==='Processing'&&<Sv d={ic.clock} size={12} color={st.color}/>}
+                    {s.status}
+                  </span>
+                </td>
+                <td style={{padding:'14px 16px',textAlign:'center'}}>
+                  {s.url?<a href={s.url} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}
+                    style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:`2px solid ${B.border}30`,background:B.wh,color:B.teal,textDecoration:'none',fontSize:11,fontWeight:700}}>
+                    <Sv d={ic.play} size={12} color={B.teal}/> Watch
+                  </a>:s.status!=='Complete'?<button onClick={e=>{e.stopPropagation();setCompleteModal({title:s.title,requestor:s.requestor,url:''});}}
+                    style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:`2px solid ${B.green}40`,background:`${B.green}08`,color:B.green,fontSize:11,fontWeight:700,cursor:'pointer'}}>
+                    <Sv d={ic.check} size={12} color={B.green}/> Complete
+                  </button>:<span style={{color:B.txtMute,fontSize:11}}>—</span>}
+                </td>
+              </tr>
+              {isExp&&<tr style={{borderBottom:`1px solid ${B.border}20`}}>
+                <td colSpan={6} style={{padding:0}}>
+                  <div style={{padding:'16px 20px 16px 48px',background:`${B.navy}03`,display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+                    <div>
+                      <div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:8}}>Details</div>
+                      {s.description&&<div style={{fontSize:13,color:B.txtSec,lineHeight:1.6,marginBottom:10,fontWeight:500}}>{s.description}</div>}
+                      {s.mediaType&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Type:</strong> {s.mediaType}</div>}
+                      {s.playlist&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Playlist:</strong> {s.playlist}</div>}
+                      {s.privacy&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Privacy:</strong> {s.privacy}</div>}
+                    </div>
+                    <div>
+                      {s.engine&&<div style={{marginBottom:8}}>
+                        <div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:6}}>EnGiNE</div>
+                        <div style={{fontSize:12,color:B.txtSec}}><strong>Course:</strong> {s.engineCourse||'—'}</div>
+                      </div>}
+                      {s.notes&&<div>
+                        <div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:6}}>Special Notes</div>
+                        <div style={{fontSize:12,color:B.txtSec,lineHeight:1.5}}>{s.notes}</div>
+                      </div>}
+                    </div>
+                  </div>
+                </td>
+              </tr>}
+            </React.Fragment>;
+          })}
+          {filtered.length===0&&<tr><td colSpan={6} style={{padding:40,textAlign:'center',color:B.txtMute}}>No submissions found.</td></tr>}
+        </tbody>
+      </table>
+    </div>
+
+    {/* ── SUBMIT FORM MODAL ── */}
+    {showForm&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(6px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
+      onClick={e=>{if(e.target===e.currentTarget)setShowForm(false);}}>
+      <div style={{background:B.wh,borderRadius:20,width:'100%',maxWidth:640,maxHeight:'90vh',overflow:'auto',boxShadow:'0 24px 80px rgba(0,0,0,0.2)',animation:'fadeIn 0.2s ease'}}>
+        <div style={{padding:'24px 28px 16px',borderBottom:`2px solid ${B.border}30`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <div style={{width:40,height:40,borderRadius:12,background:'linear-gradient(135deg,#ef4444,#dc2626)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <Sv d={ic.video} size={20} color="#fff"/>
+            </div>
+            <div>
+              <h2 style={{fontSize:18,fontWeight:800,color:B.navy,margin:0}}>Submit a Video</h2>
+              <p style={{fontSize:12,color:B.txtMute,margin:0}}>Upload files to SharePoint first</p>
+            </div>
+          </div>
+          <button onClick={()=>setShowForm(false)} style={{background:'none',border:'none',cursor:'pointer',padding:4}}><Sv d={ic.x} size={20} color={B.txtMute}/></button>
+        </div>
+        <div style={{padding:'20px 28px 28px'}}>
+          {/* Copyright warning */}
+          <div style={{padding:'12px 16px',borderRadius:10,background:'#fee2e2',border:'1.5px solid #fca5a5',borderLeft:'4px solid #ef4444',marginBottom:20,fontSize:13,color:'#991b1b',fontWeight:500,lineHeight:1.6}}>
+            <strong>IMPORTANT:</strong> Your video cannot contain copyrighted images/audio that you do not have permission to use. This can result in a copyright strike and the department losing our YouTube channel permanently.
+          </div>
+
+          <Input label="Your Name" required><Field value={form.requestor} onChange={v=>uf('requestor',v)} placeholder="First Last"/></Input>
+          <Input label="Your Email" required><Field value={form.email} onChange={v=>uf('email',v)} placeholder="name@maine.gov" type="email"/></Input>
+          <Input label="What DOE Team Represents this Video Content" required><Field value={form.team} onChange={v=>uf('team',v)} placeholder="e.g., Communications, Assessment"/></Input>
+
+          <Input label="Title of Video" required>
+            <Field value={form.title} onChange={v=>uf('title',v)} placeholder="60-70 characters recommended"/>
+            <div style={{fontSize:11,color:form.title.length>70?'#ef4444':B.txtMute,marginTop:4,fontWeight:500}}>{form.title.length}/70 characters</div>
+          </Input>
+
+          <Input label="Is your video intended for EnGiNE?">
+            <div style={{display:'flex',gap:8}}>
+              {['Yes','No'].map(o=><button key={o} onClick={()=>uf('engine',o)} style={{padding:'8px 20px',borderRadius:10,fontSize:14,fontWeight:600,cursor:'pointer',border:`2px solid ${form.engine===o?B.teal:B.border+'30'}`,background:form.engine===o?`${B.teal}10`:B.wh,color:form.engine===o?B.navy:B.txtMute}}>{o}</button>)}
+            </div>
+          </Input>
+
+          {form.engine==='Yes'&&<Input label="EnGiNE Course Name"><Field value={form.engineCourse} onChange={v=>uf('engineCourse',v)} placeholder="Course name"/></Input>}
+
+          <Input label="Description" required>
+            <Field value={form.description} onChange={v=>uf('description',v)} type="textarea" placeholder="Give a complete understanding of the video content. If PD, include learning objectives."/>
+            <div style={{fontSize:11,color:B.txtMute,marginTop:4,fontWeight:500}}>Should be longer than a single sentence.</div>
+          </Input>
+
+          <Input label="What type of media are you sharing" required>
+            <select value={form.mediaType} onChange={e=>uf('mediaType',e.target.value)} style={{width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:form.mediaType?B.txt:B.txtMute,background:B.wh,cursor:'pointer',outline:'none'}}>
+              <option value="">Select type...</option>
+              {['Webinar','Training','Information Session','Promotional Media','Office Hours','Good News'].map(o=><option key={o} value={o}>{o}</option>)}
+            </select>
+          </Input>
+
+          <Input label="Playlists to add to">
+            <Field value={form.playlist} onChange={v=>uf('playlist',v)} placeholder="List all playlists"/>
+            <div style={{fontSize:11,color:B.txtMute,marginTop:4}}><a href="https://www.youtube.com/@MaineDOEComm/playlists" target="_blank" rel="noopener noreferrer" style={{color:B.teal,fontWeight:600}}>View current playlists →</a></div>
+          </Input>
+
+          <Input label="Privacy Setting">
+            <div style={{display:'flex',flexDirection:'column',gap:6}}>
+              {[{v:'Public',l:'Public — Most Common / For Everyone'},{v:'Unlisted',l:"Unlisted — Doesn't show in search, need direct link"},{v:'Private',l:'Private — Only accessible through sharing (rare)'}].map(o=>(
+                <button key={o.v} onClick={()=>uf('privacy',o.v)} style={{padding:'10px 16px',borderRadius:10,fontSize:13,fontWeight:500,cursor:'pointer',textAlign:'left',border:`2px solid ${form.privacy===o.v?B.teal:B.border+'30'}`,background:form.privacy===o.v?`${B.teal}10`:B.wh,color:form.privacy===o.v?B.navy:B.txtSec}}>{o.l}</button>
+              ))}
+            </div>
+          </Input>
+
+          <Input label="Any special notes?"><Field value={form.notes} onChange={v=>uf('notes',v)} type="textarea" placeholder="Anything else we should know?"/></Input>
+
+          {/* Video file upload */}
+          <div style={{padding:'18px 20px',borderRadius:12,background:'linear-gradient(135deg,#0c192608,#162d4408)',border:`2px solid ${B.teal}20`,marginBottom:20}}>
+            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:12}}>
+              <Sv d={ic.folder} size={18} color={B.teal}/>
+              <div style={{fontSize:14,fontWeight:700,color:B.navy}}>Upload your video file</div>
+            </div>
+            <p style={{fontSize:12,color:B.txtMute,lineHeight:1.6,fontWeight:500,marginBottom:12}}>
+              After submitting this form, upload your video to our shared Google Drive folder. It will be automatically uploaded to YouTube and matched to this submission.
+            </p>
+            <a href="https://drive.google.com/drive/folders/1i5Hp9HSxyya3sgVA4HSMmMosIYRCLlv1" target="_blank" rel="noopener noreferrer"
+              style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,
+                background:B.teal,color:'#0c1926',textDecoration:'none',fontSize:13,fontWeight:700,
+                boxShadow:'0 4px 12px rgba(66,195,247,0.25)'}}>
+              <Sv d={ic.ext} size={14} color="#0c1926"/> Open Upload Folder
+            </a>
+          </div>
+
+          {/* Proofread checkbox */}
+          <div style={{padding:'14px 16px',borderRadius:10,background:'#f8fafc',border:`2px solid ${form.proofread?B.teal:B.border+'30'}`,marginBottom:20,cursor:'pointer',display:'flex',alignItems:'flex-start',gap:12}} onClick={()=>uf('proofread',!form.proofread)}>
+            <div style={{width:22,height:22,borderRadius:6,border:`2px solid ${form.proofread?B.teal:B.border}`,background:form.proofread?B.teal:'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
+              {form.proofread&&<Sv d={ic.tick} size={14} color="#fff"/>}
+            </div>
+            <div style={{fontSize:13,color:B.navy,fontWeight:600,lineHeight:1.5}}>I have proofread all content and there are no spelling or grammatical errors.</div>
+          </div>
+
+          {/* SharePoint reminder */}
+          <div style={{padding:'12px 16px',borderRadius:10,background:'#fef3c714',border:'1.5px solid #f59e0b30',borderLeft:'4px solid #f59e0b',marginBottom:20,fontSize:13,color:B.txtSec,fontWeight:500}}>
+            Upload your video file(s) to the <a href={SP} target="_blank" style={{color:B.teal,fontWeight:700}}>SharePoint folder</a>.
+          </div>
+
+          {submitMsg&&<div style={{padding:'10px 16px',borderRadius:10,marginBottom:14,fontSize:13,fontWeight:600,background:submitMsg.ok?'#d1fae5':'#fee2e2',color:submitMsg.ok?'#065f46':'#991b1b',border:`1.5px solid ${submitMsg.ok?'#6ee7b7':'#fca5a5'}`}}>{submitMsg.t}</div>}
+
+          <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+            <button onClick={()=>setShowForm(false)} style={{padding:'12px 24px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:14,fontWeight:600,cursor:'pointer'}}>Cancel</button>
+            <button onClick={handleSubmit} disabled={submitting} style={{padding:'12px 28px',borderRadius:10,border:'none',background:submitting?'#94a3b8':'linear-gradient(135deg,#ef4444,#dc2626)',color:'#fff',fontSize:14,fontWeight:700,cursor:submitting?'default':'pointer',display:'flex',alignItems:'center',gap:8}}>
+              {submitting?<><Sv d={ic.spin} size={16} color="#fff" style={{animation:'spin 1s linear infinite'}}/> Submitting...</>:<><Sv d={ic.upload} size={16} color="#fff"/> Submit Video</>}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>}
+
+    {/* ── COMPLETE MODAL ── */}
+    {completeModal&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(6px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
+      onClick={e=>{if(e.target===e.currentTarget)setCompleteModal(null);}}>
+      <div style={{background:B.wh,borderRadius:20,width:'100%',maxWidth:480,boxShadow:'0 24px 80px rgba(0,0,0,0.2)',animation:'fadeIn 0.2s ease',padding:28}}>
+        <h2 style={{fontSize:18,fontWeight:800,color:B.navy,marginBottom:4}}>Mark as Complete</h2>
+        <p style={{fontSize:13,color:B.txtMute,marginBottom:20}}><strong>{completeModal.title}</strong> by {completeModal.requestor}</p>
+        <Input label="YouTube URL" required><Field value={completeModal.url} onChange={v=>setCompleteModal(p=>({...p,url:v}))} placeholder="https://youtu.be/..."/></Input>
+        <div style={{padding:'12px 16px',borderRadius:10,background:'#f0fdf4',border:'1.5px solid #bbf7d0',marginBottom:20,fontSize:13,color:'#065f46',fontWeight:500,lineHeight:1.6}}>
+          This will update the status to <strong>Complete</strong>, notify the team in Teams, and open a pre-filled email to the requestor in Outlook.
+        </div>
+        <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+          <button onClick={()=>setCompleteModal(null)} style={{padding:'10px 20px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:14,fontWeight:600,cursor:'pointer'}}>Cancel</button>
+          <button onClick={handleComplete} disabled={completing||!completeModal.url} style={{padding:'10px 24px',borderRadius:10,border:'none',background:completing||!completeModal.url?'#94a3b8':'linear-gradient(135deg,#16a34a,#15803d)',color:'#fff',fontSize:14,fontWeight:700,cursor:completing?'default':'pointer',display:'flex',alignItems:'center',gap:6}}>
+            {completing?<><Sv d={ic.spin} size={14} color="#fff" style={{animation:'spin 1s linear infinite'}}/> Sending...</>:<><Sv d={ic.check} size={14} color="#fff"/> Complete & Notify</>}
+          </button>
+        </div>
+      </div>
+    </div>}
+
+    <div style={{textAlign:'center',padding:'0 0 40px',fontSize:12,color:B.txtMute,fontWeight:500}}>Maine Department of Education · Communications Portal</div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

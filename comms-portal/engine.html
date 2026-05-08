@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EnGiNE | Maine DOE Communications Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1)}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><span class="current">EnGiNE</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect} = React;
+
+const Sv=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const ic={
+  ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
+  book:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"],
+  users:["M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2","M9 11a4 4 0 100-8 4 4 0 000 8z","M23 21v-2a4 4 0 00-3-3.87","M16 3.13a4 4 0 010 7.75"],
+  clock:["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 6v6l4 2"],
+  star:["M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"],
+  play:["M5 3l14 9-14 9V3z"],
+  globe:["M12 22a10 10 0 100-20 10 10 0 000 20z","M2 12h20"],
+  arrow:["M5 12h14","M12 5l7 7-7 7"],
+  mail:["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"],
+};
+
+const B={navy:'#182b3c',teal:'#42c3f7',green:'#34d399',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0'};
+
+function App(){
+  const [widgetLoaded,setWidgetLoaded]=useState(false);
+
+  useEffect(()=>{
+    // Load course widget
+    const link=document.createElement('link');
+    link.rel='stylesheet';link.href='https://engine.maine.gov/course-widget/styles';
+    document.head.appendChild(link);
+    const script=document.createElement('script');
+    script.src='https://engine.maine.gov/course-widget/script';
+    script.setAttribute('data-base','https://engine.maine.gov');
+    script.setAttribute('data-page-limit','100');
+    script.setAttribute('data-columns','3');
+    script.setAttribute('data-categories','45,25,59,31,35,60,15,58,10,9');
+    script.setAttribute('data-description-length','10000');
+    document.body.appendChild(script);
+    script.onload=()=>setWidgetLoaded(true);
+  },[]);
+
+  return <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px',animation:'fadeIn 0.3s ease'}}>
+
+    {/* Hero */}
+    <div style={{position:'relative',borderRadius:'0 0 20px 20px',overflow:'hidden',minHeight:260,marginBottom:28}}>
+      <div style={{position:'absolute',inset:0,
+        backgroundImage:'url(https://engine.maine.gov/sites/default/files/2026-03/EnGiNE-Home-Banner.png)',
+        backgroundSize:'cover',backgroundPosition:'center',filter:'blur(1px) brightness(0.3)',transform:'scale(1.05)'}}/>
+      <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,rgba(12,25,38,0.85),rgba(22,45,68,0.65))'}}/>
+      <div style={{position:'absolute',inset:0,pointerEvents:'none',
+        backgroundImage:'linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)',
+        backgroundSize:'60px 60px',opacity:.4}}/>
+      <div style={{position:'relative',zIndex:1,padding:'44px 36px 36px'}}>
+        <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:16}}>
+          <img src="https://engine.maine.gov/themes/custom/cates/engine-logo-white.png" alt="EnGiNE" style={{height:44}}/>
+          <div>
+            <div style={{fontSize:11,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',color:B.teal,marginBottom:4,display:'flex',alignItems:'center',gap:8}}>
+              <span style={{width:16,height:2,background:B.teal,borderRadius:1}}/>Engaging Innovation in Education
+            </div>
+            <h1 style={{fontSize:'clamp(24px,3vw,32px)',fontWeight:800,color:'#ffffff',lineHeight:1.1,letterSpacing:'-0.02em'}}>
+              Maine's <span style={{background:`linear-gradient(135deg,${B.teal},${B.green})`,WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Professional Learning</span> Platform
+            </h1>
+          </div>
+        </div>
+        <p style={{fontSize:14,color:'#cbd5e1',lineHeight:1.7,maxWidth:600,fontWeight:500,marginBottom:20}}>
+          From coastal islands to northern rural communities, EnGiNE connects Maine's entire educational workforce through professional learning, collaboration, contact hours, and shared resources.
+        </p>
+        <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+          <a href="https://engine.maine.gov" target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 22px',borderRadius:50,
+              background:B.teal,color:B.navy,textDecoration:'none',fontSize:13,fontWeight:700}}>
+            Visit EnGiNE <Sv d={ic.ext} size={14} color={B.navy}/>
+          </a>
+          <a href="https://engine.maine.gov/user/register" target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 22px',borderRadius:50,
+              background:'rgba(255,255,255,0.1)',border:'1.5px solid rgba(255,255,255,0.2)',color:'#e2e8f0',textDecoration:'none',fontSize:13,fontWeight:600}}>
+            Create Account
+          </a>
+          <a href="https://engine.maine.gov/user/login" target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 22px',borderRadius:50,
+              background:'rgba(255,255,255,0.1)',border:'1.5px solid rgba(255,255,255,0.2)',color:'#e2e8f0',textDecoration:'none',fontSize:13,fontWeight:600}}>
+            Sign In
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* What is EnGiNE + Stats */}
+    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:28}}>
+      <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:'24px 26px'}}>
+        <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
+          <span style={{width:16,height:2,background:B.teal,borderRadius:1}}/>What is EnGiNE?
+        </h3>
+        <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500,marginBottom:12}}>
+          EnGiNE (Engaging Innovation in Education) is Maine's statewide professional learning platform for educators and school staff. It provides free, on-demand courses across dozens of topic areas — from instructional strategies to school safety, special education to data literacy.
+        </p>
+        <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500}}>
+          Educators can earn contact hours, track their learning progress, and connect with colleagues across the state — all in one place.
+        </p>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+        {[
+          {icon:ic.book,label:'On-Demand Courses',desc:'Self-paced learning across 10+ categories',color:B.teal},
+          {icon:ic.clock,label:'Contact Hours',desc:'Earn hours toward recertification',color:B.green},
+          {icon:ic.users,label:'Community',desc:'Connect with educators statewide',color:'#a78bfa'},
+          {icon:ic.star,label:'Free Access',desc:'Available to all Maine educators',color:'#fbbf24'},
+        ].map((s,i)=>(
+          <div key={i} style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:'18px 16px',display:'flex',flexDirection:'column',gap:8}}>
+            <div style={{width:36,height:36,borderRadius:10,background:`${s.color}15`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <Sv d={s.icon} size={18} color={s.color}/>
+            </div>
+            <div style={{fontSize:14,fontWeight:700,color:B.navy}}>{s.label}</div>
+            <div style={{fontSize:12,color:B.txtMute,fontWeight:500,lineHeight:1.5}}>{s.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Communications Orientation */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.teal}25`,overflow:'hidden',marginBottom:28}}>
+      <div style={{padding:'18px 24px',background:'linear-gradient(135deg,#0c1926,#162d44)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <div style={{width:40,height:40,borderRadius:12,background:`${B.teal}20`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <Sv d={ic.play} size={18} color={B.teal}/>
+          </div>
+          <div>
+            <h3 style={{fontSize:16,fontWeight:700,color:'#fff',margin:0}}>Communications Orientation</h3>
+            <p style={{fontSize:12,color:'#94a3b8',margin:0,fontWeight:500}}>Required for all Maine DOE staff</p>
+          </div>
+        </div>
+        <a href="https://learn.moodle.rrev-engine.com/course/view.php?id=174" target="_blank" rel="noopener noreferrer"
+          style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 18px',borderRadius:50,
+            background:B.teal,color:B.navy,textDecoration:'none',fontSize:13,fontWeight:700}}>
+          Start Course <Sv d={ic.arrow} size={14} color={B.navy}/>
+        </a>
+      </div>
+      <div style={{padding:'20px 24px'}}>
+        <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500}}>
+          Welcome to the Maine DOE Communications Orientation! This module covers everything you need to know about external-facing communications — newsletters, media releases, branding, marketing, graphics, website management, and more. Learn how the communications team operates, understand essential processes, and get up to speed on standards that affect every office in the department.
+        </p>
+      </div>
+    </div>
+
+    {/* Submit Course Request */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',marginBottom:28}}>
+      <div style={{padding:'18px 24px',background:'linear-gradient(135deg,#0c1926,#162d44)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <div style={{width:40,height:40,borderRadius:12,background:'rgba(167,139,250,0.2)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <Sv d={ic.mail} size={18} color="#a78bfa"/>
+          </div>
+          <div>
+            <h3 style={{fontSize:16,fontWeight:700,color:'#fff',margin:0}}>Request a Course on EnGiNE</h3>
+            <p style={{fontSize:12,color:'#94a3b8',margin:0,fontWeight:500}}>Have professional learning content to share?</p>
+          </div>
+        </div>
+        <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=q6g_QX0gYkubzeoajy-GTo9TTqa8VhVMnzxeeWJViwtUOElCUThCOVJEM1E2RjlUVUZSMDNYNEU4OS4u" target="_blank" rel="noopener noreferrer"
+          style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 18px',borderRadius:50,
+            background:'#a78bfa',color:'#fff',textDecoration:'none',fontSize:13,fontWeight:700}}>
+          Submit Request <Sv d={ic.ext} size={14} color="#fff"/>
+        </a>
+      </div>
+      <div style={{padding:'20px 24px'}}>
+        <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500}}>
+          If you have a training, webinar recording, or professional learning resource that should be available to Maine educators through EnGiNE, submit a course request. Our team will work with you to get your content published and accessible statewide.
+        </p>
+      </div>
+    </div>
+
+    {/* Course Catalog */}
+    <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
+      <span style={{width:16,height:2,background:B.teal,borderRadius:1}}/>Course Catalog
+    </h3>
+    <div id="engine-cards" style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:20,marginBottom:40,minHeight:300}}>
+      <div id="engine-filters" style={{display:'flex',flexWrap:'wrap',gap:8,marginBottom:16}}></div>
+      <div id="moodle-course-widget"></div>
+      <div id="engine-pagination" style={{display:'flex',justifyContent:'center',gap:6,marginTop:20}}></div>
+    </div>
+
+    <div style={{textAlign:'center',padding:'0 0 30px',fontSize:12,color:B.txtMute,fontWeight:500}}>
+      Maine Department of Education · EnGiNE · Communications Portal
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+
+<style>
+/* =========================================
+   EnGiNE / Moodle Course Widget — FULL STYLES
+   ========================================= */
+
+#moodle-course-widget{
+  --doe-navy: #162c40;
+  --doe-link: #42c3f7;
+  --doe-ink: #212529;
+  --doe-border: rgba(22,44,64,.14);
+  --card-radius: 16px;
+  --shadow: 0 8px 18px rgba(0,0,0,.08);
+  --shadow-hover: 0 12px 26px rgba(0,0,0,.12);
+  --btn-radius: 8px;
+}
+
+#moodle-course-widget a,
+#moodle-course-widget a:visited{
+  color: #182b3c !important;
+}
+#moodle-course-widget a:hover{
+  filter: brightness(.92);
+}
+#moodle-course-widget .title a{
+  text-decoration: underline !important;
+}
+
+/* Grid */
+#moodle-course-widget .grid{
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 20px !important;
+  align-items: stretch !important;
+}
+@media (max-width: 1200px){
+  #moodle-course-widget .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 700px){
+  #moodle-course-widget .grid{ grid-template-columns: 1fr !important; }
+}
+
+/* Card shell */
+#moodle-course-widget article.card{
+  background: #fff !important;
+  border: 1px solid var(--doe-border) !important;
+  border-radius: var(--card-radius) !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100% !important;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease !important;
+}
+#moodle-course-widget article.card:hover{
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-hover) !important;
+  border-color: rgba(22,44,64,.22) !important;
+}
+
+/* Hero */
+#moodle-course-widget a.hero{
+  display: block !important;
+  aspect-ratio: 16 / 9 !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+/* Body */
+#moodle-course-widget .body{
+  padding: 16px 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+}
+
+/* Title clamp */
+#moodle-course-widget .title{
+  margin: 0 !important;
+  font-size: 1.05rem !important;
+  line-height: 1.25 !important;
+  font-weight: 700 !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  overflow: hidden !important;
+}
+
+/* Description clamp */
+#moodle-course-widget .desc{
+  margin: 0 !important;
+  line-height: 1.45 !important;
+  color: var(--doe-ink) !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 3 !important;
+  overflow: hidden !important;
+  min-height: calc(1.45em * 3) !important;
+}
+
+/* Learn more button */
+#moodle-course-widget a.learn-more{
+  margin-top: auto !important;
+  width: 100% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 12px !important;
+  border-radius: var(--btn-radius) !important;
+  background: var(--doe-navy) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(0,0,0,.18) !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  line-height: 1 !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,.10) !important;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, color .12s ease !important;
+}
+#moodle-course-widget a.learn-more:visited{
+  color: #ffffff !important;
+}
+#moodle-course-widget a.learn-more:hover{
+  transform: translateY(-1px) !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,.14) !important;
+  background: var(--doe-link) !important;
+  color: #0b1f2a !important;
+}
+
+/* Hide default dropdown */
+#engine-widget-course-category-selector,
+#moodle-course-widget > select{
+  display: none !important;
+}
+
+/* Hide course 120 */
+#moodle-course-widget .card:has(a[href*="id=120"]){
+  display: none !important;
+}
+
+/* Hide default show-more */
+#moodle-course-widget button.show-more{
+  display: none !important;
+}
+
+/* Filter buttons */
+.engine-filter-btn{
+  padding:8px 16px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  border:1px solid rgba(0,0,0,.12);
+  background:#42c3f7;
+  color:#0b1f2a;
+  font-family:'DM Sans',sans-serif;
+  white-space:nowrap;
+  box-shadow:0 6px 14px rgba(0,0,0,.10);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.engine-filter-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 22px rgba(0,0,0,.14);
+}
+.engine-filter-btn.active{
+  background:#162c40;
+  color:#ffffff;
+  border-color:rgba(0,0,0,.18);
+}
+
+/* Pagination */
+.engine-page-btn{
+  padding:6px 14px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  border:1px solid rgba(0,0,0,.12);
+  background:#fff;
+  color:#475569;
+  font-family:'DM Sans',sans-serif;
+  min-width:36px;
+  transition:all 0.15s;
+}
+.engine-page-btn:hover{ border-color:#42c3f7; }
+.engine-page-btn.active{ background:#162c40; color:#42c3f7; border:none; }
+.engine-page-btn:disabled{ opacity:.4; cursor:default; }
+</style>
+
+<script>
+/* ============================================================
+   EnGiNE / Moodle Course Widget Enhancements
+   Waits for widget to fully render, then:
+   1) Converts category <select> into clickable buttons
+   2) Ensures every card has a "Learn more →" button
+   3) Adds pagination (9 per page)
+   ============================================================ */
+
+(function () {
+  var CARDS_PER_PAGE = 9;
+  var currentPage = 1;
+  var hasInit = false;
+
+  function waitForWidget() {
+    var root = document.querySelector('#moodle-course-widget');
+    if (!root) { setTimeout(waitForWidget, 500); return; }
+    
+    var cards = root.querySelectorAll('article.card');
+    var select = root.querySelector('select');
+    
+    // Need both cards AND the select to be present
+    if (cards.length < 2 || !select || !select.options || select.options.length < 2) {
+      setTimeout(waitForWidget, 500);
+      return;
+    }
+    
+    if (hasInit) return;
+    hasInit = true;
+    
+    console.log('EnGiNE widget ready: ' + cards.length + ' cards, ' + select.options.length + ' categories');
+    
+    // Small delay to let widget finish any final rendering
+    setTimeout(function() { initAll(root, select); }, 600);
+  }
+
+  function initAll(root, select) {
+    buildCategoryButtons(root, select);
+    ensureLearnMoreButtons(root);
+    snapshotCards(root);
+    applyPagination(root);
+    hideShowMore(root);
+    
+    // Re-apply learn-more on widget re-renders
+    var obs = new MutationObserver(function() {
+      ensureLearnMoreButtons(root);
+      hideShowMore(root);
+    });
+    obs.observe(root, { childList: true, subtree: true });
+  }
+
+  /* ── CATEGORY BUTTONS ── */
+
+  function buildCategoryButtons(root, select) {
+    if (document.querySelector('.mw-catbar')) return;
+    
+    select.style.display = 'none';
+
+    var bar = document.createElement('div');
+    bar.className = 'mw-catbar';
+    bar.setAttribute('role', 'toolbar');
+    bar.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px 0;';
+
+    var filterContainer = document.getElementById('engine-filters');
+
+    Array.from(select.options).forEach(function(opt) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      var active = select.value === opt.value;
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      btn.textContent = (opt.textContent || '').trim();
+      styleCatBtn(btn, active);
+
+      btn.addEventListener('click', function() {
+        select.value = opt.value;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        bar.querySelectorAll('.mw-catbtn').forEach(function(b) {
+          b.setAttribute('aria-pressed', 'false');
+          styleCatBtn(b, false);
+        });
+        btn.setAttribute('aria-pressed', 'true');
+        styleCatBtn(btn, true);
+        currentPage = 1;
+        // Wait for widget to re-render after filter change, then re-snapshot and paginate
+        setTimeout(function() { snapshotCards(root); applyPagination(root); }, 400);
+      });
+
+      bar.appendChild(btn);
+    });
+
+    if (filterContainer) {
+      filterContainer.innerHTML = '';
+      filterContainer.appendChild(bar);
+    } else {
+      select.parentNode.insertBefore(bar, select);
+    }
+  }
+
+  function styleCatBtn(btn, isActive) {
+    btn.className = 'mw-catbtn';
+    btn.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border-radius:8px;border:1px solid rgba(0,0,0,.12);cursor:pointer;white-space:nowrap;line-height:1;font-weight:700;font-family:DM Sans,sans-serif;font-size:13px;box-shadow:0 6px 14px rgba(0,0,0,.10);transition:transform .12s ease,box-shadow .12s ease;';
+    if (isActive) {
+      btn.style.background = '#162c40';
+      btn.style.color = '#ffffff';
+      btn.style.borderColor = 'rgba(0,0,0,.18)';
+    } else {
+      btn.style.background = '#42c3f7';
+      btn.style.color = '#0b1f2a';
+    }
+    btn.onmouseenter = function() { btn.style.transform='translateY(-1px)'; btn.style.boxShadow='0 10px 22px rgba(0,0,0,.14)'; };
+    btn.onmouseleave = function() { btn.style.transform='translateY(0)'; btn.style.boxShadow='0 6px 14px rgba(0,0,0,.10)'; };
+  }
+
+  /* ── LEARN MORE BUTTONS ── */
+
+  function ensureLearnMoreButtons(root) {
+    var cards = root.querySelectorAll('article.card');
+    for (var i = 0; i < cards.length; i++) {
+      upsertLearnMore(cards[i]);
+    }
+  }
+
+  function upsertLearnMore(card) {
+    var body = card.querySelector('.body');
+    if (!body) return;
+    
+    var href = null;
+    var hero = card.querySelector('a.hero[href]');
+    if (hero) href = hero.href;
+    if (!href) { var tl = card.querySelector('.title a[href]'); if (tl) href = tl.href; }
+    if (!href) { var any = card.querySelector('a[href]'); if (any) href = any.href; }
+    if (!href) return;
+
+    // If learn-more got stuck inside clamped desc, move it out
+    var inDesc = body.querySelector('.desc a.learn-more');
+    if (inDesc) { inDesc.remove(); body.appendChild(inDesc); }
+
+    var lm = body.querySelector(':scope > a.learn-more');
+    if (!lm) {
+      var anyLm = card.querySelector('a.learn-more');
+      if (anyLm) { anyLm.remove(); body.appendChild(anyLm); lm = anyLm; }
+    }
+    if (!lm) {
+      lm = document.createElement('a');
+      lm.className = 'learn-more';
+      lm.href = href;
+      lm.target = '_blank';
+      lm.rel = 'noopener';
+      lm.textContent = 'Learn more \u2192';
+      body.appendChild(lm);
+    } else {
+      if (!lm.getAttribute('href')) lm.href = href;
+      if (!lm.textContent || !lm.textContent.trim()) lm.textContent = 'Learn more \u2192';
+    }
+  }
+
+  /* ── PAGINATION ── */
+
+  var allValidCards = []; // snapshot of all valid cards
+
+  function snapshotCards(root) {
+    var cards = root.querySelectorAll('article.card');
+    allValidCards = [];
+    for (var i = 0; i < cards.length; i++) {
+      if (cards[i].querySelector('a[href*="id=120"]')) continue;
+      allValidCards.push(cards[i]);
+    }
+    console.log('EnGiNE: Snapshotted ' + allValidCards.length + ' cards');
+  }
+
+  function applyPagination(root) {
+    // Step 1: Remove our pagination hiding
+    for (var i = 0; i < allValidCards.length; i++) {
+      if (allValidCards[i].dataset.pgHide === '1') {
+        allValidCards[i].style.removeProperty('display');
+        allValidCards[i].dataset.pgHide = '';
+      }
+    }
+
+    // Step 2: Force browser reflow
+    void root.offsetHeight;
+
+    // Step 3: Find cards visible after widget filtering
+    var activeCards = [];
+    for (var j = 0; j < allValidCards.length; j++) {
+      if (allValidCards[j].offsetParent !== null) {
+        activeCards.push(allValidCards[j]);
+      }
+    }
+
+    var totalPages = Math.ceil(activeCards.length / CARDS_PER_PAGE);
+    if (currentPage > totalPages) currentPage = totalPages || 1;
+
+    var start = (currentPage - 1) * CARDS_PER_PAGE;
+    var end = start + CARDS_PER_PAGE;
+
+    // Step 4: Hide cards outside current page
+    for (var k = 0; k < activeCards.length; k++) {
+      if (k >= start && k < end) {
+        activeCards[k].style.removeProperty('display');
+      } else {
+        activeCards[k].style.setProperty('display', 'none', 'important');
+        activeCards[k].dataset.pgHide = '1';
+      }
+    }
+
+    // Step 5: Build pagination UI
+    var pagDiv = document.getElementById('engine-pagination');
+    if (!pagDiv) return;
+    if (totalPages <= 1) { pagDiv.innerHTML = ''; return; }
+
+    var html = '<button class="engine-page-btn"' + (currentPage===1?' disabled':'') + ' data-p="prev">Prev</button>';
+    for (var p = 1; p <= totalPages; p++) {
+      html += '<button class="engine-page-btn' + (p===currentPage?' active':'') + '" data-p="' + p + '">' + p + '</button>';
+    }
+    html += '<button class="engine-page-btn"' + (currentPage===totalPages?' disabled':'') + ' data-p="next">Next</button>';
+    pagDiv.innerHTML = html;
+
+    console.log('EnGiNE pagination: page ' + currentPage + '/' + totalPages + ', showing ' + Math.min(end, activeCards.length) + ' of ' + activeCards.length);
+  }
+
+  // Click handler via delegation on document (survives innerHTML replacement)
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.engine-page-btn');
+    if (!btn || btn.disabled) return;
+    e.preventDefault();
+    var val = btn.getAttribute('data-p');
+    if (val === 'prev') currentPage = Math.max(1, currentPage - 1);
+    else if (val === 'next') currentPage = currentPage + 1;
+    else currentPage = parseInt(val);
+    var root = document.querySelector('#moodle-course-widget');
+    if (root) applyPagination(root);
+  });
+
+  /* ── HIDE SHOW MORE ── */
+
+  function hideShowMore(root) {
+    var btn = root.querySelector('button.show-more');
+    if (btn) btn.style.display = 'none';
+  }
+
+  /* ── START ── */
+  waitForWidget();
+})();
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

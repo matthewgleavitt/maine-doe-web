@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics Dashboard | Maine DOE Communications Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Calibri,sans-serif;background:#eee6df;color:#182b3c}
+#root{min-height:100vh}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#6d8ba640;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500;transition:color .15s}
+.portal-bar .crumb a:hover{color:#42c3f7}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><a href="index.html">Website</a><span class="sep">›</span><span class="current">Analytics Dashboard</span></div></div>
+<div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px"><div style="width:36px;height:36px;border:3px solid #e4dbd3;border-top-color:#42c3f7;border-radius:50%;animation:spin .8s linear infinite"></div><p style="color:#6d8ba6;font-size:14px">Loading Analytics Dashboard...</p></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo, useRef } = React;
+
+// ── Safe URL decoder (handles GA4 truncated strings) ──
+function safeDecode(str) {
+  if (!str) return str;
+  str = str.replace(/%[0-9a-fA-F]?$/, '');
+  try { return decodeURIComponent(str); } catch(e) {
+    return str.replace(/%20/g,' ').replace(/%26/g,'&').replace(/%2F/gi,'/').replace(/%2C/gi,',').replace(/%28/g,'(').replace(/%29/g,')').replace(/%27/g,"'").replace(/%23/g,'#').replace(/%3A/gi,':').replace(/%2B/g,'+').replace(/%3D/gi,'=').replace(/%3F/gi,'?').replace(/%25/g,'%');
+  }
+}
+
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return "";
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1048576) return (bytes / 1024).toFixed(0) + " KB";
+  return (bytes / 1048576).toFixed(1) + " MB";
+}
+
+// ── Compact SVG Icons ─────────────────────
+const I = ({d, size=20, color='currentColor', style, onClick}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}} onClick={onClick}>
+    {Array.isArray(d) ? d.map((p,i) => <path key={i} d={p}/>) : <path d={d}/>}
+  </svg>
+);
+const Ico = {
+  search: (p) => <I d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" {...p}/>,
+  x: (p) => <I d={["M18 6L6 18","M6 6l12 12"]} {...p}/>,
+  eye: (p) => <I d={["M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z","M12 9a3 3 0 100 6 3 3 0 000-6z"]} {...p}/>,
+  download: (p) => <I d={["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"]} {...p}/>,
+  barChart: (p) => <I d={["M12 20V10","M18 20V4","M6 20v-6"]} {...p}/>,
+  users: (p) => <I d={["M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2","M23 21v-2a4 4 0 00-3-3.87","M9 7a4 4 0 100-8 4 4 0 000 8z","M16 3.13a4 4 0 010 7.75"]} {...p}/>,
+  file: (p) => <I d={["M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z","M14 2v6h6","M16 13H8","M16 17H8","M10 9H8"]} {...p}/>,
+  folder: (p) => <I d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" {...p}/>,
+  check: (p) => <I d="M20 6L9 17l-5-5" {...p}/>,
+  checkCircle: (p) => <I d={["M22 11.08V12a10 10 0 11-5.93-9.14","M22 4L12 14.01l-3-3"]} {...p}/>,
+  alertCircle: (p) => <I d={["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 8v4","M12 16h.01"]} {...p}/>,
+  info: (p) => <I d={["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 16v-4","M12 8h.01"]} {...p}/>,
+  loader: (p) => <I d={["M12 2v4","M12 18v4","M4.93 4.93l2.83 2.83","M16.24 16.24l2.83 2.83","M2 12h4","M18 12h4","M4.93 19.07l2.83-2.83","M16.24 7.76l2.83-2.83"]} style={{animation:'spin 1.5s linear infinite',...(p.style||{})}} {...p}/>,
+  wrench: (p) => <I d={["M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"]} {...p}/>,
+  chevRight: (p) => <I d="M9 18l6-6-6-6" {...p}/>,
+  arrowUp: (p) => <I d={["M7 7h10","M17 7l-5-5","M12 17V2"]} {...p}/>,
+  trend: (p) => <I d={["M23 6l-9.5 9.5-5-5L1 18","M17 6h6v6"]} {...p}/>,
+};
+
+// ── Brand Constants ───────────────────────
+const B = {
+  navy:"#182b3c", navyMid:"#274f73", steel:"#6d8ba6",
+  teal:"#42c3f7", tealDk:"#2da8d8", warm:"#eee6df",
+  warmDk:"#d4ccc4", wh:"#ffffff", red:"#8a2e13",
+  // WCAG-compliant text colors
+  txt:"#182b3c", txtSec:"#3d5468", txtMute:"#516d82",
+  border:"#c4bbb2", borderDk:"#a89e95",
+};
+
+// ── Analytics Dashboard ───────────────────
+function AnalyticsDashboard() {
+  const [tab, setTab] = useState("overview");
+  const [dateRange, setDateRange] = useState("30");
+  const [pageSearch, setPageSearch] = useState("");
+  const [fileSearch, setFileSearch] = useState("");
+  const [expandedFiles, setExpandedFiles] = useState({});
+  const [ownerFilter, setOwnerFilter] = useState("");
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec";
+  const [connected, setConnected] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [pageData, setPageData] = useState(null);
+  const [fileData, setFileData] = useState(null);
+  const [ownerMap, setOwnerMap] = useState({});
+  const [owners, setOwners] = useState([]);
+  const [nodeAliasMap, setNodeAliasMap] = useState({});
+  const [drupalFiles, setDrupalFiles] = useState({});
+  const [error, setError] = useState(null);
+  const cache = useRef({});
+
+  const rawPages = pageData || [];
+
+  // Normalize paths: strip /index.php, trailing slashes, resolve node paths to aliases, merge duplicates
+  const mergedPages = useMemo(() => {
+    const map = {};
+    rawPages.forEach(p => {
+      let normPath = p.path.replace(/\/index\.php/g, '').replace(/\/$/, '') || p.path;
+      if (nodeAliasMap[normPath]) normPath = nodeAliasMap[normPath];
+      if (normPath === '/doe/home') normPath = '/doe';
+      if (normPath.includes('404') || normPath.includes('/user/login') || normPath.includes('/user/password') || normPath.includes('/admin/')) return;
+      if (!map[normPath]) {
+        map[normPath] = { ...p, path: normPath, views: 0, users: 0, avgSecs: 0, count: 0 };
+      }
+      map[normPath].views += p.views;
+      map[normPath].users += p.users;
+      const parts = (p.avg || "0:00").split(":");
+      const secs = (parseInt(parts[0])||0) * 60 + (parseInt(parts[1])||0);
+      map[normPath].avgSecs += secs * p.views;
+      map[normPath].count += p.views;
+      if (p.title && !p.path.includes('index.php') && p.title.length > (map[normPath].title||'').length) {
+        map[normPath].title = p.title;
+      }
+    });
+    return Object.values(map).map(p => {
+      const avgSecs = p.count > 0 ? Math.round(p.avgSecs / p.count) : 0;
+      return { ...p, avg: Math.floor(avgSecs/60) + ":" + String(avgSecs%60).padStart(2,"0") };
+    }).sort((a,b) => b.views - a.views);
+  }, [rawPages, nodeAliasMap]);
+
+  const pages = useMemo(() => mergedPages.map(p => ({...p, owner: ownerMap[p.path] || ownerMap[p.path.replace(/\/$/,"")] || ownerMap[p.path.replace("/doe","")] || ""})), [mergedPages, ownerMap]);
+
+  // Enrich GA4 file data with Drupal file inventory
+  const inventory = drupalFiles.__inventory || [];
+  const enrichedFiles = useMemo(() => (fileData || []).map(f => {
+    // Extract path from GA4 URL for prefix matching
+    const ga4Path = safeDecode((f.url || '').replace(/https?:\/\/[^\/]+/, '')).toLowerCase();
+    let match = null;
+    let bestLen = 0;
+
+    if (ga4Path.length >= 20) {
+      // Find the LONGEST matching inventory path (most specific match)
+      for (const item of inventory) {
+        const dPath = item.p.toLowerCase();
+        if (dPath.startsWith(ga4Path) && ga4Path.length > bestLen) {
+          match = item;
+          bestLen = ga4Path.length;
+          // If the GA4 path is very close to the full path length, it's a strong match
+          if (ga4Path.length > dPath.length * 0.7) break;
+        }
+      }
+    }
+
+    // Also try exact filename match
+    if (!match) {
+      const ga4Name = safeDecode(f.file || "").toLowerCase().trim();
+      if (ga4Name.length >= 5) {
+        for (const item of inventory) {
+          if (item.n.toLowerCase() === ga4Name) { match = item; break; }
+          if (item.n.toLowerCase().startsWith(ga4Name)) { match = item; break; }
+        }
+      }
+    }
+
+    if (match) {
+      return { ...f, file: match.n, url: match.u, owner: match.o, matched: true };
+    }
+    return { ...f, file: safeDecode(f.file), matched: false };
+  }), [fileData, drupalFiles]);
+
+  // Log match stats
+  useEffect(() => {
+    if (fileData && inventory.length > 0) {
+      const matched = enrichedFiles.filter(f => f.matched).length;
+      console.log(`File matching: ${matched}/${enrichedFiles.length} GA4 files matched to inventory (${inventory.length} files available)`);
+      enrichedFiles.filter(f => !f.matched).slice(0, 3).forEach(f => {
+        console.log('Unmatched:', f.file, '| Path:', safeDecode((f.url||'').replace(/https?:\/\/[^\/]+/,'')).substring(0, 80));
+      });
+    }
+  }, [fileData, drupalFiles]);
+
+  const files = enrichedFiles;
+  const totalViews = pages.reduce((s,p) => s+p.views, 0);
+  const totalUsers = pages.reduce((s,p) => s+p.users, 0);
+  const totalDownloads = files.reduce((s,f) => s+f.clicks, 0);
+
+  const filteredPages = pages.filter(p => {
+    const ms = p.title.toLowerCase().includes(pageSearch.toLowerCase()) || p.path.toLowerCase().includes(pageSearch.toLowerCase()) || (p.owner||"").toLowerCase().includes(pageSearch.toLowerCase());
+    const mo = !ownerFilter || p.owner === ownerFilter;
+    return ms && mo;
+  });
+  const filteredFiles = files.filter(f => f.file.toLowerCase().includes(fileSearch.toLowerCase()) || (f.page||"").toLowerCase().includes(fileSearch.toLowerCase()));
+
+  // Aggregate files by name
+  const aggregatedFiles = (() => {
+    const map = {};
+    filteredFiles.forEach(f => {
+      const name = f.file || "(unknown)";
+      const key = name.toLowerCase();
+      if (!map[key]) map[key] = { file: name, url: f.url || "", totalClicks: 0, pages: [], filesize: f.filesize || 0, filemime: f.filemime || "", owner: f.owner || "" };
+      map[key].totalClicks += (f.clicks || 0);
+      if (f.page) {
+        let normPage = f.page.replace(/\/index\.php/g, '').replace(/\/$/, '') || f.page;
+        if (nodeAliasMap[normPage]) normPage = nodeAliasMap[normPage];
+        map[key].pages.push({ page: normPage, clicks: f.clicks || 0, url: f.url || "" });
+      }
+      if (!map[key].url && f.url) map[key].url = f.url;
+      if (f.filesize && !map[key].filesize) map[key].filesize = f.filesize;
+    });
+    // Merge duplicate pages within each file
+    Object.values(map).forEach(f => {
+      const pageMap = {};
+      f.pages.forEach(pg => {
+        if (!pageMap[pg.page]) pageMap[pg.page] = { ...pg, clicks: 0 };
+        pageMap[pg.page].clicks += pg.clicks;
+      });
+      f.pages = Object.values(pageMap);
+    });
+    return Object.values(map).sort((a, b) => b.totalClicks - a.totalClicks);
+  })();
+  const uniqueFileCount = aggregatedFiles.length;
+  const aggTotalDownloads = aggregatedFiles.reduce((s, f) => s + f.totalClicks, 0);
+
+  async function fetchDrupalOwners() {
+    const map = {}; const oSet = new Set(); const nMap = {};
+    let url = "https://www.maine.gov/doe/jsonapi/node/multi_column_page?fields[node--multi_column_page]=title,path,field_page_owner_email,drupal_internal__nid&page[limit]=50";
+    let pg = 0;
+    try {
+      while (url && pg < 40) {
+        const r = await fetch(url.replace(/^http:/,"https:"));
+        const j = await r.json();
+        if (j.data) j.data.forEach(n => {
+          const a = n.attributes?.path?.alias;
+          const e = n.attributes?.field_page_owner_email;
+          const nid = n.attributes?.drupal_internal__nid;
+          if (a && e) { const nm = e.split("@")[0].split(".").map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(" "); map[a]=nm; map["/doe"+a]=nm; oSet.add(nm); }
+          // Build node ID → alias map for path normalization
+          if (nid && a) {
+            nMap["/doe/node/" + nid] = "/doe" + a;
+            nMap["/node/" + nid] = a;
+          }
+        });
+        url = j.links?.next?.href || null; pg++;
+      }
+    } catch(e) { console.log("Drupal owners API:", e.message); }
+    setOwnerMap(map); setOwners(Array.from(oSet).sort());
+    setNodeAliasMap(nMap);
+    console.log("Node-to-alias map: " + Object.keys(nMap).length + " entries");
+  }
+
+  async function fetchDrupalFiles() {
+    try {
+      // Load static file inventory (exported from Drupal admin)
+      const r = await fetch('file-inventory.json');
+      const inventory = await r.json();
+      const fMap = { __inventory: inventory };
+      console.log("Loaded " + inventory.length + " files from static inventory");
+      setDrupalFiles(fMap);
+    } catch(e) {
+      console.log("Static inventory not found, trying JSON:API...", e.message);
+      // Fallback to API if static file not available
+      const fMap = { __inventory: [] };
+      let url = "https://www.maine.gov/doe/jsonapi/file/file?filter[filemime][operator]=STARTS_WITH&filter[filemime][value]=application&fields[file--file]=filename,uri,filemime,filesize&page[limit]=50";
+      let pg = 0;
+      try {
+        while (url && pg < 60) {
+          const r2 = await fetch(url.replace(/^http:/,"https:"));
+          const j = await r2.json();
+          if (j.data) j.data.forEach(f => {
+            const fn = f.attributes?.filename || "";
+            const uriUrl = f.attributes?.uri?.url || "";
+            const fullUrl = uriUrl.startsWith("http") ? uriUrl : "https://www.maine.gov" + uriUrl;
+            fMap.__inventory.push({ p: uriUrl, n: fn, u: fullUrl, o: "" });
+          });
+          url = j.links?.next?.href || null; pg++;
+        }
+      } catch(e2) { console.log("JSON:API also failed:", e2.message); }
+      console.log("Loaded " + fMap.__inventory.length + " files from JSON:API fallback");
+      setDrupalFiles(fMap);
+    }
+  }
+
+  async function fetchData(days) {
+    const d = days || dateRange;
+    // Check cache first
+    if (cache.current[d]) {
+      setPageData(cache.current[d].pages);
+      setFileData(cache.current[d].files);
+      setConnected(true);
+      return;
+    }
+    setLoading(true); setError(null);
+    try {
+      const [pR, fR] = await Promise.all([
+        fetch(SCRIPT_URL+"?type=pages&days="+d),
+        fetch(SCRIPT_URL+"?type=files&days="+d),
+      ]);
+      const pD = await pR.json(); const fD = await fR.json();
+      if (pD.error) throw new Error(pD.error);
+      const pageRows = pD.rows||[];
+      const fileRows = fD.rows||[];
+      cache.current[d] = { pages: pageRows, files: fileRows };
+      setPageData(pageRows); setFileData(fileRows);
+      setConnected(true);
+      // Save 30-day page views to portal stats cache
+      if(d==='30'){
+        const totalViews=pageRows.reduce((s,p)=>s+(p.views||0),0);
+        const pvStr=totalViews>1000?(Math.round(totalViews/1000)+'K'):totalViews.toLocaleString();
+        try{fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'save_stats',pageViews:pvStr})})}catch(e){}
+      }
+    } catch(e) { setError(e.message); }
+    setLoading(false);
+  }
+
+  useEffect(() => { fetchData(); fetchDrupalOwners(); fetchDrupalFiles(); }, []);
+  function changePeriod(d) { setDateRange(d); fetchData(d); }
+
+  const dateLabels = {"7":"7 days","30":"30 days","90":"90 days","180":"6 months","365":"1 year"};
+  const topPages = pages.slice(0,10);
+  const maxViews = topPages.length>0 ? topPages[0].views : 1;
+  const topFiles = files.slice(0,8);
+  const maxClicks = topFiles.length>0 ? topFiles[0].clicks : 1;
+
+  return (
+    <div style={{maxWidth:1200,margin:"0 auto",padding:28}}>
+      {/* Header */}
+      <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:28}}>
+        <div style={{width:44,height:44,borderRadius:12,background:`linear-gradient(135deg,${B.teal},${B.tealDk})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,fontWeight:800,color:B.wh}}>ME</div>
+        <div>
+          <h1 style={{fontSize:24,fontWeight:800,color:B.navy,margin:0}}>Analytics Dashboard</h1>
+          <p style={{fontSize:13,color:B.txtSec,margin:0}}>Maine DOE Communications Portal</p>
+        </div>
+        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:8}}>
+          {connected&&!loading ? <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 14px",borderRadius:20,background:"#22c55e14",border:"1.5px solid #22c55e50",fontSize:12,fontWeight:700,color:"#16713a"}}>
+            <div style={{width:7,height:7,borderRadius:"50%",background:"#22c55e"}}/> Live — GA4 connected
+          </div> : connected&&loading ? <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 14px",borderRadius:20,background:`${B.teal}14`,border:`1.5px solid ${B.teal}50`,fontSize:12,fontWeight:600,color:B.tealDk}}>
+            <Ico.loader size={14} color={B.teal} style={{animation:"spin 1s linear infinite"}}/> Updating...
+          </div> : loading ? <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 14px",borderRadius:20,background:`${B.teal}14`,fontSize:12,fontWeight:600,color:B.tealDk}}>
+            <Ico.loader size={14} color={B.teal}/> Connecting...
+          </div> : <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 14px",borderRadius:20,background:`${B.red}14`,fontSize:12,fontWeight:600,color:B.red}}>
+            <Ico.alertCircle size={14}/> Not connected
+          </div>}
+        </div>
+      </div>
+
+      {error && <div style={{padding:"12px 16px",borderRadius:10,background:`${B.red}0c`,borderLeft:`3px solid ${B.red}`,marginBottom:16,fontSize:13,color:B.red,display:"flex",alignItems:"center",gap:8}}>
+        <Ico.alertCircle size={16} color={B.red}/> {error}
+        <button onClick={()=>fetchData()} style={{marginLeft:"auto",background:B.navy,color:B.wh,border:"none",padding:"6px 14px",borderRadius:6,fontSize:12,fontWeight:600,cursor:"pointer"}}>Retry</button>
+      </div>}
+
+      {/* Date range */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:12}}>
+        <div style={{display:"flex",gap:6}}>
+          {[["overview","Overview",Ico.barChart],["pages","All pages",Ico.eye],["files","File downloads",Ico.download]].map(([id,label,Icon]) =>
+            <button key={id} onClick={()=>setTab(id)} style={{display:"flex",alignItems:"center",gap:6,padding:"10px 18px",borderRadius:8,border:tab===id?"none":`2px solid ${B.border}`,background:tab===id?B.navy:B.wh,color:tab===id?B.teal:B.txt,fontSize:13,fontWeight:600,cursor:"pointer",boxShadow:tab===id?"0 2px 8px rgba(24,43,60,0.2)":"none"}}>
+              <Icon size={14} color={tab===id?B.teal:B.txtSec}/> {label}
+            </button>
+          )}
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:6}}>
+          {Object.entries(dateLabels).map(([d,label]) =>
+            <button key={d} onClick={()=>changePeriod(d)} style={{padding:"8px 14px",borderRadius:8,border:dateRange===d?"none":`2px solid ${B.border}`,background:dateRange===d?B.navy:B.wh,color:dateRange===d?B.teal:B.txt,fontSize:12,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",boxShadow:dateRange===d?"0 2px 8px rgba(24,43,60,0.2)":"none"}}>
+              {label}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Loading overlay for date range switch */}
+      {loading&&connected&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"40px 0"}}>
+        <Ico.loader size={20} color={B.teal} style={{animation:"spin 1s linear infinite"}}/>
+        <span style={{fontSize:14,fontWeight:600,color:B.txtSec}}>Loading {dateLabels[dateRange]} data...</span>
+      </div>}
+
+      {(!loading||!connected)&&<div key={tab+dateRange} style={{animation:"fadeIn 0.3s ease"}}>
+        {/* ── OVERVIEW ──────────────────────── */}
+        {tab === "overview" && <div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))",gap:14,marginBottom:28}}>
+            {[
+              {l:"Page views",v:totalViews.toLocaleString(),icon:Ico.eye,c:B.teal},
+              {l:"Unique users",v:totalUsers.toLocaleString(),icon:Ico.users,c:B.navyMid},
+              {l:"File downloads",v:totalDownloads.toLocaleString(),icon:Ico.download,c:"#22c55e"},
+              {l:"Pages tracked",v:pages.length.toString(),icon:Ico.file,c:B.steel},
+              {l:"Files tracked",v:files.length.toString(),icon:Ico.folder,c:"#f59e0b"},
+            ].map((m,i) => {
+              const MIcon = m.icon;
+              return <div key={i} style={{background:B.wh,borderRadius:14,padding:"20px 22px",border:`2px solid ${B.border}`,boxShadow:"0 2px 8px rgba(24,43,60,0.04)",position:"relative",overflow:"hidden"}}>
+                <div style={{position:"absolute",top:14,right:16,opacity:0.12}}><MIcon size={36} color={m.c}/></div>
+                <div style={{fontSize:11,color:B.txtSec,textTransform:"uppercase",fontWeight:600,letterSpacing:.4,marginBottom:6}}>{m.l}</div>
+                <div style={{fontSize:30,fontWeight:700,color:B.navy,lineHeight:1}}>{m.v}</div>
+                <div style={{fontSize:11,color:B.txtSec,marginTop:6}}>Last {dateLabels[dateRange]}</div>
+              </div>;
+            })}
+          </div>
+
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:24}}>
+            {/* Top Pages */}
+            <div style={{background:B.wh,borderRadius:14,padding:"22px 24px",border:`2px solid ${B.border}`}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+                <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:0}}>Top pages</h4>
+                <button onClick={()=>setTab("pages")} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:B.teal,fontWeight:600,display:"flex",alignItems:"center",gap:4}}>
+                  View all <Ico.chevRight size={12}/>
+                </button>
+              </div>
+              {topPages.length === 0 && <p style={{color:B.txtSec,fontSize:13,textAlign:"center",padding:20}}>No data yet. Check your GA4 connection.</p>}
+              {topPages.map((p,i) => <div key={i} style={{marginBottom:12}}>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:4}}>
+                  <span style={{color:B.txt,fontWeight:600,flex:1,fontSize:13}}>{p.title.replace(" | Department of Education","")}<br/><span style={{fontSize:10,color:B.txtSec,fontFamily:'monospace',fontWeight:500}}>{p.path}</span></span>
+                  <span style={{color:B.txt,fontWeight:700,fontFamily:"monospace",fontSize:13}}>{p.views.toLocaleString()}</span>
+                </div>
+                <div style={{height:8,borderRadius:4,background:`${B.navy}08`,overflow:"hidden"}}>
+                  <div style={{height:"100%",borderRadius:4,background:`linear-gradient(90deg,${B.navy},${B.navyMid})`,width:`${(p.views/maxViews)*100}%`,transition:"width 0.5s ease"}}/>
+                </div>
+              </div>)}
+            </div>
+
+            {/* Top Downloads */}
+            <div style={{background:B.wh,borderRadius:14,padding:"22px 24px",border:`2px solid ${B.border}`}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+                <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:0}}>Top downloads</h4>
+                <button onClick={()=>setTab("files")} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:B.teal,fontWeight:600,display:"flex",alignItems:"center",gap:4}}>
+                  View all <Ico.chevRight size={12}/>
+                </button>
+              </div>
+              {topFiles.length === 0 && <p style={{color:B.txtSec,fontSize:13,textAlign:"center",padding:20}}>No file download data yet. The JS snippet needs time to collect clicks.</p>}
+              {topFiles.map((f,i) => {
+                const decoded = safeDecode(f.file);
+                const nm = decoded.length>35 ? decoded.substring(0,32)+"..." : decoded;
+                return <div key={i} style={{marginBottom:12}}>
+                  <div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:4}}>
+                    <span style={{color:B.navy,fontWeight:500,display:"flex",alignItems:"center",gap:4,flex:1,fontSize:13}} title={decoded}><Ico.download size={11} color={B.teal}/> {nm}</span>
+                    <span style={{color:B.txt,fontWeight:700,fontFamily:"monospace",fontSize:13}}>{(f.clicks||0).toLocaleString()}</span>
+                  </div>
+                  <div style={{height:8,borderRadius:4,background:"#22c55e10",overflow:"hidden"}}>
+                    <div style={{height:"100%",borderRadius:4,background:"linear-gradient(90deg,#22c55e,#16a34a)",width:`${(f.clicks/maxClicks)*100}%`,transition:"width 0.5s ease"}}/>
+                  </div>
+                </div>;
+              })}
+            </div>
+          </div>
+
+          {/* Full ranked table */}
+          <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}`,overflow:"hidden"}}>
+            <div style={{padding:"16px 20px",borderBottom:`1px solid ${B.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:0}}>All pages ranked by views</h4>
+              <span style={{fontSize:12,color:B.txtSec}}>{pages.length} pages · Last {dateLabels[dateRange]}</span>
+            </div>
+            <div style={{overflowX:"auto",maxHeight:500,overflowY:"auto"}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
+                <thead><tr style={{background:`${B.navy}0f`,position:"sticky",top:0}}>
+                  {["#","Page","Owner","Views","Users","Avg. time","Share"].map((h,i) =>
+                    <th key={i} style={{padding:"10px 16px",textAlign:i>2?"right":"left",fontWeight:600,color:B.navy,fontSize:11,textTransform:"uppercase",letterSpacing:.4}}>{h}</th>
+                  )}
+                </tr></thead>
+                <tbody>{pages.map((p,i) => <tr key={i} style={{borderBottom:`1px solid ${B.border}`}}
+                  onMouseEnter={e=>e.currentTarget.style.background=`${B.teal}06`}
+                  onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                  <td style={{padding:"12px 16px",color:B.txtSec,fontWeight:600,fontSize:12}}>{i+1}</td>
+                  <td style={{padding:"12px 16px"}}>
+                    <div style={{fontWeight:500,color:B.navy}}>{p.title.replace(" | Department of Education","")}</div>
+                    <div style={{fontSize:11,color:B.txtSec,fontFamily:"monospace",marginTop:2}}>{p.path}</div>
+                  </td>
+                  <td style={{padding:"12px 16px"}}>{p.owner ? <span style={{display:"inline-block",padding:"2px 8px",borderRadius:5,background:`${B.navyMid}10`,color:B.navyMid,fontSize:11,fontWeight:600,whiteSpace:"nowrap"}}>{p.owner}</span> : <span style={{fontSize:11,color:B.txtSec}}>—</span>}</td>
+                  <td style={{padding:"12px 16px",textAlign:"right",fontWeight:600,color:B.navy}}>{p.views.toLocaleString()}</td>
+                  <td style={{padding:"12px 16px",textAlign:"right",color:B.txtSec}}>{p.users.toLocaleString()}</td>
+                  <td style={{padding:"12px 16px",textAlign:"right",color:B.txtSec}}>{p.avg}</td>
+                  <td style={{padding:"12px 16px",textAlign:"right"}}>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:6}}>
+                      <div style={{width:50,height:6,borderRadius:3,background:`${B.navy}08`,overflow:"hidden"}}>
+                        <div style={{height:"100%",borderRadius:3,background:B.teal,width:`${totalViews>0?(p.views/totalViews)*100:0}%`}}/>
+                      </div>
+                      <span style={{fontSize:11,color:B.txt,fontWeight:600,fontFamily:"monospace",minWidth:36,textAlign:"right"}}>{totalViews>0?(p.views/totalViews*100).toFixed(1):0}%</span>
+                    </div>
+                  </td>
+                </tr>)}</tbody>
+              </table>
+            </div>
+          </div>
+        </div>}
+
+        {/* ── ALL PAGES ─────────────────────── */}
+        {tab === "pages" && <div>
+          <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 16px",background:B.wh,borderRadius:10,border:`2px solid ${B.border}`,flex:1,minWidth:250}}>
+              <Ico.search size={16} color={B.txtSec}/>
+              <input type="text" placeholder="Search by title, URL, or owner..." value={pageSearch} onChange={e=>setPageSearch(e.target.value)}
+                style={{border:"none",outline:"none",flex:1,fontSize:14,color:B.txt,fontWeight:500,background:"transparent"}}/>
+              {pageSearch && <span onClick={()=>setPageSearch("")} style={{cursor:"pointer"}}><Ico.x size={14} color={B.txtSec}/></span>}
+            </div>
+            {owners.length > 0 && <div style={{display:"flex",alignItems:"center",gap:8,padding:"0 4px 0 14px",background:B.wh,borderRadius:10,border:`2px solid ${B.border}`}}>
+              <Ico.users size={14} color={B.txtSec}/>
+              <select value={ownerFilter} onChange={e=>setOwnerFilter(e.target.value)}
+                style={{border:"none",outline:"none",fontSize:13,color:ownerFilter?B.navy:B.txtSec,background:"transparent",padding:"10px 8px",cursor:"pointer",minWidth:140}}>
+                <option value="">All owners</option>
+                {owners.map(o=><option key={o} value={o}>{o}</option>)}
+              </select>
+              {ownerFilter && <span onClick={()=>setOwnerFilter("")} style={{cursor:"pointer",padding:"0 8px"}}><Ico.x size={14} color={B.txtSec}/></span>}
+            </div>}
+          </div>
+          <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}`,overflow:"hidden"}}>
+            <div style={{overflowX:"auto"}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
+                <thead><tr style={{background:B.navy,color:B.wh}}>
+                  {["Page","Owner","Views","Users","Avg. time"].map((h,i) =>
+                    <th key={i} style={{padding:"12px 16px",textAlign:i>1?"right":"left",fontWeight:600}}>{h}</th>
+                  )}
+                </tr></thead>
+                <tbody>{filteredPages.map((p,i) => <tr key={i} style={{borderBottom:`1px solid ${B.border}`}}
+                  onMouseEnter={e=>e.currentTarget.style.background=`${B.teal}06`}
+                  onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                  <td style={{padding:"14px 16px"}}><div style={{fontWeight:500,color:B.navy}}>{p.title.replace(" | Department of Education","")}</div><div style={{fontSize:11,color:B.txtSec,marginTop:2,fontFamily:"monospace"}}>{p.path}</div></td>
+                  <td style={{padding:"14px 16px"}}>{p.owner?<span onClick={()=>setOwnerFilter(p.owner)} style={{display:"inline-block",padding:"3px 10px",borderRadius:6,background:`${B.navyMid}10`,color:B.navyMid,fontSize:11,fontWeight:600,cursor:"pointer"}}>{p.owner}</span>:<span style={{color:B.txtSec,fontSize:11}}>—</span>}</td>
+                  <td style={{padding:"14px 16px",textAlign:"right",fontWeight:600,color:B.navy}}>{p.views.toLocaleString()}</td>
+                  <td style={{padding:"14px 16px",textAlign:"right",color:B.txtSec}}>{p.users.toLocaleString()}</td>
+                  <td style={{padding:"14px 16px",textAlign:"right",color:B.txtSec}}>{p.avg}</td>
+                </tr>)}
+                {filteredPages.length===0 && <tr><td colSpan={5} style={{padding:30,textAlign:"center",color:B.txtSec}}>No pages match your search.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>}
+
+        {/* ── FILE DOWNLOADS ────────────────── */}
+        {tab === "files" && <div>
+          <div style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",borderRadius:10,background:`${B.teal}12`,borderLeft:`4px solid ${B.teal}`,marginBottom:16,fontSize:13,color:B.navy,lineHeight:1.6}}>
+            <Ico.info size={16} color={B.teal} style={{flexShrink:0}}/>
+            <div>Showing file downloads for the last <strong>{dateLabels[dateRange]}</strong>. Click a row to see which pages drive downloads.</div>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 16px",background:B.wh,borderRadius:10,border:`2px solid ${B.border}`,marginBottom:16}}>
+            <Ico.search size={16} color={B.txtSec}/>
+            <input type="text" placeholder="Search files by name or page..." value={fileSearch} onChange={e=>setFileSearch(e.target.value)}
+              style={{border:"none",outline:"none",flex:1,fontSize:14,color:B.txt,fontWeight:500,background:"transparent"}}/>
+            {fileSearch && <span onClick={()=>setFileSearch("")} style={{cursor:"pointer"}}><Ico.x size={14} color={B.txtSec}/></span>}
+          </div>
+          <div style={{fontSize:12,color:B.txtSec,marginBottom:8,textAlign:"right"}}>{uniqueFileCount} unique files · {aggTotalDownloads.toLocaleString()} total downloads</div>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {aggregatedFiles.map((af,i) => {
+              const isExpanded = expandedFiles[i];
+              const hasMultiplePages = af.pages.length > 1;
+              return <div key={i} style={{background:B.wh,borderRadius:12,border:`1px solid ${isExpanded ? B.teal+'50' : B.border}`,overflow:"hidden",transition:"border-color 0.2s"}}>
+                {/* Main row */}
+                <div onClick={()=>{ if (af.pages.length>0) setExpandedFiles(prev=>({...prev,[i]:!prev[i]})); }}
+                  style={{display:"flex",alignItems:"center",gap:16,padding:"16px 20px",cursor:af.pages.length>0?"pointer":"default",transition:"background 0.15s"}}
+                  onMouseEnter={e=>e.currentTarget.style.background=`${B.teal}04`}
+                  onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                  {/* Downloads count */}
+                  <div style={{minWidth:70,textAlign:"right"}}>
+                    <div style={{fontSize:24,fontWeight:800,color:B.navy,lineHeight:1}}>{af.totalClicks.toLocaleString()}</div>
+                    <div style={{fontSize:11,color:B.txt,marginTop:2,fontWeight:500}}>downloads</div>
+                  </div>
+                  {/* File info */}
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:"flex",alignItems:"center",gap:6}}>
+                      <Ico.download size={15} color={B.teal} style={{flexShrink:0}}/>
+                      {af.url ? <a href={af.url} target="_blank" rel="noopener noreferrer" title={af.file}
+                        style={{fontWeight:600,fontSize:14,color:B.navy,textDecoration:"none",wordBreak:"break-word",lineHeight:1.3}}
+                        onClick={e=>e.stopPropagation()}
+                        onMouseEnter={e=>e.currentTarget.style.color=B.teal}
+                        onMouseLeave={e=>e.currentTarget.style.color=B.navy}>
+                        {af.file}
+                      </a> : <span style={{fontWeight:600,fontSize:14,color:B.navy,wordBreak:"break-word"}}>{af.file}</span>}
+                    </div>
+                    <div style={{display:"flex",gap:8,marginTop:4,alignItems:"center",flexWrap:"wrap"}}>
+                      {af.filesize > 0 && <span style={{fontSize:11,color:B.txtSec,background:`${B.navy}06`,padding:"1px 8px",borderRadius:4}}>{formatBytes(af.filesize)}</span>}
+                      {af.owner && <span style={{fontSize:11,fontWeight:600,color:B.navyMid,background:`${B.navyMid}10`,padding:"1px 8px",borderRadius:4}}>{af.owner}</span>}
+                      {hasMultiplePages && <span style={{fontSize:11,color:B.txtSec}}>Downloaded from {af.pages.length} pages</span>}
+                      {af.pages.length === 1 && <span style={{fontSize:11,color:B.txtSec}}>From: <a href={"https://www.maine.gov"+af.pages[0].page} target="_blank" rel="noopener noreferrer"
+                        style={{color:B.txtSec,textDecoration:"none"}}
+                        onClick={e=>e.stopPropagation()}
+                        onMouseEnter={e=>e.currentTarget.style.color=B.teal}
+                        onMouseLeave={e=>e.currentTarget.style.color=B.txtSec}>{af.pages[0].page}</a></span>}
+                    </div>
+                  </div>
+                  {/* Expand arrow */}
+                  {af.pages.length > 1 && <div style={{transform:isExpanded?"rotate(90deg)":"rotate(0deg)",transition:"transform 0.2s",flexShrink:0}}>
+                    <Ico.chevRight size={16} color={B.txtSec}/>
+                  </div>}
+                </div>
+                {/* Expanded per-page breakdown */}
+                {isExpanded && af.pages.length > 0 && <div style={{borderTop:`1px solid ${B.border}`,background:`${B.navy}03`}}>
+                  {af.pages.sort((a,b)=>b.clicks-a.clicks).map((pg,j) => (
+                    <div key={j} style={{display:"flex",alignItems:"center",gap:16,padding:"10px 20px 10px 106px",borderBottom:j<af.pages.length-1?`1px solid ${B.border}`:"none",fontSize:13}}>
+                      <span style={{minWidth:50,textAlign:"right",fontWeight:600,color:B.navy,fontFamily:"monospace"}}>{pg.clicks.toLocaleString()}</span>
+                      <a href={"https://www.maine.gov"+pg.page} target="_blank" rel="noopener noreferrer"
+                        style={{color:B.txtSec,textDecoration:"none",fontSize:12,wordBreak:"break-all"}}
+                        onMouseEnter={e=>e.currentTarget.style.color=B.teal}
+                        onMouseLeave={e=>e.currentTarget.style.color=B.txtSec}>
+                        {pg.page}
+                      </a>
+                      {/* Proportion bar */}
+                      <div style={{width:80,height:6,borderRadius:3,background:`${B.navy}08`,overflow:"hidden",flexShrink:0,marginLeft:"auto"}}>
+                        <div style={{height:"100%",borderRadius:3,background:B.teal,width:`${(pg.clicks/af.totalClicks)*100}%`}}/>
+                      </div>
+                      <span style={{fontSize:11,color:B.txt,fontWeight:600,fontFamily:"monospace",minWidth:36,textAlign:"right"}}>{(pg.clicks/af.totalClicks*100).toFixed(0)}%</span>
+                    </div>
+                  ))}
+                </div>}
+              </div>;
+            })}
+            {aggregatedFiles.length===0 && <div style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}`,padding:40,textAlign:"center",color:B.txtSec,fontSize:13}}>
+              {files.length===0?"No file download data yet. Register the custom dimension in GA4 and allow time for data collection.":"No files match your search."}
+            </div>}
+          </div>
+        </div>}
+      </div>}
+
+      {/* Footer */}
+      <div style={{textAlign:"center",padding:"28px 0 16px",fontSize:12,color:B.txtSec,fontWeight:500}}>
+        Maine Department of Education · Website & Technology · Communications Portal
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<AnalyticsDashboard/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

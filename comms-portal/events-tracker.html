@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events Tracker | Maine DOE Communications Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><span class="current">Events Tracker</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useMemo} = React;
+
+const Sv=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const ic={
+  cal:["M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z","M16 2v4","M8 2v4","M3 10h18"],
+  plus:["M12 5v14","M5 12h14"],
+  clock:["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 6v6l4 2"],
+  check:["M22 11.08V12a10 10 0 11-5.93-9.14","M22 4L12 14.01l-3-3"],
+  tick:["M20 6L9 17l-5-5"],
+  play:["M5 3l14 9-14 9V3z"],
+  search:"M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",
+  x:["M18 6L6 18","M6 6l12 12"],
+  ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
+  spin:["M12 2v4","M12 18v4","M4.93 4.93l2.83 2.83","M16.24 16.24l2.83 2.83","M2 12h4","M18 12h4"],
+  map:["M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z","M12 13a3 3 0 100-6 3 3 0 000 6z"],
+  globe:["M12 22a10 10 0 100-20 10 10 0 000 20z","M2 12h20"],
+  users:["M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2","M9 11a4 4 0 100-8 4 4 0 000 8z","M23 21v-2a4 4 0 00-3-3.87","M16 3.13a4 4 0 010 7.75"],
+  folder:["M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"],
+};
+
+const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',green:'#16a34a'};
+const API='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
+const CAL_URL='https://www.maine.gov/doe/calendar';
+
+const ST={Received:{bg:'#dbeafe',color:'#1e40af',border:'#93c5fd'},Processing:{bg:'#fef3c7',color:'#92400e',border:'#fcd34d'},Complete:{bg:'#d1fae5',color:'#065f46',border:'#6ee7b7'}};
+
+const FOCUS_AREAS=['Adult Education','Assessment','Attendance & Engagement','Career & Technical Education','Child Nutrition','Data','Early Learning','Educator Supports','Extended Learning','Federal Programs','Higher Education','Home Instruction','Instructional Supports','Interdisciplinary Instruction','Multilingual Learning','Outdoor Education','Policy/Rulemaking','School Climate','School Facilities','School Finance','School Safety','School Health','Special Services & Inclusive Education','Technology & Learning','Transition'];
+const EVENT_TYPES=['Conference','Discussion Group','Information Session','Office Hours','Public Hearing','Student Opportunity','Training','Webinar','Workshop'];
+
+function Input({label,required,hint,children}){
+  return <div style={{marginBottom:14}}>
+    <label style={{display:'block',fontSize:12,fontWeight:700,color:B.navy,marginBottom:5,textTransform:'uppercase',letterSpacing:'.03em'}}>{label}{required&&' *'}</label>
+    {children}
+    {hint&&<div style={{fontSize:11,color:B.txtMute,marginTop:4,fontWeight:500}}>{hint}</div>}
+  </div>;
+}
+
+function Field({value,onChange,placeholder,type}){
+  const s={width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:B.txt,outline:'none',background:B.wh};
+  const f=e=>e.currentTarget.style.borderColor=B.teal;
+  const b=e=>e.currentTarget.style.borderColor=`${B.border}30`;
+  if(type==='textarea') return <textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={{...s,resize:'vertical',minHeight:100}} onFocus={f} onBlur={b}/>;
+  return <input type={type||'text'} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={f} onBlur={b}/>;
+}
+
+function Select({value,onChange,options,placeholder}){
+  return <select value={value} onChange={e=>onChange(e.target.value)} style={{width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:value?B.txt:B.txtMute,background:B.wh,cursor:'pointer',outline:'none'}}>
+    <option value="">{placeholder||'Select...'}</option>
+    {options.map(o=><option key={o} value={o}>{o}</option>)}
+  </select>;
+}
+
+function App(){
+  const [data,setData]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [search,setSearch]=useState('');
+  const [filter,setFilter]=useState('');
+  const [expanded,setExpanded]=useState(null);
+  const [showForm,setShowForm]=useState(false);
+  const [submitting,setSubmitting]=useState(false);
+  const [submitMsg,setSubmitMsg]=useState(null);
+  const [completeModal,setCompleteModal]=useState(null);
+  const [completing,setCompleting]=useState(false);
+  const emptyForm={requestor:'',email:'',focus:'',eventTitle:'',eventType:'',dateTime:'',audience:'',description:'',location:'',regLink:'',address:'',coincides:'',notes:'',proofread:false};
+  const [form,setForm]=useState(emptyForm);
+  const uf=(k,v)=>setForm(p=>({...p,[k]:v}));
+
+  async function load(){
+    try{const r=await fetch(API+'?type=events');const j=await r.json();setData(j.rows||[]);}
+    catch(e){}
+    setLoading(false);
+  }
+  useEffect(()=>{load();},[]);
+
+  const stats=useMemo(()=>({
+    total:data.length,
+    received:data.filter(s=>s.status==='Received').length,
+    processing:data.filter(s=>s.status==='Processing').length,
+    complete:data.filter(s=>s.status==='Complete').length,
+  }),[data]);
+
+  const filtered=useMemo(()=>{
+    let r=data;
+    if(search){const q=search.toLowerCase();r=r.filter(s=>(s.eventTitle||'').toLowerCase().includes(q)||(s.requestor||'').toLowerCase().includes(q)||(s.focus||'').toLowerCase().includes(q)||(s.eventType||'').toLowerCase().includes(q));}
+    if(filter)r=r.filter(s=>s.status===filter);
+    return r;
+  },[data,search,filter]);
+
+  async function handleSubmit(){
+    if(!form.requestor||!form.email||!form.eventTitle||!form.focus||!form.eventType||!form.dateTime||!form.audience||!form.description||!form.location){
+      setSubmitMsg({ok:false,t:'Please fill in all required fields.'});return;}
+    if(!form.proofread){setSubmitMsg({ok:false,t:'Please acknowledge that you have proofread all content.'});return;}
+    setSubmitting(true);setSubmitMsg(null);
+    try{
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'event_submit',...form})});
+      const j=await r.json();
+      if(j.success){
+        // Optimistic insert — add to local state immediately
+        const now=new Date();
+        const newRow={
+          requestor:form.requestor,email:form.email,focus:form.focus,
+          eventTitle:form.eventTitle,eventType:form.eventType,
+          dateTime:form.dateTime,location:form.location,
+          description:form.description,audience:form.audience,
+          regLink:form.regLink,address:form.address,
+          coincides:form.coincides,notes:form.notes,
+          status:'Received',
+          dateSubmitted:now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+        };
+        setData(prev=>[newRow,...prev]);
+        setSubmitMsg({ok:true,t:'Event submitted successfully!'});
+        setForm(emptyForm);
+        setTimeout(()=>{setShowForm(false);setSubmitMsg(null);},1500);
+      }
+      else setSubmitMsg({ok:false,t:j.error||'Something went wrong.'});
+    }catch(e){setSubmitMsg({ok:false,t:e.message});}
+    setSubmitting(false);
+  }
+
+  async function handleComplete(){
+    if(!completeModal?.calUrl)return;
+    setCompleting(true);
+    try{
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'event_complete',eventTitle:completeModal.eventTitle,requestor:completeModal.requestor,calUrl:completeModal.calUrl})});
+      const j=await r.json();
+      if(j.success&&j.email){
+        const subj=encodeURIComponent('Your event is now on the Maine DOE Calendar: '+completeModal.eventTitle);
+        const body=encodeURIComponent('Hi '+(j.name||completeModal.requestor)+',\r\n\r\nYour event "'+completeModal.eventTitle+'" has been added to the Maine DOE Professional Development Calendar and can be viewed here:\r\n\r\n'+completeModal.calUrl+'\r\n\r\nPlease review and let me know if there are any edits needed.\r\n\r\nThanks,\r\nMatt Leavitt\r\nWebsite & Technology Coordinator\r\nMaine Department of Education');
+        const a=document.createElement('a');a.href='mailto:'+encodeURIComponent(j.email)+'?subject='+subj+'&body='+body;a.click();
+      }
+      await load();setCompleteModal(null);
+    }catch(e){console.error(e);}
+    setCompleting(false);
+  }
+
+  if(loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'80vh',gap:12}}>
+    <Sv d={ic.spin} size={24} color={B.teal} style={{animation:'spin 1s linear infinite'}}/><span style={{color:B.txtSec,fontSize:14,fontWeight:600}}>Loading events...</span>
+  </div>;
+
+  return <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px',animation:'fadeIn 0.3s ease'}}>
+
+    {/* HERO */}
+    <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:32,marginBottom:28,position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',inset:0,pointerEvents:'none',backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
+      <div style={{position:'relative',zIndex:1}}>
+        <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:20}}>
+          <div style={{width:48,height:48,borderRadius:14,background:'linear-gradient(135deg,#f59e0b,#d97706)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 16px rgba(245,158,11,0.3)'}}>
+            <Sv d={ic.cal} size={24} color="#fff"/>
+          </div>
+          <div>
+            <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0}}>Events Tracker</h1>
+            <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Submit and track DOE calendar event requests</p>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+          <button onClick={()=>setShowForm(true)} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'linear-gradient(135deg,#f59e0b,#d97706)',color:'#fff',border:'none',fontSize:14,fontWeight:700,boxShadow:'0 4px 16px rgba(245,158,11,0.3)',cursor:'pointer'}}>
+            <Sv d={ic.plus} size={18} color="#fff"/> Submit New Event
+          </button>
+          <a href={CAL_URL} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
+            <Sv d={ic.ext} size={18} color="#94a3b8"/> View Calendar
+          </a>
+          <span style={{color:'rgba(255,255,255,0.2)',fontSize:20,fontWeight:300}}>|</span>
+          <a href="https://www.maine.gov/doe/certificate/create.shtml" target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
+            <Sv d={ic.plus} size={18} color="#94a3b8"/> Create Certificate
+          </a>
+          <a href="https://www.maine.gov/doe/certificate/view.shtml" target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
+            <Sv d={ic.search} size={18} color="#94a3b8"/> View Certificates
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* STATS */}
+    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
+      {[{l:'Total',v:stats.total,c:B.teal,f:''},{l:'Received',v:stats.received,c:'#3b82f6',f:'Received'},{l:'Processing',v:stats.processing,c:'#f59e0b',f:'Processing'},{l:'Complete',v:stats.complete,c:'#16a34a',f:'Complete'}].map((m,i)=>(
+        <div key={i} onClick={()=>setFilter(filter===m.f?'':m.f)} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${filter===m.f||(m.f===''&&!filter)?m.c+'50':B.border+'30'}`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)',cursor:'pointer',transition:'all 0.15s'}}>
+          <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:700,letterSpacing:.4,marginBottom:4,display:'flex',alignItems:'center',gap:5}}>
+            <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
+          </div>
+          <div style={{fontSize:28,fontWeight:800,color:B.navy,lineHeight:1}}>{m.v}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* SEARCH */}
+    <div style={{display:'flex',gap:8,marginBottom:14}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}30`,flex:1}}>
+        <Sv d={ic.search} size={16} color={B.txtMute}/>
+        <input type="text" placeholder="Search by title, requestor, focus area, or type..." value={search} onChange={e=>setSearch(e.target.value)} style={{border:'none',outline:'none',flex:1,fontSize:14,color:B.txt,fontWeight:500,background:'transparent'}}/>
+        {search&&<span onClick={()=>setSearch('')} style={{cursor:'pointer'}}><Sv d={ic.x} size={14} color={B.txtMute}/></span>}
+      </div>
+    </div>
+
+    <div style={{fontSize:13,color:B.txtSec,fontWeight:600,marginBottom:10}}>{filtered.length} event{filtered.length!==1?'s':''}{filter&&` — ${filter}`}</div>
+
+    {/* TABLE */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:40}}>
+      <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+        <thead><tr style={{background:B.navy,color:'#fff'}}>
+          {['Date','Event Title','Focus Area','Type','Location','Status',''].map((h,i)=>(
+            <th key={i} style={{padding:'12px 14px',fontWeight:700,textAlign:i===5?'center':'left',fontSize:12}}>{h}</th>
+          ))}
+        </tr></thead>
+        <tbody>
+          {filtered.map((s,i)=>{
+            const st=ST[s.status]||ST.Received;
+            const isExp=expanded===i;
+            const locIcon=s.location==='Virtual'?ic.globe:s.location==='Hybrid'?ic.users:ic.map;
+            return <React.Fragment key={i}>
+              <tr style={{borderBottom:isExp?'none':`1px solid ${B.border}20`,cursor:'pointer'}} onClick={()=>setExpanded(isExp?null:i)}
+                onMouseEnter={e=>e.currentTarget.style.background=`${B.teal}06`} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={{padding:'14px',fontSize:12,color:B.txtMute,whiteSpace:'nowrap',fontWeight:500}}>{s.dateSubmitted}</td>
+                <td style={{padding:'14px',fontWeight:600,color:B.txt}}>{s.eventTitle}</td>
+                <td style={{padding:'14px',color:B.txtSec,fontWeight:500,fontSize:12}}>{s.focus}</td>
+                <td style={{padding:'14px',color:B.txtSec,fontWeight:500,fontSize:12}}>{s.eventType}</td>
+                <td style={{padding:'14px'}}>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:11,fontWeight:600,color:B.txtSec}}>
+                    <Sv d={locIcon} size={12} color={B.txtMute}/>{s.location}
+                  </span>
+                </td>
+                <td style={{padding:'14px',textAlign:'center'}}>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'4px 14px',borderRadius:20,fontSize:11,fontWeight:700,background:st.bg,color:st.color,border:`1.5px solid ${st.border}`}}>
+                    {s.status==='Complete'&&<Sv d={ic.check} size={12} color={st.color}/>}
+                    {s.status==='Processing'&&<Sv d={ic.clock} size={12} color={st.color}/>}
+                    {s.status}
+                  </span>
+                </td>
+                <td style={{padding:'14px',textAlign:'center'}}>
+                  {s.calUrl?<a href={s.calUrl} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}
+                    style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:`2px solid ${B.border}30`,background:B.wh,color:B.teal,textDecoration:'none',fontSize:11,fontWeight:700}}>
+                    <Sv d={ic.ext} size={12} color={B.teal}/> View
+                  </a>:s.status!=='Complete'?<button onClick={e=>{e.stopPropagation();setCompleteModal({eventTitle:s.eventTitle,requestor:s.requestor,calUrl:''});}}
+                    style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:`2px solid ${B.green}40`,background:`${B.green}08`,color:B.green,fontSize:11,fontWeight:700,cursor:'pointer'}}>
+                    <Sv d={ic.check} size={12} color={B.green}/> Complete
+                  </button>:<span style={{color:B.txtMute,fontSize:11}}>—</span>}
+                </td>
+              </tr>
+              {isExp&&<tr style={{borderBottom:`1px solid ${B.border}20`}}>
+                <td colSpan={7} style={{padding:0}}>
+                  <div style={{padding:'16px 20px 16px 48px',background:`${B.navy}03`,display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+                    <div>
+                      <div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:8}}>Event Details</div>
+                      {s.description&&<div style={{fontSize:13,color:B.txtSec,lineHeight:1.6,marginBottom:10,fontWeight:500}}>{s.description}</div>}
+                      {s.dateTime&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Date & Time:</strong> {s.dateTime}</div>}
+                      {s.audience&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Audience:</strong> {s.audience}</div>}
+                      {s.location&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Location:</strong> {s.location}</div>}
+                    </div>
+                    <div>
+                      <div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:8}}>Contact & Links</div>
+                      {s.requestor&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Requestor:</strong> {s.requestor}</div>}
+                      {s.email&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Email:</strong> {s.email}</div>}
+                      {s.regLink&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Registration:</strong> <a href={s.regLink} target="_blank" style={{color:B.teal}}>{s.regLink.substring(0,50)}...</a></div>}
+                      {s.address&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Address:</strong> {s.address}</div>}
+                      {s.notes&&<div style={{marginTop:8}}><div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:4}}>Notes</div><div style={{fontSize:12,color:B.txtSec,lineHeight:1.5}}>{s.notes}</div></div>}
+                    </div>
+                  </div>
+                </td>
+              </tr>}
+            </React.Fragment>;
+          })}
+          {filtered.length===0&&<tr><td colSpan={7} style={{padding:40,textAlign:'center',color:B.txtMute}}>No events found.</td></tr>}
+        </tbody>
+      </table>
+    </div>
+
+    {/* SUBMIT FORM MODAL */}
+    {showForm&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(6px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
+      onClick={e=>{if(e.target===e.currentTarget)setShowForm(false);}}>
+      <div style={{background:B.wh,borderRadius:20,width:'100%',maxWidth:680,maxHeight:'90vh',overflow:'auto',boxShadow:'0 24px 80px rgba(0,0,0,0.2)',animation:'fadeIn 0.2s ease'}}>
+        <div style={{padding:'24px 28px 16px',borderBottom:`2px solid ${B.border}30`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <div style={{width:40,height:40,borderRadius:12,background:'linear-gradient(135deg,#f59e0b,#d97706)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <Sv d={ic.cal} size={20} color="#fff"/>
+            </div>
+            <div>
+              <h2 style={{fontSize:18,fontWeight:800,color:B.navy,margin:0}}>Request a Calendar Event</h2>
+              <p style={{fontSize:12,color:B.txtMute,margin:0}}>Submit at least 1 week in advance (2+ weeks recommended)</p>
+            </div>
+          </div>
+          <button onClick={()=>setShowForm(false)} style={{background:'none',border:'none',cursor:'pointer',padding:4}}><Sv d={ic.x} size={20} color={B.txtMute}/></button>
+        </div>
+        <div style={{padding:'20px 28px 28px'}}>
+
+          {/* Guidelines */}
+          <div style={{padding:'12px 16px',borderRadius:10,background:'#fef3c714',border:'1.5px solid #f59e0b30',borderLeft:'4px solid #f59e0b',marginBottom:20,fontSize:13,color:B.txtSec,fontWeight:500,lineHeight:1.7}}>
+            <strong>Guidelines:</strong> Proofread all content. Follow Maine DOE branding. Spell out acronyms. Only submit when all details are confirmed. Events must be hosted or co-hosted by a DOE team.
+          </div>
+
+          <Input label="Your Name" required><Field value={form.requestor} onChange={v=>uf('requestor',v)} placeholder="First Last"/></Input>
+          <Input label="Contact Email" required><Field value={form.email} onChange={v=>uf('email',v)} placeholder="name@maine.gov" type="email"/></Input>
+
+          <Input label="Area of Focus" required>
+            <Select value={form.focus} onChange={v=>uf('focus',v)} options={FOCUS_AREAS} placeholder="Select area of focus..."/>
+          </Input>
+
+          <Input label="Event Title" required hint="Shorter titles appear better on the calendar — we may shorten if needed.">
+            <Field value={form.eventTitle} onChange={v=>uf('eventTitle',v)} placeholder="Event title"/>
+          </Input>
+
+          <Input label="Event Type" required>
+            <Select value={form.eventType} onChange={v=>uf('eventType',v)} options={EVENT_TYPES} placeholder="Select event type..."/>
+          </Input>
+
+          <Input label="Event Date(s) & Time" required hint="If recurring, list all dates. Include end time or it will be assumed 1 hour.">
+            <Field value={form.dateTime} onChange={v=>uf('dateTime',v)} placeholder="e.g., April 15, 2026, 2:00 - 3:30 PM"/>
+          </Input>
+
+          <Input label="Intended Audience" required>
+            <Field value={form.audience} onChange={v=>uf('audience',v)} placeholder="e.g., K-12 Educators, School Administrators"/>
+          </Input>
+
+          <Input label="Event Description" required hint="Be descriptive — this is your primary marketing tool. More than one sentence.">
+            <Field value={form.description} onChange={v=>uf('description',v)} type="textarea" placeholder="Give visitors information about this specific event and what they can expect."/>
+          </Input>
+
+          <Input label="Event Location / Platform" required>
+            <div style={{display:'flex',gap:8}}>
+              {['Virtual','In-Person','Hybrid'].map(o=>(
+                <button key={o} onClick={()=>uf('location',o)} style={{flex:1,padding:'10px 16px',borderRadius:10,fontSize:13,fontWeight:600,cursor:'pointer',textAlign:'center',
+                  border:`2px solid ${form.location===o?B.teal:B.border+'30'}`,background:form.location===o?`${B.teal}10`:B.wh,color:form.location===o?B.navy:B.txtSec,
+                  display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+                  <Sv d={o==='Virtual'?ic.globe:o==='Hybrid'?ic.users:ic.map} size={14} color={form.location===o?B.teal:B.txtMute}/>{o}
+                </button>
+              ))}
+            </div>
+          </Input>
+
+          {(form.location==='Virtual'||form.location==='Hybrid')&&
+            <Input label="Registration or Join Link" required><Field value={form.regLink} onChange={v=>uf('regLink',v)} placeholder="https://..."/></Input>
+          }
+
+          {(form.location==='In-Person'||form.location==='Hybrid')&&
+            <Input label="Event Address" required hint="Include full address with zip code.">
+              <Field value={form.address} onChange={v=>uf('address',v)} placeholder="123 Main St, Augusta, ME 04330"/>
+            </Input>
+          }
+
+          {form.location==='In-Person'&&
+            <Input label="Registration Link"><Field value={form.regLink} onChange={v=>uf('regLink',v)} placeholder="https://... (if applicable)"/></Input>
+          }
+
+          {/* Calendar check */}
+          <div style={{padding:'14px 16px',borderRadius:10,background:`${B.teal}08`,border:`1.5px solid ${B.teal}20`,marginBottom:14,display:'flex',alignItems:'flex-start',gap:12}}>
+            <Sv d={ic.cal} size={18} color={B.teal} style={{flexShrink:0,marginTop:2}}/>
+            <div style={{fontSize:13,color:B.txtSec,fontWeight:500,lineHeight:1.6}}>
+              <strong>Check the calendar first!</strong> Make sure nothing else is planned for the same day, time, and audience. <a href={CAL_URL} target="_blank" rel="noopener noreferrer" style={{color:B.teal,fontWeight:700}}>View the calendar →</a>
+            </div>
+          </div>
+
+          <Input label="Does your event coincide with another DOE event?" required>
+            <div style={{display:'flex',gap:8}}>
+              {['No','Yes'].map(o=>(
+                <button key={o} onClick={()=>uf('coincides',o)} style={{padding:'8px 20px',borderRadius:10,fontSize:14,fontWeight:600,cursor:'pointer',
+                  border:`2px solid ${form.coincides===o?(o==='Yes'?'#f59e0b':B.teal):B.border+'30'}`,
+                  background:form.coincides===o?(o==='Yes'?'#fef3c7':`${B.teal}10`):B.wh,
+                  color:form.coincides===o?B.navy:B.txtMute}}>{o}</button>
+              ))}
+            </div>
+          </Input>
+
+          <Input label="Special Notes"><Field value={form.notes} onChange={v=>uf('notes',v)} type="textarea" placeholder="Anything else we should know?"/></Input>
+
+          {/* Proofread */}
+          <div style={{padding:'14px 16px',borderRadius:10,background:'#f8fafc',border:`2px solid ${form.proofread?B.teal:B.border+'30'}`,marginBottom:20,cursor:'pointer',display:'flex',alignItems:'flex-start',gap:12}} onClick={()=>uf('proofread',!form.proofread)}>
+            <div style={{width:22,height:22,borderRadius:6,border:`2px solid ${form.proofread?B.teal:B.border}`,background:form.proofread?B.teal:'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
+              {form.proofread&&<Sv d={ic.tick} size={14} color="#fff"/>}
+            </div>
+            <div style={{fontSize:13,color:B.navy,fontWeight:600,lineHeight:1.5}}>I have proofread all content and there are no spelling or grammatical errors.</div>
+          </div>
+
+          {submitMsg&&<div style={{padding:'10px 16px',borderRadius:10,marginBottom:14,fontSize:13,fontWeight:600,background:submitMsg.ok?'#d1fae5':'#fee2e2',color:submitMsg.ok?'#065f46':'#991b1b',border:`1.5px solid ${submitMsg.ok?'#6ee7b7':'#fca5a5'}`}}>{submitMsg.t}</div>}
+
+          <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+            <button onClick={()=>setShowForm(false)} style={{padding:'12px 24px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:14,fontWeight:600,cursor:'pointer'}}>Cancel</button>
+            <button onClick={handleSubmit} disabled={submitting} style={{padding:'12px 28px',borderRadius:10,border:'none',background:submitting?'#94a3b8':'linear-gradient(135deg,#f59e0b,#d97706)',color:'#fff',fontSize:14,fontWeight:700,cursor:submitting?'default':'pointer',display:'flex',alignItems:'center',gap:8}}>
+              {submitting?<><Sv d={ic.spin} size={16} color="#fff" style={{animation:'spin 1s linear infinite'}}/> Submitting...</>:<><Sv d={ic.cal} size={16} color="#fff"/> Submit Event</>}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>}
+
+    {/* COMPLETE MODAL */}
+    {completeModal&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(6px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
+      onClick={e=>{if(e.target===e.currentTarget)setCompleteModal(null);}}>
+      <div style={{background:B.wh,borderRadius:20,width:'100%',maxWidth:480,boxShadow:'0 24px 80px rgba(0,0,0,0.2)',animation:'fadeIn 0.2s ease',padding:28}}>
+        <h2 style={{fontSize:18,fontWeight:800,color:B.navy,marginBottom:4}}>Mark as Complete</h2>
+        <p style={{fontSize:13,color:B.txtMute,marginBottom:20}}><strong>{completeModal.eventTitle}</strong> by {completeModal.requestor}</p>
+        <Input label="Calendar Event URL" required><Field value={completeModal.calUrl} onChange={v=>setCompleteModal(p=>({...p,calUrl:v}))} placeholder="https://www.maine.gov/doe/calendar/..."/></Input>
+        <div style={{padding:'12px 16px',borderRadius:10,background:'#f0fdf4',border:'1.5px solid #bbf7d0',marginBottom:20,fontSize:13,color:'#065f46',fontWeight:500,lineHeight:1.6}}>
+          This will update the status to <strong>Complete</strong>, notify the team in Teams, and open a pre-filled email to the requestor in Outlook.
+        </div>
+        <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+          <button onClick={()=>setCompleteModal(null)} style={{padding:'10px 20px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:14,fontWeight:600,cursor:'pointer'}}>Cancel</button>
+          <button onClick={handleComplete} disabled={completing||!completeModal.calUrl} style={{padding:'10px 24px',borderRadius:10,border:'none',background:completing||!completeModal.calUrl?'#94a3b8':'linear-gradient(135deg,#16a34a,#15803d)',color:'#fff',fontSize:14,fontWeight:700,cursor:completing?'default':'pointer',display:'flex',alignItems:'center',gap:6}}>
+            {completing?<><Sv d={ic.spin} size={14} color="#fff" style={{animation:'spin 1s linear infinite'}}/> Sending...</>:<><Sv d={ic.check} size={14} color="#fff"/> Complete & Notify</>}
+          </button>
+        </div>
+      </div>
+    </div>}
+
+    <div style={{textAlign:'center',padding:'0 0 40px',fontSize:12,color:B.txtMute,fontWeight:500}}>Maine Department of Education · Communications Portal</div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

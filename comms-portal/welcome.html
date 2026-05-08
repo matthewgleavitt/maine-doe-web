@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome | Maine DOE Communications Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#eee6df;color:#182b3c;min-height:100vh}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><span class="current">Communications Portal</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useRef} = React;
+
+const Sv=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const ic={
+  bell:["M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9","M13.73 21a2 2 0 01-3.46 0"],
+  news:["M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9c0-1.1.9-2 2-2h2","M18 14h-8","M15 18h-5","M10 6h8v4h-8V6z"],
+  cal:["M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z","M16 2v4","M8 2v4","M3 10h18"],
+  users:["M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2","M9 11a4 4 0 100-8 4 4 0 000 8z","M23 21v-2a4 4 0 00-3-3.87","M16 3.13a4 4 0 010 7.75"],
+  mail:["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"],
+  phone:["M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"],
+  x:["M18 6L6 18","M6 6l12 12"],
+  spin:["M12 2v4","M12 18v4","M4.93 4.93l2.83 2.83","M16.24 16.24l2.83 2.83","M2 12h4","M18 12h4"],
+  wrench:["M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"],
+  star:"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
+  globe:["M12 22a10 10 0 100-20 10 10 0 000 20z","M2 12h20","M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"],
+  ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
+  book:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"],
+};
+
+const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0'};
+const API='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
+
+const tabs=[
+  {id:'announcements',label:'Announcements',icon:ic.bell},
+  {id:'news',label:'News',icon:ic.news},
+  {id:'social',label:'Social',icon:ic.users},
+  {id:'calendar',label:'Calendar',icon:ic.cal},
+  {id:'contact',label:'Contact',icon:ic.mail},
+];
+
+function App(){
+  const [tab,setTab]=useState('announcements');
+  const [announcements,setAnnouncements]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [expandedAnn,setExpandedAnn]=useState(null);
+  const newsRef=useRef(null);
+  const goodNewsRef=useRef(null);
+
+  useEffect(()=>{
+    (async()=>{
+      try{const r=await fetch(API+'?type=announcements');const j=await r.json();if(j.rows)setAnnouncements(j.rows);}catch(e){}
+      setLoading(false);
+    })();
+  },[]);
+
+  // Load Elfsight when news, calendar, or social tab is active
+  useEffect(()=>{
+    if(tab==='news'||tab==='calendar'||tab==='social'){
+      if(!document.querySelector('script[src*="elfsight"]')){
+        const s=document.createElement('script');s.src='https://static.elfsight.com/platform/platform.js';s.async=true;document.body.appendChild(s);
+      } else {
+        // Script already loaded — trigger re-scan for new widget divs
+        setTimeout(()=>{
+          if(window.eapps&&window.eapps.reinit) window.eapps.reinit();
+          else if(window.ElfsightPlatform&&window.ElfsightPlatform.init) window.ElfsightPlatform.init();
+        },200);
+      }
+    }
+  },[tab]);
+
+  return <div style={{maxWidth:1100,margin:'0 auto',padding:'0 28px'}}>
+
+    {/* Hero */}
+    <div style={{position:'relative',borderRadius:'0 0 20px 20px',overflow:'hidden',minHeight:220,marginBottom:28}}>
+      <div style={{position:'absolute',inset:0,
+        backgroundImage:'url(https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/hero-bg.jpg)',
+        backgroundSize:'cover',backgroundPosition:'center 40%',filter:'blur(1px) brightness(0.3)',transform:'scale(1.05)'}}/>
+      <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,rgba(12,25,38,0.8),rgba(22,45,68,0.6))'}}/>
+      <div style={{position:'absolute',inset:0,pointerEvents:'none',
+        backgroundImage:'linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)',
+        backgroundSize:'60px 60px',opacity:.4}}/>
+      <div style={{position:'relative',zIndex:1,padding:'44px 36px 36px'}}>
+        <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:16}}>
+          <div style={{background:'#fff',borderRadius:16,
+            display:'flex',alignItems:'center',justifyContent:'center',
+            boxShadow:'0 8px 32px rgba(66,195,247,0.25)',padding:'10px 24px'}}>
+            <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/maine-doe-logo.png" alt="Maine DOE" style={{height:48,objectFit:'contain'}}/>
+          </div>
+          <div>
+            <div style={{fontSize:11,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',color:'#42c3f7',marginBottom:4,display:'flex',alignItems:'center',gap:8}}>
+              <span style={{width:16,height:2,background:'#42c3f7',borderRadius:1}}/>Maine Department of Education
+            </div>
+            <h1 style={{fontSize:'clamp(26px,3vw,34px)',fontWeight:800,color:'#ffffff',lineHeight:1.1,letterSpacing:'-0.02em'}}>
+              Communications <span style={{background:'linear-gradient(135deg,#42c3f7,#34d399)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Portal</span>
+            </h1>
+          </div>
+        </div>
+        <p style={{fontSize:14,color:'#cbd5e1',lineHeight:1.7,maxWidth:480,fontWeight:500,marginBottom:16}}>
+          Your hub for announcements, news, brand resources, templates, and communications tools.
+        </p>
+        <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+          <a href="https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039" target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 22px',borderRadius:10,
+              background:'linear-gradient(135deg,#42c3f7,#34d399)',color:'#0c1926',textDecoration:'none',fontSize:13,fontWeight:700,
+              boxShadow:'0 4px 16px rgba(66,195,247,0.3)'}}>
+            <Sv d={ic.ext} size={14} color="#0c1926"/> Open Workflow
+          </a>
+          <a href="https://stateofmaine.sharepoint.com/:o:/r/sites/MaineDOE/Maine%20DOE%20Information%20Library/Maine%20DOE%20Employee%20Handbook?d=w468cf35d92264d3db9d2099ad7a7595b&csf=1&web=1&e=iiNUTi" target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 22px',borderRadius:10,
+              background:'linear-gradient(135deg,#42c3f7,#34d399)',color:'#0c1926',textDecoration:'none',fontSize:13,fontWeight:700,
+              boxShadow:'0 4px 16px rgba(66,195,247,0.3)'}}>
+            <Sv d={ic.book} size={14} color="#0c1926"/> Staff Handbook
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Tab bar */}
+    <div style={{display:'flex',gap:6,marginBottom:24}}>
+      {tabs.map(t=>{
+        const active=tab===t.id;
+        return <button key={t.id} onClick={()=>setTab(t.id)}
+          style={{display:'flex',alignItems:'center',gap:7,padding:'10px 18px',borderRadius:10,fontSize:13,fontWeight:600,cursor:'pointer',
+            border:active?`2px solid ${B.teal}`:'2px solid #c2cdd8',
+            background:active?B.navy:B.wh,color:active?B.teal:B.txtSec,
+            boxShadow:active?'0 2px 8px rgba(24,43,60,0.2)':'0 1px 3px rgba(0,0,0,0.04)',
+            transition:'all 0.15s'}}>
+          <Sv d={t.icon} size={15} color={active?B.teal:B.txtMute}/> {t.label}
+        </button>;
+      })}
+    </div>
+
+    {/* Tab content */}
+    <div key={tab} style={{animation:'fadeIn 0.3s ease',paddingBottom:40}}>
+
+      {/* ── ANNOUNCEMENTS ── */}
+      {tab==='announcements'&&<div>
+        {loading?<div style={{padding:40,textAlign:'center'}}><Sv d={ic.spin} size={24} color={B.teal} style={{animation:'spin 1s linear infinite'}}/></div>
+        :announcements.length===0?<div style={{background:B.wh,borderRadius:14,padding:40,textAlign:'center',border:`2px solid ${B.border}30`}}>
+          <Sv d={ic.bell} size={32} color={B.border} style={{marginBottom:12}}/>
+          <p style={{fontSize:15,fontWeight:600,color:B.txtSec}}>No announcements right now</p>
+          <p style={{fontSize:13,color:B.txtMute,marginTop:4}}>Check back later for updates from the Communications team.</p>
+        </div>
+        :<div style={{maxHeight:500,overflowY:'auto',borderRadius:14,border:`2px solid ${B.border}30`,background:B.wh}}>
+          {announcements.map((a,i)=>{
+            const isUrgent=a.priority==='urgent';
+            const isImportant=a.priority==='important';
+            const accent=isUrgent?'#ef4444':isImportant?'#f59e0b':'#42c3f7';
+            const isExp=expandedAnn===i;
+            return <div key={i} style={{padding:'16px 20px',borderBottom:i<announcements.length-1?`1px solid ${B.border}15`:'none',
+              borderLeft:`4px solid ${accent}`,cursor:'pointer',transition:'background 0.15s',
+              background:isExp?`${accent}06`:'transparent'}}
+              onClick={()=>setExpandedAnn(isExp?null:i)}>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:isExp?8:0}}>
+                {isUrgent&&<span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'#fee2e2',color:'#991b1b',border:'1px solid #fca5a5'}}>URGENT</span>}
+                {isImportant&&<span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'#fef3c7',color:'#92400e',border:'1px solid #fcd34d'}}>IMPORTANT</span>}
+                <h4 style={{fontSize:14,fontWeight:700,color:B.navy,margin:0,flex:1}}>{a.title}</h4>
+                <span style={{fontSize:11,color:'#94a3b8',fontWeight:500,flexShrink:0}}>{a.date}</span>
+                <Sv d={isExp?["M18 15l-6-6-6 6"]:["M6 9l6 6 6-6"]} size={16} color={B.txtMute}/>
+              </div>
+              {isExp&&<p style={{fontSize:13,color:B.txtSec,lineHeight:1.65,margin:0,fontWeight:500,paddingTop:4}}>{a.message}</p>}
+            </div>;
+          })}
+        </div>}
+      </div>}
+
+      {/* ── NEWS ── */}
+      {tab==='news'&&<div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+          <div>
+            <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
+              <span style={{width:16,height:2,background:'#42c3f7',borderRadius:1}}/>DOE Newsroom
+            </h3>
+            <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:20,minHeight:300}}>
+              <div className="elfsight-app-643d49ae-6888-4d88-ad4f-6573c67cbd08" data-elfsight-app-lazy></div>
+            </div>
+          </div>
+          <div>
+            <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
+              <span style={{width:16,height:2,background:'#34d399',borderRadius:1}}/>Good News
+            </h3>
+            <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:20,minHeight:300}}>
+              <div className="elfsight-app-367e30ae-ddee-464b-81c9-4e97235c4f00" data-elfsight-app-lazy></div>
+            </div>
+          </div>
+        </div>
+      </div>}
+
+      {/* ── SOCIAL ── */}
+      {tab==='social'&&<div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+          <div>
+            <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
+              <span style={{width:16,height:2,background:'#42c3f7',borderRadius:1}}/>Follow us
+            </h3>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              {[
+                {name:'Facebook',url:'https://www.facebook.com/MaineDepartmentofEducation1/',color:'#1877f2',
+                  path:'M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z'},
+                {name:'Instagram',url:'https://www.instagram.com/mainedepted/',color:'#e1306c',
+                  path:'M16 4H8a4 4 0 00-4 4v8a4 4 0 004 4h8a4 4 0 004-4V8a4 4 0 00-4-4zM12 15a3 3 0 110-6 3 3 0 010 6zM17.5 7.5a.5.5 0 110-1 .5.5 0 010 1z'},
+                {name:'YouTube',url:'https://www.youtube.com/@MaineDOE',color:'#ef4444',
+                  path:'M23 7l-7 5 7 5V7zM14 5H3a2 2 0 00-2 2v10a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2z'},
+                {name:'LinkedIn',url:'https://www.linkedin.com/company/education-maine-department-of/posts/?feedView=all',color:'#0a66c2',
+                  path:'M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 6a2 2 0 100-4 2 2 0 000 4z'},
+              ].map((s,i)=>(
+                <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
+                  style={{display:'flex',alignItems:'center',gap:14,padding:'16px 20px',borderRadius:14,
+                    background:B.wh,border:`2px solid ${s.color}20`,textDecoration:'none',
+                    transition:'all 0.15s'}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor=s.color;e.currentTarget.style.transform='translateX(4px)';}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor=s.color+'20';e.currentTarget.style.transform='none';}}>
+                  <div style={{width:44,height:44,borderRadius:12,background:s.color,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={s.path}/></svg>
+                  </div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:15,fontWeight:700,color:B.navy}}>{s.name}</div>
+                    <div style={{fontSize:12,color:B.txtMute,fontWeight:500}}>@{s.name==='Facebook'?'MaineDOE':s.name==='Instagram'?'mainedepted':s.name==='YouTube'?'MaineDOE':'Maine DOE'}</div>
+                  </div>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={B.txtMute} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>
+                </a>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
+              <span style={{width:16,height:2,background:'#1877f2',borderRadius:1}}/>Latest posts
+            </h3>
+            <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:20,minHeight:300,overflow:'hidden'}}>
+              <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FMaineDepartmentofEducation1%2F&tabs=timeline&width=500&height=600&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false"
+                width="100%" height="600" style={{border:'none',overflow:'hidden'}} allow="encrypted-media"
+                title="Maine DOE Facebook Feed"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>}
+
+      {/* ── CALENDAR ── */}
+      {tab==='calendar'&&<div>
+        <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',padding:20,minHeight:500}}>
+          <div className="elfsight-app-6c6f22e1-033b-47cd-8ea3-0906acf8c9e4"></div>
+        </div>
+      </div>}
+
+      {/* ── CONTACT ── */}
+      {tab==='contact'&&<div>
+        <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
+          <span style={{width:16,height:2,background:B.teal,borderRadius:1}}/>Communications Team
+        </h3>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:18,marginBottom:28}}>
+          {[
+            {name:'Chloe Teboe',title:'Communications Director',email:'chloe.teboe@maine.gov',
+              desc:'Brand strategy, media relations, press inquiries, newsroom articles, priority notices, and overall communications direction.',
+              color:'#42c3f7',gradient:'linear-gradient(135deg,#42c3f7,#2da8d8)'},
+            {name:'Rachel Paling',title:'Communications Coordinator',email:'rachel.paling@maine.gov',
+              desc:'Newsletters, Mailchimp campaigns, social media, event promotions, and content workflows.',
+              color:'#34d399',gradient:'linear-gradient(135deg,#34d399,#16a34a)'},
+            {name:'Matt Leavitt',title:'Website & Technology Coordinator',email:'matthew.g.leavitt@maine.gov',
+              desc:'Website updates, Drupal pages, YouTube uploads, analytics, accessibility, templates, and this portal.',
+              color:'#c084fc',gradient:'linear-gradient(135deg,#c084fc,#a855f7)'},
+          ].map((c,i)=>(
+            <div key={i} style={{background:B.wh,borderRadius:16,overflow:'hidden',border:`2.5px solid ${c.color}30`,
+              boxShadow:'0 4px 16px rgba(0,0,0,0.05)',animation:`fadeIn 0.4s ease ${i*0.1}s both`}}>
+              <div style={{height:6,background:c.gradient}}/>
+              <div style={{padding:'24px 22px'}}>
+                <div style={{width:48,height:48,borderRadius:14,background:c.gradient,
+                  display:'flex',alignItems:'center',justifyContent:'center',marginBottom:14,
+                  fontSize:18,fontWeight:800,color:'#fff',boxShadow:`0 4px 16px ${c.color}30`}}>
+                  {c.name.split(' ').map(n=>n[0]).join('')}
+                </div>
+                <h3 style={{fontSize:17,fontWeight:700,color:B.navy,margin:'0 0 2px'}}>{c.name}</h3>
+                <p style={{fontSize:12,fontWeight:600,color:c.color,margin:'0 0 12px'}}>{c.title}</p>
+                <p style={{fontSize:13,color:B.txtSec,lineHeight:1.6,margin:'0 0 16px',fontWeight:500}}>{c.desc}</p>
+                <a href={'mailto:'+c.email} style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:12,fontWeight:700,
+                  color:c.color,textDecoration:'none',padding:'8px 14px',borderRadius:8,border:`2px solid ${c.color}30`,
+                  background:`${c.color}08`,transition:'all 0.15s'}}
+                  onMouseEnter={e=>{e.currentTarget.style.background=`${c.color}15`;}}
+                  onMouseLeave={e=>{e.currentTarget.style.background=`${c.color}08`;}}>
+                  <Sv d={ic.mail} size={14} color={c.color}/> Email
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
+          <span style={{width:16,height:2,background:'#f59e0b',borderRadius:1}}/>Don't see what you're looking for?
+        </h3>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:14}}>
+          {[
+            {name:'Tyler Rollins',email:'tyler.rollins@maine.gov',desc:'Internal apps, Microsoft products, and digital tools.',color:'#0891b2',icon:ic.globe},
+            {name:'Melissa O\'Neal Low',email:'melissa.a.oneal-low@maine.gov',desc:'Constituent concerns and public inquiries.',color:'#e11d48',icon:ic.users},
+            {name:'Tanuja Bhatnagar',email:'tanuja.bhatnagar@maine.gov',desc:'Connection to the Commissioner, speaking engagements, and executive outreach.',color:'#7c3aed',icon:ic.star},
+            {name:'MaineIT Help Desk',phone:'207-624-7700',desc:'Computer issues, technical questions, and Assyst tickets.',color:'#475569',icon:ic.wrench},
+          ].map((c,i)=>(
+            <div key={i} style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'16px 18px',
+              display:'flex',alignItems:'flex-start',gap:14,animation:`fadeIn 0.3s ease ${i*0.08}s both`}}>
+              <div style={{width:38,height:38,borderRadius:10,background:`${c.color}12`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <Sv d={c.icon} size={18} color={c.color}/>
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:14,fontWeight:700,color:B.navy,marginBottom:2}}>{c.name}</div>
+                <p style={{fontSize:12,color:B.txtMute,lineHeight:1.5,margin:'0 0 8px',fontWeight:500}}>{c.desc}</p>
+                {c.email?<a href={'mailto:'+c.email} style={{fontSize:11,fontWeight:700,color:c.color,textDecoration:'none'}}>
+                  {c.email}
+                </a>
+                :<span style={{fontSize:11,fontWeight:700,color:c.color}}>{c.phone}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>}
+
+    </div>
+
+    <div style={{textAlign:'center',padding:'0 0 30px',fontSize:12,color:B.txtMute,fontWeight:500}}>
+      Maine Department of Education · Website & Technology · Communications Portal
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

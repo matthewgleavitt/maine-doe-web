@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Templates | Maine DOE Communications Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><span class="current">Templates</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useMemo} = React;
+
+const Sv=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const ic={
+  copy:["M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2","M15 2H9a1 1 0 00-1 1v2a1 1 0 001 1h6a1 1 0 001-1V3a1 1 0 00-1-1z"],
+  ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
+  download:["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"],
+  search:"M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",
+  x:["M18 6L6 18","M6 6l12 12"],
+  spin:["M12 2v4","M12 18v4","M4.93 4.93l2.83 2.83","M16.24 16.24l2.83 2.83","M2 12h4","M18 12h4"],
+  image:["M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z","M8.5 10a1.5 1.5 0 100-3 1.5 1.5 0 000 3z","M21 15l-5-5L5 21"],
+  file:["M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z","M14 2v6h6"],
+  monitor:["M20 3H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V5a2 2 0 00-2-2z","M8 21h8","M12 17v4"],
+  grid:["M10 3H3v7h7V3z","M21 3h-7v7h7V3z","M21 14h-7v7h7v-7z","M10 14H3v7h7v-7z"],
+};
+
+const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',pink:'#ec4899',pinkLt:'#fdf2f6'};
+const API='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
+
+const CAT_COLORS={
+  'Design':{bg:'#fce7f3',color:'#be185d',border:'#f9a8d4'},
+  'Documents':{bg:'#dbeafe',color:'#1e40af',border:'#93c5fd'},
+  'Presentations':{bg:'#fef3c7',color:'#92400e',border:'#fcd34d'},
+};
+
+const SOURCE_ICONS={
+  'Canva':{icon:ic.grid,label:'Open in Canva',color:'#7c3aed'},
+  'SharePoint':{icon:ic.ext,label:'Open in SharePoint',color:'#0078d4'},
+  'Download':{icon:ic.download,label:'Download',color:'#16a34a'},
+  'Google Drive':{icon:ic.ext,label:'Open in Drive',color:'#ea4335'},
+};
+
+function App(){
+  const [data,setData]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [search,setSearch]=useState('');
+  const [catFilter,setCatFilter]=useState('');
+
+  useEffect(()=>{
+    (async()=>{
+      try{const r=await fetch(API+'?type=templates');const j=await r.json();setData(j.rows||[]);}catch(e){}
+      setLoading(false);
+    })();
+  },[]);
+
+  const categories=useMemo(()=>[...new Set(data.map(t=>t.category).filter(Boolean))],[data]);
+
+  const filtered=useMemo(()=>{
+    let r=data;
+    if(catFilter)r=r.filter(t=>t.category===catFilter);
+    if(search){const q=search.toLowerCase();r=r.filter(t=>(t.name||'').toLowerCase().includes(q)||(t.description||'').toLowerCase().includes(q)||(t.subcategory||'').toLowerCase().includes(q));}
+    return r;
+  },[data,search,catFilter]);
+
+  // Group by subcategory
+  const grouped=useMemo(()=>{
+    const map={};
+    filtered.forEach(t=>{
+      const key=t.subcategory||t.category||'Other';
+      if(!map[key])map[key]=[];
+      map[key].push(t);
+    });
+    return Object.entries(map);
+  },[filtered]);
+
+  if(loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'80vh',gap:12}}>
+    <Sv d={ic.spin} size={24} color={B.teal} style={{animation:'spin 1s linear infinite'}}/><span style={{color:B.txtSec,fontSize:14,fontWeight:600}}>Loading templates...</span>
+  </div>;
+
+  return <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px',animation:'fadeIn 0.3s ease'}}>
+
+    {/* HERO */}
+    <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:32,marginBottom:28,position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',inset:0,pointerEvents:'none',backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
+      <div style={{position:'relative',zIndex:1}}>
+        <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:16}}>
+          <div style={{width:48,height:48,borderRadius:14,background:'linear-gradient(135deg,#f472b6,#ec4899)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 16px rgba(244,114,182,0.3)'}}>
+            <Sv d={ic.copy} size={24} color="#fff"/>
+          </div>
+          <div>
+            <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0}}>Templates</h1>
+            <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Official DOE templates for presentations, documents, and design</p>
+          </div>
+        </div>
+        <p style={{fontSize:13,color:'#94a3b8',lineHeight:1.7,maxWidth:600,fontWeight:500}}>
+          Use these approved templates for all Maine DOE communications. Contact Rachel Paling or Matt Leavitt if you need access or a new template.
+        </p>
+      </div>
+    </div>
+
+    {/* FILTERS */}
+    <div style={{display:'flex',gap:8,marginBottom:20,flexWrap:'wrap',alignItems:'center'}}>
+      <button onClick={()=>setCatFilter('')} style={{padding:'8px 18px',borderRadius:10,fontSize:13,fontWeight:600,cursor:'pointer',
+        border:`2px solid ${!catFilter?B.teal:B.border+'30'}`,background:!catFilter?`${B.teal}10`:B.wh,color:!catFilter?B.navy:B.txtMute}}>
+        All ({data.length})
+      </button>
+      {categories.map(c=>{
+        const cc=CAT_COLORS[c]||{bg:'#f1f5f9',color:'#334155',border:'#e2e8f0'};
+        const active=catFilter===c;
+        const count=data.filter(t=>t.category===c).length;
+        return <button key={c} onClick={()=>setCatFilter(active?'':c)} style={{padding:'8px 18px',borderRadius:10,fontSize:13,fontWeight:600,cursor:'pointer',
+          border:`2px solid ${active?cc.border:B.border+'30'}`,background:active?cc.bg:B.wh,color:active?cc.color:B.txtMute}}>
+          {c} ({count})
+        </button>;
+      })}
+
+      <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8,padding:'8px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}30`,minWidth:220}}>
+        <Sv d={ic.search} size={16} color={B.txtMute}/>
+        <input type="text" placeholder="Search templates..." value={search} onChange={e=>setSearch(e.target.value)} style={{border:'none',outline:'none',flex:1,fontSize:13,color:B.txt,fontWeight:500,background:'transparent'}}/>
+        {search&&<span onClick={()=>setSearch('')} style={{cursor:'pointer'}}><Sv d={ic.x} size={14} color={B.txtMute}/></span>}
+      </div>
+    </div>
+
+    {/* TEMPLATE GRID */}
+    {filtered.length===0?<div style={{padding:60,textAlign:'center',color:B.txtMute}}>
+      <Sv d={ic.copy} size={40} color={B.border} style={{marginBottom:12}}/>
+      <p style={{fontSize:15,fontWeight:600}}>No templates found</p>
+      <p style={{fontSize:13,marginTop:4}}>Try a different filter or search term.</p>
+    </div>:
+    grouped.map(([group,items],gi)=>(
+      <div key={group} style={{marginBottom:32,animation:`fadeIn 0.3s ease ${gi*0.1}s both`}}>
+        <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
+          <span style={{width:16,height:2,background:B.teal,borderRadius:1}}/>{group}
+        </h3>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:16}}>
+          {items.map((t,i)=>{
+            const cc=CAT_COLORS[t.category]||{bg:'#f1f5f9',color:'#334155',border:'#e2e8f0'};
+            const src=SOURCE_ICONS[t.source]||SOURCE_ICONS['Download'];
+            return <div key={i} style={{background:B.wh,borderRadius:16,overflow:'hidden',border:`2.5px solid ${cc.border}45`,
+              boxShadow:'0 2px 12px rgba(0,0,0,0.04)',transition:'all 0.2s',cursor:'pointer'}}
+              onClick={()=>window.open(t.url,'_blank')}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor=cc.border;e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow=`0 12px 40px ${cc.border}20`;}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=cc.border+'45';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.04)';}}>
+
+              {/* Thumbnail or placeholder */}
+              {t.thumbnail?
+                <div style={{height:140,background:`url(${t.thumbnail}) center/cover`,borderBottom:`2px solid ${cc.border}30`}}/>
+              :
+                <div style={{height:100,background:`linear-gradient(135deg,${cc.bg},${cc.border}30)`,display:'flex',alignItems:'center',justifyContent:'center',borderBottom:`2px solid ${cc.border}30`}}>
+                  <Sv d={t.category==='Design'?ic.image:t.category==='Presentations'?ic.monitor:ic.file} size={32} color={cc.border}/>
+                </div>
+              }
+
+              <div style={{padding:'16px 18px 18px'}}>
+                {/* Category + Source pills */}
+                <div style={{display:'flex',gap:6,marginBottom:10,flexWrap:'wrap'}}>
+                  <span style={{fontSize:10,fontWeight:700,padding:'3px 10px',borderRadius:16,background:cc.bg,color:cc.color,border:`1px solid ${cc.border}`}}>{t.category}</span>
+                  <span style={{fontSize:10,fontWeight:700,padding:'3px 10px',borderRadius:16,background:'#f1f5f9',color:B.txtSec,border:`1px solid #e2e8f0`}}>{t.source}</span>
+                </div>
+
+                {/* Title */}
+                <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'0 0 6px',lineHeight:1.3}}>{t.name}</h4>
+
+                {/* Description */}
+                {t.description&&<p style={{fontSize:12,color:B.txtMute,lineHeight:1.5,margin:'0 0 14px',fontWeight:500}}>{t.description}</p>}
+
+                {/* Action button */}
+                <div style={{display:'flex',alignItems:'center',gap:6,fontSize:12,fontWeight:700,color:src.color}}>
+                  <Sv d={src.icon} size={14} color={src.color}/> {src.label}
+                </div>
+              </div>
+            </div>;
+          })}
+        </div>
+      </div>
+    ))}
+
+    <div style={{textAlign:'center',padding:'20px 0 40px',fontSize:12,color:B.txtMute,fontWeight:500}}>Maine Department of Education · Communications Portal</div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Process & Procedure | Maine DOE Communications Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1)}
+.portal-bar img{height:28px;object-fit:contain}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/maine-doe-logo.png" alt="Maine DOE"/><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><span class="current">Process & Procedure</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState} = React;
+
+const Sv=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const B={navy:'#182b3c',teal:'#42c3f7',green:'#34d399',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',red:'#ef4444'};
+
+const ic={
+  users:["M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2","M9 11a4 4 0 100-8 4 4 0 000 8z","M23 21v-2a4 4 0 00-3-3.87","M16 3.13a4 4 0 010 7.75"],
+  phone:["M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"],
+  mail:["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"],
+  clip:["M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"],
+  book:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"],
+  ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
+  check:["M20 6L9 17l-5-5"],
+  x:["M18 6L6 18","M6 6l12 12"],
+  info:["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 8v4","M12 16h.01"],
+  alert:["M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z","M12 9v4","M12 17h.01"],
+};
+
+const tabs=[
+  {id:'comms',label:'Working with Comms',icon:ic.users},
+  {id:'voicemail',label:'Voicemail',icon:ic.phone},
+  {id:'signature',label:'Email Signature',icon:ic.mail},
+  {id:'resources',label:'Resources',icon:ic.book},
+];
+
+function Card({children,accent}){
+  return <div style={{background:B.wh,borderRadius:14,border:`2px solid ${accent?accent+'30':B.border+'30'}`,
+    padding:'20px 22px',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',
+    ...(accent?{borderTop:`4px solid ${accent}`}:{})}}>{children}</div>;
+}
+
+function SectionHead({title,sub}){
+  return <div style={{marginBottom:16}}>
+    <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',display:'flex',alignItems:'center',gap:10}}>
+      <span style={{width:16,height:2,background:B.teal,borderRadius:1}}/>{title}
+    </h3>
+    {sub&&<p style={{fontSize:13,color:B.txtMute,marginTop:4,fontWeight:500}}>{sub}</p>}
+  </div>;
+}
+
+function Tip({children,type}){
+  const warn=type==='warn';
+  return <div style={{padding:'14px 18px',borderRadius:12,marginBottom:16,fontSize:13,color:warn?'#92400e':B.txtSec,fontWeight:500,lineHeight:1.7,
+    background:warn?'#fef3c714':'#42c3f708',border:`1.5px solid ${warn?'#f59e0b30':'#42c3f730'}`,borderLeft:`4px solid ${warn?'#f59e0b':'#42c3f7'}`}}>{children}</div>;
+}
+
+function App(){
+  const [tab,setTab]=useState('comms');
+
+  return <div style={{maxWidth:1060,margin:'0 auto',padding:'28px 28px 60px',animation:'fadeIn 0.3s ease'}}>
+
+    {/* Header */}
+    <div style={{position:'relative',borderRadius:'0 0 20px 20px',overflow:'hidden',minHeight:180,marginBottom:28}}>
+      <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,#0c1926,#162d44)'}}/>
+      <div style={{position:'absolute',inset:0,pointerEvents:'none',
+        backgroundImage:'linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)',
+        backgroundSize:'60px 60px',opacity:.4}}/>
+      <div style={{position:'relative',zIndex:1,padding:'36px 36px 28px'}}>
+        <div style={{fontSize:11,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',color:B.teal,marginBottom:8,display:'flex',alignItems:'center',gap:8}}>
+          <span style={{width:16,height:2,background:B.teal,borderRadius:1}}/>Communications
+        </div>
+        <h1 style={{fontSize:'clamp(24px,3vw,30px)',fontWeight:800,color:'#ffffff',letterSpacing:'-0.02em',marginBottom:8}}>
+          Process & <span style={{background:'linear-gradient(135deg,#34d399,#16a34a)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Procedure</span>
+        </h1>
+        <p style={{fontSize:14,color:'#94a3b8',fontWeight:500,maxWidth:500}}>Guidelines, resources, and standard operating procedures for Maine DOE communications.</p>
+      </div>
+    </div>
+
+    {/* Tab bar */}
+    <div style={{display:'flex',gap:6,marginBottom:24,flexWrap:'wrap'}}>
+      {tabs.map(t=>{
+        const active=tab===t.id;
+        return <button key={t.id} onClick={()=>setTab(t.id)}
+          style={{display:'flex',alignItems:'center',gap:7,padding:'10px 18px',borderRadius:10,fontSize:13,fontWeight:600,cursor:'pointer',
+            border:active?`2px solid ${B.navy}`:`2px solid #c2cdd8`,
+            background:active?B.navy:B.wh,color:active?B.teal:B.txtSec,transition:'all 0.15s'}}>
+          <Sv d={t.icon} size={16} color={active?B.teal:B.txtMute}/>{t.label}
+        </button>;
+      })}
+    </div>
+
+    {/* ── WORKING WITH COMMS ── */}
+    {tab==='comms'&&<div style={{animation:'fadeIn 0.3s ease'}}>
+      <SectionHead title="Involving the Communications Team" sub="When should you involve us? Early and often!"/>
+      <Tip>Bring the Communications Team in at the <strong>ground level</strong> of any project. This will save you time and energy!</Tip>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
+        <Card accent="#16a34a">
+          <h4 style={{fontSize:15,fontWeight:700,color:'#16a34a',margin:'0 0 12px'}}>Please do</h4>
+          {['Bring us in at the ground level','Invite us to first planning meetings','Share goals so we can strategize together',
+            'Contact us early and often','Adhere to the Brand Guide','Use appropriate workflows'].map((x,i)=>
+            <div key={i} style={{padding:'6px 0',fontSize:13,color:B.navy,fontWeight:500,display:'flex',alignItems:'center',gap:8}}>
+              <Sv d={ic.check} size={14} color="#16a34a"/>{x}
+            </div>)}
+        </Card>
+        <Card accent={B.red}>
+          <h4 style={{fontSize:15,fontWeight:700,color:B.red,margin:'0 0 12px'}}>Please do not</h4>
+          {['Wait until you send us a Newsroom post','Use just one tactic to achieve your goal',
+            'Ask for content without providing context','Talk to the press without approval','Plan events without informing us'].map((x,i)=>
+            <div key={i} style={{padding:'6px 0',fontSize:13,color:B.navy,fontWeight:500,display:'flex',alignItems:'center',gap:8}}>
+              <Sv d={ic.x} size={14} color={B.red}/>{x}
+            </div>)}
+        </Card>
+      </div>
+      <Tip type="warn">Submit to the <strong>Communications Workflow at least two weeks</strong> before you want content posted or sent.</Tip>
+      <Card>
+        <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Communications materials</h4>
+        {[{t:'Priority notice',d:'Targeted message to specific audience via Mailchimp'},
+          {t:'Administrative letter',d:'New/changed laws or regulations — multi-step approval'},
+          {t:'Newsroom article',d:'Professional learning, school highlights, grants'},
+          {t:'Media advisory',d:'Press invitations to cover Maine DOE events'},
+          {t:'Media release',d:'Announcements and news for press and wider audience'},
+          {t:'Maine DOE Update',d:'Weekly Friday newsletter with all Newsroom articles'},
+          {t:'Social media',d:'Facebook, Instagram, LinkedIn promotions'}].map((x,i)=>(
+          <div key={i} style={{padding:'10px 0',borderBottom:i<6?`1px solid ${B.border}15`:'none'}}>
+            <div style={{fontSize:14,fontWeight:700,color:B.navy}}>{x.t}</div>
+            <div style={{fontSize:12,color:B.txtMute,marginTop:3,fontWeight:500}}>{x.d}</div>
+          </div>
+        ))}
+      </Card>
+    </div>}
+
+    {/* ── VOICEMAIL ── */}
+    {tab==='voicemail'&&<div style={{animation:'fadeIn 0.3s ease'}}>
+      <SectionHead title="Voicemail Setup" sub="Standard voicemail greeting and setup instructions for Maine DOE staff."/>
+      <Card>
+        <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'0 0 12px'}}>Standard Voicemail Greeting</h4>
+        <div style={{padding:'16px 20px',borderRadius:10,background:'#f8fafc',border:`1.5px solid ${B.border}20`,marginBottom:16,fontSize:14,color:B.txtSec,lineHeight:1.8,fontStyle:'italic',fontWeight:500}}>
+          "Thank you for calling the Maine Department of Education. You've reached <strong>[Your Name]</strong>, <strong>[Your Title]</strong>. I am unable to take your call right now, but please leave a message with your name, phone number, and a brief description of your inquiry, and I will return your call as soon as possible. Thank you."
+        </div>
+        <Tip>Update your voicemail whenever you will be out of office for an extended period. Include the date you'll return and an alternate contact if appropriate.</Tip>
+      </Card>
+    </div>}
+
+    {/* ── EMAIL SIGNATURE ── */}
+    {tab==='signature'&&<div style={{animation:'fadeIn 0.3s ease'}}>
+      <SectionHead title="Email Signature" sub="Standard email signature format for all Maine DOE staff."/>
+      <Card>
+        <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'0 0 12px'}}>Signature Format</h4>
+        <div style={{padding:'20px 24px',borderRadius:10,background:'#f8fafc',border:`1.5px solid ${B.border}20`,marginBottom:16,fontSize:14,lineHeight:1.8}}>
+          <div style={{fontWeight:700,color:B.navy}}>First Last</div>
+          <div style={{color:B.txtSec,fontWeight:500}}>Title</div>
+          <div style={{color:B.txtSec,fontWeight:500}}>Maine Department of Education</div>
+          <div style={{color:B.txtSec,fontWeight:500}}>23 State House Station, Augusta, ME 04333</div>
+          <div style={{color:B.txtSec,fontWeight:500}}>Phone: (207) 624-XXXX</div>
+          <div style={{color:B.teal,fontWeight:500}}>firstname.lastname@maine.gov</div>
+        </div>
+        <Tip>Do not include images, logos, quotes, or promotional content in your email signature. Keep it clean and professional.</Tip>
+      </Card>
+    </div>}
+
+    {/* ── RESOURCES ── */}
+    {tab==='resources'&&<div style={{animation:'fadeIn 0.3s ease'}}>
+      <SectionHead title="Resources" sub="Helpful links and reference materials."/>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+        {[
+          {name:'Communications Workflow',desc:'Submit newsroom articles, priority notices, and media requests.',href:'https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039',color:'#6366f1',icon:ic.clip},
+          {name:'Staff Handbook',desc:'Maine DOE Employee Handbook on SharePoint.',href:'https://stateofmaine.sharepoint.com/:o:/r/sites/MaineDOE/Maine%20DOE%20Information%20Library/Maine%20DOE%20Employee%20Handbook?d=w468cf35d92264d3db9d2099ad7a7595b&csf=1&web=1&e=iiNUTi',color:'#0891b2',icon:ic.book},
+          {name:'Brand Guide',desc:'Colors, typography, voice & tone, and visual standards.',href:'brandguide.html',color:'#8b5cf6',icon:ic.info},
+          {name:'Communications Orientation',desc:'Onboarding module covering all comms processes.',href:'https://learn.moodle.rrev-engine.com/course/view.php?id=174',color:'#16a34a',icon:ic.users},
+        ].map((r,i)=>(
+          <a key={i} href={r.href} target={r.href.startsWith('http')?'_blank':undefined} rel={r.href.startsWith('http')?'noopener noreferrer':undefined}
+            style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:'18px 20px',textDecoration:'none',
+              display:'flex',alignItems:'flex-start',gap:14,transition:'all 0.15s'}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor=r.color+'60';e.currentTarget.style.transform='translateY(-2px)';}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
+            <div style={{width:40,height:40,borderRadius:12,background:`${r.color}12`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <Sv d={r.icon} size={20} color={r.color}/>
+            </div>
+            <div>
+              <div style={{fontSize:15,fontWeight:700,color:B.navy,marginBottom:4}}>{r.name}</div>
+              <div style={{fontSize:12,color:B.txtMute,fontWeight:500,lineHeight:1.5}}>{r.desc}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>}
+
+    <div style={{textAlign:'center',padding:'40px 0 0',fontSize:12,color:B.txtMute,fontWeight:500}}>
+      Maine Department of Education · Communications Portal
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

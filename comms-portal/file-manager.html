@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Manager | Maine DOE Communications Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Calibri,sans-serif;background:#eee6df;color:#182b3c}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes progressPulse{0%,100%{opacity:1}50%{opacity:.6}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#51708240;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500;transition:color .15s}
+.portal-bar .crumb a:hover{color:#42c3f7}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><a href="index.html">Website</a><span class="sep">›</span><span class="current">File Manager</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useMemo,useCallback} = React;
+
+const I=({d,size=20,color='currentColor',style,onClick})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}} onClick={onClick}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+const Ic={
+  search:p=><I d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" {...p}/>,
+  x:p=><I d={["M18 6L6 18","M6 6l12 12"]} {...p}/>,
+  download:p=><I d={["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"]} {...p}/>,
+  file:p=><I d={["M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z","M14 2v6h6"]} {...p}/>,
+  trash:p=><I d={["M3 6h18","M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"]} {...p}/>,
+  link:p=><I d={["M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71","M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"]} {...p}/>,
+  alert:p=><I d={["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 8v4","M12 16h.01"]} {...p}/>,
+  users:p=><I d={["M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2","M9 7a4 4 0 100-8 4 4 0 000 8z","M16 3.13a4 4 0 010 7.75"]} {...p}/>,
+  up:p=><I d={["M12 19V5","M5 12l7-7 7 7"]} {...p}/>,
+  down:p=><I d={["M12 5v14","M19 12l-7 7-7-7"]} {...p}/>,
+  bar:p=><I d={["M12 20V10","M18 20V4","M6 20v-6"]} {...p}/>,
+  refresh:p=><I d={["M23 4v6h-6","M1 20v-6h6","M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"]} {...p}/>,
+};
+
+const B={navy:"#182b3c",navyMid:"#274f73",teal:"#42c3f7",tealDk:"#2da8d8",wh:"#ffffff",red:"#8a2e13",
+  txt:"#182b3c",txtSec:"#3d5468",border:"#a8bdd0",warm:"#eee6df"};
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec";
+const API_BASE="https://www.maine.gov/doe/jsonapi";
+
+function safeDecode(s){if(!s)return s;s=s.replace(/%[0-9a-fA-F]?$/,'');try{return decodeURIComponent(s)}catch(e){return s.replace(/%20/g,' ').replace(/%26/g,'&')}}
+function ownerName(e){if(!e||!e.includes('@'))return'';return e.split('@')[0].split('.').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')}
+function getExt(n){return n&&n.includes('.')?n.rsplit?n.split('.').pop().toLowerCase():n.substring(n.lastIndexOf('.')+1).toLowerCase():''}
+
+const EXT_C={pdf:{bg:"#dc262614",c:"#991b1b"},docx:{bg:"#2563eb14",c:"#1e40af"},doc:{bg:"#2563eb14",c:"#1e40af"},
+  xlsx:{bg:"#16a34a14",c:"#166534"},xls:{bg:"#16a34a14",c:"#166534"},pptx:{bg:"#ea580c14",c:"#9a3412"},
+  ppt:{bg:"#ea580c14",c:"#9a3412"},csv:{bg:"#16a34a14",c:"#166534"},rtf:{bg:"#7c3aed14",c:"#5b21b6"},zip:{bg:"#a8a29e20",c:"#44403c"},
+  png:{bg:"#06b6d414",c:"#0e7490"},jpg:{bg:"#06b6d414",c:"#0e7490"},jpeg:{bg:"#06b6d414",c:"#0e7490"},gif:{bg:"#06b6d414",c:"#0e7490"},svg:{bg:"#06b6d414",c:"#0e7490"},webp:{bg:"#06b6d414",c:"#0e7490"}};
+function ExtBadge({ext}){const s=EXT_C[ext]||{bg:`${B.navy}08`,c:B.txtSec};
+  return <span style={{display:"inline-block",padding:"2px 8px",borderRadius:4,background:s.bg,color:s.c,fontSize:10,fontWeight:700,letterSpacing:.5}}>{(ext||'?').toUpperCase()}</span>}
+
+function FileManager(){
+  const isAdmin=new URLSearchParams(window.location.search).has('admin');
+  const [files,setFiles]=useState([]);
+  const [deleting,setDeleting]=useState(new Set());
+  const [deleted,setDeleted]=useState(new Set());
+  const [loadProgress,setLoadProgress]=useState({loaded:0,phase:'Starting...'});
+  const [ready,setReady]=useState(false);
+  const [ownerMap,setOwnerMap]=useState({});
+  const [filePageMap,setFilePageMap]=useState({});
+  const [fileDownloads,setFileDownloads]=useState({});
+  const [live,setLive]=useState({files:false,owners:false,ga4:false});
+  const [search,setSearch]=useState("");
+  const [typeFilter,setTypeFilter]=useState("");
+  const [ownerFilter,setOwnerFilter]=useState("");
+  const [statusFilter,setStatusFilter]=useState("");
+  const [sortField,setSortField]=useState("n");
+  const [sortDir,setSortDir]=useState("asc");
+  const [expandedRows,setExpandedRows]=useState({});
+  const [filePages,setFilePages]=useState({});
+  const [scanMeta,setScanMeta]=useState({});
+  const [selected,setSelected]=useState(new Set());
+  const [pg,setPg]=useState(0);
+  const PG=50;
+
+  function toggleSelect(key){setSelected(prev=>{const s=new Set(prev);if(s.has(key))s.delete(key);else s.add(key);return s;});}
+  function toggleSelectAll(){
+    const keys=paged.map(f=>f.p);
+    const allSel=keys.every(k=>selected.has(k));
+    setSelected(prev=>{const s=new Set(prev);keys.forEach(k=>{if(allSel)s.delete(k);else s.add(k);});return s;});
+  }
+  function requestBulkDeletion(){
+    const sel=enriched.filter(f=>selected.has(f.p));
+    const list=sel.map(f=>'[File ID '+f.fid+'] '+f.n+'\n  Owner: '+(f.owner||'Unknown')+'\n  URL: '+f.u).join('\n\n');
+    const subject=encodeURIComponent('File Deletion Request: '+sel.length+' files');
+    const body=encodeURIComponent('Hi Matt,\n\nPlease delete the following '+sel.length+' file(s):\n\n'+list+'\n\nReason: [Please fill in]\n\nThank you!');
+    window.open('mailto:matthew.g.leavitt@maine.gov?subject='+subject+'&body='+body);
+  }
+
+  // Admin direct delete via Drupal form POST (same approach as orphan file finder)
+  async function deleteFileDirect(f){
+    if(!f.fid||deleting.has(f.fid))return;
+    if(!confirm('Permanently delete "'+f.n+'"? This cannot be undone.'))return;
+    setDeleting(prev=>{const s=new Set(prev);s.add(f.fid);return s;});
+    try{
+      const deleteUrl=window.location.origin+'/doe/file/'+f.fid+'/delete';
+      const formResp=await fetch(deleteUrl,{credentials:'same-origin'});
+      if(!formResp.ok){alert('Could not load delete form ('+formResp.status+')');setDeleting(prev=>{const s=new Set(prev);s.delete(f.fid);return s;});return;}
+      const formHtml=await formResp.text();
+      const parser=new DOMParser();
+      const doc=parser.parseFromString(formHtml,'text/html');
+      const form=doc.querySelector('form');
+      if(!form){alert('No form found on delete page');setDeleting(prev=>{const s=new Set(prev);s.delete(f.fid);return s;});return;}
+      const formData=new FormData();
+      form.querySelectorAll('input').forEach(input=>{
+        if(input.type==='file')return;
+        if((input.type==='checkbox'||input.type==='radio')&&!input.checked)return;
+        if(input.name)formData.append(input.name,input.value||'');
+      });
+      let submitBtn=null;
+      form.querySelectorAll('input[type="submit"],button[type="submit"]').forEach(btn=>{
+        const val=(btn.value||btn.textContent||'').toLowerCase();
+        if(val.includes('delete')||val.includes('confirm'))submitBtn=btn;
+      });
+      if(submitBtn)formData.set(submitBtn.name||'op',submitBtn.value||'Delete');
+      else formData.set('op','Delete');
+      let actionUrl=form.getAttribute('action')||deleteUrl;
+      if(actionUrl.startsWith('/'))actionUrl=window.location.origin+actionUrl;
+      const submitResp=await fetch(actionUrl,{method:'POST',credentials:'same-origin',body:formData,redirect:'manual'});
+      if(submitResp.status===302||submitResp.status===303||submitResp.type==='opaqueredirect'){
+        setDeleted(prev=>{const s=new Set(prev);s.add(f.fid);return s;});
+        setFiles(prev=>prev.filter(x=>x.fid!==f.fid));
+        setSelected(prev=>{const s=new Set(prev);s.delete(f.p);return s;});
+      }else{
+        alert('Delete failed ('+submitResp.status+') for '+f.n);
+      }
+    }catch(e){alert('Error: '+e.message);}
+    setDeleting(prev=>{const s=new Set(prev);s.delete(f.fid);return s;});
+  }
+
+  async function bulkDeleteDirect(){
+    const sel=enriched.filter(f=>selected.has(f.p)&&f.fid);
+    if(sel.length===0)return;
+    if(!confirm('Permanently delete '+sel.length+' file(s)? This cannot be undone.'))return;
+    for(const f of sel){
+      setDeleting(prev=>{const s=new Set(prev);s.add(f.fid);return s;});
+      try{
+        const deleteUrl=window.location.origin+'/doe/file/'+f.fid+'/delete';
+        const formResp=await fetch(deleteUrl,{credentials:'same-origin'});
+        if(!formResp.ok)continue;
+        const formHtml=await formResp.text();
+        const doc=new DOMParser().parseFromString(formHtml,'text/html');
+        const form=doc.querySelector('form');
+        if(!form)continue;
+        const formData=new FormData();
+        form.querySelectorAll('input').forEach(input=>{
+          if(input.type==='file')return;
+          if((input.type==='checkbox'||input.type==='radio')&&!input.checked)return;
+          if(input.name)formData.append(input.name,input.value||'');
+        });
+        formData.set('op','Delete');
+        let actionUrl=form.getAttribute('action')||deleteUrl;
+        if(actionUrl.startsWith('/'))actionUrl=window.location.origin+actionUrl;
+        const submitResp=await fetch(actionUrl,{method:'POST',credentials:'same-origin',body:formData,redirect:'manual'});
+        if(submitResp.status===302||submitResp.status===303||submitResp.type==='opaqueredirect'){
+          setDeleted(prev=>{const s=new Set(prev);s.add(f.fid);return s;});
+          setFiles(prev=>prev.filter(x=>x.fid!==f.fid));
+        }
+      }catch(e){}
+      setDeleting(prev=>{const s=new Set(prev);s.delete(f.fid);return s;});
+    }
+    setSelected(new Set());
+  }
+
+  // ── Load pre-scanned file→page data from server ──
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const r=await fetch(SCRIPT_URL+'?type=file_pages');
+        const j=await r.json();
+        if(j.rows){
+          const map={};
+          j.rows.forEach(row=>{if(row.pages&&row.pages.length>0)map[row.p]=row.pages;});
+          setFilePages(map);
+          setScanMeta({lastScan:j.lastScan,scanning:j.scanning,progress:j.progress});
+          setLive(s=>({...s,scan:true}));
+          console.log('Loaded pre-scanned page data for '+Object.keys(map).length+' files'+(j.lastScan?' (scanned '+new Date(j.lastScan).toLocaleDateString()+')':''));
+        }
+      }catch(e){console.log('File pages fetch:',e.message);}
+    })();
+  },[]);
+
+  // ── Cursor-based JSON:API file fetcher (cache-first) ──
+  const fetchAllFiles = useCallback(async()=>{
+    setLoadProgress({loaded:0,phase:'Loading from cache...'});
+    
+    // Try cached data from Apps Script first
+    try{
+      const r=await fetch(SCRIPT_URL+'?type=drupal_files');
+      const j=await r.json();
+      if(j.files&&j.files.length>0){
+        const mapped=j.files.map(f=>{
+          const fullUrl=f.path.startsWith('http')?f.path:'https://www.maine.gov'+f.path;
+          return{
+            n:f.name, p:f.path, u:fullUrl,
+            e:f.ext||'',
+            c:0,
+            filesize:f.size||0,
+            filemime:f.mime||'',
+            d:f.created?new Date(f.created).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'',
+            fid:f.fid||'',
+            id:'',
+          };
+        });
+        setFiles(mapped);
+        setReady(true);
+        setLive(s=>({...s,files:true}));
+        console.log('Loaded '+mapped.length+' files from cache ('+j.cachedAt+')');
+        return;
+      }
+    }catch(e){console.log('Cache miss, fetching from Drupal directly');}
+    
+    // Fallback: fetch directly from Drupal
+    setLoadProgress({loaded:0,phase:'Connecting to Drupal...'});
+    const allFiles=[];
+    let url=`${API_BASE}/file/file?fields[file--file]=filename,uri,filemime,filesize,created,drupal_internal__fid&page[limit]=50`;
+    let pageNum=0;
+    try{
+      while(url&&pageNum<500){
+        const r=await fetch(url.replace(/^http:/,'https:'));
+        const j=await r.json();
+        if(j.data) j.data.forEach(f=>{allFiles.push(parseFile(f));});
+        setLoadProgress({loaded:allFiles.length,phase:`Loading files... ${allFiles.length.toLocaleString()}`});
+        url=j.links?.next?.href||null;
+        pageNum++;
+        if(pageNum%10===0)await new Promise(r=>setTimeout(r,0));
+      }
+      setFiles(allFiles);
+      setReady(true);
+      setLive(s=>({...s,files:true}));
+      console.log('Loaded '+allFiles.length+' files from Drupal (cursor pagination, '+pageNum+' pages)');
+      try{fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'save_stats',totalFiles:String(allFiles.length)})})}catch(e){}
+    }catch(e){console.error('File fetch failed:',e);setReady(true);}
+  },[]);
+
+  function parseFile(f){
+    const fn=f.attributes?.filename||'';
+    const mime=f.attributes?.filemime||'';
+    const uri=f.attributes?.uri?.url||'';
+    const fullUrl=uri.startsWith('http')?uri:'https://www.maine.gov'+uri;
+    return{
+      n:fn, p:uri, u:fullUrl,
+      e:fn.includes('.')?fn.substring(fn.lastIndexOf('.')+1).toLowerCase():'',
+      c:0,
+      filesize:f.attributes?.filesize||0,
+      filemime:mime,
+      d:f.attributes?.created?new Date(f.attributes.created).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'',
+      fid:f.attributes?.drupal_internal__fid||'',
+      id:f.id||'',
+    };
+  }
+
+  // ── Fetch page owners (live) ────────────
+  useEffect(()=>{
+    (async()=>{
+      const map={};
+      let url=`${API_BASE}/node/multi_column_page?fields[node--multi_column_page]=title,path,field_page_owner_email&page[limit]=50`;
+      let p=0;
+      try{
+        while(url&&p<40){
+          const r=await fetch(url.replace(/^http:/,'https:'));
+          const j=await r.json();
+          if(j.data) j.data.forEach(n=>{
+            const a=n.attributes?.path?.alias;
+            const e=n.attributes?.field_page_owner_email;
+            if(a&&e){const nm=ownerName(e);map[a]=nm;map['/doe'+a]=nm;}
+          });
+          url=j.links?.next?.href||null;p++;
+        }
+        setOwnerMap(map);setLive(s=>({...s,owners:true}));
+        console.log('Loaded '+Object.keys(map).length+' page owners (live)');
+      }catch(e){console.log('Owners:',e.message)}
+    })();
+  },[]);
+
+  // ── Fetch GA4 downloads (live) ──────────
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const r=await fetch(SCRIPT_URL+'?type=files&days=365');
+        const j=await r.json();
+        if(j.rows){
+          const fpMap={},dlMap={};
+          j.rows.forEach(row=>{
+            const fPath=safeDecode((row.url||'').replace(/https?:\/\/[^\/]+/,'')).toLowerCase();
+            const key=fPath||safeDecode(row.file||'').toLowerCase();
+            if(!fpMap[key])fpMap[key]=[];
+            if(row.page)fpMap[key].push({page:row.page.replace(/\/index\.php/g,'').replace(/\/$/,''),clicks:row.clicks||0});
+            dlMap[key]=(dlMap[key]||0)+(row.clicks||0);
+          });
+          setFilePageMap(fpMap);setFileDownloads(dlMap);setLive(s=>({...s,ga4:true}));
+          console.log('Loaded GA4 data for '+Object.keys(fpMap).length+' files (live)');
+        }
+      }catch(e){console.log('GA4:',e.message)}
+    })();
+  },[]);
+
+  // ── Start file fetch on mount ───────────
+  useEffect(()=>{fetchAllFiles();},[fetchAllFiles]);
+
+  // ── Enrich files with owners + downloads ─
+  // Note: GA4 truncates long filenames AND uses decoded paths (spaces not %20)
+  const enriched=useMemo(()=>{
+    const ga4Keys=Object.keys(fileDownloads);
+    
+    return files.map(f=>{
+      const fPath=f.p.toLowerCase();
+      const fPathDecoded=safeDecode(fPath); // decode %20 → spaces to match GA4
+      const fn=f.n.toLowerCase();
+      const fnDecoded=safeDecode(fn);
+      
+      // Priority 1: Server-scanned body references
+      const scanned=filePages[f.p];
+      if(scanned&&scanned.length>0){
+        const topOwner=scanned.find(r=>r.o)?.o||'';
+        let downloads=0;
+        for(const gk of ga4Keys){
+          if(fPathDecoded.startsWith(gk)||gk.startsWith(fPathDecoded)||fPath===gk||fPathDecoded===gk){downloads=fileDownloads[gk];break;}
+        }
+        return{...f,owner:topOwner,downloads,linkedPages:scanned.map(r=>({page:r.p,title:r.t,owner:r.o})),scanned:true};
+      }
+      
+      // Priority 2: GA4 download data — flexible matching
+      let pages=filePageMap[fPath]||filePageMap[fPathDecoded]||[];
+      let dlCount=fileDownloads[fPath]||fileDownloads[fPathDecoded]||0;
+      
+      // Try: truncated GA4 key is a prefix of decoded file path, or vice versa
+      if(!pages.length||!dlCount){
+        for(const gk of ga4Keys){
+          if(fPathDecoded.startsWith(gk)||gk.startsWith(fPathDecoded)||fPath.startsWith(gk)||gk.startsWith(fPath)){
+            if(!pages.length)pages=filePageMap[gk]||[];
+            if(!dlCount)dlCount=fileDownloads[gk]||0;
+            if(pages.length&&dlCount)break;
+          }
+        }
+      }
+      
+      // Try: match by decoded filename at end of path
+      if(!pages.length||!dlCount){
+        for(const[k,v]of Object.entries(filePageMap)){
+          if(k.endsWith('/'+fnDecoded)||k.endsWith('/'+fn)||k.endsWith('/'+encodeURIComponent(fn).toLowerCase())){
+            if(!pages.length)pages=v;
+            if(!dlCount)dlCount=fileDownloads[k]||0;
+            break;
+          }
+        }
+      }
+      
+      // Try: filename without extension (GA4 often truncates)
+      if(!dlCount){
+        const fnNoExt=fnDecoded.replace(/\.[^.]+$/,'');
+        if(fnNoExt.length>8){
+          for(const gk of ga4Keys){
+            if(gk.endsWith('/'+fnNoExt)||gk.includes('/'+fnNoExt)){
+              dlCount=fileDownloads[gk]||0;
+              if(!pages.length)pages=filePageMap[gk]||[];
+              break;
+            }
+          }
+        }
+      }
+      
+      let owner='';
+      if(pages.length>0){
+        const top=pages.sort((a,b)=>(b.clicks||0)-(a.clicks||0))[0];
+        owner=ownerMap[top.page]||ownerMap[top.page.replace('/doe','')]||'';
+      }
+      return{...f,owner,downloads:dlCount,linkedPages:pages.map(p=>({page:p.page,clicks:p.clicks})),scanned:false};
+    });
+  },[files,ownerMap,filePageMap,fileDownloads,filePages]);
+
+  // Debug: log how many files have downloads
+  useEffect(()=>{
+    if(enriched.length>0&&Object.keys(fileDownloads).length>0){
+      const withDl=enriched.filter(f=>f.downloads>0).length;
+      console.log('Download matching: '+withDl+'/'+enriched.length+' files have download data. GA4 keys sample:',Object.keys(fileDownloads).slice(0,3),'File paths sample:',enriched.slice(0,3).map(f=>f.p));
+    }
+  },[enriched,fileDownloads]);
+
+  const allOwners=useMemo(()=>{
+    const s=new Set();enriched.forEach(f=>{if(f.owner)s.add(f.owner)});return Array.from(s).sort();
+  },[enriched]);
+
+  const scannedCount=useMemo(()=>Object.keys(filePages).length,[filePages]);
+
+  const stats=useMemo(()=>({
+    total:enriched.length,
+    withDownloads:enriched.filter(f=>f.downloads>0).length,
+    totalDL:enriched.reduce((s,f)=>s+f.downloads,0),
+    owners:allOwners.length,
+  }),[enriched,allOwners]);
+
+  const filtered=useMemo(()=>{
+    let r=enriched;
+    if(search){const q=search.toLowerCase();r=r.filter(f=>f.n.toLowerCase().includes(q)||(f.owner||'').toLowerCase().includes(q)||f.p.toLowerCase().includes(q));}
+    if(typeFilter)r=r.filter(f=>f.e===typeFilter);
+    if(ownerFilter)r=r.filter(f=>f.owner===ownerFilter);
+    if(statusFilter==='downloaded')r=r.filter(f=>f.downloads>0);
+    if(statusFilter==='nodownloads')r=r.filter(f=>f.downloads===0);
+    return[...r].sort((a,b)=>{
+      let va=a[sortField],vb=b[sortField];
+      if(typeof va==='string'){va=va.toLowerCase();vb=(vb||'').toLowerCase();}
+      return sortDir==='asc'?(va<vb?-1:va>vb?1:0):(va>vb?-1:va<vb?1:0);
+    });
+  },[enriched,search,typeFilter,ownerFilter,statusFilter,sortField,sortDir]);
+
+  const pageCount=Math.ceil(filtered.length/PG);
+  const paged=filtered.slice(pg*PG,(pg+1)*PG);
+
+  function toggleSort(f){if(sortField===f)setSortDir(d=>d==='asc'?'desc':'asc');else{setSortField(f);setSortDir(f==='n'?'asc':'desc');}setPg(0);}
+
+  function requestDeletion(f){
+    const s=encodeURIComponent('File Deletion Request: '+f.n);
+    const b=encodeURIComponent('Hi Matt,\n\nPlease delete this file:\n\nFile: '+f.n+'\nURL: '+f.u+'\nPage owner: '+(f.owner||'Unknown')+'\nDownloads (past year): '+f.downloads+'\n\nReason: [Please fill in]\n\nThank you!');
+    window.open('mailto:matthew.g.leavitt@maine.gov?subject='+s+'&body='+b);
+  }
+
+  function SH({field,label,align}){const a=sortField===field;
+    return <th onClick={()=>toggleSort(field)} style={{padding:'12px 14px',textAlign:align||'left',fontWeight:700,cursor:'pointer',userSelect:'none',whiteSpace:'nowrap',fontSize:12,letterSpacing:.3}}>
+      <span style={{display:'inline-flex',alignItems:'center',gap:4}}>{label} {a&&(sortDir==='asc'?<Ic.up size={11} color={B.teal}/>:<Ic.down size={11} color={B.teal}/>)}</span>
+    </th>}
+
+  // ── Loading screen ──────────────────────
+  if(!ready) return(
+    <div style={{maxWidth:600,margin:'120px auto',textAlign:'center',padding:40}}>
+      <div style={{width:48,height:48,borderRadius:14,background:`linear-gradient(135deg,${B.teal},${B.tealDk})`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,fontWeight:800,color:B.wh,margin:'0 auto 20px'}}>ME</div>
+      <h2 style={{fontSize:20,fontWeight:800,color:B.navy,marginBottom:8}}>File Manager</h2>
+      <p style={{fontSize:14,color:B.txtSec,marginBottom:24}}>{loadProgress.phase}</p>
+      <div style={{height:8,borderRadius:4,background:`${B.navy}10`,overflow:'hidden',maxWidth:400,margin:'0 auto'}}>
+        <div style={{height:'100%',borderRadius:4,background:`linear-gradient(90deg,${B.teal},${B.tealDk})`,width:`${Math.min((loadProgress.loaded/12000)*100,100)}%`,transition:'width 0.3s',animation:'progressPulse 1.5s ease infinite'}}/>
+      </div>
+      <p style={{fontSize:12,color:B.txtSec,marginTop:10}}>{loadProgress.loaded.toLocaleString()} files loaded</p>
+    </div>
+  );
+
+  return(
+    <div style={{maxWidth:1300,margin:'0 auto',padding:28,animation:'fadeIn .3s ease'}}>
+      {/* Header */}
+      <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:24}}>
+        <div style={{width:44,height:44,borderRadius:12,background:`linear-gradient(135deg,${B.teal},${B.tealDk})`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,fontWeight:800,color:B.wh}}>ME</div>
+        <div style={{flex:1}}>
+          <h1 style={{fontSize:24,fontWeight:800,color:B.navy,margin:0}}>File Manager</h1>
+          <p style={{fontSize:13,color:B.txtSec,margin:0}}>Maine DOE Communications Portal — {stats.total.toLocaleString()} files</p>
+        </div>
+        <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+          {Object.entries(live).map(([k,v])=>v&&<span key={k} style={{padding:'4px 10px',borderRadius:14,background:'#16a34a14',border:'1.5px solid #16a34a50',fontSize:10,fontWeight:700,color:'#16713a'}}>{k==='files'?'Files':'GA4'==='ga4'?'GA4':k} live</span>)}
+          {scanMeta.lastScan&&<span style={{fontSize:10,color:'#16713a',padding:'4px 10px',borderRadius:14,background:'#16a34a14',border:'1.5px solid #16a34a50',fontWeight:700}}>Scanned {new Date(scanMeta.lastScan).toLocaleDateString()}</span>}
+          {scanMeta.scanning&&<span style={{fontSize:10,color:B.teal,padding:'4px 10px',borderRadius:14,background:`${B.teal}10`,border:`1.5px solid ${B.teal}50`,fontWeight:700}}>Server scanning: {scanMeta.progress?.toLocaleString()} files</span>}
+          <button onClick={()=>{setReady(false);setFiles([]);fetchAllFiles();}} title="Refresh from Drupal"
+            style={{padding:'6px 12px',borderRadius:8,border:`2px solid ${B.border}`,background:B.wh,cursor:'pointer',display:'flex',alignItems:'center',gap:4,fontSize:12,fontWeight:600,color:B.txt}}>
+            <Ic.refresh size={14} color={B.teal}/> Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:12,marginBottom:24}}>
+        {[
+          {l:'Total files',v:stats.total.toLocaleString(),icon:Ic.file,c:B.teal},
+          {l:'With downloads',v:stats.withDownloads.toLocaleString(),icon:Ic.download,c:B.navyMid,f:'downloaded'},
+          {l:'Total downloads',v:stats.totalDL.toLocaleString(),icon:Ic.bar,c:B.tealDk},
+          {l:'Page owners',v:stats.owners.toString(),icon:Ic.users,c:'#16a34a'},
+          {l:'Scanned',v:`${scannedCount}/${stats.total}`,icon:Ic.search,c:B.tealDk},
+        ].map((m,i)=>(
+          <div key={i} onClick={()=>{if(m.f){setStatusFilter(statusFilter===m.f?'':m.f);setPg(0);}}}
+            style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}`,boxShadow:'0 2px 8px rgba(24,43,60,0.05)',cursor:m.f?'pointer':'default'}}>
+            <div style={{fontSize:10,color:B.txtSec,textTransform:'uppercase',fontWeight:700,letterSpacing:.4,marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
+              <m.icon size={13} color={m.c}/>{m.l}
+            </div>
+            <div style={{fontSize:26,fontWeight:800,color:B.navy,lineHeight:1}}>{m.v}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filters */}
+      <div style={{display:'flex',gap:8,marginBottom:14,flexWrap:'wrap'}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}`,boxShadow:'0 1px 4px rgba(24,43,60,0.04)',flex:1,minWidth:260}}>
+          <Ic.search size={16} color={B.txtSec}/>
+          <input type="text" placeholder="Search by name, owner, or path..." value={search} onChange={e=>{setSearch(e.target.value);setPg(0);}}
+            style={{border:'none',outline:'none',flex:1,fontSize:14,color:B.txt,fontWeight:500,background:'transparent'}}/>
+          {search&&<span onClick={()=>setSearch('')} style={{cursor:'pointer'}}><Ic.x size={14} color={B.txtSec}/></span>}
+        </div>
+        <select value={ownerFilter} onChange={e=>{setOwnerFilter(e.target.value);setPg(0);}}
+          style={{padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}`,boxShadow:'0 1px 4px rgba(24,43,60,0.04)',fontSize:13,color:ownerFilter?B.txt:B.txtSec,background:B.wh,cursor:'pointer',fontWeight:500,minWidth:160}}>
+          <option value="">All page owners</option>
+          {allOwners.map(o=><option key={o} value={o}>{o}</option>)}
+        </select>
+        <select value={typeFilter} onChange={e=>{setTypeFilter(e.target.value);setPg(0);}}
+          style={{padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}`,boxShadow:'0 1px 4px rgba(24,43,60,0.04)',fontSize:13,color:typeFilter?B.txt:B.txtSec,background:B.wh,cursor:'pointer',fontWeight:500}}>
+          <option value="">All types</option>
+          {['pdf','docx','xlsx','pptx','doc','xls','csv','rtf','ppt','zip','png','jpg','gif'].map(e=><option key={e} value={e}>.{e}</option>)}
+        </select>
+        {(search||typeFilter||ownerFilter||statusFilter)&&<button onClick={()=>{setSearch('');setTypeFilter('');setOwnerFilter('');setStatusFilter('');setPg(0);}}
+          style={{padding:'10px 14px',borderRadius:10,border:`2px solid ${B.red}40`,background:`${B.red}08`,color:B.red,fontSize:13,fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',gap:4}}>
+          <Ic.x size={14}/> Clear
+        </button>}
+      </div>
+
+      {/* Count + pagination */}
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+        <span style={{fontSize:13,color:B.txtSec,fontWeight:600}}>
+          {filtered.length.toLocaleString()} files
+          {ownerFilter&&<span> owned by <strong>{ownerFilter}</strong></span>}
+        </span>
+        {pageCount>1&&<div style={{display:'flex',alignItems:'center',gap:6}}>
+          <button disabled={pg===0} onClick={()=>setPg(p=>p-1)} style={{padding:'6px 12px',borderRadius:6,border:`2px solid ${B.border}`,background:B.wh,color:pg===0?B.border:B.txt,fontSize:12,fontWeight:600,cursor:pg===0?'default':'pointer'}}>Prev</button>
+          <span style={{fontSize:12,color:B.txtSec,fontWeight:600}}>{pg+1}/{pageCount}</span>
+          <button disabled={pg>=pageCount-1} onClick={()=>setPg(p=>p+1)} style={{padding:'6px 12px',borderRadius:6,border:`2px solid ${B.border}`,background:B.wh,color:pg>=pageCount-1?B.border:B.txt,fontSize:12,fontWeight:600,cursor:pg>=pageCount-1?'default':'pointer'}}>Next</button>
+        </div>}
+      </div>
+
+      {/* Bulk action bar */}
+      {selected.size>0&&<div style={{display:'flex',alignItems:'center',gap:12,padding:'12px 18px',background:B.navy,borderRadius:10,marginBottom:12,animation:'fadeIn .2s ease'}}>
+        <span style={{color:B.wh,fontSize:13,fontWeight:600,flex:1}}>{selected.size} file{selected.size!==1?'s':''} selected</span>
+        <button onClick={isAdmin?bulkDeleteDirect:requestBulkDeletion} style={{padding:'8px 16px',borderRadius:8,border:'none',background:B.red,color:B.wh,fontSize:13,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',gap:6}}>
+          <Ic.trash size={14} color={B.wh}/> {isAdmin?'Delete selected':'Request deletion'}
+        </button>
+        <button onClick={()=>setSelected(new Set())} style={{padding:'8px 16px',borderRadius:8,border:`2px solid ${B.wh}30`,background:'transparent',color:B.wh,fontSize:13,fontWeight:600,cursor:'pointer'}}>
+          Clear selection
+        </button>
+      </div>}
+
+      {/* Table */}
+      <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}`,overflow:'hidden',boxShadow:'0 2px 12px rgba(24,43,60,0.06)'}}>
+        <div style={{overflowX:'auto'}}>
+          <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+            <thead><tr style={{background:B.navy,color:B.wh}}>
+              <th style={{padding:'12px 8px',width:40,textAlign:'center'}}><input type="checkbox" onChange={toggleSelectAll} checked={paged.length>0&&paged.every(f=>selected.has(f.p))} style={{cursor:'pointer',width:16,height:16}}/></th>
+              <th style={{padding:'12px 14px',fontWeight:700,width:55}}>Type</th>
+              <SH field="fid" label="ID" align="right"/>
+              <SH field="n" label="File name"/>
+              <SH field="owner" label="Page owner"/>
+              <SH field="downloads" label="Downloads" align="right"/>
+              <SH field="d" label="Uploaded"/>
+              <th style={{padding:'12px 14px',fontWeight:700,width:90,textAlign:'center'}}>Actions</th>
+            </tr></thead>
+            <tbody>{paged.map((f,i)=>{
+              const hasPages=f.linkedPages&&f.linkedPages.length>0;
+              const isExp=expandedRows[pg*PG+i];
+              return <React.Fragment key={i}>
+              <tr style={{borderBottom:isExp?'none':`1px solid ${B.border}`,cursor:'pointer'}}
+                onClick={()=>{
+                  const key=pg*PG+i;
+                  setExpandedRows(prev=>({...prev,[key]:!prev[key]}));
+                }}
+                onMouseEnter={e=>e.currentTarget.style.background=`${B.teal}06`}
+                onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={{padding:'12px 8px',textAlign:'center'}} onClick={e=>e.stopPropagation()}>
+                  <input type="checkbox" checked={selected.has(f.p)} onChange={()=>toggleSelect(f.p)} style={{cursor:'pointer',width:16,height:16}}/>
+                </td>
+                <td style={{padding:'12px 14px'}}><ExtBadge ext={f.e}/></td>
+                <td style={{padding:'12px 8px',textAlign:'right',fontFamily:'monospace',fontSize:12,color:B.txtSec,fontWeight:600}}>{f.fid}</td>
+                <td style={{padding:'12px 14px'}}>
+                  <a href={f.u} target="_blank" rel="noopener noreferrer" title={f.n}
+                    style={{fontWeight:600,color:B.txt,textDecoration:'none',display:'block',wordBreak:'break-word',lineHeight:1.4}}
+                    onClick={e=>e.stopPropagation()}
+                    onMouseEnter={e=>e.currentTarget.style.color=B.teal}
+                    onMouseLeave={e=>e.currentTarget.style.color=B.txt}>{f.n}</a>
+                  {hasPages&&<span style={{fontSize:11,color:B.txtSec,marginTop:2,display:'inline-flex',alignItems:'center',gap:4}}>
+                    <Ic.link size={10} color={B.teal}/> {f.scanned?`Found on ${f.linkedPages.length} page${f.linkedPages.length!==1?'s':''}`:hasPages?`${f.linkedPages.length} page${f.linkedPages.length!==1?'s':''} (GA4)`:'Click to scan'}
+                    <span style={{transform:isExp?'rotate(90deg)':'rotate(0)',transition:'transform 0.2s',display:'inline-block'}}>›</span>
+                  </span>}
+                  {!hasPages&&<span style={{fontSize:11,color:B.txtSec,marginTop:2,display:'inline-flex',alignItems:'center',gap:4}}>
+                    <Ic.search size={10} color={B.txtSec}/> Click to find pages
+                    <span style={{transform:isExp?'rotate(90deg)':'rotate(0)',transition:'transform 0.2s',display:'inline-block'}}>›</span>
+                  </span>}
+                </td>
+                <td style={{padding:'12px 14px'}}>
+                  {f.owner?<span onClick={e=>{e.stopPropagation();setOwnerFilter(f.owner);setPg(0);}}
+                    style={{display:'inline-block',padding:'3px 10px',borderRadius:6,background:`${B.navyMid}10`,color:B.navyMid,fontSize:11,fontWeight:700,cursor:'pointer',whiteSpace:'nowrap'}}>{f.owner}</span>
+                    :<span style={{color:B.txtSec,fontSize:12}}>—</span>}
+                </td>
+                <td style={{padding:'12px 14px',textAlign:'right'}}>
+                  {f.downloads>0?<span style={{fontWeight:700,color:B.txt,fontSize:14}}>{f.downloads.toLocaleString()}</span>:<span style={{color:B.txtSec,fontSize:12}}>—</span>}
+                </td>
+                <td style={{padding:'12px 14px',fontSize:12,color:B.txtSec,whiteSpace:'nowrap'}}>{f.d}</td>
+                <td style={{padding:'12px 14px',textAlign:'center'}}>
+                  <div style={{display:'flex',gap:4,justifyContent:'center'}}>
+                    <a href={f.u} target="_blank" rel="noopener noreferrer" title="Download"
+                      style={{padding:'5px',borderRadius:6,border:`2px solid ${B.border}`,background:B.wh,display:'flex',cursor:'pointer'}}
+                      onClick={e=>e.stopPropagation()}
+                      onMouseEnter={e=>{e.currentTarget.style.borderColor=B.teal;e.currentTarget.style.background=`${B.teal}08`;}}
+                      onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border;e.currentTarget.style.background=B.wh;}}>
+                      <Ic.download size={13} color={B.teal}/>
+                    </a>
+                    <button onClick={e=>{e.stopPropagation();isAdmin?deleteFileDirect(f):requestDeletion(f);}} 
+                      title={isAdmin?'Delete file':'Request deletion'}
+                      disabled={deleting.has(f.fid)}
+                      style={{padding:'5px',borderRadius:6,border:`2px solid ${deleting.has(f.fid)?B.border:B.border}`,background:deleting.has(f.fid)?`${B.red}10`:B.wh,display:'flex',cursor:deleting.has(f.fid)?'wait':'pointer',opacity:deleting.has(f.fid)?.5:1}}
+                      onMouseEnter={e=>{if(!deleting.has(f.fid)){e.currentTarget.style.borderColor=B.red;e.currentTarget.style.background=`${B.red}08`;}}}
+                      onMouseLeave={e=>{if(!deleting.has(f.fid)){e.currentTarget.style.borderColor=B.border;e.currentTarget.style.background=B.wh;}}}>
+                      <Ic.trash size={13} color={B.red}/>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              {isExp&&<tr style={{borderBottom:`1px solid ${B.border}`}}>
+                <td colSpan={8} style={{padding:0}}>
+                  <div style={{background:`${B.navy}03`,padding:'10px 14px 10px 80px'}}>
+                    {f.linkedPages&&f.linkedPages.length>0?<div>
+                      <div style={{fontSize:11,fontWeight:700,color:B.txtSec,textTransform:'uppercase',letterSpacing:.4,marginBottom:6}}>
+                        {f.scanned?'Found on pages':'Downloaded from (GA4)'}
+                      </div>
+                      {f.linkedPages.map((lp,j)=>(
+                        <div key={j} style={{display:'flex',alignItems:'center',gap:12,padding:'6px 0',borderBottom:j<f.linkedPages.length-1?`1px solid ${B.border}`:'none',fontSize:13}}>
+                          <a href={'https://www.maine.gov'+(lp.page||lp.p)} target="_blank" rel="noopener noreferrer"
+                            style={{color:B.txt,textDecoration:'none',fontWeight:600,flex:1}}
+                            onMouseEnter={e=>e.currentTarget.style.color=B.teal}
+                            onMouseLeave={e=>e.currentTarget.style.color=B.txt}>
+                            {lp.title||lp.t||lp.page||lp.p}
+                          </a>
+                          <span style={{fontSize:11,color:B.txtSec,fontFamily:'monospace'}}>{lp.page||lp.p}</span>
+                          {(lp.owner||lp.o)&&<span style={{fontSize:10,padding:'2px 8px',borderRadius:4,background:`${B.navyMid}10`,color:B.navyMid,fontWeight:700,whiteSpace:'nowrap'}}>{lp.owner||lp.o}</span>}
+                          {lp.clicks>0&&<span style={{fontSize:11,color:B.txtSec,fontWeight:600}}>{lp.clicks.toLocaleString()} downloads</span>}
+                        </div>
+                      ))}
+                    </div>:<div style={{padding:'8px 0',color:B.txtSec,fontSize:13,fontStyle:'italic'}}>
+                      No page references found. This file may be orphaned or the server scan is still in progress.
+                    </div>}
+                  </div>
+                </td>
+              </tr>}
+              </React.Fragment>;
+            })}
+            {paged.length===0&&<tr><td colSpan={8} style={{padding:40,textAlign:'center',color:B.txtSec}}>No files match your filters.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {pageCount>1&&<div style={{display:'flex',justifyContent:'center',gap:6,marginTop:14}}>
+        <button disabled={pg===0} onClick={()=>setPg(p=>p-1)} style={{padding:'8px 16px',borderRadius:8,border:`2px solid ${B.border}`,background:B.wh,color:pg===0?B.border:B.txt,fontSize:13,fontWeight:600,cursor:pg===0?'default':'pointer'}}>Previous</button>
+        <span style={{padding:'8px 12px',fontSize:13,color:B.txtSec,fontWeight:600}}>Page {pg+1} of {pageCount}</span>
+        <button disabled={pg>=pageCount-1} onClick={()=>setPg(p=>p+1)} style={{padding:'8px 16px',borderRadius:8,border:`2px solid ${B.border}`,background:B.wh,color:pg>=pageCount-1?B.border:B.txt,fontSize:13,fontWeight:600,cursor:pg>=pageCount-1?'default':'pointer'}}>Next</button>
+      </div>}
+
+      <div style={{textAlign:'center',padding:'28px 0 16px',fontSize:12,color:B.txtSec,fontWeight:500}}>
+        Maine Department of Education · Website & Technology · Communications Portal
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<FileManager/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>
