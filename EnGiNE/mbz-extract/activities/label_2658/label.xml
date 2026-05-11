@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="81" moduleid="2658" modulename="label" contextid="7012">
+  <label id="81">
+    <name>Welcome to Maine DOE Communications Orientation</name>
+    <intro>&lt;p&gt;Hello and welcome to the Maine DOE Communications Orientation module! Our communications team is excited to onboard you to all things related to external-facing and some internal communications, including newsletters and media releases, branding, marketing, graphics, website, and more. &lt;/p&gt;
+&lt;p&gt;This module is designed to explain the various roles that our team plays, share basic information about how we interact with our audiences, explain some of the essential processes that you may interface with, and provide a general overview of important things to know that affect all offices in the department.&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;h4 style="text-align: center;"&gt;&lt;em&gt;Use the navigation menu on the left-hand side of the screen to move throughout the course in order. &lt;/em&gt;&lt;/h4&gt;
+&lt;p style="text-align: center;"&gt;&lt;/p&gt;
+&lt;h3&gt;IMPORTANT&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;As you complete each section of this module, please "mark as done" at the top of the screen. Throughout the course, there are a few tasks to accomplish, which you will need to complete to receive your communications orientation certificate and profile badge! &lt;/strong&gt;&lt;strong&gt;&lt;br&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;strong&gt;When there are tasks to complete, you will see this icon:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;img class="img-fluid" style="display: block; margin-left: auto; margin-right: auto;" role="presentation" src="@@PLUGINFILE@@/Task%20%281%29.png" alt="" width="150" height="150"&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;strong&gt;If you have any questions about this module, please contact &lt;a href="mailto:matthew.g.leavitt@maine.gov" target="_blank" rel="noopener"&gt;matthew.g.leavitt@maine.gov&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;</intro>
+    <introformat>1</introformat>
+    <timemodified>1743778022</timemodified>
+  </label>
+</activity>

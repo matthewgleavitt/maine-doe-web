@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="4" moduleid="2835" modulename="customcert" contextid="7299">
+  <customcert id="4">
+    <templateid>5</templateid>
+    <name>Communications Orientation Certificate</name>
+    <intro>&lt;p&gt;Congratulations—you are nearly finished with the Communications Orientation! Once you validate that you have completed each section and activity for this course, the communications team will award you a certificate. &lt;/p&gt;
+&lt;p&gt;Thank you for taking the time to work through this course to understand the importance of branding our communications! If you have any questions, please feel free to contact the communications team!&lt;/p&gt;</intro>
+    <introformat>1</introformat>
+    <requiredtime>0</requiredtime>
+    <verifyany>0</verifyany>
+    <emailstudents>1</emailstudents>
+    <emailteachers>1</emailteachers>
+    <emailothers></emailothers>
+    <protection>modify, copy</protection>
+    <timecreated>1741381728</timecreated>
+    <timemodified>1744985189</timemodified>
+    <issues>
+      <issue id="3">
+        <customcertid>4</customcertid>
+        <userid>186</userid>
+        <timecreated>1741383441</timecreated>
+        <emailed>1</emailed>
+        <code>ePn7yOMIED</code>
+      </issue>
+      <issue id="4">
+        <customcertid>4</customcertid>
+        <userid>1090</userid>
+        <timecreated>1742479204</timecreated>
+        <emailed>1</emailed>
+        <code>9vGWtIkvD2</code>
+      </issue>
+      <issue id="5">
+        <customcertid>4</customcertid>
+        <userid>118</userid>
+        <timecreated>1743538082</timecreated>
+        <emailed>1</emailed>
+        <code>fPzAjtzAKb</code>
+      </issue>
+      <issue id="6">
+        <customcertid>4</customcertid>
+        <userid>38</userid>
+        <timecreated>1744215005</timecreated>
+        <emailed>0</emailed>
+        <code>fjXP5NPxaN</code>
+      </issue>
+      <issue id="7">
+        <customcertid>4</customcertid>
+        <userid>1148</userid>
+        <timecreated>1744979923</timecreated>
+        <emailed>0</emailed>
+        <code>CkC4DeXAnu</code>
+      </issue>
+      <issue id="9">
+        <customcertid>4</customcertid>
+        <userid>171</userid>
+        <timecreated>1747248119</timecreated>
+        <emailed>0</emailed>
+        <code>N0rx5WfpYM</code>
+      </issue>
+      <issue id="13">
+        <customcertid>4</customcertid>
+        <userid>1192</userid>
+        <timecreated>1748614622</timecreated>
+        <emailed>0</emailed>
+        <code>mPnyLOHLS7</code>
+      </issue>
+      <issue id="15">
+        <customcertid>4</customcertid>
+        <userid>1196</userid>
+        <timecreated>1748963241</timecreated>
+        <emailed>0</emailed>
+        <code>0xiiSA7GWB</code>
+      </issue>
+      <issue id="16">
+        <customcertid>4</customcertid>
+        <userid>1219</userid>
+        <timecreated>1748970626</timecreated>
+        <emailed>0</emailed>
+        <code>JLfigYX48x</code>
+      </issue>
+      <issue id="17">
+        <customcertid>4</customcertid>
+        <userid>1222</userid>
+        <timecreated>1748974502</timecreated>
+        <emailed>0</emailed>
+        <code>OwnRbwOehC</code>
+      </issue>
+      <issue id="30">
+        <customcertid>4</customcertid>
+        <userid>1950</userid>
+        <timecreated>1756239621</timecreated>
+        <emailed>0</emailed>
+        <code>qllicI0yby</code>
+      </issue>
+      <issue id="33">
+        <customcertid>4</customcertid>
+        <userid>1952</userid>
+        <timecreated>1756406334</timecreated>
+        <emailed>0</emailed>
+        <code>gas6BvSE7D</code>
+      </issue>
+      <issue id="37">
+        <customcertid>4</customcertid>
+        <userid>1257</userid>
+        <timecreated>1756931559</timecreated>
+        <emailed>0</emailed>
+        <code>usl43Kkhgy</code>
+      </issue>
+      <issue id="51">
+        <customcertid>4</customcertid>
+        <userid>1281</userid>
+        <timecreated>1758406512</timecreated>
+        <emailed>0</emailed>
+        <code>EU96PgrQaK</code>
+      </issue>
+      <issue id="103">
+        <customcertid>4</customcertid>
+        <userid>2034</userid>
+        <timecreated>1761055215</timecreated>
+        <emailed>0</emailed>
+        <code>BYse0ZZvKO</code>
+      </issue>
+      <issue id="175">
+        <customcertid>4</customcertid>
+        <userid>2545</userid>
+        <timecreated>1765815215</timecreated>
+        <emailed>0</emailed>
+        <code>JCwXsurPoJ</code>
+      </issue>
+      <issue id="386">
+        <customcertid>4</customcertid>
+        <userid>2453</userid>
+        <timecreated>1773765243</timecreated>
+        <emailed>0</emailed>
+        <code>47ua8X62jL</code>
+      </issue>
+      <issue id="421">
+        <customcertid>4</customcertid>
+        <userid>3321</userid>
+        <timecreated>1774612812</timecreated>
+        <emailed>0</emailed>
+        <code>uHua9nAIU6</code>
+      </issue>
+    </issues>
+    <template id="5">
+      <name>Communications Orientation Certificate</name>
+      <contextid>7299</contextid>
+      <timecreated>1741381728</timecreated>
+      <timemodified>1754058395</timemodified>
+      <pages>
+        <page id="5">
+          <templateid>5</templateid>
+          <width>297</width>
+          <height>220</height>
+          <leftmargin>0</leftmargin>
+          <rightmargin>0</rightmargin>
+          <sequence>1</sequence>
+          <timecreated>1741381728</timecreated>
+          <timemodified>1741623620</timemodified>
+          <element id="4">
+            <pageid>5</pageid>
+            <name>Background image</name>
+            <element>bgimage</element>
+            <data>{"width":0,"height":0,"contextid":"7008","filearea":"image","itemid":"0","filepath":"\/","filename":"Certificate Template - EnGiNE.png"}</data>
+            <font>$@NULL@$</font>
+            <fontsize>$@NULL@$</fontsize>
+            <colour>$@NULL@$</colour>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>$@NULL@$</width>
+            <refpoint>$@NULL@$</refpoint>
+            <sequence>1</sequence>
+            <alignment>L</alignment>
+            <timecreated>1741622421</timecreated>
+            <timemodified>1741622509</timemodified>
+          </element>
+          <element id="5">
+            <pageid>5</pageid>
+            <name>Date</name>
+            <element>date</element>
+            <data>{"dateitem":"-1","dateformat":"1"}</data>
+            <font>helveticab</font>
+            <fontsize>18</fontsize>
+            <colour>#182b3c</colour>
+            <posx>146</posx>
+            <posy>130</posy>
+            <width>0</width>
+            <refpoint>1</refpoint>
+            <sequence>2</sequence>
+            <alignment>C</alignment>
+            <timecreated>1741622444</timecreated>
+            <timemodified>1741624028</timemodified>
+          </element>
+          <element id="7">
+            <pageid>5</pageid>
+            <name>Course name</name>
+            <element>coursename</element>
+            <data>2</data>
+            <font>helveticab</font>
+            <fontsize>40</fontsize>
+            <colour>#182b3c</colour>
+            <posx>148</posx>
+            <posy>112</posy>
+            <width>0</width>
+            <refpoint>1</refpoint>
+            <sequence>3</sequence>
+            <alignment>C</alignment>
+            <timecreated>1741623068</timecreated>
+            <timemodified>1741623999</timemodified>
+          </element>
+          <element id="8">
+            <pageid>5</pageid>
+            <name>Teacher name</name>
+            <element>teachername</element>
+            <data>186</data>
+            <font>helveticab</font>
+            <fontsize>29</fontsize>
+            <colour>#000000</colour>
+            <posx>151</posx>
+            <posy>142</posy>
+            <width>0</width>
+            <refpoint>1</refpoint>
+            <sequence>4</sequence>
+            <alignment>C</alignment>
+            <timecreated>1741623114</timecreated>
+            <timemodified>1741624008</timemodified>
+          </element>
+          <element id="9">
+            <pageid>5</pageid>
+            <name>Student name</name>
+            <element>studentname</element>
+            <data></data>
+            <font>helveticab</font>
+            <fontsize>50</fontsize>
+            <colour>#182b3c</colour>
+            <posx>148</posx>
+            <posy>75</posy>
+            <width>0</width>
+            <refpoint>1</refpoint>
+            <sequence>5</sequence>
+            <alignment>C</alignment>
+            <timecreated>1741623152</timecreated>
+            <timemodified>1741624004</timemodified>
+          </element>
+          <element id="263">
+            <pageid>5</pageid>
+            <name>Text</name>
+            <element>text</element>
+            <data>New text I need</data>
+            <font>times</font>
+            <fontsize>33</fontsize>
+            <colour>#000000</colour>
+            <posx>$@NULL@$</posx>
+            <posy>$@NULL@$</posy>
+            <width>0</width>
+            <refpoint>1</refpoint>
+            <sequence>6</sequence>
+            <alignment>L</alignment>
+            <timecreated>1754058408</timecreated>
+            <timemodified>1754058408</timemodified>
+          </element>
+        </page>
+      </pages>
+    </template>
+  </customcert>
+</activity>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section id="1193">
+  <number>1</number>
+  <name>The Communications Team</name>
+  <summary>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Our%20Team%20%20Roles%20%282%29.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;Our small but mighty communications team is here to assist offices, teams, and individuals with communications, marketing, branding, and some technical expertise. Learn about who we are and what we do!&lt;/p&gt;</summary>
+  <summaryformat>1</summaryformat>
+  <sequence>2659,2660,2742</sequence>
+  <visible>1</visible>
+  <availabilityjson>{"op":"&amp;","c":[],"showc":[]}</availabilityjson>
+  <component>$@NULL@$</component>
+  <itemid>$@NULL@$</itemid>
+  <timemodified>1741625087</timemodified>
+</section>

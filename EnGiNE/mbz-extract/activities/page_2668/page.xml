@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="562" moduleid="2668" modulename="page" contextid="7022">
+  <page id="562">
+    <name>Design &amp; Templates</name>
+    <intro>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Branding%20-%20Design%20%20Templates.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;h5&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Event%20Calendar%20%281%29.png" alt="" width="100" height="100"&gt;&lt;strong&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;"&gt;We work with teams to create and assist in creating templates and graphics for external-facing materials.&lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Branding%20-%20Design%20%20Templates.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;The Communications Team is here to assist with your design needs within reason. We understand that not everyone has the capacity or skillset to create marketing materials entirely on their own, so we want to aid you and your team in a process that meets the Maine DOE brand guidelines and reflects a professional and engaging piece of media. &lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;strong&gt;Please get all graphics and print materials approved by the Communications Team before using or printing and using.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Graphics/Digital/Print Media&lt;/strong&gt;: We mostly design our materials using Canva. Depending on the scope and depth of the project, we have ready-made templates for some items. For other, larger-scale projects involving the Communications Team will be important (e.g., toolkits, media connected to campaigns, etc.). &lt;strong&gt;Example&lt;/strong&gt;: &lt;a href="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-files/Student%20Supports%20-%20The%20Importance%20of%20Student%20Attendance%20Toolkit%20-%2012.23.2024.pdf" target="_blank" rel="noopener"&gt;Attendance Toolkit&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Video&lt;/strong&gt;: We can edit video, whether for quick social media reels, longer, informative professional development, or just to make some clips of footage you have. Some Canva templates are available, and we can also generally assist with editing (especially for longer videos). Video editing takes time, so always involve the team as early as possible if this is part of the vision for your project. &lt;strong&gt;Example&lt;/strong&gt;: &lt;a href="https://www.youtube.com/watch?v=NZTc73oS7_M" target="_blank" rel="noopener"&gt;Getting to know Community Schools in Maine&lt;/a&gt;&lt;/p&gt;
+&lt;h5&gt;&lt;em&gt;For most graphics or videos, you should check in with the Communications Team to ensure that formatting and final touches align with branding, even when using a template.&lt;/em&gt;&lt;/h5&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>11</revision>
+    <timemodified>1743448820</timemodified>
+  </page>
+</activity>

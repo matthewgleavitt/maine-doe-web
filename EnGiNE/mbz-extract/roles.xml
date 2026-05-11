@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<roles_definition>
+  <role id="1">
+    <name></name>
+    <shortname>manager</shortname>
+    <nameincourse>$@NULL@$</nameincourse>
+    <description></description>
+    <sortorder>1</sortorder>
+    <archetype>manager</archetype>
+  </role>
+  <role id="3">
+    <name></name>
+    <shortname>editingteacher</shortname>
+    <nameincourse>$@NULL@$</nameincourse>
+    <description></description>
+    <sortorder>4</sortorder>
+    <archetype>editingteacher</archetype>
+  </role>
+  <role id="5">
+    <name>Participant</name>
+    <shortname>participant</shortname>
+    <nameincourse>Participant</nameincourse>
+    <description>Elaine changed student to this custom text on April 20, 2026. Some educators were confused by the term student, so I made the generic change.</description>
+    <sortorder>6</sortorder>
+    <archetype>student</archetype>
+  </role>
+</roles_definition>

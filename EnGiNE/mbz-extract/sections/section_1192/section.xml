@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section id="1192">
+  <number>0</number>
+  <name>Welcome to Communications Orientation</name>
+  <summary>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/EnGiNE%20-Communications%20Orientation%20Welcome%20Banner.png" alt="" width="1200" height="400"&gt;&lt;/p&gt;</summary>
+  <summaryformat>1</summaryformat>
+  <sequence>2658,3146</sequence>
+  <visible>1</visible>
+  <availabilityjson>{"op":"&amp;","c":[],"showc":[]}</availabilityjson>
+  <component>$@NULL@$</component>
+  <itemid>$@NULL@$</itemid>
+  <timemodified>1749743380</timemodified>
+</section>

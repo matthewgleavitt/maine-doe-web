@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="566" moduleid="2672" modulename="page" contextid="7026">
+  <page id="566">
+    <name>Maine DOE Event Calendar</name>
+    <intro>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Marketing%20Tools%20-%20Calendar.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;h5&gt;&lt;em&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" src="@@PLUGINFILE@@/Event%20Calendar.png" alt="" width="100" height="100"&gt;&lt;/em&gt;&lt;strong&gt;Our event calendar is used department-wide to share learning opportunities, conferences, office hours, and other events hosted or co-hosted by Maine DOE. &lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;i&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Marketing%20Tools%20-%20Calendar.png" alt="" width="1575" height="300"&gt;&lt;/i&gt;&lt;/p&gt;
+&lt;p&gt;&lt;i&gt;Our event calendar is used department-wide to share learning opportunities, conferences, office hours, and other events that are either hosted or co-hosted by the Maine DOE. &lt;/i&gt;&lt;/p&gt;
+&lt;p&gt;Requests must be made at least one week in advance. This provides time for the event to be posted and also allows for the public to have time to find events. &lt;/p&gt;
+&lt;p&gt;Check out some of our upcoming events to get a sense of the variety of opportunities available throughout the state. &lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;strong&gt;&lt;a href="https://www.maine.gov/doe/calendar#calendar" target="_blank" rel="noopener"&gt;Full Calendar&lt;/a&gt;&lt;br&gt;&lt;a href="https://forms.office.com/Pages/ResponsePage.aspx?id=q6g_QX0gYkubzeoajy-GTo9TTqa8VhVMnzxeeWJViwtUOEgyRlRQODBKTEhSTVhSS1pHRlcyWEcyMC4u" target="_blank" rel="noopener"&gt;Calendar Request Form&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;i&gt;&lt;u&gt;Please follow these guidelines when submitting an event:&lt;/u&gt;&lt;/i&gt;&lt;/strong&gt;&lt;strong&gt;&lt;i&gt;&lt;u&gt;&lt;br&gt;&lt;/u&gt;&lt;/i&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li class="MsoNormal" style="mso-list: l0 level1 lfo1; tab-stops: list .5in;"&gt;&lt;span style="mso-bidi-font-weight: normal;"&gt;Proof-read/grammar-check all wording. (The information you submit will largely be copied/pasted for public viewing.)&lt;/span&gt;&lt;/li&gt;
+&lt;li class="MsoNormal" style="mso-list: l0 level1 lfo1; tab-stops: list .5in;"&gt;&lt;span style="mso-bidi-font-weight: normal;"&gt;Follow all Maine DOE branding guidelines. (For example, use “Maine DOE” rather than "MDOE").&lt;/span&gt;&lt;/li&gt;
+&lt;li class="MsoNormal" style="mso-list: l0 level1 lfo1; tab-stops: list .5in;"&gt;&lt;span style="mso-bidi-font-weight: normal;"&gt;Spell out all acronyms, and avoid jargon.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;Do NOT submit your form until you have all the details confirmed for your event&lt;/li&gt;
+&lt;li&gt;If you need to make an edit to a submitted event, email &lt;a href="mailto:matthew.g.leavitt@maine.gov"&gt;matthew.g.leavitt@maine.gov&lt;/a&gt; for alterations&lt;/li&gt;
+&lt;li&gt;Only submit events that are hosted or co-hosted by a Maine DOE team&lt;/li&gt;
+&lt;li&gt;Be sure to check the calendar to see if something else is planned for the day and time you are planning an event and targeted to the same audience. Newsroom posts that promote Maine DOE events will not be published unless the events are published on the calendar.&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>8</revision>
+    <timemodified>1743184106</timemodified>
+  </page>
+</activity>

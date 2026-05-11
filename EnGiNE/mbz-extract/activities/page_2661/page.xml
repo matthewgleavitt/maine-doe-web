@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="556" moduleid="2661" modulename="page" contextid="7015">
+  <page id="556">
+    <name>Maine DOE Newsroom</name>
+    <intro>&lt;h5&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Types%20of%20Communication%20-%20Newsroom%20%282%29.png" alt="" width="1575" height="300"&gt;&lt;/h5&gt;
+&lt;h5&gt;&lt;strong&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Maine%20DOE%20newsroom.png?time=1741203068762" alt="" width="100" height="100"&gt;The Maine DOE Newsroom highlights the work of the Maine DOE and Maine schools, educators, and students.&lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Types%20of%20Communication%20-%20Newsroom.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Inspiring trust in our schools; focusing on a whole student approach; encouraging innovation; respecting educators; providing information, guidance, professional learning, and support to schools and educators; and providing adequate and equitable school funding and resources.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The Maine DOE Newsroom highlights the work of Maine schools and the Maine DOE.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Most external communications are a good fit for a newsroom article. This includes good news happening across the state, upcoming events including professional learning/development, recognition, series or media campaigns, and other general information &amp;amp; articles we want to share with the public (all audiences).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href="https://mainedoenews.net/" target="_blank" rel="noopener"&gt;Visit the Maine DOE Newsroom&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span style="font-size: 13.0pt; mso-bidi-font-size: 11.0pt; line-height: 107%; font-family: 'Calibri',sans-serif; mso-fareast-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: EN-US; mso-bidi-language: AR-SA;"&gt;Newsroom articles share information, professional learning opportunities, school highlights, new grant opportunities, and other information we want those working in education and the general public to know about. Think of it like our digital newspaper: Articles are posted in the Newsroom and are included in the weekly Maine DOE Update newsletter.  &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Maine DOE Update&lt;/strong&gt; - The Maine DOE Update is sent out weekly on Friday afternoons and includes all of the Newsroom articles published that week, as well as any other important updates to share with those who have subscribed. Anyone can subscribe to the Maine DOE Update through a link in the Maine DOE Newsroom. &lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;br&gt;&lt;strong&gt;&lt;a href="http://maine.us2.list-manage1.com/subscribe?u=a582edd6473e477ef6307c769&amp;amp;id=21283d239d"&gt;Subscription link&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;h5 style="text-align: center;"&gt;&lt;strong&gt;&lt;span style="font-size: 13.0pt; mso-bidi-font-size: 11.0pt; line-height: 107%; font-family: 'Calibri',sans-serif; mso-fareast-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: EN-US; mso-bidi-language: AR-SA;"&gt;Check out some of our latest articles!&lt;/span&gt;&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;
+&lt;script src="https://static.elfsight.com/platform/platform.js" async=""&gt;
+  &lt;/script&gt;
+&lt;/p&gt;
+&lt;div class="elfsight-app-643d49ae-6888-4d88-ad4f-6573c67cbd08" data-elfsight-app-lazy=""&gt; &lt;/div&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>21</revision>
+    <timemodified>1743448479</timemodified>
+  </page>
+</activity>

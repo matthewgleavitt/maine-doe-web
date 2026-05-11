@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="588" moduleid="2831" modulename="page" contextid="7295">
+  <page id="588">
+    <name>Task: Check with your supervisor about workflows</name>
+    <intro>&lt;h6&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Task.png" alt="" width="100" height="100"&gt;&lt;em&gt;Reach out to your supervisor to check if you will be using workflows&lt;/em&gt;&lt;/h6&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;strong&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Task.png" alt="" width="150" height="150"&gt;Task&lt;/strong&gt;: &lt;em&gt;Send a message to your supervisor, asking if you will need to use any workflows. This should be done early on, so the Operations Team can add the appropriate permissions beforehand.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Please do not mark this activity as done until you have sent the email. &lt;/em&gt;&lt;/p&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>9</revision>
+    <timemodified>1744985159</timemodified>
+  </page>
+</activity>

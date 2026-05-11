@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<badges>
+  <badge id="8">
+    <name>Communications</name>
+    <description>Test</description>
+    <timecreated>1741362652</timecreated>
+    <timemodified>1741362652</timemodified>
+    <usercreated>186</usercreated>
+    <usermodified>186</usermodified>
+    <issuername>Maine DOE</issuername>
+    <issuerurl>https://dev-moodle.rrev-engine.com</issuerurl>
+    <issuercontact>doe.engine@maine.gov</issuercontact>
+    <expiredate>$@NULL@$</expiredate>
+    <expireperiod>$@NULL@$</expireperiod>
+    <type>2</type>
+    <courseid>174</courseid>
+    <message>&lt;p&gt;You have been awarded the badge "%badgename%"!&lt;/p&gt;
+&lt;p&gt;More information about this badge can be found on the %badgelink% badge information page.&lt;/p&gt;
+&lt;p&gt;You can manage and download the badge from your &lt;a href="https://dev-moodle.rrev-engine.com/badges/mybadges.php"&gt;Manage badges&lt;/a&gt; page.&lt;/p&gt;</message>
+    <messagesubject>Congratulations! You just earned a badge!</messagesubject>
+    <attachment>1</attachment>
+    <notification>0</notification>
+    <status>0</status>
+    <nextcron>$@NULL@$</nextcron>
+    <version></version>
+    <language>en</language>
+    <imageauthorname></imageauthorname>
+    <imageauthoremail></imageauthoremail>
+    <imageauthorurl></imageauthorurl>
+    <imagecaption></imagecaption>
+    <criteria>
+    </criteria>
+    <alignments>
+    </alignments>
+    <relatedbadges>
+    </relatedbadges>
+    <manual_awards>
+    </manual_awards>
+    <tags>
+    </tags>
+  </badge>
+  <badge id="9">
+    <name>Maine DOE - Communications Orientation Badge</name>
+    <description>Badge for completing the communications orientation training.</description>
+    <timecreated>1741381193</timecreated>
+    <timemodified>1741381244</timemodified>
+    <usercreated>186</usercreated>
+    <usermodified>186</usermodified>
+    <issuername>Maine DOE</issuername>
+    <issuerurl>https://dev-moodle.rrev-engine.com/</issuerurl>
+    <issuercontact>doe.engine@maine.gov</issuercontact>
+    <expiredate>$@NULL@$</expiredate>
+    <expireperiod>$@NULL@$</expireperiod>
+    <type>2</type>
+    <courseid>174</courseid>
+    <message>&lt;p&gt;You have been awarded the badge "%badgename%"!&lt;/p&gt;
+&lt;p&gt;More information about this badge can be found on the %badgelink% badge information page.&lt;/p&gt;
+&lt;p&gt;You can manage and download the badge from your &lt;a href="https://dev-moodle.rrev-engine.com/badges/mybadges.php"&gt;Manage badges&lt;/a&gt; page.&lt;/p&gt;</message>
+    <messagesubject>Congratulations! You just earned a badge!</messagesubject>
+    <attachment>1</attachment>
+    <notification>0</notification>
+    <status>1</status>
+    <nextcron>$@NULL@$</nextcron>
+    <version>1.0</version>
+    <language>en</language>
+    <imageauthorname></imageauthorname>
+    <imageauthoremail></imageauthoremail>
+    <imageauthorurl></imageauthorurl>
+    <imagecaption>Communications Orientation Complete</imagecaption>
+    <criteria>
+      <criterion id="10">
+        <badgeid>9</badgeid>
+        <criteriatype>0</criteriatype>
+        <method>1</method>
+        <description></description>
+        <descriptionformat>1</descriptionformat>
+        <parameters>
+        </parameters>
+      </criterion>
+      <criterion id="11">
+        <badgeid>9</badgeid>
+        <criteriatype>4</criteriatype>
+        <method>1</method>
+        <description>&lt;p&gt;Congratulations on completing the Maine DOE communications orientation!&lt;/p&gt;</description>
+        <descriptionformat>1</descriptionformat>
+        <parameters>
+          <parameter id="69">
+            <critid>11</critid>
+            <name>course_174</name>
+            <value>174</value>
+            <criteriatype>4</criteriatype>
+          </parameter>
+        </parameters>
+      </criterion>
+    </criteria>
+    <alignments>
+    </alignments>
+    <relatedbadges>
+    </relatedbadges>
+    <manual_awards>
+    </manual_awards>
+    <tags>
+    </tags>
+  </badge>
+</badges>

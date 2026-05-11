@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<block id="3133" contextid="7286" version="2024100700">
+  <blockname>completionstatus</blockname>
+  <parentcontextid>7008</parentcontextid>
+  <showinsubcontexts>1</showinsubcontexts>
+  <pagetypepattern>*</pagetypepattern>
+  <subpagepattern>$@NULL@$</subpagepattern>
+  <defaultregion>side-pre</defaultregion>
+  <defaultweight>-10</defaultweight>
+  <configdata>Tzo4OiJzdGRDbGFzcyI6MDp7fQ==</configdata>
+  <timecreated>1741369379</timecreated>
+  <timemodified>1741369451</timemodified>
+  <block_positions>
+    <block_position id="92">
+      <contextid>7008</contextid>
+      <pagetype>course-view-section-topics</pagetype>
+      <subpage></subpage>
+      <visible>1</visible>
+      <region>side-pre</region>
+      <weight>0</weight>
+    </block_position>
+  </block_positions>
+</block>

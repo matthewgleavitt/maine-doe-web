@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="561" moduleid="2667" modulename="page" contextid="7021">
+  <page id="561">
+    <name>Maine DOE Brand Guide</name>
+    <intro>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Branding%20-%20Guide.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;h5&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" src="@@PLUGINFILE@@/Brand%20Guide.png" alt="" width="100" height="100"&gt;&lt;strong&gt;The Maine DOE Brand Guide is a comprehensive resource for understanding our department's look and feel, from color usage to communications protocols. &lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Branding%20-%20Guide.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class="normaltextrun"&gt;&lt;span style="font-size: 13.0pt; font-family: 'Calibri',sans-serif; mso-fareast-font-family: 'Yu Gothic Light'; mso-fareast-theme-font: major-fareast;"&gt;The Brand Guide provides clear and specific criteria regarding categories from logos to templates, written components, and everything in between. When creating anything for publication, please consult the sections here related to your work to guarantee your product stays on-brand. &lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Vision &amp;amp; Mission/Our Whole Student Approach&lt;/li&gt;
+&lt;li&gt;Accessibility&lt;/li&gt;
+&lt;li&gt;Brand &amp;amp; Voice&lt;/li&gt;
+&lt;li&gt;Proofreading/Editing&lt;/li&gt;
+&lt;li&gt;Acronyms&lt;/li&gt;
+&lt;li&gt;Logos&lt;/li&gt;
+&lt;li&gt;Color Usage&lt;/li&gt;
+&lt;li&gt;Typography (Fonts)&lt;/li&gt;
+&lt;li&gt;Graphics &amp;amp; Images/Promotional Materials&lt;/li&gt;
+&lt;li&gt;Website&lt;/li&gt;
+&lt;li&gt;Professional Event Calendar&lt;/li&gt;
+&lt;li&gt;YouTube&lt;/li&gt;
+&lt;li&gt;Email Signature Policy&lt;/li&gt;
+&lt;li&gt;Involving the Communications Team&lt;/li&gt;
+&lt;li&gt;Content/Approval&lt;/li&gt;
+&lt;li&gt;Links to Templates&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You can find the Brand Guide in Microsoft Teams under our DOE Team channel and the Communications sub-channel under "Files"&lt;/p&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>8</revision>
+    <timemodified>1743179476</timemodified>
+  </page>
+</activity>

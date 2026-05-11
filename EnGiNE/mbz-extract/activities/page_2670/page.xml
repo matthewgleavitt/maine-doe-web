@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="564" moduleid="2670" modulename="page" contextid="7024">
+  <page id="564">
+    <name>The Images We Use</name>
+    <intro>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Branding%20-%20Images.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;h5&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" src="@@PLUGINFILE@@/Images.png" alt="" width="100" height="100"&gt;&lt;strong&gt;Learn about the types of images we use to tell stories and communicate with our audiences.&lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Branding%20-%20Images%20Border%20%281%29.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;The Maine DOE brand is one that incites and promotes the ideals of education, learning, and the whole student. With that in mind, we want to highlight real people engaging in education and education-adjacent activities. Whenever the opportunity arises to use photos from Maine schools, we should prioritize these images!&lt;/p&gt;
+&lt;p&gt;&lt;img class="img-fluid" src="@@PLUGINFILE@@/Federal%20Programs%20-%20Child%20Nutrition%20-%20summer%20food.png" alt="example of a calendar template showing a child nutrition event. " width="1280" height="720"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Here is an example of a professional development opportunity using our event calendar template. The image used shows a real person engaging in a relevant activity.&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;All images should be real photographs. Avoid clipart, cartoons, etc.&lt;/li&gt;
+&lt;li&gt;Any time you can use real images (e.g. school visits, etc.) and have permission to do so—those are best! &lt;/li&gt;
+&lt;li&gt;Promote diversity and equity where you are able. &lt;/li&gt;
+&lt;li&gt;Images can be &lt;strong&gt;too &lt;/strong&gt;large for the website and other projects. Typically, 1920x1280 will work. If the image is too large, it will slow down the website. &lt;/li&gt;
+&lt;li&gt;Be mindful of copyright! Use a website that has royalty-free/common-usage copyright. (Please reach out to our team, if you are unsure. We also have an Adobe Stock account)
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.pexels.com/"&gt;www.pexels.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.unsplash.com/"&gt;www.unsplash.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.pixabay.com/"&gt;www.pixabay.com&lt;/a&gt; &lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For certain campaigns and audiences, there may be exceptions to the types of graphics/images we use from our standard branding, but the Communications Team should always approve these changes. &lt;/p&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>9</revision>
+    <timemodified>1743180629</timemodified>
+  </page>
+</activity>

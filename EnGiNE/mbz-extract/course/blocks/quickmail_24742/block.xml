@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<block id="24742" contextid="34951" version="2024101701">
+  <blockname>quickmail</blockname>
+  <parentcontextid>7008</parentcontextid>
+  <showinsubcontexts>0</showinsubcontexts>
+  <pagetypepattern>course-view-*</pagetypepattern>
+  <subpagepattern>$@NULL@$</subpagepattern>
+  <defaultregion>side-pre</defaultregion>
+  <defaultweight>8</defaultweight>
+  <configdata></configdata>
+  <timecreated>1774006654</timecreated>
+  <timemodified>1774006654</timemodified>
+  <block_positions>
+  </block_positions>
+</block>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="581" moduleid="2742" modulename="page" contextid="7173">
+  <page id="581">
+    <name>Communications Portal</name>
+    <intro>&lt;h5&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Our%20Team%20%20Roles%20-%20Communications%20Portal%20%281%29.png" alt="" width="1575" height="300"&gt;&lt;/h5&gt;
+&lt;h5&gt;&lt;strong&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Connecting%20%282%29.png" alt="" width="100" height="100"&gt;Connect with the team, find communication files, and learn about the communications portal on DOE Teams (in Microsoft Teams).&lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Our%20Team%20%20Roles%20-%20Communications%20Portal%20%281%29.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;The communications portal inside Microsoft Teams is our one-stop shop for files, links, and important communications information. Please watch the following video to learn how to navigate and find this information. &lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;&lt;iframe title="Communications - Onboarding Module - Teams Portal.mp4" src="https://stateofmaine.sharepoint.com/teams/DOETeam/_layouts/15/embed.aspx?UniqueId=0db40649-a5fe-44e8-9926-86dd129d980e&amp;amp;embed=%7B%22ust%22%3Atrue%2C%22hv%22%3A%22CopyEmbedCode%22%7D&amp;amp;referrer=StreamWebApp&amp;amp;referrerScenario=EmbedDialog.Create" width="640" height="360" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"&gt;&lt;/iframe&gt;&lt;/p&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>11</revision>
+    <timemodified>1743185330</timemodified>
+  </page>
+</activity>

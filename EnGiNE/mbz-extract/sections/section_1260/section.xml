@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section id="1260">
+  <number>7</number>
+  <name>Congratulations</name>
+  <summary>&lt;p&gt;Once you have completed every section of the course, you will receive your Communications Onboarding badge! &lt;/p&gt;</summary>
+  <summaryformat>1</summaryformat>
+  <sequence>2835</sequence>
+  <visible>1</visible>
+  <availabilityjson>{"op":"&amp;","c":[{"type":"completion","cm":2659,"e":1},{"type":"completion","cm":2660,"e":1},{"type":"completion","cm":2742,"e":1},{"type":"completion","cm":2661,"e":1},{"type":"completion","cm":2662,"e":1},{"type":"completion","cm":2663,"e":1},{"type":"completion","cm":2664,"e":1},{"type":"completion","cm":2666,"e":1},{"type":"completion","cm":2831,"e":1},{"type":"completion","cm":2832,"e":1},{"type":"completion","cm":2834,"e":1},{"type":"completion","cm":2833,"e":1},{"type":"completion","cm":2747,"e":1},{"type":"completion","cm":2671,"e":1},{"type":"completion","cm":2672,"e":1},{"type":"completion","cm":2670,"e":1},{"type":"completion","cm":2669,"e":1},{"type":"completion","cm":2667,"e":1},{"type":"completion","cm":2668,"e":1}],"showc":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]}</availabilityjson>
+  <component>$@NULL@$</component>
+  <itemid>$@NULL@$</itemid>
+  <timemodified>1741383056</timemodified>
+</section>

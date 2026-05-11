@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="590" moduleid="2833" modulename="page" contextid="7297">
+  <page id="590">
+    <name>Task: Email Signature</name>
+    <intro>&lt;h6&gt;&lt;em&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Task%20%281%29.png" alt="" width="100" height="100"&gt;Use the Maine DOE signature template to create your signature, then email the communications team to confirm accuracy.&lt;/em&gt;&lt;/h6&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Task.png" alt="" width="150" height="150"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Task:&lt;/strong&gt; &lt;em&gt;Create your email signature and email &lt;a href="mailto:matthew.g.leavitt@maine.gov"&gt;matthew.g.leavitt@maine.gov&lt;/a&gt; for confirmation. Please read through this activity and then use the provided template to construct your signature. Do not mark this task as complete until you have sent your email and received confirmation.&lt;/em&gt;&lt;/p&gt;
+&lt;div class="OutlineElement Ltr SCXO106430228 BCX0"&gt;
+&lt;p class="Paragraph SCXO106430228 BCX0" xml:lang="EN-US" lang="EN-US"&gt;&lt;/p&gt;
+&lt;p class="Paragraph SCXO106430228 BCX0" xml:lang="EN-US" lang="EN-US"&gt;&lt;/p&gt;
+&lt;p class="Paragraph SCXO106430228 BCX0" xml:lang="EN-US" lang="EN-US"&gt;&lt;strong&gt;Finding &amp;amp; Using the Template&lt;br&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;h4 class="Paragraph SCXO106430228 BCX0" lang="EN-US" style="text-align: center;" xml:lang="EN-US"&gt;&lt;a href="https://stateofmaine.sharepoint.com/:w:/r/teams/DOETeam/_layouts/15/Doc.aspx?sourcedoc=%7B49BEBB62-602A-45D6-8AC1-ED37BE62F4FF%7D&amp;amp;file=Communications%20-%20Maine%20DOE%20Email%20Signature%20Template.docx&amp;amp;action=default&amp;amp;mobileredirect=true" target="_blank" rel="noopener"&gt;&lt;strong&gt;&lt;span style="text-decoration: underline;"&gt;Maine DOE Signature Template&lt;/span&gt;&lt;/strong&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;div&gt;
+&lt;p paraid="400394119" paraeid="{68fac0ce-764a-40ea-878b-47d4479ea5ff}{32}" style="text-align: center;"&gt;&lt;strong&gt;&lt;span lang="EN-US" xml:lang="EN-US" data-contrast="auto"&gt;Template notes&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div&gt;
+&lt;p paraid="1310211948" paraeid="{68fac0ce-764a-40ea-878b-47d4479ea5ff}{42}"&gt;&lt;span lang="EN-US" xml:lang="EN-US" data-contrast="auto"&gt;Please remember to change your name/pronouns, job title, office/team (if applicable), email address, and phone number.&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span lang="EN-US" xml:lang="EN-US" data-contrast="auto"&gt;If you want to add one additional link after Maine DOE Newsroom – click your mouse next to the Newsroom (a space is already provided), type a pipe: &lt;strong&gt;|&lt;/strong&gt; (which is shift+\), type your text, select that text and hyperlink (you can hyperlink by right-clicking the highlighted text and selecting "link"). &lt;/span&gt;&lt;span data-ccp-props="{}"&gt; &lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span lang="EN-US" xml:lang="EN-US" data-contrast="auto"&gt;If you are inserting a team-specific logo, click the area next to the Maine DOE logo and hit space seven times, and insert your logo. &lt;/span&gt;&lt;span data-ccp-props="{}"&gt; &lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;p class="Paragraph SCXO106430228 BCX0" xml:lang="EN-US" lang="EN-US"&gt;&lt;strong&gt;&lt;br&gt;If you are having difficulty finding the template, you can search Microsoft Teams under DOE TEAM &amp;gt; COMMUNICATIONS &amp;gt; FILES &amp;gt; TEMPLATES &amp;amp; DOCUMENTS.&lt;/strong&gt;&lt;/p&gt;
+&lt;br&gt;&lt;iframe title="Communications - Outlook Signature Template (Location).mp4" src="https://stateofmaine.sharepoint.com/teams/DOETeam/_layouts/15/embed.aspx?UniqueId=39fc953c-8635-493c-b4b1-1ac3b4b55f87&amp;amp;embed=%7B%22ust%22%3Atrue%2C%22hv%22%3A%22CopyEmbedCode%22%7D&amp;amp;referrer=StreamWebApp&amp;amp;referrerScenario=EmbedDialog.Create" width="640" height="360" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"&gt;&lt;/iframe&gt;
+&lt;p class="Paragraph SCXO106430228 BCX0" xml:lang="EN-US" lang="EN-US"&gt;&lt;/p&gt;
+&lt;h4 class="Paragraph SCXO106430228 BCX0" lang="EN-US" xml:lang="EN-US"&gt;&lt;strong&gt;&lt;span class="LineBreakBlob BlobObject DragDrop SCXO106430228 BCX0"&gt;&lt;span class="SCXO106430228 BCX0"&gt;How to change your signature&lt;/span&gt;&lt;/span&gt;&lt;/strong&gt;&lt;/h4&gt;
+&lt;p class="Paragraph SCXO106430228 BCX0" xml:lang="EN-US" lang="EN-US"&gt;&lt;em&gt;Desktop Application&lt;/em&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;
+&lt;iframe title="Communications - Outlook Signature Desktop Tutorial.mp4" src="https://stateofmaine.sharepoint.com/teams/DOETeam/_layouts/15/embed.aspx?UniqueId=82f839f6-067a-4283-a69c-99aec580a82b&amp;amp;embed=%7B%22ust%22%3Atrue%2C%22hv%22%3A%22CopyEmbedCode%22%7D&amp;amp;referrer=StreamWebApp&amp;amp;referrerScenario=EmbedDialog.Create" width="640" height="360" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"&gt;&lt;/iframe&gt;
+&lt;p class="Paragraph SCXO106430228 BCX0" xml:lang="EN-US" lang="EN-US"&gt;&lt;/p&gt;
+&lt;p class="Paragraph SCXO106430228 BCX0" xml:lang="EN-US" lang="EN-US"&gt;&lt;em&gt;Web Application&lt;br&gt;&lt;br&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;iframe title="Communications - Outlook Web Signature Tutorial.mp4" src="https://stateofmaine.sharepoint.com/teams/DOETeam/_layouts/15/embed.aspx?UniqueId=6ca4f225-852b-482f-965a-8045da167ae3&amp;amp;embed=%7B%22ust%22%3Atrue%2C%22hv%22%3A%22CopyEmbedCode%22%7D&amp;amp;referrer=StreamWebApp&amp;amp;referrerScenario=EmbedDialog.Create" width="640" height="360" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>10</revision>
+    <timemodified>1743724332</timemodified>
+  </page>
+</activity>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="563" moduleid="2669" modulename="page" contextid="7023">
+  <page id="563">
+    <name>File Naming Convention</name>
+    <intro>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Branding%20-%20File%20Naming.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;h5&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" src="@@PLUGINFILE@@/Files.png" alt="" width="100" height="100"&gt;&lt;strong&gt;Learn how to name files and documents for the public using the department file-naming convention. &lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Branding%20-%20File%20Naming%20Convention%20Border.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;If you are saving files for public viewing/download, they should be named according to a convention that captures the area of focus, description of the content, and date in a standard format to ensure consistency and searchability.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Team/Area - Title of File - Full Date&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Spaces between hyphens&lt;/li&gt;
+&lt;li&gt;No abbreviations or acronyms (unless universal or a specific project/program within the department that would be recognizable to all)&lt;/li&gt;
+&lt;li&gt;Date with periods in between and the full year is written out, and no leading 0's - &lt;em&gt;6.1.2024&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;PDFs must be used unless you share a document where most of the document is meant for the end user to edit the contents or an Excel document with formulas.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Examples:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Assessment – Print Disability Flowchart – 5.15.2024.pdf&lt;/li&gt;
+&lt;li&gt;Outdoor Education – Maine Outdoor Learning Grant Application – 5.15.2024.pdf&lt;/li&gt;
+&lt;li&gt;MLTI – Sphero Tutorial – 5.15.2024.pdf&lt;/li&gt;
+&lt;li&gt;School Safety – Restorative Practices Brochure – 5.15.2024.pdf&lt;/li&gt;
+&lt;li&gt;Child Nutrition – USDA Pricing Sheet – 5.15.2024&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>8</revision>
+    <timemodified>1743179300</timemodified>
+  </page>
+</activity>

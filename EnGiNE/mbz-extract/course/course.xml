@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<course id="174" contextid="7008">
+  <shortname>MDOE:MC-ORI</shortname>
+  <fullname>Communications Orientation</fullname>
+  <idnumber>MDOE-101</idnumber>
+  <summary>&lt;p&gt;Maine DOE internal orientation for communications, branding, and marketing. This course covers internal communication procedures and shares with the ways in which we communication with the public. &lt;/p&gt;</summary>
+  <summaryformat>1</summaryformat>
+  <format>topics</format>
+  <showgrades>0</showgrades>
+  <newsitems>5</newsitems>
+  <startdate>1740200400</startdate>
+  <enddate>0</enddate>
+  <marker>0</marker>
+  <maxbytes>0</maxbytes>
+  <legacyfiles>0</legacyfiles>
+  <showreports>0</showreports>
+  <visible>1</visible>
+  <groupmode>0</groupmode>
+  <groupmodeforce>0</groupmodeforce>
+  <defaultgroupingid>0</defaultgroupingid>
+  <lang></lang>
+  <theme></theme>
+  <timecreated>1677676698</timecreated>
+  <timemodified>1757094339</timemodified>
+  <requested>0</requested>
+  <showactivitydates>1</showactivitydates>
+  <showcompletionconditions>1</showcompletionconditions>
+  <pdfexportfont>$@NULL@$</pdfexportfont>
+  <enablecompletion>1</enablecompletion>
+  <completionnotify>0</completionnotify>
+  <category id="49">
+    <name>Marketing and Communications</name>
+    <description>&lt;p&gt;This is the Marketing and Communications Team area for all their courses.&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;</description>
+  </category>
+  <tags>
+  </tags>
+  <customfields>
+    <customfield id="139">
+      <shortname>hours</shortname>
+      <type>textarea</type>
+      <value></value>
+      <valueformat>1</valueformat>
+      <valuetrust></valuetrust>
+    </customfield>
+    <customfield id="454">
+      <shortname>mdoe_contact</shortname>
+      <type>text</type>
+      <value>Matt Leavitt</value>
+      <valueformat>0</valueformat>
+      <valuetrust></valuetrust>
+    </customfield>
+    <customfield id="1352">
+      <shortname>delivery_mode</shortname>
+      <type>select</type>
+      <value>0</value>
+      <valueformat>0</valueformat>
+      <valuetrust></valuetrust>
+    </customfield>
+    <customfield id="1353">
+      <shortname>format_structure</shortname>
+      <type>select</type>
+      <value>0</value>
+      <valueformat>0</valueformat>
+      <valuetrust></valuetrust>
+    </customfield>
+  </customfields>
+  <courseformatoptions>
+    <courseformatoption>
+      <format>topics</format>
+      <sectionid>0</sectionid>
+      <name>hiddensections</name>
+      <value>1</value>
+    </courseformatoption>
+    <courseformatoption>
+      <format>topics</format>
+      <sectionid>0</sectionid>
+      <name>coursedisplay</name>
+      <value>0</value>
+    </courseformatoption>
+  </courseformatoptions>
+</course>

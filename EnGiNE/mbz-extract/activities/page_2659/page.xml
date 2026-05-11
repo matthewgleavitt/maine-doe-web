@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="554" moduleid="2659" modulename="page" contextid="7013">
+  <page id="554">
+    <name>Meet the Team!</name>
+    <intro>&lt;h5&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Our%20Team%20%20Roles%20-%20Meet%20The%20Team%20%282%29.png" alt="" width="1575" height="300"&gt;&lt;/h5&gt;
+&lt;h5&gt;&lt;em&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Meet%20the%20Team.png" alt="" width="100" height="100"&gt;&lt;/em&gt;&lt;strong&gt;Meet the members of the Maine DOE Communications Team!&lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Our%20Team%20%20Roles%20-%20Meet%20The%20Team.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;Hello new Maine DOE staff member!&lt;/p&gt;
+&lt;p&gt;First, we would like to introduce our team members and share how you can contact us! &lt;/p&gt;
+&lt;table style="border-collapse: collapse; width: 100%; height: 210px;" border="0"&gt;&lt;colgroup&gt; &lt;col style="width: 33.3017%;"&gt; &lt;col style="width: 33.3017%;"&gt; &lt;col style="width: 33.3017%;"&gt; &lt;/colgroup&gt;
+&lt;tbody&gt;
+&lt;tr style="height: 210px;"&gt;
+&lt;td style="height: 210px;"&gt;
+&lt;p style="text-align: center;"&gt;&lt;img class="img-fluid" src="@@PLUGINFILE@@/Meet%20the%20Team%20-%20Chloe%20Teboe%20%282%29.png" alt="Photo of Chloe Teboe" width="1080" height="1080"&gt;&lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;strong&gt;Email:&lt;br&gt;&lt;a href="mailto:Chloe.Teboe@maine.gov"&gt;Chloe.Teboe@maine.gov&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td style="height: 210px;"&gt;
+&lt;p&gt;&lt;img class="img-fluid" src="@@PLUGINFILE@@/Meet%20the%20Team%20-%20Rachel%20Paling%20%281%29.png" alt="Rachel Paling Photo" width="1080" height="1080"&gt;&lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;strong&gt;Email: &lt;br&gt;&lt;a href="mailto:Rachel.Paling@maine.gov"&gt;Rachel.Paling@maine.gov&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td style="height: 210px;"&gt;
+&lt;p&gt;&lt;img class="img-fluid" src="@@PLUGINFILE@@/Meet%20the%20Team%20-%20Matt%20Leavitt%20%281%29.png" alt="Matt Leavitt Photo" width="1080" height="1080"&gt;&lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;strong&gt;Email:&lt;br&gt;&lt;a href="mailto:Matthew.G.Leavitt@maine.gov"&gt;Matthew.G.Leavitt@maine.gov&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>34</revision>
+    <timemodified>1743767796</timemodified>
+  </page>
+</activity>

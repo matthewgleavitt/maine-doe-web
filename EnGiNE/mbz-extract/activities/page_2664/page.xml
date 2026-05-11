@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="559" moduleid="2664" modulename="page" contextid="7018">
+  <page id="559">
+    <name>Newsletters &amp; Public Information</name>
+    <intro>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Types%20of%20Communication%20-%20Newsletter%20%20Info%20%281%29.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;h4&gt;&lt;em&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" src="@@PLUGINFILE@@/Newsletters.png" alt="" width="100" height="100"&gt;&lt;/em&gt;&lt;/h4&gt;
+&lt;h5&gt;&lt;strong&gt;Learn about our newsletters and methods of sharing public information with different audiences.&lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Types%20of%20Communication%20-%20Newsletter%20%20Info.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;Newsletters are used for sharing your messages, information, and staying connected with specific audiences and the public.  We generally use MailChimp with curated contact lists to send newsletters and announcements to the field.&lt;/p&gt;
+&lt;p&gt;Current public newsletters:&lt;label class="checkbox" for="group_16"&gt;&lt;/label&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Maine DOE Update - Official Weekly Newsletter&lt;/li&gt;
+&lt;li&gt;Press Releases&lt;/li&gt;
+&lt;li&gt;McKinney–Vento Liaison Newsletter&lt;/li&gt;
+&lt;li&gt;World of Early Learning Newsletter&lt;/li&gt;
+&lt;li&gt;Wellness Times Newsletter&lt;/li&gt;
+&lt;li&gt;What's Happening in Health Education and Physical Education Newsletter&lt;/li&gt;
+&lt;li&gt;Data Reporting Update&lt;/li&gt;
+&lt;li&gt;Interdisciplinary Instruction Newsletter&lt;/li&gt;
+&lt;li&gt;Multi-tiered Systems of Support (MTSS) Newsletter&lt;/li&gt;
+&lt;li&gt;Transition Maine Newsletter&lt;/li&gt;
+&lt;li&gt;Integrate THIS - 2024/25 Teacher Leader Fellows Newsletter&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You can sign up for newsletters on &lt;a href="https://maine.us2.list-manage.com/subscribe?u=a582edd6473e477ef6307c769&amp;amp;id=21283d239d" target="_blank" rel="noopener"&gt;our newsletter portal&lt;/a&gt;.&lt;/p&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>16</revision>
+    <timemodified>1743448700</timemodified>
+  </page>
+</activity>

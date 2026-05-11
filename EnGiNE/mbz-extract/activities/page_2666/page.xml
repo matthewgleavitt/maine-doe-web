@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="560" moduleid="2666" modulename="page" contextid="7020">
+  <page id="560">
+    <name>Approval Process &amp; Workflows</name>
+    <intro>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Content%20%20Submission%20-%20Workflows.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;h5&gt;&lt;strong&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" src="@@PLUGINFILE@@/Workflow.png" alt="" width="100" height="100"&gt;The Communications Workflow is are internal processes for approving content for external-facing audiences. Documents are submitted and passed along the approval chain through supervisors, commissioners, and the Communications Team. &lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Content%20%20Submission%20-%20Workflows.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p class="MsoNormal"&gt;Workflows are utilized through the Microsoft Dynamics app. They are submitted like a form that automatically sends your content to the appropriate parties for approval (typically your supervisor/director, then to a commissioner, and ultimately to the Director of Communications). &lt;/p&gt;
+&lt;p class="MsoNormal"&gt;Workflows are an approval process for content that the public will see, including:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Newsroom Articles&lt;/li&gt;
+&lt;li&gt;Priority Notices&lt;/li&gt;
+&lt;li&gt;Media Advisories&lt;/li&gt;
+&lt;li&gt;Media Releases&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;When preparing to submit content for any communications, involve your director/teams, and any other teams that may be involved. All content should be prepared in a Word document, proofread, and in quality condition before submission. Be sure to include any relevant images or attachments that accompany the content. &lt;/p&gt;
+&lt;p&gt;&lt;em&gt;(Example of Workflow)&lt;/em&gt;&lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;img class="img-fluid" src="@@PLUGINFILE@@/image%20%281%29.png" alt="workflow" width="1906" height="913"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Templates&lt;/strong&gt;: For certain media, there are templates available to aid you in formatting. You can check the &lt;a href="https://stateofmaine.sharepoint.com/:f:/t/DOETeam/Es4vI81JwTxIto_QgNIQchsBsW6NzP28cHxNvHwr49gtFA?e=Z0papg" target="_blank" rel="noopener"&gt;Communications Templates &amp;amp; Documents&lt;/a&gt; folder in Teams for the most updated versions.&lt;/p&gt;
+&lt;p&gt;Check with your supervisor if you will be using a workflow for any reason. Here is an in-depth tutorial on how to use and submit content on the workflow platform.&lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;iframe title="Communications Workflow Tutorial Updated 11.19.2024_1.mp4" src="https://stateofmaine.sharepoint.com/teams/DOETeam/_layouts/15/embed.aspx?UniqueId=8d7d2060-29c9-4022-b76f-68a75b2d1aa0&amp;amp;embed=%7B%22ust%22%3Atrue%2C%22hv%22%3A%22CopyEmbedCode%22%7D&amp;amp;referrer=StreamWebApp&amp;amp;referrerScenario=EmbedDialog.Create" width="640" height="360" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"&gt;&lt;/iframe&gt;&lt;/p&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>17</revision>
+    <timemodified>1743448756</timemodified>
+  </page>
+</activity>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section id="1198">
+  <number>6</number>
+  <name>Marketing Tools &amp; Applications</name>
+  <summary>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Marketing%20Tools.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;h5&gt;&lt;strong&gt;Learn about what primary communication tools the department uses to assist with outreach and marketing.&lt;/strong&gt;&lt;/h5&gt;</summary>
+  <summaryformat>1</summaryformat>
+  <sequence>2671,2672</sequence>
+  <visible>1</visible>
+  <availabilityjson>{"op":"&amp;","c":[],"showc":[]}</availabilityjson>
+  <component>$@NULL@$</component>
+  <itemid>$@NULL@$</itemid>
+  <timemodified>1741627215</timemodified>
+</section>

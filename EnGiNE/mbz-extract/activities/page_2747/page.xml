@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="582" moduleid="2747" modulename="page" contextid="7186">
+  <page id="582">
+    <name>Types of Incoming Communications</name>
+    <intro>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Incoming%20Communications%20-%20Types%20of%20Incoming%20Communications.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;h5&gt;&lt;strong&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Incoming%20Communications%20%281%29.png" alt="" width="100" height="100"&gt;Learn about the different types of communications coming in from external sources and how to handle each one.&lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Incoming%20Communications%20-%20Types%20of%20Incoming%20Communications.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Media Inquiries&lt;/strong&gt;  &lt;strong&gt;-&lt;/strong&gt; All media inquiries should immediately be forwarded to the Director of Communications, Chloe Teboe, at &lt;a href="mailto:chloe.teboe@maine.gov"&gt;chloe.teboe@maine.gov.&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Official Statements/Comments/General Questions&lt;/strong&gt;  &lt;strong&gt;-&lt;/strong&gt; These are drafted and provided by the Director of Communications in collaboration with content experts. &lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Media Interview Requests (on-camera, in-person, over the phone) -&lt;/strong&gt; These are granted on a case-by-case basis, depending on the interview topic, timing, and availability. Content experts are sometimes asked to conduct media interviews. Please refer to the &lt;a href="https://stateofmaine.sharepoint.com/:b:/r/sites/MaineDOE/Policy%20%20Procedures/Communication%20Policies%20and%20Procedures/General%20Communications%20Guide%20final.pdf?csf=1&amp;amp;e=5FOADg"&gt;General Communications Guidelines and the FAQ regarding media&lt;/a&gt;. &lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Data Requests&lt;/strong&gt;  &lt;strong&gt;-&lt;/strong&gt; The Director of Communications and the Data Team will determine whether the Maine DOE has the requested data on file and whether the Maine DOE will answer the question(s) being asked. Data often needs to be provided in context to ensure it is not misinterpreted. &lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;FOAA -&lt;/strong&gt; Freedom of Information/Access Act inquiries should be sent to Jennifer Belanger at &lt;a href="mailto:jennifer.belanger@maine.gov"&gt;jennifer.belanger@maine.gov&lt;/a&gt;. (Please the Director of Communications)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Constituent Concerns - &lt;/strong&gt;All constituent concerns should be logged in &lt;a href="https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=fa34a958-90f4-eb11-bacb-001dd8027dad&amp;amp;pagetype=entitylist&amp;amp;etn=incident&amp;amp;viewid=00000000-0000-0000-00aa-000010001028&amp;amp;viewType=1039" target="_blank" rel="noopener"&gt;Maine DOE Assist&lt;/a&gt;. Contact Melissa O’Neal-Low at &lt;a href="mailto:melissa.a.oneal-low@maine.gov"&gt;melissa.a.oneal-low@maine.gov&lt;/a&gt; with questions.&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>7</revision>
+    <timemodified>1743183274</timemodified>
+  </page>
+</activity>

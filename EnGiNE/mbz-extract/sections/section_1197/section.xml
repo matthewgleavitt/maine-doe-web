@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section id="1197">
+  <number>5</number>
+  <name>Incoming Communications</name>
+  <summary>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Incoming%20Communications%20%281%29.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;Constituents and other interested parties often contact the department for various information. Knowing where to filter requests is essential, as you may encounter them in your role. &lt;/p&gt;</summary>
+  <summaryformat>1</summaryformat>
+  <sequence>2747</sequence>
+  <visible>1</visible>
+  <availabilityjson>{"op":"&amp;","c":[],"showc":[]}</availabilityjson>
+  <component>$@NULL@$</component>
+  <itemid>$@NULL@$</itemid>
+  <timemodified>1741626950</timemodified>
+</section>

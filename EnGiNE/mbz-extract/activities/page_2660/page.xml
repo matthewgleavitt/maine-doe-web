@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="555" moduleid="2660" modulename="page" contextid="7014">
+  <page id="555">
+    <name>What We Do &amp; How We Can Help</name>
+    <intro>&lt;h5&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Our%20Team%20%20Roles%20-%20What%20We%20Do%20%282%29.png" alt="" width="1575" height="300"&gt;&lt;/h5&gt;
+&lt;h5&gt;&lt;strong&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/How%20to%20help.png?time=1741202772448" alt="" width="100" height="100"&gt;An overview of how the Communications Team can assist you and your team, including who can help with what!&lt;/strong&gt;&lt;/h5&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" role="presentation" src="@@PLUGINFILE@@/Our%20Team%20%20Roles%20-%20What%20We%20Do.png" alt="" width="1575" height="300"&gt;&lt;/p&gt;
+&lt;p&gt;The Communications Team primarily deals with anything that the general public and our targeted audiences (e.g., school administrators, teachers, ed techs, school nurses, superintendents, principals, and other school staff) will see. Our level of involvement looks different depending on the project, but you should plan to connect with the communications team whenever you are working on something that requires language/messaging, graphics, and marketing. Larger campaigns and marketing efforts are especially important for us to know about, as they allow ample time to create a schedule and ensure everything is aligned with our branding and policies. The department is large, with many messages going out at all times!&lt;/p&gt;
+&lt;p&gt;Some items (such as Maine DOE news articles) must follow a specific approval process before sharing them, so it is never too early to involve us! &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;We are here to help with:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Media inquiries&lt;/li&gt;
+&lt;li&gt;Marketing campaigns and advertising&lt;/li&gt;
+&lt;li&gt;Strategic communications&lt;/li&gt;
+&lt;li&gt;Writing, editing, and voice&lt;/li&gt;
+&lt;li&gt;Website strategy and design&lt;/li&gt;
+&lt;li&gt;Publishing videos (varying levels of involvement)&lt;/li&gt;
+&lt;li&gt;Promoting events/professional learning opportunities&lt;/li&gt;
+&lt;li&gt;Graphics, templates, logos, infographics, etc.&lt;/li&gt;
+&lt;li&gt;Publicizing Maine DOE accomplishments&lt;/li&gt;
+&lt;li&gt;Sharing good news from schools&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Who can help with what?&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Media Inquiries/Priority Notices/Media Advisories and Releases&lt;/strong&gt; – Director of Communications&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Newsroom/Social Media/Newsletters/Community Outreach &lt;/strong&gt;– Communications Outreach Manager&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Website/YouTube/Events Calendar&lt;/strong&gt; - Website and Technology Coordinator&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Branding Questions&lt;/strong&gt; – Anyone on the Communications Team&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SharePoint/Teams/Internal Systems&lt;/strong&gt; – Operations Team&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Software/Hardware Troubleshooting&lt;/strong&gt; – MaineIT&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>15</revision>
+    <timemodified>1742832332</timemodified>
+  </page>
+</activity>

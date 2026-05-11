@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activity id="589" moduleid="2832" modulename="page" contextid="7296">
+  <page id="589">
+    <name>Task: Review the Maine DOE Brand Guide</name>
+    <intro>&lt;h6&gt;&lt;em&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Task.png" alt="" width="100" height="100"&gt;Take some time to go through the Maine DOE Brand Guide to familiarize yourself with some of the standards. Some of the areas of focus of the guide are reiterated in this course, but there is also other information, such as the colors and fonts we use, writing guidelines, and more. &lt;/em&gt;&lt;/h6&gt;</intro>
+    <introformat>1</introformat>
+    <content>&lt;p&gt;&lt;img class="img-fluid" style="float: left; padding-right: 10px;" role="presentation" src="@@PLUGINFILE@@/Task.png" alt="" width="150" height="150"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Task: &lt;/strong&gt;&lt;em&gt;Review the Maine DOE Brand Guide&lt;/em&gt;. You can find the Brand Guide in the Communications Team in DOE Team (in Microsoft Teams). Learn more about navigating here from the Communications Portal section of this course. &lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Please do not mark this activity as done until you have reviewed the Brand Guide. &lt;/em&gt;&lt;/p&gt;</content>
+    <contentformat>1</contentformat>
+    <legacyfiles>0</legacyfiles>
+    <legacyfileslast>$@NULL@$</legacyfileslast>
+    <display>5</display>
+    <displayoptions>a:2:{s:10:"printintro";s:1:"0";s:17:"printlastmodified";s:1:"1";}</displayoptions>
+    <revision>5</revision>
+    <timemodified>1743179603</timemodified>
+  </page>
+</activity>
