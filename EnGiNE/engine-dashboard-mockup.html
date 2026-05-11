@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EnGiNE Dashboard — v1 Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/*
+  EnGiNE Dashboard — v1 mockup.
+  Standalone preview file. The .ep-dash section is the only thing that gets
+  pasted into Moodle's Custom HTML block. The .moodle-faux-* classes simulate
+  the surrounding Moodle chrome (header, sidebar, native blocks, footer) so
+  Matt can see the design in context — they would not exist in production.
+
+  In production, all rules under "DASHBOARD STYLES" get scoped under
+  body.path-my .ep-dash { ... } and body.path-my { ... } when pasted into
+  the New Learning theme Custom CSS textarea.
+*/
+
+/* ===== SIMULATED MOODLE CHROME (mockup only) ===== */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  background: #f0f4f8;
+  color: #162d44;
+  line-height: 1.6;
+  font-size: 16px;
+}
+.moodle-faux-topbar {
+  background: #0c1926;
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  padding: 8px 32px;
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+.moodle-faux-topbar a { color: #cbd5e1; text-decoration: none; }
+.moodle-faux-header {
+  background: #1e3a5f;
+  color: #fff;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.moodle-faux-header .logo {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em;
+}
+.moodle-faux-header .gear {
+  width: 32px; height: 32px;
+  background: #fff; color: #0c1926;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800;
+}
+.moodle-faux-header .right { display: flex; gap: 18px; align-items: center; opacity: 0.85; font-size: 0.9rem; }
+.moodle-faux-header .avatar { width: 32px; height: 32px; border-radius: 50%; background: #94a3b8; }
+.moodle-faux-subnav {
+  background: #233f63;
+  color: #fff;
+  padding: 12px 32px;
+  display: flex; gap: 20px; align-items: center;
+  font-size: 0.95rem;
+}
+.moodle-faux-subnav a { color: #fff; text-decoration: none; opacity: 0.9; }
+.moodle-faux-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 600px;
+}
+.moodle-faux-sidebar {
+  background: #0c1926;
+  color: #cbd5e1;
+  padding: 18px 0;
+  font-size: 0.95rem;
+}
+.moodle-faux-sidebar a {
+  display: block;
+  padding: 10px 24px;
+  color: #cbd5e1;
+  text-decoration: none;
+}
+.moodle-faux-sidebar a.active { background: rgba(66,195,247,0.1); border-left: 3px solid #42c3f7; padding-left: 21px; }
+
+.moodle-faux-main {
+  background: #f0f4f8;
+  padding: 24px 40px 60px;
+}
+/* Pale-blue page header / Dashboard h1 / breadcrumb — visually hidden.
+   Our hero is the page header. Keeping h1 in DOM for screen readers. */
+.moodle-faux-page-h1 {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.moodle-faux-breadcrumb { display: none; }
+
+/* Native Moodle block — dark header band on top + light body below.
+   The h3 inside breaks out via negative margins to form a dark navy band
+   that matches the hero greeting visually. */
+.moodle-faux-block {
+  background: #fff;
+  border: 1px solid #dce4ed;
+  border-left: 4px solid #42c3f7;
+  border-radius: 0 16px 16px 0;
+  padding: 0 40px 36px 40px;
+  margin-top: 32px;
+  box-shadow: 0 10px 32px rgba(12,25,38, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+/* Block title — solid white on dark navy band with subtle teal grid pattern.
+   Matches the hero's vibe. */
+.moodle-faux-block h3 {
+  position: relative;
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-transform: none;
+  line-height: 1.1;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  margin: 0 -40px 28px -40px;
+  padding: 28px 40px;
+  color: #fff;
+  background-color: #0c1926;
+  background-image:
+    linear-gradient(rgba(66,195,247, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(66,195,247, 0.06) 1px, transparent 1px),
+    linear-gradient(135deg, #0c1926 0%, #162d44 100%);
+  background-size: 60px 60px, 60px 60px, 100% 100%;
+  border-bottom: 1px solid rgba(66,195,247, 0.22);
+}
+.moodle-faux-block .block-body { color: #475569; }
+
+.moodle-faux-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+}
+.moodle-faux-empty-state-icon {
+  width: 60px; height: 60px;
+  margin: 0 auto 12px;
+  opacity: 0.3;
+}
+
+.moodle-faux-course-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+.moodle-faux-course-card {
+  background: #fff;
+  border: 1px solid #dce4ed;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.moodle-faux-course-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.moodle-faux-course-thumb {
+  background: linear-gradient(135deg, #162d44 0%, #1e3a56 100%);
+  aspect-ratio: 16/9;
+  display: flex; align-items: center; justify-content: center;
+  color: #42c3f7;
+  font-weight: 800;
+  font-size: 1rem;
+}
+.moodle-faux-course-body { padding: 16px 18px; flex: 1; display: flex; flex-direction: column; }
+.moodle-faux-course-title { font-weight: 700; color: #162d44; font-size: 1rem; margin: 0 0 4px; line-height: 1.3; }
+.moodle-faux-course-cat { font-size: 0.8rem; color: #64748b; margin-bottom: 12px; }
+.moodle-faux-course-cta {
+  margin-top: auto;
+  background: #162d44;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px;
+  text-align: center;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.moodle-faux-footer {
+  background: #0c1926;
+  color: #cbd5e1;
+  padding: 32px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ===========================================================
+   DASHBOARD STYLES — these get extracted to Moodle Custom CSS,
+   each rule scoped under body.path-my .ep-dash { ... }
+   =========================================================== */
+
+.ep-dash {
+  --navy: #0c1926;
+  --navy-mid: #162d44;
+  --navy-light: #1e3a56;
+  --teal: #42c3f7;
+  --teal-glow: rgba(66,195,247,0.5);
+  --slate: #475569;
+  --text-muted: #b8c5d3;
+  --light-bg: #f0f4f8;
+  --card-border: #dce4ed;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 24px;
+
+  /* Accent palette */
+  --accent-green: #34d399;
+
+  /* WCAG AA: teal #42c3f7 fails 4.5:1 on light backgrounds (~1.7:1).
+     Use this deeper teal for any label/text on white/light cards. */
+  --label-on-light: #075985; /* ~6.5:1 on #f0f4f8, ~8.2:1 on #fff */
+
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  color: var(--navy-mid);
+}
+
+/* Subtle background pattern — kills the flat-white feeling without going dark */
+body.path-my .moodle-faux-main,
+.moodle-faux-main {
+  background-color: #eef2f8;
+  background-image:
+    radial-gradient(circle at 15% 8%, rgba(66,195,247,0.06) 0%, transparent 38%),
+    radial-gradient(circle at 88% 18%, rgba(167,139,250,0.05) 0%, transparent 35%),
+    radial-gradient(circle at 50% 95%, rgba(52,211,153,0.04) 0%, transparent 40%);
+}
+
+/* ----- Hero ----- */
+.ep-dash__hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 40px;
+  align-items: stretch;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  border: 2px solid rgba(66,195,247, 0.4);
+  border-radius: var(--radius-lg);
+  padding: 48px 44px;
+  color: #fff;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+.ep-dash__hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(66,195,247,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(66,195,247,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  -webkit-mask-image: radial-gradient(ellipse at top right, #000 30%, transparent 80%);
+          mask-image: radial-gradient(ellipse at top right, #000 30%, transparent 80%);
+  pointer-events: none;
+}
+.ep-dash__hero-inner { position: relative; z-index: 1; }
+
+/* Hero right column — Recently Accessed mini-list */
+.ep-dash__hero-recent {
+  position: relative; z-index: 1;
+  border-left: 1px solid rgba(66,195,247, 0.25);
+  padding-left: 28px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ep-dash__hero-recent-label {
+  color: var(--teal);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 0 0 16px 0;
+  display: flex; align-items: center; gap: 12px;
+}
+.ep-dash__hero-recent-label::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 2px;
+  background: var(--teal);
+}
+.ep-dash__hero-recent-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex; flex-direction: column;
+  gap: 2px;
+}
+.ep-dash__hero-recent-item a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px;
+  color: rgba(255,255,255,0.92);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.15s, transform 0.15s, color 0.15s;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.ep-dash__hero-recent-item a:hover {
+  background: rgba(66,195,247,0.12);
+  color: #fff;
+  transform: translateX(2px);
+}
+.ep-dash__hero-recent-item a:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+.ep-dash__hero-recent-arrow {
+  color: var(--teal);
+  flex-shrink: 0;
+  font-size: 0.95rem;
+  transition: transform 0.15s;
+}
+.ep-dash__hero-recent-item a:hover .ep-dash__hero-recent-arrow { transform: translateX(3px); }
+.ep-dash__hero-recent-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ep-dash__hero-recent-empty {
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  line-height: 1.5;
+}
+.ep-dash__hero-recent-empty a {
+  color: var(--teal);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(66,195,247,0.5);
+}
+.ep-dash__hero-recent-empty a:hover { border-bottom-style: solid; }
+/* Default: section-label sits on light bg — use deep teal (WCAG AA) */
+.ep-dash__section-label {
+  color: var(--label-on-light);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 0 18px 0;
+}
+.ep-dash__section-label::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 2px;
+  background: var(--label-on-light);
+}
+/* Inside the hero (dark bg), teal passes contrast — restore brand teal */
+.ep-dash__hero .ep-dash__section-label,
+.ep-dash__hero-recent-label {
+  color: var(--teal);
+}
+.ep-dash__hero .ep-dash__section-label::before,
+.ep-dash__hero-recent-label::before {
+  background: var(--teal);
+}
+.ep-dash__hero-greeting {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0 0 8px 0;
+  color: #5cd0fa; /* fallback for browsers without background-clip support */
+  background: linear-gradient(120deg, #5cd0fa 0%, #6df2c1 60%, #34d399 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.ep-dash__hero-greeting [data-ep-firstname] {
+  background: inherit;
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.ep-dash__hero-subhead {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.85);
+  max-width: 560px;
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+}
+.ep-dash__hero-ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.ep-dash__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.ep-dash__btn--primary {
+  background: var(--teal);
+  color: var(--navy);
+  border-color: var(--teal);
+}
+.ep-dash__btn--primary:hover {
+  background: #5cd0fa;
+  box-shadow: 0 8px 24px var(--teal-glow);
+  transform: translateY(-1px);
+}
+/* Secondary CTA — identical visual treatment to primary per Matt's request.
+   Both filled teal, both navy text. */
+.ep-dash__btn--secondary {
+  background: var(--teal);
+  color: var(--navy);
+  border-color: var(--teal);
+}
+.ep-dash__btn--secondary:hover {
+  background: #5cd0fa;
+  box-shadow: 0 8px 24px var(--teal-glow);
+  transform: translateY(-1px);
+}
+.ep-dash__btn:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+.ep-dash__btn-arrow { font-weight: 400; transition: transform 0.2s; }
+.ep-dash__btn:hover .ep-dash__btn-arrow { transform: translateX(3px); }
+
+/* ----- Discipline grid ----- */
+/* Discipline section — encapsulated as a card matching the native blocks. */
+.ep-dash__section {
+  background: #fff;
+  border: 1px solid var(--card-border);
+  border-left: 4px solid var(--teal);
+  border-radius: 0 16px 16px 0;
+  padding: 0 40px 36px 40px;
+  margin-top: 32px;
+  box-shadow: 0 10px 32px rgba(12,25,38, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+/* Dark-navy header band with honeycomb pattern + bright gradient text */
+.ep-dash__section-header {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 -40px 28px -40px;
+  padding: 28px 40px;
+  isolation: isolate;
+}
+.ep-dash__section-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: #0c1926;
+  background-image:
+    linear-gradient(rgba(66,195,247, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(66,195,247, 0.06) 1px, transparent 1px),
+    linear-gradient(135deg, #0c1926 0%, #162d44 100%);
+  background-size: 60px 60px, 60px 60px, 100% 100%;
+  border-bottom: 1px solid rgba(66,195,247, 0.22);
+}
+.ep-dash__section-header h2 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 0;
+  line-height: 1.1;
+  color: #fff;
+}
+/* Hide the small "EXPLORE" label and "Tap any discipline" subhead — extra noise. */
+.ep-dash__section-header .ep-dash__section-label,
+.ep-dash__section-header .ep-dash__section-meta { display: none; }
+.ep-dash__section-meta {
+  color: var(--slate);
+  font-size: 0.9rem;
+}
+.ep-dash__tile-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+.ep-dash__tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  border: 1px solid rgba(255,255,255, 0.12);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 10px 10px 0;
+  text-decoration: none;
+  color: rgba(255,255,255, 0.92);
+  box-shadow: 0 4px 14px rgba(12,25,38, 0.18), inset 0 1px 0 rgba(255,255,255, 0.04);
+  transition: transform 0.15s, box-shadow 0.15s, border-left-width 0.15s, background 0.15s, border-color 0.15s;
+  min-height: 60px;
+}
+.ep-dash__tile:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(12,25,38, 0.30), inset 0 1px 0 rgba(255,255,255, 0.08);
+  border-left-width: 5px;
+  border-color: rgba(66,195,247, 0.30);
+}
+.ep-dash__tile:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+/* Tile icon — greeting gradient bg + 2px navy ring + dark icon glyph.
+   Carries the blue→green ombre from the greeting, with homepage Option C ring treatment. */
+.ep-dash__tile-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #5cd0fa 0%, #6df2c1 60%, #34d399 100%);
+  border: 2px solid var(--navy-mid);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--navy);
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(12,25,38,0.18), inset 0 1px 0 rgba(255,255,255,0.4);
+  font-size: 17px;
+  line-height: 1;
+}
+.ep-dash__tile-icon svg { width: 19px; height: 19px; stroke-width: 2; }
+.ep-dash__tile:hover .ep-dash__tile-icon {
+  box-shadow: 0 6px 16px rgba(12,25,38,0.25), inset 0 1px 0 rgba(255,255,255,0.5), 0 0 0 3px rgba(66,195,247,0.18);
+}
+.ep-dash__tile-title {
+  flex: 1;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+  line-height: 1.2;
+  margin: 0;
+}
+.ep-dash__tile-count {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255,255,255, 0.92);
+  font-weight: 600;
+  background: rgba(66,195,247, 0.16);
+  padding: 3px 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  border: 1px solid rgba(66,195,247, 0.28);
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 1280px) {
+  .ep-dash__tile-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 1100px) {
+  .ep-dash__hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .ep-dash__hero-recent {
+    border-left: none;
+    border-top: 1px solid rgba(66,195,247, 0.25);
+    padding-left: 0;
+    padding-top: 22px;
+  }
+}
+@media (max-width: 1000px) {
+  .ep-dash__tile-grid { grid-template-columns: repeat(3, 1fr); }
+  .ep-dash__hero { padding: 44px 32px; }
+  .ep-dash__hero-greeting { font-size: 2rem; }
+}
+@media (max-width: 640px) {
+  .ep-dash__tile-grid { grid-template-columns: repeat(2, 1fr); }
+  .ep-dash__hero { padding: 32px 24px; }
+  .ep-dash__hero-greeting { font-size: 1.6rem; }
+  .ep-dash__hero-subhead { font-size: 1rem; }
+  .ep-dash__btn { padding: 12px 20px; font-size: 0.9rem; }
+}
+@media (max-width: 420px) {
+  .ep-dash__tile-grid { grid-template-columns: 1fr; }
+}
+
+/* ----- Reduced motion ----- */
+@media (prefers-reduced-motion: reduce) {
+  .ep-dash__btn,
+  .ep-dash__tile,
+  .moodle-faux-course-card { transition: none; }
+  .ep-dash__btn:hover,
+  .ep-dash__tile:hover,
+  .moodle-faux-course-card:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ FAUX MOODLE CHROME (mockup only) ============ -->
+<div class="moodle-faux-topbar">
+  <a href="#">Community Forums</a>
+  <a href="#">Collaboration Groups</a>
+  <a href="#">Resource Sharing</a>
+</div>
+<header class="moodle-faux-header">
+  <div class="logo"><span class="gear">⚙</span> EnGiNE</div>
+  <div class="right">
+    <span>🔔</span>
+    <span>💬</span>
+    <span class="avatar"></span>
+    <span>Search 🔍</span>
+  </div>
+</header>
+<nav class="moodle-faux-subnav">
+  <a href="#">My courses ▾</a>
+  <a href="#">Bookmarks ▾</a>
+  <span style="margin-left:auto">🔍 Search</span>
+</nav>
+
+<div class="moodle-faux-shell">
+  <aside class="moodle-faux-sidebar">
+    <a href="#">Blocks</a>
+    <a href="#">Turn editing on</a>
+    <a href="#">My courses</a>
+    <a href="#" class="active">Site home</a>
+    <a href="#">All courses</a>
+    <a href="#">Blog</a>
+    <a href="#">Calendar</a>
+    <a href="#">Badges</a>
+  </aside>
+
+  <main class="moodle-faux-main">
+    <h1 class="moodle-faux-page-h1">Dashboard</h1>
+    <div class="moodle-faux-breadcrumb">🏠</div>
+
+<!-- ============ THE ACTUAL DASHBOARD CONTENT (.ep-dash) ============ -->
+<!-- This is what gets pasted into the Custom HTML block on /my -->
+
+<div class="ep-dash">
+
+  <!-- Hero -->
+  <section class="ep-dash__hero" aria-labelledby="ep-dash-greeting">
+    <div class="ep-dash__hero-inner">
+      <p class="ep-dash__section-label">Dashboard</p>
+      <h2 class="ep-dash__hero-greeting" id="ep-dash-greeting">
+        <span data-ep-greeting>Good morning</span>, <span data-ep-firstname>Matt</span>
+      </h2>
+      <p class="ep-dash__hero-subhead">
+        Maine's Professional Learning Ecosystem for Educators &amp; School Staff. Pick up where you left off, or explore something new.
+      </p>
+      <div class="ep-dash__hero-ctas">
+        <a class="ep-dash__btn ep-dash__btn--primary" href="https://learn.moodle.rrev-engine.com/my/courses.php">
+          Browse My Courses <span class="ep-dash__btn-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="ep-dash__btn ep-dash__btn--secondary" href="https://learn.moodle.rrev-engine.com/course/index.php">
+          Browse All Courses <span class="ep-dash__btn-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+
+    <aside class="ep-dash__hero-recent" aria-labelledby="ep-dash-recent-label">
+      <p class="ep-dash__hero-recent-label" id="ep-dash-recent-label">Recently Accessed</p>
+      <ul class="ep-dash__hero-recent-list" data-ep-recent-list>
+        <li class="ep-dash__hero-recent-item">
+          <a href="#">
+            <span class="ep-dash__hero-recent-title">_Welcome to EnGiNE 2.0</span>
+            <span class="ep-dash__hero-recent-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li class="ep-dash__hero-recent-item">
+          <a href="#">
+            <span class="ep-dash__hero-recent-title">EnGiNE's Pit Crew</span>
+            <span class="ep-dash__hero-recent-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li class="ep-dash__hero-recent-item">
+          <a href="#">
+            <span class="ep-dash__hero-recent-title">Communications Orientation</span>
+            <span class="ep-dash__hero-recent-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li class="ep-dash__hero-recent-item">
+          <a href="#">
+            <span class="ep-dash__hero-recent-title">Fellowship of the EnGiNE</span>
+            <span class="ep-dash__hero-recent-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ul>
+      <!-- Empty state (used by JS in production when no recent courses):
+      <p class="ep-dash__hero-recent-empty">
+        Nothing here yet. <a href="https://learn.moodle.rrev-engine.com/course/index.php">Browse the catalog →</a>
+      </p>
+      -->
+    </aside>
+  </section>
+
+</div>
+<!-- ============ END FIRST .ep-dash (hero) ============ -->
+
+<!-- ============ NATIVE MY COURSES BLOCK (full enrolled list with filters) ============ -->
+<!-- Recently Accessed now lives inside the hero — Moodle's native block_recentlyaccessedcourses
+     gets hidden via CSS in production, with JS reading its data into the hero list. -->
+<section class="moodle-faux-block" aria-label="Course overview">
+  <h3>My Courses</h3>
+  <div class="block-body">
+    <p style="margin-top:0; font-size:0.9rem; color:#475569">Filters: <strong style="color:#075985">All</strong> · In progress · Future · Past — Sort by name ▾</p>
+    <div class="moodle-faux-course-card-grid">
+      <article class="moodle-faux-course-card">
+        <div class="moodle-faux-course-thumb">EnGiNE 2.0</div>
+        <div class="moodle-faux-course-body">
+          <h4 class="moodle-faux-course-title">_Welcome to EnGiNE 2.0</h4>
+          <p class="moodle-faux-course-cat">EnGiNE</p>
+          <a class="moodle-faux-course-cta" href="#">Enter this course</a>
+        </div>
+      </article>
+      <article class="moodle-faux-course-card">
+        <div class="moodle-faux-course-thumb">PIT CREW</div>
+        <div class="moodle-faux-course-body">
+          <h4 class="moodle-faux-course-title">EnGiNE's Pit Crew</h4>
+          <p class="moodle-faux-course-cat">EnGiNE</p>
+          <a class="moodle-faux-course-cta" href="#">Enter this course</a>
+        </div>
+      </article>
+      <article class="moodle-faux-course-card">
+        <div class="moodle-faux-course-thumb">FELLOWSHIP</div>
+        <div class="moodle-faux-course-body">
+          <h4 class="moodle-faux-course-title">Fellowship of the EnGiNE</h4>
+          <p class="moodle-faux-course-cat">Educator Supports</p>
+          <a class="moodle-faux-course-cta" href="#">Enter this course</a>
+        </div>
+      </article>
+      <article class="moodle-faux-course-card">
+        <div class="moodle-faux-course-thumb">SCHOOL HEALTH</div>
+        <div class="moodle-faux-course-body">
+          <h4 class="moodle-faux-course-title">TEAMS: Training, Education, Assistance…</h4>
+          <p class="moodle-faux-course-cat">School Health</p>
+          <a class="moodle-faux-course-cta" href="#">Enter this course</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECOND .ep-dash (discipline tiles) ============ -->
+<div class="ep-dash">
+
+  <!-- Discover by Discipline -->
+  <section class="ep-dash__section" aria-labelledby="ep-dash-disciplines-heading">
+    <div class="ep-dash__section-header">
+      <div>
+        <p class="ep-dash__section-label">Explore</p>
+        <h2 id="ep-dash-disciplines-heading">Explore EnGiNE Experiences</h2>
+      </div>
+      <p class="ep-dash__section-meta">Tap any discipline to filter the catalog</p>
+    </div>
+
+    <div class="ep-dash__tile-grid">
+
+      <a class="ep-dash__tile" href="https://learn.moodle.rrev-engine.com/course/index.php?categoryid=45">
+        <span class="ep-dash__tile-icon" aria-hidden="true">
+          <!-- Graduation cap -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </span>
+        <h3 class="ep-dash__tile-title">Educator Supports</h3>
+        <span class="ep-dash__tile-count">17</span>
+      </a>
+
+      <a class="ep-dash__tile" href="https://learn.moodle.rrev-engine.com/course/index.php?categoryid=25">
+        <span class="ep-dash__tile-icon" aria-hidden="true">
+          <!-- Heart pulse -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/><path d="M3.22 12h6l1-3 2 6 1-3h6.78"/></svg>
+        </span>
+        <h3 class="ep-dash__tile-title">School Health</h3>
+        <span class="ep-dash__tile-count">16</span>
+      </a>
+
+      <a class="ep-dash__tile" href="https://learn.moodle.rrev-engine.com/course/index.php?categoryid=59">
+        <span class="ep-dash__tile-icon" aria-hidden="true">
+          <!-- Laptop / chip -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/><circle cx="12" cy="11" r="3"/></svg>
+        </span>
+        <h3 class="ep-dash__tile-title">Technology &amp; Learning</h3>
+        <span class="ep-dash__tile-count">7</span>
+      </a>
+
+      <a class="ep-dash__tile" href="https://learn.moodle.rrev-engine.com/course/index.php?categoryid=31">
+        <span class="ep-dash__tile-icon" aria-hidden="true">
+          <!-- Connected nodes -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><circle cx="12" cy="12" r="2"/><line x1="7.5" y1="7.5" x2="10.5" y2="10.5"/><line x1="16.5" y1="7.5" x2="13.5" y2="10.5"/><line x1="7.5" y1="16.5" x2="10.5" y2="13.5"/><line x1="16.5" y1="16.5" x2="13.5" y2="13.5"/></svg>
+        </span>
+        <h3 class="ep-dash__tile-title">Interdisciplinary Instruction</h3>
+        <span class="ep-dash__tile-count">5</span>
+      </a>
+
+      <a class="ep-dash__tile" href="https://learn.moodle.rrev-engine.com/course/index.php?categoryid=35">
+        <span class="ep-dash__tile-icon" aria-hidden="true">
+          <!-- Apple -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75-.5 3.5-1.5 2-2 3-7 3-9.5C18.5 7 16.5 5 13.5 5c-.6 0-1.16.13-1.5.34-.34-.21-.9-.34-1.5-.34C7.5 5 5.5 7 5.5 9.94c0 2.5 1 7.5 3 9.5.75 1 2 1.5 3.5 1.5z"/><path d="M12 5c0-2 1-3 2-3"/></svg>
+        </span>
+        <h3 class="ep-dash__tile-title">Child Nutrition</h3>
+        <span class="ep-dash__tile-count">3</span>
+      </a>
+
+      <a class="ep-dash__tile" href="https://learn.moodle.rrev-engine.com/course/index.php?categoryid=60">
+        <span class="ep-dash__tile-icon" aria-hidden="true">
+          <!-- Feather -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
+        </span>
+        <h3 class="ep-dash__tile-title">Wabanaki Studies</h3>
+        <span class="ep-dash__tile-count">5</span>
+      </a>
+
+      <a class="ep-dash__tile" href="https://learn.moodle.rrev-engine.com/course/index.php?categoryid=15">
+        <span class="ep-dash__tile-icon" aria-hidden="true">
+          <!-- Shield -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </span>
+        <h3 class="ep-dash__tile-title">School Safety</h3>
+        <span class="ep-dash__tile-count">1</span>
+      </a>
+
+      <a class="ep-dash__tile" href="https://learn.moodle.rrev-engine.com/course/index.php?categoryid=58">
+        <span class="ep-dash__tile-icon" aria-hidden="true">
+          <!-- Tree / pine -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L6 9 L9 9 L4 16 L9 16 L4 21 L20 21 L15 16 L20 16 L15 9 L18 9 Z"/></svg>
+        </span>
+        <h3 class="ep-dash__tile-title">Outdoor Education</h3>
+        <span class="ep-dash__tile-count">4</span>
+      </a>
+
+      <a class="ep-dash__tile" href="https://learn.moodle.rrev-engine.com/course/index.php?categoryid=10">
+        <span class="ep-dash__tile-icon" aria-hidden="true">
+          <!-- Universal access -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="6.5" r="1.5" fill="currentColor"/><path d="M5 9.5h14"/><path d="M9.5 9.5 L8.5 18"/><path d="M14.5 9.5 L15.5 18"/><path d="M9 13h6"/></svg>
+        </span>
+        <h3 class="ep-dash__tile-title">Special &amp; Inclusive Education</h3>
+        <span class="ep-dash__tile-count">2</span>
+      </a>
+
+      <a class="ep-dash__tile" href="https://learn.moodle.rrev-engine.com/course/index.php?categoryid=9">
+        <span class="ep-dash__tile-icon" aria-hidden="true">
+          <!-- Lightbulb -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2 a7 7 0 0 1 7 7 c0 2.7-1.5 5-4 6.3 V18 H9 V15.3 C6.5 14 5 11.7 5 9 a7 7 0 0 1 7-7z"/></svg>
+        </span>
+        <h3 class="ep-dash__tile-title">Innovation &amp; Research</h3>
+        <span class="ep-dash__tile-count">1</span>
+      </a>
+
+    </div>
+  </section>
+
+</div>
+<!-- ============ END .ep-dash ============ -->
+
+<!-- ============ ANNOUNCEMENTS (demoted to bottom) ============ -->
+<section class="moodle-faux-block" aria-label="Latest announcements">
+  <h3>Latest Announcements</h3>
+  <div class="block-body" style="font-size: 0.95rem">
+    <p style="margin:0 0 8px"><a href="#" style="color:#162d44; font-weight:700">EnGiNE is now running Moodle 4.0!</a><br>
+    <span style="color:#64748b; font-size:0.85rem">Jim Lochran · September 2 2022</span></p>
+    <p style="margin:0; color:#64748b; font-size:0.85rem">Older topics…</p>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<footer class="moodle-faux-footer">
+  23 State House Station · Augusta, ME 04333-0023 · <a href="#" style="color:#42c3f7">DOE Contact Page</a>
+</footer>
+
+<script>
+// JS that ships with the dashboard — same scoping pattern as the homepage:
+// only runs if the .ep-dash wrapper exists on the page.
+(function(){
+  if (!document.querySelector('.ep-dash')) return;
+
+  // Time-of-day greeting
+  var hour = new Date().getHours();
+  var greeting = 'Good evening';
+  if (hour < 12) greeting = 'Good morning';
+  else if (hour < 18) greeting = 'Good afternoon';
+  var el = document.querySelector('[data-ep-greeting]');
+  if (el) el.textContent = greeting;
+
+  // First-name pull (in production: read from Moodle's user menu / M.cfg.user)
+  // In this mockup we leave the hard-coded "Matt" in the markup as a fallback.
+})();
+</script>
+
+</body>
+</html>

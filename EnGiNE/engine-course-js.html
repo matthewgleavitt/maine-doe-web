@@ -1,0 +1,302 @@
+<!-- ============================================================
+     EnGiNE Course View JS — v1
+     Paste into: Site administration → Appearance → Additional HTML
+                 → "Before BODY is closed" field
+     Append AFTER any existing engine-dashboard JS, with the
+     fence comments below to keep it identifiable.
+     KILL SWITCH: comment out the body.classList.add line to
+     instantly revert all course-view styling.
+     ============================================================ -->
+
+<!-- ===== ENGINE COURSE VIEW v1 ===== -->
+<script>
+(function(){
+  // Only act on course landing or activity views
+  var isCourseView = document.body.classList.contains('path-course-view');
+  var isActivity = document.body.classList.contains('path-mod');
+  if (!isCourseView && !isActivity) return;
+
+  // 1) ADD THE KILL-SWITCH CLASS — without this, our CSS does nothing
+  document.body.classList.add('engine-course-v1');
+
+  if (!isCourseView) return;  // remaining work is landing-only
+
+  // 2) BANNER EXTRACTION — pull first img from each section's .summarytext
+  //    and inject as a <div class="engine-banner-img"> STRIP ABOVE the section header.
+  //    The standard navy gradient header stays visible below for clear accordion UX.
+  var sections = document.querySelectorAll('li.section.course-section');
+  sections.forEach(function(section){
+    var bannerImg = section.querySelector('.summarytext img.img-fluid');
+    if (!bannerImg || !bannerImg.src) return;
+    if (section.querySelector('.engine-banner-img')) return;  // idempotent
+    section.classList.add('engine-has-banner');
+    var strip = document.createElement('div');
+    strip.className = 'engine-banner-img';
+    strip.style.backgroundImage = 'url(' + bannerImg.src + ')';
+    var sectionItem = section.querySelector('.section-item');
+    if (sectionItem) {
+      sectionItem.insertBefore(strip, sectionItem.firstChild);
+    } else {
+      section.insertBefore(strip, section.firstChild);
+    }
+  });
+
+  // Mark sections whose summary is only a banner (no other prose) so we can
+  // collapse the empty intro area cleanly.
+  sections.forEach(function(section){
+    var summarytext = section.querySelector('.summarytext');
+    if (!summarytext) return;
+    var clone = summarytext.cloneNode(true);
+    var firstP = clone.querySelector('p:first-child');
+    if (firstP && firstP.querySelector('img.img-fluid')) firstP.remove();
+    if (!clone.textContent.trim()) section.classList.add('engine-summary-empty');
+  });
+
+  // 3) SECTION NUMBER BADGE — inject a numbered badge AFTER the chevron so
+  //    every section has: [chevron] [number] [title] consistently.
+  sections.forEach(function(section){
+    var header = section.querySelector('.course-section-header');
+    if (!header) return;
+    if (header.querySelector('.engine-section-num')) return;  // idempotent
+    var num = header.getAttribute('data-number');
+    if (num === null) return;
+    var chevron = header.querySelector('[data-toggle="collapse"]');
+    if (!chevron) return;
+    var badge = document.createElement('span');
+    badge.className = 'engine-section-num';
+    badge.textContent = num;
+    chevron.parentNode.insertBefore(badge, chevron.nextSibling);
+  });
+
+  // 3a) MAKE ENTIRE SECTION HEADER CLICKABLE — clicking anywhere on a header
+  //     toggles the accordion via the inner chevron. Banner sections render
+  //     the banner image as a separate strip ABOVE the header (see step 2),
+  //     so the chevron stays inline in the standard navy bar.
+  document.querySelectorAll('.course-section-header').forEach(function(header){
+    if (header.__engineToggleWired) return;
+    header.__engineToggleWired = true;
+    header.addEventListener('click', function(e){
+      // Native chevron click — let Moodle handle it
+      if (e.target.closest('[data-toggle="collapse"]')) return;
+      // Edit-mode chrome — don't hijack
+      if (e.target.closest('.inplaceeditable, .quickeditlink, .action-menu, button, .section_action_menu, .bulkselect')) return;
+      var chevron = header.querySelector('[data-toggle="collapse"]');
+      if (chevron) chevron.click();
+    });
+  });
+
+  // 4) MODTYPE → ICON MAPPING
+  var ICON_MAP = {
+    page:        { variant: '',             remix: 'ri-book-open-line' },
+    forum:       { variant: 'forum',        remix: 'ri-discuss-line' },
+    feedback:    { variant: 'feedback',     remix: 'ri-survey-line' },
+    url:         { variant: 'url',          remix: 'ri-external-link-line' },
+    folder:      { variant: 'folder',       remix: 'ri-folder-line' },
+    jitsi:       { variant: 'video',        remix: 'ri-vidicon-line' },
+    h5pactivity: { variant: 'interactive',  remix: 'ri-cursor-line' },
+    book:        { variant: 'book',         remix: 'ri-book-2-line' },
+    quiz:        { variant: 'quiz',         remix: 'ri-questionnaire-line' },
+    assign:      { variant: 'assign',       remix: 'ri-file-upload-line' },
+    lesson:      { variant: '',             remix: 'ri-roadmap-line' },
+    glossary:    { variant: '',             remix: 'ri-book-marked-line' },
+    choice:      { variant: 'feedback',     remix: 'ri-checkbox-multiple-line' },
+    workshop:    { variant: 'interactive',  remix: 'ri-team-line' },
+    resource:    { variant: 'folder',       remix: 'ri-file-text-line' },
+    scorm:       { variant: 'interactive',  remix: 'ri-cursor-line' },
+    customcert:  { variant: '',             remix: 'ri-award-fill' }
+  };
+
+  function getModtype(li) {
+    var match = li.className.match(/modtype_(\w+)/);
+    return match ? match[1] : null;
+  }
+
+  document.querySelectorAll('li.activity.activity-wrapper').forEach(function(li){
+    if (li.querySelector('.engine-icon')) return;  // idempotent
+    var modtype = getModtype(li);
+    if (!modtype) return;
+    if (modtype === 'label' || modtype === 'subsection') return;
+    var cfg = ICON_MAP[modtype] || { variant: '', remix: 'ri-file-text-line' };
+    var icon = document.createElement('span');
+    icon.className = 'engine-icon' + (cfg.variant ? ' engine-icon--' + cfg.variant : '');
+    icon.innerHTML = '<i class="' + cfg.remix + '"></i>';
+    var iconContainer = li.querySelector('.activityiconcontainer, .activity-icon');
+    if (iconContainer && iconContainer.parentNode) {
+      iconContainer.parentNode.insertBefore(icon, iconContainer);
+    } else {
+      var grid = li.querySelector('.activity-grid');
+      if (grid) grid.insertBefore(icon, grid.firstChild);
+    }
+  });
+
+  // 5) TASK PAGE DETECTION
+  document.querySelectorAll('li.activity.modtype_page').forEach(function(li){
+    var nameEl = li.querySelector('.activityname a, .activityname');
+    if (!nameEl) return;
+    var name = (nameEl.textContent || '').trim();
+    if (/^Task[:\s]/i.test(name)) {
+      li.classList.add('engine-task');
+      var icon = li.querySelector('.engine-icon');
+      if (icon) {
+        icon.className = 'engine-icon engine-icon--task';
+        icon.innerHTML = '<i class="ri-flag-fill"></i>';
+      }
+    }
+  });
+
+  // 6) CERTIFICATE TERMINAL NODE
+  document.querySelectorAll('li.section.course-section').forEach(function(section){
+    var hasCert = section.querySelector('li.activity.modtype_customcert');
+    var nonCertActivities = section.querySelectorAll('li.activity:not(.modtype_customcert)');
+    if (hasCert && nonCertActivities.length === 0) {
+      section.classList.add('engine-section--cert');
+    }
+  });
+
+  // 7) FIRST INCOMPLETE ACTIVITY → "Up next" marker
+  (function markUpNext(){
+    var s = document.querySelectorAll('li.section.course-section:not(.engine-section--cert)');
+    for (var i = 0; i < s.length; i++) {
+      var activities = s[i].querySelectorAll('li.activity.activity-wrapper');
+      for (var j = 0; j < activities.length; j++) {
+        var li = activities[j];
+        var modtype = getModtype(li);
+        if (modtype === 'label' || modtype === 'subsection') continue;
+        var completion = li.querySelector('.activity-completion');
+        if (!completion) continue;
+        var isComplete = completion.querySelector('.btn-success, .badge.bg-success, [data-toggletype="manual:undo"]');
+        if (!isComplete) {
+          li.classList.add('engine-current');
+          return;
+        }
+      }
+    }
+  })();
+
+  // 8) MARK COMPLETE SECTIONS
+  document.querySelectorAll('li.section.course-section:not(.engine-section--cert)').forEach(function(section){
+    var tracked = section.querySelectorAll('.activity-completion');
+    if (tracked.length === 0) return;
+    var incomplete = 0;
+    tracked.forEach(function(comp){
+      if (!comp.querySelector('.btn-success, .badge.bg-success, [data-toggletype="manual:undo"]')) {
+        incomplete++;
+      }
+    });
+    if (incomplete === 0) section.classList.add('engine-section--complete');
+  });
+
+  // 9) HERO CARD INJECTION
+  //    Builds the course hero from page data and inserts above the section list.
+  (function buildHero(){
+    if (document.querySelector('.engine-course-hero')) return;  // idempotent
+
+    // Title — strip "Course " prefix from h1
+    var titleEl = document.querySelector('h1.maincoursepage, h1.heding') || document.querySelector('h1');
+    var title = (titleEl ? titleEl.textContent : document.title).trim();
+    title = title.replace(/^Course\s+/i, '').replace(/\s*\|.*$/, '');
+
+    // Counts
+    var sectionCount = document.querySelectorAll('li.section.course-section').length;
+    var activityCount = document.querySelectorAll('li.activity.activity-wrapper').length;
+    var hasCert = !!document.querySelector('li.activity.modtype_customcert');
+
+    // Progress
+    var tracked = document.querySelectorAll('li.activity .activity-completion');
+    var complete = 0;
+    tracked.forEach(function(c){
+      if (c.querySelector('.btn-success, .badge.bg-success, [data-toggletype="manual:undo"]')) complete++;
+    });
+    var total = tracked.length;
+    var pct = total ? Math.round(complete / total * 100) : 0;
+
+    // First incomplete activity for "Continue" CTA
+    var nextLink = null;
+    var sList = document.querySelectorAll('li.section.course-section:not(.engine-section--cert)');
+    for (var i = 0; i < sList.length && !nextLink; i++) {
+      var acts = sList[i].querySelectorAll('li.activity.activity-wrapper');
+      for (var j = 0; j < acts.length; j++) {
+        var mt = (acts[j].className.match(/modtype_(\w+)/) || [])[1];
+        if (!mt || mt === 'label' || mt === 'subsection') continue;
+        var comp = acts[j].querySelector('.activity-completion');
+        if (!comp) continue;
+        var isDone = comp.querySelector('.btn-success, .badge.bg-success, [data-toggletype="manual:undo"]');
+        if (!isDone) {
+          var link = acts[j].querySelector('.activityname a');
+          if (link) nextLink = link.href;
+          break;
+        }
+      }
+    }
+
+    // CTA
+    var ctaText, ctaHref, ctaIcon;
+    if (pct === 100) {
+      ctaText = 'Review course';
+      ctaHref = '#';
+      ctaIcon = 'ri-restart-line';
+    } else if (nextLink) {
+      ctaText = 'Continue where you left off';
+      ctaHref = nextLink;
+      ctaIcon = 'ri-arrow-right-line';
+    } else {
+      ctaText = 'Start course';
+      ctaHref = '#';
+      ctaIcon = 'ri-play-line';
+    }
+
+    // Eyebrow — pull category from breadcrumb if possible
+    var eyebrow = 'EnGiNE Course';
+    var bcItems = document.querySelectorAll('.breadcrumb-item a');
+    if (bcItems.length > 2) {
+      var possibleCategory = bcItems[bcItems.length - 2].textContent.trim();
+      if (possibleCategory && possibleCategory !== 'My courses') {
+        eyebrow = 'EnGiNE Experience · ' + possibleCategory;
+      }
+    }
+
+    // Description — placeholder for v1; future versions could fetch from a Moodle endpoint
+    var desc = 'Continue your EnGiNE learning experience. This course has ' + sectionCount + ' sections covering ' + activityCount + ' activities.';
+
+    // Build hero element
+    var hero = document.createElement('section');
+    hero.className = 'engine-course-hero';
+    hero.innerHTML =
+      '<div class="engine-course-hero__inner">' +
+        '<div class="engine-course-hero__left">' +
+          '<div class="engine-course-hero__eyebrow">' + eyebrow + '</div>' +
+          '<h1 class="engine-course-hero__title">' + title + '</h1>' +
+          '<p class="engine-course-hero__desc">' + desc + '</p>' +
+          '<div class="engine-course-hero__meta">' +
+            '<div class="engine-course-hero__meta-item"><i class="ri-stack-line"></i> ' + sectionCount + ' sections · ' + activityCount + ' activities</div>' +
+            '<div class="engine-course-hero__meta-item"><i class="ri-graduation-cap-line"></i> Self-paced</div>' +
+            (hasCert ? '<div class="engine-course-hero__meta-item"><i class="ri-medal-line"></i> Certificate on completion</div>' : '') +
+          '</div>' +
+          '<div class="engine-course-hero__ctas">' +
+            '<a href="' + ctaHref + '" class="engine-course-hero__btn engine-course-hero__btn--primary">' + ctaText + ' <i class="' + ctaIcon + '"></i></a>' +
+          '</div>' +
+        '</div>' +
+        '<div class="engine-course-hero__progress">' +
+          '<div class="engine-course-hero__progress-label">Your progress</div>' +
+          '<div class="engine-course-hero__progress-pct">' + pct + '%<span class="denom"> complete</span></div>' +
+          '<div class="engine-course-hero__progress-bar"><div class="engine-course-hero__progress-fill" style="width:' + pct + '%"></div></div>' +
+          '<div class="engine-course-hero__progress-counts">' +
+            '<span><strong>' + complete + '</strong> of ' + total + ' activities</span>' +
+            (pct === 100 ? '<span>\u{1F389} Complete!</span>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    // Insert before the section list
+    var sectionList = document.querySelector('ul.topics, ul.weeks, #region-main ul');
+    if (sectionList && sectionList.parentNode) {
+      sectionList.parentNode.insertBefore(hero, sectionList);
+    } else {
+      var regionMain = document.querySelector('#region-main');
+      if (regionMain) regionMain.insertBefore(hero, regionMain.firstChild);
+    }
+  })();
+
+})();
+</script>
+<!-- ===== /ENGINE COURSE VIEW v1 ===== -->

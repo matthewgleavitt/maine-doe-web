@@ -1,0 +1,1457 @@
+/* ============================================================
+ * EnGiNE Course View — v1
+ * ============================================================
+ *
+ * Scoped to body.engine-course-v1 (added by engine-course-js.html).
+ *
+ * KILL SWITCH: remove or comment out the one line in
+ * engine-course-js.html that adds `engine-course-v1` to body.
+ * No rules in this file match without that class present.
+ *
+ * Surfaces styled:
+ *   - Course landing  (body.path-course-view.engine-course-v1)
+ *   - Activity view   (body.path-mod.engine-course-v1)
+ *
+ * Do not touch:
+ *   - body.editing chrome (edit pencils, kebabs, bulk select, add activity)
+ *   - Sidebar (engine theme owns it)
+ *   - Header / footer (engine theme owns them)
+ *
+ * Last updated: 2026-05-11
+ * ============================================================ */
+
+/* ============================================================
+ * 1. DESIGN TOKENS
+ * ============================================================ */
+
+body.engine-course-v1 {
+  --ec-navy:        #182b3c;
+  --ec-navy-mid:    #162d44;
+  --ec-navy-deep:   #0c1926;
+  --ec-navy-light:  #1e3a56;
+  --ec-teal:        #42c3f7;
+  --ec-teal-light:  #5cd0fa;
+  --ec-mint:        #34d399;
+  --ec-mint-light:  #6df2c1;
+  --ec-gold:        #f5b948;
+  --ec-gold-light:  #fbd384;
+  --ec-skill:       #eee6df;
+  --ec-slate:       #475569;
+  --ec-slate-light: #94a3b8;
+  --ec-card-bg:     #ffffff;
+  --ec-card-border: #dce4ed;
+  --ec-card-shadow: 0 6px 20px rgba(24, 43, 60, 0.06);
+  --ec-card-shadow-hover: 0 10px 28px rgba(24, 43, 60, 0.10);
+  --ec-radius:      14px;
+  --ec-radius-sm:   10px;
+  --ec-radius-lg:   18px;
+}
+
+/* ============================================================
+ * 2. COURSE LANDING — PAGE FRAME
+ * ============================================================ */
+
+/* Page bg = Skill beige — high specificity to beat theme defaults */
+body.engine-course-v1.path-course-view,
+body.engine-course-v1.path-course-view #page-wrapper,
+body.engine-course-v1.path-course-view #page-wrapper > #page,
+body.engine-course-v1.path-course-view #page-content,
+body.engine-course-v1.path-course-view section#region-main {
+  background: var(--ec-skill) !important;
+}
+
+body.engine-course-v1.path-course-view #region-main {
+  padding-top: 16px !important;
+}
+
+/* Hide engine theme's redundant course title H1 — our hero replaces it */
+body.engine-course-v1.path-course-view h1.heding.maincoursepage,
+body.engine-course-v1.path-course-view h1.maincoursepage,
+body.engine-course-v1.path-course-view h1.heding {
+  display: none !important;
+}
+
+body.engine-course-v1.path-course-view .course-title h2.h5 {
+  display: none !important;
+}
+
+body.engine-course-v1.path-course-view .course-title {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Tone down the standard page-header band so the hero stands out */
+body.engine-course-v1.path-course-view #page-header {
+  padding: 6px 0 0 !important;
+  background: transparent !important;
+  border-bottom: none !important;
+  margin-bottom: 8px;
+}
+
+body.engine-course-v1.path-course-view #page-header > .inner {
+  padding: 8px 20px !important;
+}
+
+/* Breadcrumb as a tight white "tertiary nav block" — matches activity-view mockup pattern */
+body.engine-course-v1.path-course-view div.breadcrumb {
+  display: inline-flex !important;
+  align-items: center !important;
+  background: #fff !important;
+  padding: 10px 18px !important;
+  margin: 0 0 14px 0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 8px rgba(24, 43, 60, 0.06) !important;
+  width: auto !important;
+  max-width: 100%;
+}
+
+body.engine-course-v1.path-course-view ol.breadcrumb,
+body.engine-course-v1.path-course-view .breadcrumb-item,
+body.engine-course-v1.path-course-view .secondary-navigation .nav-link {
+  line-height: 1.4 !important;
+}
+
+/* Inner nav + ol stay transparent — no nested block */
+body.engine-course-v1.path-course-view div.breadcrumb > nav,
+body.engine-course-v1.path-course-view div.breadcrumb ol.breadcrumb {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap;
+  gap: 4px;
+  list-style: none;
+  font-size: 0.84rem;
+}
+
+body.engine-course-v1.path-course-view .breadcrumb-item {
+  color: var(--ec-slate-light);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+body.engine-course-v1.path-course-view .breadcrumb-item + .breadcrumb-item::before {
+  content: '\203A';  /* › */
+  color: var(--ec-slate-light);
+  padding: 0 8px;
+  font-weight: 600;
+}
+
+body.engine-course-v1.path-course-view .breadcrumb-item a {
+  color: var(--ec-slate);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 2px 6px;
+  border-radius: 5px;
+  transition: background 0.15s, color 0.15s;
+}
+
+body.engine-course-v1.path-course-view .breadcrumb-item a:hover {
+  color: var(--ec-teal);
+  background: rgba(66, 195, 247, 0.08);
+}
+
+body.engine-course-v1.path-course-view .breadcrumb-item.active,
+body.engine-course-v1.path-course-view .breadcrumb-item:last-child {
+  color: var(--ec-navy);
+  font-weight: 700;
+}
+
+/* Widen content column — default 1270px is too narrow on wide viewports */
+body.engine-course-v1.path-course-view .container-fluid {
+  max-width: 1500px !important;
+}
+
+/* "Course management" / "Turn editing on" — inline action row top-right */
+body.engine-course-v1.path-course-view a[href*="management"],
+body.engine-course-v1.path-course-view a[href*="editmode"] {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ec-slate);
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+  text-decoration: none;
+}
+
+body.engine-course-v1.path-course-view a[href*="management"]:hover,
+body.engine-course-v1.path-course-view a[href*="editmode"]:hover {
+  background: rgba(66, 195, 247, 0.1);
+  color: var(--ec-navy);
+}
+
+/* ============================================================
+ * 2B. SECONDARY NAVIGATION TABS (Course | Settings | Participants | ...)
+ * ============================================================ */
+
+body.engine-course-v1.path-course-view .secondary-navigation {
+  background: #fff;
+  border-radius: 10px;
+  padding: 6px 8px;
+  box-shadow: 0 2px 8px rgba(24, 43, 60, 0.06);
+  margin: 0 0 18px 0;
+  width: auto !important;
+  display: inline-block !important;
+}
+
+body.engine-course-v1.path-course-view .secondary-navigation > nav,
+body.engine-course-v1.path-course-view .secondary-navigation > nav > ul {
+  width: auto !important;
+  display: flex !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body.engine-course-v1.path-course-view .secondary-navigation .nav-item {
+  border: none !important;
+  background: transparent !important;
+  margin: 0 3px !important;
+}
+
+body.engine-course-v1.path-course-view .secondary-navigation .nav-link {
+  border: none !important;
+  background: transparent !important;
+  color: var(--ec-slate) !important;
+  font-size: 0.88rem !important;
+  font-weight: 600;
+  padding: 8px 18px !important;
+  border-radius: 7px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 40px !important;
+  line-height: 1 !important;
+}
+
+body.engine-course-v1.path-course-view .secondary-navigation .nav-link:hover {
+  background: rgba(66, 195, 247, 0.08) !important;
+  color: var(--ec-navy) !important;
+}
+
+body.engine-course-v1.path-course-view .secondary-navigation .nav-link[aria-current="page"],
+body.engine-course-v1.path-course-view .secondary-navigation .nav-item.active > .nav-link,
+body.engine-course-v1.path-course-view .secondary-navigation .nav-link.active {
+  background: var(--ec-navy) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+body.engine-course-v1.path-course-view .secondary-navigation .dropdown-menu {
+  display: none !important;
+}
+
+body.engine-course-v1.path-course-view .secondary-navigation .dropdown.show .dropdown-menu,
+body.engine-course-v1.path-course-view .secondary-navigation .dropdown-menu.show {
+  display: block !important;
+  position: absolute !important;
+  background: #fff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(24, 43, 60, 0.12) !important;
+  padding: 6px !important;
+  min-width: 200px !important;
+  z-index: 1000;
+}
+
+body.engine-course-v1.path-course-view .secondary-navigation .dropdown-menu .dropdown-item {
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: var(--ec-slate) !important;
+  background: transparent !important;
+}
+
+body.engine-course-v1.path-course-view .secondary-navigation .dropdown-menu .dropdown-item:hover {
+  background: rgba(66, 195, 247, 0.08) !important;
+  color: var(--ec-navy) !important;
+}
+
+/* ============================================================
+ * 2A. COURSE HERO CARD (injected by JS as <section.engine-course-hero>)
+ * ============================================================ */
+
+.engine-course-v1.path-course-view .engine-course-hero {
+  background: linear-gradient(135deg, var(--ec-navy) 0%, var(--ec-navy-mid) 100%);
+  color: #fff;
+  border-radius: var(--ec-radius-lg);
+  padding: 36px 40px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(24, 43, 60, 0.18);
+}
+
+.engine-course-v1.path-course-view .engine-course-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(66, 195, 247, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(66, 195, 247, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  -webkit-mask-image: radial-gradient(ellipse at top right, #000 30%, transparent 80%);
+  mask-image: radial-gradient(ellipse at top right, #000 30%, transparent 80%);
+  pointer-events: none;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 36px;
+  align-items: center;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ec-teal);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__eyebrow::before {
+  content: '';
+  width: 20px;
+  height: 2px;
+  background: var(--ec-teal);
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  margin-bottom: 14px;
+  background: linear-gradient(120deg, var(--ec-teal-light) 0%, var(--ec-mint-light) 60%, var(--ec-mint) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__desc {
+  font-size: 0.98rem;
+  color: rgba(255, 255, 255, 0.78);
+  margin-bottom: 22px;
+  max-width: 540px;
+  line-height: 1.55;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 22px;
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__meta-item i {
+  color: var(--ec-teal);
+  font-size: 1rem;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__ctas {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+  transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__btn--primary {
+  background: var(--ec-teal);
+  color: var(--ec-navy);
+  padding: 14px 26px;
+  font-size: 0.94rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(66, 195, 247, 0.3);
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__btn--primary:hover {
+  background: var(--ec-teal-light);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(66, 195, 247, 0.4);
+  color: var(--ec-navy);
+  text-decoration: none;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero {
+  margin-top: 0 !important;
+  margin-bottom: 18px !important;
+}
+
+body.engine-course-v1.path-course-view #region-main {
+  padding-top: 0 !important;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__btn--ghost {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  text-decoration: none;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__progress {
+  background: rgba(12, 25, 38, 0.55);
+  border: 1.5px solid rgba(66, 195, 247, 0.3);
+  border-radius: var(--ec-radius);
+  padding: 22px;
+  backdrop-filter: blur(10px);
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__progress-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ec-teal);
+  margin-bottom: 14px;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__progress-pct {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 6px;
+  line-height: 1;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__progress-pct .denom {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 14px 0 8px;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ec-teal) 0%, var(--ec-mint) 100%);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__progress-counts {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.engine-course-v1.path-course-view .engine-course-hero__progress-counts strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .engine-course-v1.path-course-view .engine-course-hero__inner {
+    grid-template-columns: 1fr;
+  }
+  .engine-course-v1.path-course-view .engine-course-hero {
+    padding: 24px 24px;
+  }
+  .engine-course-v1.path-course-view .engine-course-hero__title {
+    font-size: 1.7rem;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 2a. Section card frame
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1.path-course-view li.section.course-section {
+  background: #fff !important;
+  border: 1px solid var(--ec-card-border);
+  border-left: 4px solid var(--ec-teal);
+  border-radius: var(--ec-radius-lg);
+  margin-bottom: 22px;
+  box-shadow: 0 10px 32px rgba(24, 43, 60, 0.10) !important;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+body.engine-course-v1.path-course-view li.section.course-section:hover {
+  box-shadow: 0 14px 36px rgba(24, 43, 60, 0.14) !important;
+}
+
+/* Section marked complete (added by JS when all activities in section are done) */
+body.engine-course-v1.path-course-view li.section.course-section.engine-section--complete {
+  border-left-color: var(--ec-mint);
+}
+
+/* ------------------------------------------------------------
+ * 2b. Section header bar (navy gradient default)
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1.path-course-view .course-section-header {
+  background: linear-gradient(135deg, var(--ec-navy) 0%, var(--ec-navy-mid) 100%);
+  color: #fff;
+  padding: 18px 24px;
+  position: relative;
+  border-radius: 0;
+  margin: 0;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-height: 62px !important;
+}
+
+/* Respect Bootstrap .d-none — never unhide bulkselect etc. */
+body.engine-course-v1.path-course-view .course-section-header .d-none,
+body.engine-course-v1.path-course-view .d-none {
+  display: none !important;
+}
+
+/* Inner flex wrapper (chevron + section-num) stays compact, left-aligned */
+body.engine-course-v1.path-course-view .course-section-header > .d-flex {
+  display: flex !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+}
+
+/* Title sits to the right of the chevron/badge, NOT centered.
+   Explicit height + line-height: 1 forces the text to vertically center
+   on the same baseline as the chevron and number badge. */
+body.engine-course-v1.path-course-view .course-section-header h3.sectionname,
+body.engine-course-v1.path-course-view .course-section-header .sectionname,
+body.engine-course-v1.path-course-view .course-section-header h3 {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 38px !important;
+  line-height: 1 !important;
+  margin: 0 0 0 4px !important;
+  padding: 0 !important;
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.012em !important;
+  color: #fff !important;
+  flex: 0 1 auto !important;
+}
+
+body.engine-course-v1.path-course-view .course-section-header h3.sectionname > a,
+body.engine-course-v1.path-course-view .course-section-header .sectionname > a,
+body.engine-course-v1.path-course-view .course-section-header h3 > a {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  line-height: 1 !important;
+  color: #fff !important;
+  text-decoration: none;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Inline-edit pencil (edit mode) stays vertically aligned with title */
+body.engine-course-v1.path-course-view .course-section-header .sectionname .quickeditlink {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+/* Right-side controls (Collapse all, action menu, badges) push to right */
+body.engine-course-v1.path-course-view .course-section-header > .sectionbadges,
+body.engine-course-v1.path-course-view .course-section-header > .section_action_menu,
+body.engine-course-v1.path-course-view .course-section-header > .collapseexpand,
+body.engine-course-v1.path-course-view .course-section-header a[href*="collapse"] {
+  margin-left: auto !important;
+}
+
+body.engine-course-v1.path-course-view .course-section-header .sectionname,
+body.engine-course-v1.path-course-view .course-section-header h3 {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.012em;
+  margin: 0;
+}
+
+/* Section number badge — injected by JS AFTER the chevron in the header.
+   The chevron sits to the LEFT of the badge in every section, consistently. */
+body.engine-course-v1.path-course-view .engine-section-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-right: 16px;
+  background: linear-gradient(135deg, var(--ec-teal-light) 0%, var(--ec-mint-light) 60%, var(--ec-mint) 100%);
+  color: var(--ec-navy);
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 3px 10px rgba(66, 195, 247, 0.25);
+  flex-shrink: 0;
+}
+
+/* Spacing between chevron and badge */
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"] {
+  margin-right: 14px !important;
+}
+
+/* Whole section header is clickable (JS wires the click to trigger the chevron) */
+body.engine-course-v1.path-course-view .course-section-header {
+  cursor: pointer !important;
+}
+
+body.engine-course-v1.path-course-view .course-section-header:hover {
+  filter: brightness(1.08);
+  transition: filter 0.15s;
+}
+
+/* Collapse/expand chevron */
+body.engine-course-v1.path-course-view .course-section-header .icons-collapse-expand {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(66, 195, 247, 0.3);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  color: #fff;
+  transition: background 0.18s, transform 0.25s;
+}
+
+body.engine-course-v1.path-course-view .course-section-header .icons-collapse-expand:hover {
+  background: rgba(66, 195, 247, 0.2);
+}
+
+body.engine-course-v1.path-course-view .course-section-header .icons-collapse-expand i {
+  color: #fff;
+}
+
+/* "Collapse all" link in header */
+body.engine-course-v1.path-course-view .course-section-header a[href*="collapse"],
+body.engine-course-v1.path-course-view .course-section-header .collapseexpand {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+body.engine-course-v1.path-course-view .course-section-header a[href*="collapse"]:hover {
+  color: var(--ec-teal-light);
+}
+
+/* ------------------------------------------------------------
+ * 2c. Banner image — rendered as a STRIP above the navy header.
+ * Standard navy gradient header still shows below for accordion clarity.
+ * JS injects <div class="engine-banner-img"> as a sibling above the header.
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1.path-course-view .engine-banner-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1575 / 360;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--ec-navy-deep);
+  border-radius: var(--ec-radius-lg) var(--ec-radius-lg) 0 0;
+}
+
+/* Hide the original banner img inside the section summary (JS uses it as the strip's bg) */
+body.engine-course-v1.path-course-view li.section.course-section.engine-has-banner .summarytext > .no-overflow > p:first-child img.img-fluid:first-child {
+  display: none;
+}
+body.engine-course-v1.path-course-view li.section.course-section.engine-has-banner .summarytext > .no-overflow > p:first-child {
+  display: none;
+}
+
+/* CHEVRON BUTTON — properly centered with single icon visible at a time.
+   The selector specificity is intentionally high so it beats other rules. */
+
+/* The chevron link itself is a flex-centered circle */
+body.engine-course-v1.path-course-view .course-section-header a[data-toggle="collapse"],
+body.engine-course-v1.path-course-view .course-section-header .icons-collapse-expand {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  margin-right: 14px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(66, 195, 247, 0.3) !important;
+  border-radius: 50% !important;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+/* Only ONE icon visible at a time based on aria-expanded state.
+   These have higher specificity than the generic flex rule below. */
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"][aria-expanded="true"] .expanded-icon {
+  display: flex !important;
+}
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"][aria-expanded="true"] .collapsed-icon {
+  display: none !important;
+}
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"][aria-expanded="false"] .collapsed-icon {
+  display: flex !important;
+}
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"][aria-expanded="false"] .expanded-icon {
+  display: none !important;
+}
+
+/* The visible icon span fills the chevron and centers the inner <i> */
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"] .expanded-icon,
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"] .collapsed-icon {
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100%;
+  height: 100%;
+  line-height: 1 !important;
+}
+
+/* The FA chevron icon itself — properly sized and centered */
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"] i.fa,
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"] i.icon {
+  font-size: 1rem !important;
+  line-height: 1 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  color: #fff !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Hide the SR-only "Collapse" / "Expand" text inside the chevron link */
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"] .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+/* The dir-rtl-hide wrapper around the collapsed-icon's <i> */
+body.engine-course-v1.path-course-view .course-section-header [data-toggle="collapse"] .dir-rtl-hide {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100%;
+  height: 100%;
+}
+
+/* ------------------------------------------------------------
+ * 2d. Section body — intro text below header
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1.path-course-view .course-content-item-content {
+  padding: 24px 32px 28px;
+}
+
+/* Round top corners of section header to match new card radius */
+body.engine-course-v1.path-course-view .course-section-header {
+  border-radius: var(--ec-radius-lg) var(--ec-radius-lg) 0 0 !important;
+}
+
+/* Override theme's !important on chevron toggle bg */
+body.engine-course-v1.path-course-view .css_6wum .course-section-header .btn-icon.icons-collapse-expand,
+body.engine-course-v1.path-course-view .course-section-header .btn-icon.icons-collapse-expand {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 50% !important;
+}
+
+body.engine-course-v1.path-course-view .summarytext {
+  color: var(--ec-slate);
+  font-size: 0.94rem;
+  line-height: 1.55;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ec-card-border);
+}
+
+body.engine-course-v1.path-course-view .summarytext p:last-child {
+  margin-bottom: 0;
+}
+
+/* If section has no intro text (only the banner), hide the empty separator */
+body.engine-course-v1.path-course-view li.section.course-section.engine-summary-empty .summarytext {
+  display: none;
+}
+
+/* ============================================================
+ * 3. ACTIVITY CARDS (lesson cards)
+ * ============================================================ */
+
+body.engine-course-v1.path-course-view li.activity.activity-wrapper {
+  background: var(--ec-card-bg);
+  border: 1.5px solid var(--ec-card-border);
+  border-radius: var(--ec-radius-sm);
+  margin-bottom: 12px;
+  padding: 0;
+  transition: transform 0.15s ease, box-shadow 0.18s ease, border-color 0.15s ease, background-color 0.15s ease !important;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(24, 43, 60, 0.04);
+  cursor: pointer;
+}
+
+/* Stronger button-like hover state */
+body.engine-course-v1.path-course-view li.activity.activity-wrapper:hover {
+  transform: translateY(-2px) !important;
+  border-color: var(--ec-teal) !important;
+  background: linear-gradient(180deg, rgba(66, 195, 247, 0.04) 0%, rgba(66, 195, 247, 0) 100%) !important;
+  box-shadow: 0 10px 28px rgba(66, 195, 247, 0.18) !important;
+}
+
+body.engine-course-v1.path-course-view li.activity.activity-wrapper:hover .activityname a {
+  color: var(--ec-teal) !important;
+}
+
+/* Done/To-do pill — hidden (we use a mint check icon overlay instead).
+   Only the actionable "Mark as done" button stays visible. */
+body.engine-course-v1.path-course-view li.activity .activity-completion .btn.btn-success,
+body.engine-course-v1.path-course-view li.activity .activity-completion .completion-dropdown,
+body.engine-course-v1.path-course-view li.activity .activity-completion .badge.badge-success,
+body.engine-course-v1.path-course-view li.activity .activity-completion .badge.bg-success {
+  display: none !important;
+}
+
+body.engine-course-v1.path-course-view li.activity .activity-completion .btn[data-toggletype="manual:done"] {
+  display: inline-flex !important;
+  padding: 5px 11px !important;
+  font-size: 0.74rem !important;
+}
+
+/* Mint check overlay on the icon when activity is complete */
+body.engine-course-v1.path-course-view li.activity .engine-icon {
+  position: relative;
+}
+
+body.engine-course-v1.path-course-view li.activity:has(.btn-success) .engine-icon::after,
+body.engine-course-v1.path-course-view li.activity:has([data-toggletype="manual:undo"]) .engine-icon::after {
+  content: '\2713';  /* checkmark */
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  background: var(--ec-mint);
+  color: var(--ec-navy);
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 900;
+  box-shadow: 0 2px 6px rgba(52, 211, 153, 0.35);
+  z-index: 5;
+}
+
+body.engine-course-v1.path-course-view li.activity .activity-item {
+  padding: 18px 24px !important;
+}
+
+body.engine-course-v1.path-course-view li.activity .activity-grid {
+  display: flex;
+  align-items: center !important;
+  gap: 18px !important;
+}
+
+/* Activity completion always pushed to right regardless of DOM order */
+body.engine-course-v1.path-course-view li.activity .activity-completion {
+  order: 99 !important;
+  margin-left: auto !important;
+  align-self: center !important;
+}
+
+/* Label specifically: completion is first in DOM — push it right, content stays left */
+body.engine-course-v1.path-course-view li.activity.modtype_label .activity-completion {
+  order: 99 !important;
+  margin-left: auto !important;
+  flex-shrink: 0;
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_label .activity-altcontent {
+  order: 1 !important;
+  flex: 1 1 auto;
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_label .activity-grid {
+  align-items: flex-start !important;
+  gap: 14px !important;
+}
+
+/* Activity name area — Moodle wraps the title in .activity-name-area */
+body.engine-course-v1.path-course-view .activity-name-area {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+/* Small "Page" / "Forum" subtitle that Moodle renders under the title */
+body.engine-course-v1.path-course-view .activity-name-area .text-uppercase,
+body.engine-course-v1.path-course-view .activity-name-area .resourcetype {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ec-slate-light);
+  margin-top: 2px;
+}
+
+/* Activity name */
+body.engine-course-v1.path-course-view .activityname a {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ec-navy);
+  letter-spacing: -0.005em;
+  text-decoration: none;
+}
+
+/* Hide screen-reader-only "You must..." text inside completion */
+body.engine-course-v1.path-course-view .activity-completion .text-muted,
+body.engine-course-v1.path-course-view .activity-completion .sr-only {
+  display: none;
+}
+
+/* Tight vertical alignment of completion pill with title */
+body.engine-course-v1.path-course-view .activity-completion {
+  display: flex;
+  align-items: center;
+  align-self: center !important;
+  margin-top: 0 !important;
+}
+
+body.engine-course-v1.path-course-view .activityname a:hover {
+  color: var(--ec-teal);
+}
+
+/* Hide activity intros on the landing page (banner + description preview).
+ * They render on the activity view itself. Removes vertical noise. */
+body.engine-course-v1.path-course-view li.activity:not(.modtype_label):not(.modtype_subsection):not(.modtype_folder):not(.modtype_book) .activity-description,
+body.engine-course-v1.path-course-view li.activity:not(.modtype_label):not(.modtype_subsection):not(.modtype_folder):not(.modtype_book) .activity-altcontent {
+  display: none;
+}
+
+/* ------------------------------------------------------------
+ * 3a. Activity completion (Done pill / Mark as done button)
+ * Restyle Bootstrap's btn-success → our mint
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1 .activity-completion .btn.btn-success {
+  background: var(--ec-mint);
+  border-color: var(--ec-mint);
+  color: var(--ec-navy);
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px rgba(52, 211, 153, 0.25);
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+body.engine-course-v1 .activity-completion .btn.btn-success:hover {
+  background: var(--ec-mint-light);
+  border-color: var(--ec-mint-light);
+  color: var(--ec-navy);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(52, 211, 153, 0.35);
+}
+
+/* "Mark as done" (not yet completed) — Moodle uses btn-outline-secondary or similar */
+body.engine-course-v1 .activity-completion .btn[data-toggletype="manual:done"] {
+  background: #fff;
+  border: 1.5px solid var(--ec-card-border);
+  color: var(--ec-slate);
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+}
+
+body.engine-course-v1 .activity-completion .btn[data-toggletype="manual:done"]:hover {
+  border-color: var(--ec-teal);
+  color: var(--ec-teal);
+  background: rgba(66, 195, 247, 0.06);
+}
+
+/* Auto-completion "Done: View" pill (dropdown) */
+body.engine-course-v1 .activity-completion .completion-dropdown .dropdown-toggle,
+body.engine-course-v1 .activity-completion .badge.badge-success,
+body.engine-course-v1 .activity-completion .badge.bg-success {
+  background: var(--ec-mint);
+  color: var(--ec-navy);
+  border-color: var(--ec-mint);
+  font-weight: 700;
+  border-radius: 999px;
+}
+
+/* ------------------------------------------------------------
+ * 3b. Modtype icon variants — gradient circles
+ * Hide Moodle's stock <img> icon; the JS injects .engine-icon
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1.path-course-view li.activity .activityiconcontainer {
+  display: none;  /* hide entire stock icon container, our .engine-icon replaces it */
+}
+
+body.engine-course-v1.path-course-view .engine-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  font-size: 1.2rem;
+  border: 2px solid var(--ec-navy);
+  box-shadow: 0 3px 10px rgba(66, 195, 247, 0.18);
+  background: linear-gradient(135deg, var(--ec-teal-light) 0%, var(--ec-mint-light) 60%, var(--ec-mint) 100%);
+  color: var(--ec-navy);
+}
+
+/* Per-modtype gradient variants */
+body.engine-course-v1.path-course-view .engine-icon--forum {
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  color: #fff;
+  border-color: #4c1d95;
+}
+body.engine-course-v1.path-course-view .engine-icon--feedback {
+  background: linear-gradient(135deg, #818cf8 0%, #4f46e5 100%);
+  color: #fff;
+  border-color: #312e81;
+}
+body.engine-course-v1.path-course-view .engine-icon--url {
+  background: linear-gradient(135deg, var(--ec-teal-light) 0%, var(--ec-teal) 100%);
+  color: var(--ec-navy);
+  border-color: var(--ec-navy);
+}
+body.engine-course-v1.path-course-view .engine-icon--folder {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #fff;
+  border-color: #92400e;
+}
+body.engine-course-v1.path-course-view .engine-icon--video {
+  background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+  color: #fff;
+  border-color: #831843;
+}
+body.engine-course-v1.path-course-view .engine-icon--interactive {
+  background: linear-gradient(135deg, #fb7185 0%, #e11d48 100%);
+  color: #fff;
+  border-color: #881337;
+}
+body.engine-course-v1.path-course-view .engine-icon--book {
+  background: linear-gradient(135deg, #94a3b8 0%, #475569 100%);
+  color: #fff;
+  border-color: var(--ec-navy);
+}
+body.engine-course-v1.path-course-view .engine-icon--quiz {
+  background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+  color: #fff;
+  border-color: #831843;
+}
+body.engine-course-v1.path-course-view .engine-icon--assign {
+  background: linear-gradient(135deg, var(--ec-teal-light) 0%, var(--ec-mint) 100%);
+  color: var(--ec-navy);
+  border-color: var(--ec-navy);
+}
+body.engine-course-v1.path-course-view .engine-icon--task {
+  background: linear-gradient(135deg, var(--ec-gold-light) 0%, var(--ec-gold) 100%);
+  color: var(--ec-navy);
+  border-color: #a16207;
+}
+
+/* ------------------------------------------------------------
+ * 3c. Label — render as a soft callout (not a card)
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1.path-course-view li.activity.modtype_label {
+  background: linear-gradient(135deg, rgba(66, 195, 247, 0.06) 0%, rgba(52, 211, 153, 0.06) 100%);
+  border: 1px solid rgba(66, 195, 247, 0.18);
+  padding: 12px 16px;
+  border-radius: var(--ec-radius-sm);
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_label:hover {
+  transform: none;
+  border-color: rgba(66, 195, 247, 0.3);
+  box-shadow: none;
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_label .activityiconcontainer {
+  display: none;  /* labels don't get a gradient icon */
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_label .activity-altcontent {
+  display: block;  /* labels DO show their content (unlike regular activities) */
+  color: var(--ec-slate);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_label .activity-altcontent img.img-fluid {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+/* Labels don't show the activity-name-area at all (no title) */
+body.engine-course-v1.path-course-view li.activity.modtype_label .activity-name-area {
+  display: none;
+}
+
+/* ------------------------------------------------------------
+ * 3d. Subsection — inset mini-section
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1.path-course-view li.activity.modtype_subsection {
+  background: linear-gradient(180deg, rgba(238, 230, 223, 0.4) 0%, transparent 100%);
+  border: 1px solid var(--ec-card-border);
+  border-left: 3px solid var(--ec-teal-light);
+  border-radius: var(--ec-radius-sm);
+  padding: 14px 18px 8px;
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_subsection .activity-altcontent {
+  display: block;
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_subsection .activity-altcontent li.activity {
+  margin-bottom: 8px;
+}
+
+/* ------------------------------------------------------------
+ * 3e. Folder — file tree restyle
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1.path-course-view li.activity.modtype_folder .activity-altcontent {
+  display: block;
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_folder .filename {
+  font-size: 0.92rem;
+  color: var(--ec-navy);
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_folder a[href*="folder/download"],
+body.engine-course-v1.path-course-view li.activity.modtype_folder .btn-secondary {
+  background: var(--ec-teal);
+  color: var(--ec-navy);
+  border: none;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.84rem;
+}
+
+/* ------------------------------------------------------------
+ * 3f. Task pages — gold/amber treatment
+ * Added by JS when activity name starts with "Task"
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1.path-course-view li.activity.engine-task {
+  border-left: 3px solid var(--ec-gold);
+}
+
+body.engine-course-v1.path-course-view li.activity.engine-task .activityname a::before {
+  content: 'Task';
+  display: inline-block;
+  background: var(--ec-gold);
+  color: var(--ec-navy);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-right: 10px;
+  vertical-align: 2px;
+}
+
+/* ------------------------------------------------------------
+ * 3g. Current activity — "Up next" treatment
+ * Added by JS to first incomplete activity
+ * ------------------------------------------------------------ */
+
+body.engine-course-v1.path-course-view li.activity.engine-current {
+  border-color: var(--ec-teal);
+  box-shadow: 0 0 0 3px rgba(66, 195, 247, 0.18);
+}
+
+body.engine-course-v1.path-course-view li.activity.engine-current .activity-completion::before {
+  content: 'Up next';
+  display: inline-block;
+  background: var(--ec-teal);
+  color: var(--ec-navy);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+  margin-right: 8px;
+}
+
+/* ============================================================
+ * 4. AVAILABILITY INFO ("Not available unless...")
+ * ============================================================ */
+
+body.engine-course-v1 .availabilityinfo {
+  background: rgba(245, 185, 72, 0.08);
+  border: 1px solid rgba(245, 185, 72, 0.3);
+  border-radius: var(--ec-radius-sm);
+  padding: 10px 14px;
+  color: var(--ec-navy);
+  font-size: 0.86rem;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body.engine-course-v1 .availabilityinfo::before {
+  content: '\f023';  /* FA lock — should already render via FontAwesome */
+  font-family: 'Font Awesome 6 Free', 'FontAwesome';
+  font-weight: 900;
+  color: var(--ec-gold);
+  font-size: 0.95rem;
+}
+
+body.engine-course-v1 .availabilityinfo .showmore-button {
+  color: var(--ec-teal);
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  padding: 0 4px;
+}
+
+body.engine-course-v1 .availabilityinfo .showmore-button:hover {
+  color: var(--ec-navy);
+  text-decoration: underline;
+}
+
+/* ============================================================
+ * 5. CERTIFICATE SECTION
+ * The cert section uses the standard navy section header
+ * (same as any non-banner section). Only the customcert
+ * ACTIVITY inside gets a subtle gold accent.
+ * ============================================================ */
+
+/* Cert section: looks like any other non-banner section */
+body.engine-course-v1.path-course-view li.section.engine-section--cert {
+  border: 1px solid var(--ec-card-border);
+  border-left: 4px solid var(--ec-teal);
+  border-radius: var(--ec-radius-lg);
+  background: #fff;
+  margin-top: 22px;
+  box-shadow: 0 10px 32px rgba(24, 43, 60, 0.10);
+}
+
+/* Customcert activity: gold left-border accent + gold seal icon */
+body.engine-course-v1.path-course-view li.activity.modtype_customcert {
+  border-left: 3px solid var(--ec-gold) !important;
+}
+
+body.engine-course-v1.path-course-view li.activity.modtype_customcert .engine-icon {
+  background: linear-gradient(135deg, var(--ec-gold-light) 0%, var(--ec-gold) 100%) !important;
+  border-color: #a16207 !important;
+  color: var(--ec-navy) !important;
+  box-shadow: 0 3px 10px rgba(245, 185, 72, 0.3) !important;
+}
+
+/* ============================================================
+ * 6. ACTIVITY VIEW (body.path-mod)
+ * Applies to all modtype detail pages
+ * ============================================================ */
+
+body.engine-course-v1.path-mod #region-main {
+  background: transparent;
+}
+
+/* Activity title */
+body.engine-course-v1.path-mod #region-main h2.activity-title,
+body.engine-course-v1.path-mod .activity-header h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.022em;
+  color: var(--ec-navy);
+  line-height: 1.15;
+}
+
+/* Completion strip at top of activity */
+body.engine-course-v1.path-mod [data-region="activity-information"] {
+  background: linear-gradient(180deg, rgba(66, 195, 247, 0.06) 0%, rgba(255, 255, 255, 0) 100%);
+  border: 1px solid var(--ec-card-border);
+  border-radius: var(--ec-radius-sm);
+  padding: 12px 16px;
+  margin: 14px 0 24px;
+}
+
+/* Activity body content typography */
+body.engine-course-v1.path-mod #region-main img.img-fluid {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+body.engine-course-v1.path-mod #region-main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2em 0;
+}
+
+/* Activity navigation (Previous / Next) */
+body.engine-course-v1.path-mod .activity_navigation {
+  display: flex;
+  gap: 14px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ec-card-border);
+}
+
+body.engine-course-v1.path-mod .activity_navigation .activity-navigation-prev,
+body.engine-course-v1.path-mod .activity_navigation .activity-navigation-next,
+body.engine-course-v1.path-mod .activity_navigation a {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 14px 18px;
+  background: #fff;
+  border: 1.5px solid var(--ec-card-border);
+  border-radius: var(--ec-radius-sm);
+  text-decoration: none;
+  color: var(--ec-navy);
+  transition: transform 0.15s, border-color 0.18s, box-shadow 0.18s;
+  font-weight: 700;
+}
+
+body.engine-course-v1.path-mod .activity_navigation a:hover {
+  transform: translateY(-1px);
+  border-color: var(--ec-teal);
+  box-shadow: 0 6px 18px rgba(66, 195, 247, 0.10);
+}
+
+/* Breadcrumb — make compact */
+body.engine-course-v1.path-mod nav .breadcrumb,
+body.engine-course-v1.path-mod ol.breadcrumb {
+  background: transparent;
+  font-size: 0.84rem;
+  padding: 0;
+}
+
+body.engine-course-v1.path-mod .breadcrumb-item a {
+  color: var(--ec-slate);
+  font-weight: 600;
+}
+
+body.engine-course-v1.path-mod .breadcrumb-item a:hover {
+  color: var(--ec-teal);
+}
+
+/* ============================================================
+ * 7. MOBILE / RESPONSIVE
+ * ============================================================ */
+
+@media (max-width: 768px) {
+  body.engine-course-v1.path-course-view .course-section-header {
+    padding: 14px 16px;
+  }
+  body.engine-course-v1.path-course-view .engine-banner-img {
+    aspect-ratio: 1575 / 380;
+  }
+  body.engine-course-v1.path-course-view .course-content-item-content {
+    padding: 16px;
+  }
+  body.engine-course-v1.path-course-view li.activity .activity-grid {
+    gap: 12px;
+  }
+  body.engine-course-v1.path-course-view .engine-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+  }
+  body.engine-course-v1.path-mod #region-main h2.activity-title,
+  body.engine-course-v1.path-mod .activity-header h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* ============================================================
+ * 8. EDIT MODE SAFEGUARDS
+ * Don't break Moodle's edit chrome
+ * ============================================================ */
+
+/* Ensure edit kebab and bulk-select sit ABOVE our card background */
+body.engine-course-v1.editing .action-menu,
+body.engine-course-v1.editing .section_action_menu,
+body.engine-course-v1.editing .inplaceeditable,
+body.engine-course-v1.editing .add-modchooser,
+body.engine-course-v1.editing .bulkselect {
+  position: relative;
+  z-index: 10;
+}
+
+/* Inline edit pencil — make visible on our restyled headers */
+body.engine-course-v1.editing.path-course-view .course-section-header .inplaceeditable a,
+body.engine-course-v1.editing.path-course-view .course-section-header .quickeditlink {
+  color: #fff;
+}
+
+/* (Old banner-title-restore-for-edit rule removed — title bar is always visible now) */
+.engine-course-v1.editing.path-course-view .__legacy_banner_edit__ {
+  display: inline-block;
+  margin: 14px;
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* In edit mode, ALL activity intros stay visible so admins can preview them */
+body.engine-course-v1.editing.path-course-view li.activity .activity-description,
+body.engine-course-v1.editing.path-course-view li.activity .activity-altcontent {
+  display: block;
+}
+
+/* End engine-course-css.css */

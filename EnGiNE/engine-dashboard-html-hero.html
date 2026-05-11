@@ -1,0 +1,47 @@
+<!--
+  EnGiNE Dashboard — Hero block
+  ------------------------------------------------------------
+  Paste the contents below (everything between the markers) into:
+
+    Site Admin (or with Turn editing on, on the dashboard) →
+    Add a block → Text → Configure block →
+    "Block contents" field → switch to HTML source view (< > icon)
+
+  Block title: leave EMPTY (uncheck "Display block title") — the
+  hero has its own greeting; an outer Moodle title would duplicate.
+
+  Place this block FIRST (top) of the dashboard's main column.
+  ------------------------------------------------------------
+-->
+<!-- ===== PASTE FROM HERE ===== -->
+<div class="ep-dash">
+  <section class="ep-dash__hero" aria-labelledby="ep-dash-greeting">
+    <div class="ep-dash__hero-inner">
+      <p class="ep-dash__section-label">Dashboard</p>
+      <h2 class="ep-dash__hero-greeting" id="ep-dash-greeting">
+        <span data-ep-greeting>Welcome back</span>, <span data-ep-firstname>Educator</span>
+      </h2>
+      <p class="ep-dash__hero-subhead">
+        Maine's Professional Learning Ecosystem for Educators &amp; School Staff. Pick up where you left off, or explore something new.
+      </p>
+      <div class="ep-dash__hero-ctas">
+        <a class="ep-dash__btn ep-dash__btn--primary" href="https://learn.moodle.rrev-engine.com/my/courses.php">
+          Browse My Courses <span class="ep-dash__btn-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <a class="ep-dash__btn ep-dash__btn--secondary" href="https://learn.moodle.rrev-engine.com/course/index.php">
+          Browse All Courses <span class="ep-dash__btn-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+
+    <aside class="ep-dash__hero-recent" aria-labelledby="ep-dash-recent-label">
+      <p class="ep-dash__hero-recent-label" id="ep-dash-recent-label">Recently Accessed</p>
+      <ul class="ep-dash__hero-recent-list" data-ep-recent-list>
+        <li class="ep-dash__hero-recent-empty-li">
+          <p class="ep-dash__hero-recent-empty">Loading recent courses&hellip;</p>
+        </li>
+      </ul>
+    </aside>
+  </section>
+</div>
+<!-- ===== PASTE TO HERE ===== -->

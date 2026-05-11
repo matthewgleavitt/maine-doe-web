@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EnGiNE Activity View — Comms Orientation Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+<style>
+:root{
+  --navy:#182b3c;
+  --navy-mid:#162d44;
+  --navy-deep:#0c1926;
+  --navy-light:#1e3a56;
+  --teal:#42c3f7;
+  --teal-light:#5cd0fa;
+  --mint:#34d399;
+  --mint-light:#6df2c1;
+  --gold:#f5b948;
+  --gold-light:#fbd384;
+  --skill:#eee6df;
+  --slate:#475569;
+  --slate-light:#94a3b8;
+  --card-border:#dce4ed;
+  --radius:14px;
+  --radius-sm:10px;
+  --radius-lg:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--skill);color:var(--navy);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.page{max-width:1240px;margin:0 auto;padding:24px 24px 80px}
+
+/* Two-page demo separator */
+.demo-divider{
+  text-align:center;font-size:0.78rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--slate-light);margin:60px 0 30px;padding:14px;border-top:1px dashed var(--slate-light);border-bottom:1px dashed var(--slate-light);
+}
+
+/* ---------- Tertiary nav (breadcrumb + back-to-course) ---------- */
+.tertiary-nav{
+  background:#fff;border-radius:var(--radius-sm);
+  padding:10px 16px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  box-shadow:0 2px 8px rgba(24,43,60,0.05);
+  font-size:0.85rem;
+}
+.breadcrumb{display:flex;align-items:center;gap:10px;color:var(--slate);overflow:hidden}
+.breadcrumb a, .breadcrumb span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.breadcrumb a{color:var(--slate);font-weight:600}
+.breadcrumb a:hover{color:var(--teal);text-decoration:none}
+.breadcrumb i.sep{color:var(--slate-light);font-size:0.9rem}
+.breadcrumb .current{color:var(--navy);font-weight:700}
+.tertiary-nav__back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:0.82rem;font-weight:600;color:var(--slate);
+  padding:6px 12px;border-radius:8px;
+  background:rgba(66,195,247,0.08);
+  white-space:nowrap;
+}
+.tertiary-nav__back:hover{background:rgba(66,195,247,0.16);color:var(--navy);text-decoration:none}
+
+/* ---------- Layout: content + sticky outline rail ---------- */
+.activity-layout{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:24px;
+  align-items:start;
+}
+
+/* ---------- Activity card ---------- */
+.activity{
+  background:#fff;
+  border:1px solid var(--card-border);
+  border-left:4px solid var(--teal);
+  border-radius:var(--radius);
+  box-shadow:0 6px 20px rgba(24,43,60,0.06);
+  overflow:hidden;
+}
+
+/* Activity-banner: a smaller version of the section banner (intro area in real data) */
+.activity__banner{
+  width:100%;
+  aspect-ratio: 1575 / 300;
+  background-size:cover;background-position:center;
+  background-color:#0c1926;
+}
+
+.activity__head{padding:24px 36px 18px;border-bottom:1px solid var(--card-border)}
+.activity__eyebrow{
+  display:flex;align-items:center;gap:10px;
+  font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:10px;
+}
+.activity__eyebrow .num{
+  background:var(--teal);color:var(--navy);
+  padding:2px 8px;border-radius:6px;font-weight:800;letter-spacing:0.06em;
+}
+.activity__title{
+  font-size:2rem;font-weight:800;letter-spacing:-0.022em;line-height:1.15;
+  color:var(--navy);margin-bottom:10px;
+}
+.activity__meta{
+  display:flex;flex-wrap:wrap;gap:18px;
+  font-size:0.84rem;color:var(--slate);
+}
+.activity__meta-item{display:inline-flex;align-items:center;gap:6px}
+.activity__meta-item i{color:var(--teal);font-size:1rem}
+.activity__meta-item.status{margin-left:auto}
+.activity__meta-item.status .pill{
+  display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;
+  font-weight:700;font-size:0.74rem;
+  background:rgba(52,211,153,0.12);color:#047857;border:1px solid rgba(52,211,153,0.4);
+}
+.activity__meta-item.status .pill.todo{background:#f1f5f9;color:var(--slate);border:1px dashed #cbd5e1}
+
+/* Top completion strip */
+.activity__top-cta{
+  padding:14px 36px;
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  background:linear-gradient(180deg, rgba(66,195,247,0.06) 0%, rgba(255,255,255,0) 100%);
+  border-bottom:1px solid var(--card-border);
+}
+.activity__top-cta .helper-text{font-size:0.82rem;color:var(--slate);font-weight:600}
+.activity__top-cta .helper-text i{color:var(--teal);margin-right:6px}
+
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:var(--radius-sm);
+  font-size:0.85rem;font-weight:700;cursor:pointer;border:0;
+  transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+  font-family:inherit;
+}
+.btn-primary{background:var(--teal);color:var(--navy)}
+.btn-primary:hover{background:var(--teal-light);transform:translateY(-1px);box-shadow:0 8px 22px rgba(66,195,247,0.35)}
+.btn-secondary{background:#fff;color:var(--slate);border:1.5px solid var(--card-border)}
+.btn-secondary:hover{border-color:var(--teal);color:var(--teal)}
+.btn-done{background:var(--mint);color:var(--navy);border:1.5px solid var(--mint)}
+.btn-done:hover{background:var(--mint-light)}
+
+/* Activity body content */
+.activity__body{
+  padding:32px 36px;
+  font-size:1rem;
+  color:#1f2937;
+  line-height:1.7;
+}
+.activity__body h1,.activity__body h2,.activity__body h3,.activity__body h4,.activity__body h5{
+  color:var(--navy);font-weight:700;letter-spacing:-0.012em;
+  margin:1.4em 0 0.5em;line-height:1.25;
+}
+.activity__body h3{font-size:1.4rem}
+.activity__body h4{font-size:1.15rem}
+.activity__body h5{font-size:1rem}
+.activity__body p{margin-bottom:1em}
+.activity__body img.img-fluid{max-width:100%;height:auto;border-radius:8px}
+.activity__body table{width:100%;border-collapse:collapse;margin:1.2em 0}
+.activity__body ul,.activity__body ol{margin:0.8em 0 1em 1.4em}
+.activity__body ul li, .activity__body ol li{margin-bottom:0.4em}
+
+/* Team grid (replaces the table in the real data — cleaner layout) */
+.team-grid{
+  display:grid;grid-template-columns:repeat(3, 1fr);gap:22px;
+  margin:24px 0;
+}
+.team-card{
+  background:linear-gradient(180deg, rgba(66,195,247,0.04), transparent 60%);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius-sm);
+  padding:18px 16px;text-align:center;
+  transition:transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+}
+.team-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(24,43,60,0.10);border-color:var(--teal)}
+.team-card img{
+  width:120px;height:120px;border-radius:50%;object-fit:cover;
+  border:3px solid var(--teal-light);box-shadow:0 6px 18px rgba(66,195,247,0.2);
+  display:block;margin:0 auto 12px;
+}
+.team-card__name{font-weight:800;color:var(--navy);font-size:1.02rem;margin-bottom:4px}
+.team-card__role{font-size:0.78rem;font-weight:600;color:var(--slate);letter-spacing:0.04em;text-transform:uppercase;margin-bottom:8px}
+.team-card__email{font-size:0.84rem;color:var(--teal);font-weight:600;word-break:break-word}
+
+/* Bottom completion + activity nav */
+.activity__bottom{
+  margin:0 36px;padding:24px 0;border-top:1px solid var(--card-border);
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+}
+.activity__bottom .mark-area{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.activity__bottom .mark-area .hint{font-size:0.78rem;color:var(--slate-light);font-weight:600}
+
+.activity-nav{
+  display:flex;align-items:stretch;justify-content:space-between;gap:14px;
+  padding:24px 36px 32px;
+  border-top:1px solid var(--card-border);
+  background:linear-gradient(180deg, rgba(238,230,223,0) 0%, rgba(238,230,223,0.4) 100%);
+}
+.activity-nav__btn{
+  display:flex;flex-direction:column;flex:1;
+  padding:14px 18px;border-radius:var(--radius-sm);
+  background:#fff;border:1.5px solid var(--card-border);
+  cursor:pointer;text-decoration:none;color:inherit;
+  transition:transform 0.15s, box-shadow 0.18s, border-color 0.18s;
+  min-width:0;
+}
+.activity-nav__btn:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 6px 18px rgba(66,195,247,0.10);text-decoration:none}
+.activity-nav__btn.next{text-align:right}
+.activity-nav__btn .label{font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--slate-light);margin-bottom:4px;display:inline-flex;align-items:center;gap:6px}
+.activity-nav__btn.next .label{justify-content:flex-end}
+.activity-nav__btn .title{font-size:0.92rem;font-weight:700;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.activity-nav__btn.disabled{opacity:0.4;cursor:not-allowed}
+.activity-nav__btn.disabled:hover{transform:none;border-color:var(--card-border);box-shadow:none}
+
+/* ---------- Sticky outline rail ---------- */
+.outline-rail{
+  position:sticky;top:24px;
+  background:#fff;
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  box-shadow:0 6px 20px rgba(24,43,60,0.06);
+  overflow:hidden;
+  max-height:calc(100vh - 48px);
+  display:flex;flex-direction:column;
+}
+.outline-rail__head{
+  padding:16px 18px;
+  background:linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  color:#fff;
+}
+.outline-rail__head h3{font-size:0.84rem;font-weight:700;letter-spacing:0.04em;line-height:1.3;margin-bottom:8px}
+.outline-rail__progress{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:0.72rem;color:rgba(255,255,255,0.7)}
+.outline-rail__progress .pct{font-weight:800;color:var(--mint-light)}
+.outline-rail__bar{height:5px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden;margin-top:8px}
+.outline-rail__bar-fill{height:100%;width:24%;background:linear-gradient(90deg, var(--teal) 0%, var(--mint) 100%);border-radius:999px}
+
+.outline-rail__list{overflow-y:auto;padding:8px 0}
+.outline-section{padding:4px 12px}
+.outline-section__title{
+  font-size:0.7rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--slate-light);padding:10px 8px 6px;
+  display:flex;align-items:center;gap:8px;
+}
+.outline-section__title .num{
+  width:18px;height:18px;border-radius:50%;
+  background:rgba(66,195,247,0.12);color:var(--teal);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:0.68rem;font-weight:800;
+  border:1px solid rgba(66,195,247,0.3);
+}
+.outline-section.is-complete .outline-section__title .num{background:var(--mint);color:var(--navy);border-color:var(--mint)}
+
+.outline-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 10px;border-radius:8px;
+  font-size:0.84rem;line-height:1.35;
+  color:var(--slate);
+  cursor:pointer;transition:background 0.12s,color 0.12s;
+  text-decoration:none;
+}
+.outline-item:hover{background:rgba(66,195,247,0.06);color:var(--navy);text-decoration:none}
+.outline-item.is-current{background:var(--navy);color:#fff;font-weight:700}
+.outline-item.is-current .outline-item__check{color:var(--teal-light)}
+.outline-item.is-complete{color:var(--navy)}
+.outline-item.is-complete .outline-item__check{color:var(--mint)}
+.outline-item.is-locked{color:var(--slate-light);cursor:not-allowed}
+.outline-item.is-locked .outline-item__check{color:var(--slate-light)}
+.outline-item__check{
+  width:18px;flex-shrink:0;margin-top:2px;
+  font-size:1.05rem;color:var(--slate-light);
+}
+.outline-item__text{min-width:0}
+.outline-item__type{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--slate-light);margin-bottom:2px}
+.outline-item.is-current .outline-item__type{color:var(--teal-light)}
+
+/* ===== CERTIFICATE CLAIM VIEW ===== */
+.cert-claim{
+  background:#fff;
+  border:1px solid var(--card-border);
+  border-left:4px solid var(--gold);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:0 6px 20px rgba(24,43,60,0.06);
+}
+.cert-claim__hero{
+  background:
+    radial-gradient(ellipse at top right, rgba(245,185,72,0.25), transparent 60%),
+    radial-gradient(ellipse at bottom left, rgba(52,211,153,0.15), transparent 55%),
+    linear-gradient(135deg, var(--navy-deep) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+  color:#fff;padding:40px 36px;
+  display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:center;
+  position:relative;
+}
+.cert-claim__hero::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg, var(--gold) 0%, var(--mint) 50%, var(--teal) 100%);
+}
+.cert-claim__seal{
+  width:140px;height:140px;flex-shrink:0;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, var(--gold-light), var(--gold) 70%);
+  border:6px double rgba(255,255,255,0.9);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--navy-deep);font-size:3.4rem;
+  box-shadow:0 0 0 4px rgba(245,185,72,0.2), 0 10px 30px rgba(0,0,0,0.3);
+  position:relative;
+}
+.cert-claim__seal::after{
+  content:'';position:absolute;
+  width:140%;height:16px;top:90%;left:-20%;
+  background:linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, transparent 100%);
+  border-radius:2px;transform:rotate(-3deg);z-index:-1;
+}
+.cert-claim__hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-0.018em;line-height:1.15;margin-bottom:8px;color:#fff}
+.cert-claim__hero p{color:rgba(255,255,255,0.82);font-size:0.96rem;max-width:620px}
+.cert-claim__hero .eyebrow{
+  font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--gold-light);margin-bottom:8px;display:flex;align-items:center;gap:10px;
+}
+.cert-claim__hero .eyebrow::before{content:'';width:24px;height:2px;background:var(--gold)}
+
+.cert-claim__body{padding:32px 36px}
+.cert-claim__preview{
+  border:2px solid var(--gold);border-radius:12px;
+  background:
+    linear-gradient(135deg, #fffdf6 0%, #fff8e7 100%);
+  padding:36px 30px;text-align:center;margin-bottom:24px;
+  position:relative;
+}
+.cert-claim__preview::before, .cert-claim__preview::after{
+  content:'';position:absolute;width:18px;height:18px;
+  border:2px solid var(--gold);
+}
+.cert-claim__preview::before{top:8px;left:8px;border-right:0;border-bottom:0}
+.cert-claim__preview::after{bottom:8px;right:8px;border-left:0;border-top:0}
+.cert-claim__preview .doe-name{
+  font-size:0.74rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:6px;
+}
+.cert-claim__preview .heading{
+  font-size:1.6rem;font-weight:800;color:var(--navy);
+  letter-spacing:-0.01em;margin-bottom:14px;
+}
+.cert-claim__preview .body-text{font-size:0.92rem;color:var(--slate);margin-bottom:18px}
+.cert-claim__preview .recipient{
+  font-family:'Playfair Display','Georgia',serif;
+  font-style:italic;font-size:2rem;color:var(--navy);
+  border-bottom:1px solid var(--gold);
+  display:inline-block;padding:0 30px 4px;margin-bottom:18px;
+}
+.cert-claim__preview .footer-row{
+  display:flex;justify-content:space-around;gap:24px;
+  font-size:0.78rem;color:var(--slate);
+  margin-top:18px;
+}
+.cert-claim__preview .footer-row strong{display:block;color:var(--navy);font-size:0.86rem;margin-bottom:2px}
+
+.cert-claim__actions{
+  display:flex;gap:12px;flex-wrap:wrap;padding-top:14px;
+}
+.cert-claim__badge-row{
+  margin-top:24px;padding:18px 22px;
+  background:rgba(52,211,153,0.08);
+  border:1px solid rgba(52,211,153,0.3);
+  border-radius:var(--radius-sm);
+  display:flex;align-items:center;gap:18px;
+}
+.cert-claim__badge-row .badge-icon{
+  width:54px;height:54px;flex-shrink:0;border-radius:50%;
+  background:linear-gradient(135deg, var(--mint) 0%, var(--teal) 100%);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;border:3px solid #fff;box-shadow:0 4px 12px rgba(52,211,153,0.4);
+}
+.cert-claim__badge-row .badge-text{flex:1}
+.cert-claim__badge-row .badge-text strong{display:block;color:var(--navy);font-size:0.98rem;margin-bottom:2px}
+.cert-claim__badge-row .badge-text span{font-size:0.84rem;color:var(--slate)}
+
+.btn-gold{background:var(--gold);color:var(--navy-deep);font-weight:800;padding:12px 22px}
+.btn-gold:hover{background:var(--gold-light);transform:translateY(-1px);box-shadow:0 8px 22px rgba(245,185,72,0.4)}
+
+@media(max-width:960px){
+  .activity-layout{grid-template-columns:1fr}
+  .outline-rail{position:relative;top:auto;max-height:none}
+  .team-grid{grid-template-columns:1fr}
+  .cert-claim__hero{grid-template-columns:1fr;text-align:center}
+  .cert-claim__seal{margin:0 auto}
+  .cert-claim__hero .eyebrow{justify-content:center}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ===================================== -->
+  <!-- VIEW 1: Regular page activity         -->
+  <!-- ===================================== -->
+
+  <!-- Tertiary nav -->
+  <nav class="tertiary-nav">
+    <div class="breadcrumb">
+      <a href="#"><i class="ri-home-4-line"></i></a>
+      <i class="ri-arrow-right-s-line sep"></i>
+      <a href="#">Communications Orientation</a>
+      <i class="ri-arrow-right-s-line sep"></i>
+      <a href="#">The Communications Team</a>
+      <i class="ri-arrow-right-s-line sep"></i>
+      <span class="current">Meet the Team!</span>
+    </div>
+    <a href="#" class="tertiary-nav__back"><i class="ri-arrow-left-line"></i> Back to course</a>
+  </nav>
+
+  <div class="activity-layout">
+
+    <!-- ====== Main content column ====== -->
+    <article class="activity">
+
+      <!-- Activity intro banner (from page intro image) -->
+      <div class="activity__banner" style="background-image:url(mbz-extract/assets/section-1-banner.png)"></div>
+
+      <header class="activity__head">
+        <div class="activity__eyebrow">
+          <span class="num">1.1</span>
+          Section 1 · The Communications Team
+        </div>
+        <h1 class="activity__title">Meet the Team!</h1>
+        <div class="activity__meta">
+          <span class="activity__meta-item"><i class="ri-book-line"></i> Reading</span>
+          <span class="activity__meta-item"><i class="ri-time-line"></i> ~8 min</span>
+          <span class="activity__meta-item"><i class="ri-eye-line"></i> Auto-complete on view</span>
+          <span class="activity__meta-item status"><span class="pill"><i class="ri-check-line"></i> Done</span></span>
+        </div>
+      </header>
+
+      <div class="activity__top-cta">
+        <div class="helper-text"><i class="ri-information-line"></i> You completed this activity by viewing it. Nothing more required.</div>
+        <button class="btn btn-secondary"><i class="ri-arrow-go-back-line"></i> Mark as not done</button>
+      </div>
+
+      <div class="activity__body">
+        <h5><strong>Meet the members of the Maine DOE Communications Team!</strong></h5>
+        <p>Hello new Maine DOE staff member!</p>
+        <p>First, we'd like to introduce our team members and share how you can contact us.</p>
+
+        <div class="team-grid">
+          <div class="team-card">
+            <img src="mbz-extract/assets/chloe.png" alt="Photo of Chloe Teboe">
+            <div class="team-card__name">Chloe Teboe</div>
+            <div class="team-card__role">Director of Communications</div>
+            <a href="mailto:Chloe.Teboe@maine.gov" class="team-card__email">Chloe.Teboe@maine.gov</a>
+          </div>
+          <div class="team-card">
+            <img src="mbz-extract/assets/rachel.png" alt="Photo of Rachel Paling">
+            <div class="team-card__name">Rachel Paling</div>
+            <div class="team-card__role">Communications Specialist</div>
+            <a href="mailto:Rachel.Paling@maine.gov" class="team-card__email">Rachel.Paling@maine.gov</a>
+          </div>
+          <div class="team-card">
+            <img src="mbz-extract/assets/matt.png" alt="Photo of Matt Leavitt">
+            <div class="team-card__name">Matt Leavitt</div>
+            <div class="team-card__role">Web &amp; Marketing</div>
+            <a href="mailto:Matthew.G.Leavitt@maine.gov" class="team-card__email">Matthew.G.Leavitt@maine.gov</a>
+          </div>
+        </div>
+
+        <p>Reach out any time — we're glad to help with branding, content review, social media, web changes, design needs, and anything else communications-related.</p>
+      </div>
+
+      <div class="activity__bottom">
+        <div class="mark-area">
+          <button class="btn btn-done"><i class="ri-check-line"></i> Done</button>
+          <span class="hint">Completed automatically when you viewed this page.</span>
+        </div>
+      </div>
+
+      <nav class="activity-nav">
+        <a href="#" class="activity-nav__btn prev">
+          <span class="label"><i class="ri-arrow-left-line"></i> Previous</span>
+          <span class="title">Welcome to Comms Orientation</span>
+        </a>
+        <a href="#" class="activity-nav__btn next">
+          <span class="label">Next <i class="ri-arrow-right-line"></i></span>
+          <span class="title">What We Do &amp; How We Can Help</span>
+        </a>
+      </nav>
+    </article>
+
+    <!-- ====== Outline rail ====== -->
+    <aside class="outline-rail">
+      <div class="outline-rail__head">
+        <h3>Communications Orientation</h3>
+        <div class="outline-rail__progress">
+          <span><span class="pct">24%</span> complete</span>
+          <span>5 of 21</span>
+        </div>
+        <div class="outline-rail__bar"><div class="outline-rail__bar-fill"></div></div>
+      </div>
+      <div class="outline-rail__list">
+
+        <div class="outline-section is-complete">
+          <div class="outline-section__title"><span class="num">0</span> Welcome</div>
+          <a href="#" class="outline-item is-complete">
+            <i class="outline-item__check ri-checkbox-circle-fill"></i>
+            <span class="outline-item__text">Welcome to Comms Orientation</span>
+          </a>
+        </div>
+
+        <div class="outline-section is-complete">
+          <div class="outline-section__title"><span class="num">1</span> The Communications Team</div>
+          <a href="#" class="outline-item is-current">
+            <i class="outline-item__check ri-checkbox-circle-fill"></i>
+            <span class="outline-item__text">
+              <div class="outline-item__type">Reading · Current</div>
+              Meet the Team!
+            </span>
+          </a>
+          <a href="#" class="outline-item is-complete">
+            <i class="outline-item__check ri-checkbox-circle-fill"></i>
+            <span class="outline-item__text">What We Do &amp; How We Can Help</span>
+          </a>
+          <a href="#" class="outline-item is-complete">
+            <i class="outline-item__check ri-checkbox-circle-fill"></i>
+            <span class="outline-item__text">Communications Portal</span>
+          </a>
+        </div>
+
+        <div class="outline-section">
+          <div class="outline-section__title"><span class="num">2</span> Types of Communications</div>
+          <a href="#" class="outline-item is-complete">
+            <i class="outline-item__check ri-checkbox-circle-fill"></i>
+            <span class="outline-item__text">Maine DOE Newsroom</span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">Social Media Marketing</span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">Notices &amp; Releases</span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">Newsletters &amp; Public Info</span>
+          </a>
+        </div>
+
+        <div class="outline-section">
+          <div class="outline-section__title"><span class="num">3</span> Content Submission</div>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">Approval Process &amp; Workflows</span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-flag-line" style="color:var(--gold)"></i>
+            <span class="outline-item__text">
+              <div class="outline-item__type" style="color:var(--gold)">Task</div>
+              Check with your supervisor
+            </span>
+          </a>
+        </div>
+
+        <div class="outline-section">
+          <div class="outline-section__title"><span class="num">4</span> Maine DOE Branding</div>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">Maine DOE Brand Guide</span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-flag-line" style="color:var(--gold)"></i>
+            <span class="outline-item__text">
+              <div class="outline-item__type" style="color:var(--gold)">Task</div>
+              Review the Brand Guide
+            </span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">Design &amp; Templates</span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">File Naming Convention</span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">The Images We Use</span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">Outlook &amp; Email Guidelines</span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-flag-line" style="color:var(--gold)"></i>
+            <span class="outline-item__text">
+              <div class="outline-item__type" style="color:var(--gold)">Task</div>
+              Email Signature
+            </span>
+          </a>
+        </div>
+
+        <div class="outline-section">
+          <div class="outline-section__title"><span class="num">5</span> Incoming Communications</div>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">Types of Incoming Communications</span>
+          </a>
+        </div>
+
+        <div class="outline-section">
+          <div class="outline-section__title"><span class="num">6</span> Marketing Tools</div>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">Maine DOE Website</span>
+          </a>
+          <a href="#" class="outline-item">
+            <i class="outline-item__check ri-checkbox-blank-circle-line"></i>
+            <span class="outline-item__text">Maine DOE Event Calendar</span>
+          </a>
+        </div>
+
+        <div class="outline-section">
+          <div class="outline-section__title"><span class="num">7</span> Congratulations</div>
+          <a href="#" class="outline-item is-locked">
+            <i class="outline-item__check ri-lock-line"></i>
+            <span class="outline-item__text">
+              <div class="outline-item__type">Certificate</div>
+              Claim certificate
+            </span>
+          </a>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ===================================== -->
+  <!-- VIEW 2: Certificate Claim             -->
+  <!-- ===================================== -->
+
+  <div class="demo-divider">View 2 · Certificate Claim (after all prerequisites met)</div>
+
+  <nav class="tertiary-nav">
+    <div class="breadcrumb">
+      <a href="#"><i class="ri-home-4-line"></i></a>
+      <i class="ri-arrow-right-s-line sep"></i>
+      <a href="#">Communications Orientation</a>
+      <i class="ri-arrow-right-s-line sep"></i>
+      <a href="#">Congratulations</a>
+      <i class="ri-arrow-right-s-line sep"></i>
+      <span class="current">Communications Orientation Certificate</span>
+    </div>
+    <a href="#" class="tertiary-nav__back"><i class="ri-arrow-left-line"></i> Back to course</a>
+  </nav>
+
+  <section class="cert-claim">
+    <div class="cert-claim__hero">
+      <div class="cert-claim__seal"><i class="ri-award-fill"></i></div>
+      <div>
+        <div class="eyebrow">Final · Section 7</div>
+        <h1>Congratulations — you've finished!</h1>
+        <p>You've completed every activity in the Communications Orientation. Claim your certificate below and the communications team will award your Communications Onboarding badge to your profile.</p>
+      </div>
+    </div>
+
+    <div class="cert-claim__body">
+
+      <div class="cert-claim__preview">
+        <div class="doe-name">Maine Department of Education</div>
+        <div class="heading">Certificate of Completion</div>
+        <p class="body-text">This certifies that</p>
+        <div class="recipient">Matt Leavitt</div>
+        <p class="body-text">has successfully completed the<br><strong>Communications Orientation</strong> course on May 11, 2026.</p>
+        <div class="footer-row">
+          <div><strong>Chloe Teboe</strong>Director of Communications</div>
+          <div><strong>MDOE-101</strong>Course ID</div>
+          <div><strong>0.5 CEU</strong>Contact hours</div>
+        </div>
+      </div>
+
+      <div class="cert-claim__actions">
+        <button class="btn btn-gold"><i class="ri-download-2-line"></i> Download certificate (PDF)</button>
+        <button class="btn btn-secondary"><i class="ri-mail-send-line"></i> Email to me</button>
+        <button class="btn btn-secondary"><i class="ri-share-line"></i> Share to LinkedIn</button>
+      </div>
+
+      <div class="cert-claim__badge-row">
+        <div class="badge-icon"><i class="ri-medal-2-fill"></i></div>
+        <div class="badge-text">
+          <strong>Communications Onboarding badge</strong>
+          <span>Added to your EnGiNE profile and visible to your team.</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

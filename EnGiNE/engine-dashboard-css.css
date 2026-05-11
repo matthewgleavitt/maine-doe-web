@@ -1,0 +1,1371 @@
+/* ============================================================
+   EnGiNE Dashboard — Production CSS
+   ------------------------------------------------------------
+   Paste into:
+     Site Admin → Appearance → Themes → New Learning → Style →
+     Custom CSS (TEXT FIELD — never the file upload)
+
+   After pasting:
+     Site Admin → Development → Purge all caches
+     Hard-refresh (Cmd+Shift+R) the dashboard
+
+   Scope: every selector starts with `body.path-my` so nothing
+   leaks to course pages, admin pages, or any other layout.
+   The .ep-dash class wraps our two custom HTML blocks and is
+   only ever rendered on the /my dashboard.
+   ------------------------------------------------------------
+   WCAG 2.0 AA compliance:
+     - Section labels on light backgrounds use #075985 (~6.5:1
+       on #f0f4f8, ~8.2:1 on #fff). Brand teal #42c3f7 fails on
+       light bg (~1.7:1) and is ONLY used on dark navy contexts
+       inside the hero.
+     - Body text uses #475569 slate (~6.8:1 on light bg).
+     - Focus rings present on all interactive elements.
+     - prefers-reduced-motion gate disables all hover/transition
+       transforms.
+   ============================================================ */
+
+/* ---------- Page-level: scoped to /my dashboard only ---------- */
+
+/* Dashboard page bg is now a soft beige (Maine DOE brand-adjacent
+   warm light tone) so the white cards pop against it instead of
+   blending. The cards keep their white bg + teal left accent. */
+body.path-my,
+body.path-my #page,
+body.path-my #page-content,
+body.path-my #region-main,
+body.path-my main {
+  background-color: #eee6df !important;
+  background-image: none !important;
+}
+body.path-my #region-main > div,
+body.path-my #region-main > section,
+body.path-my #region-main [class*="container"],
+body.path-my #region-main [class*="row"]:not(.card-text):not(.tabs-content):not(.toolbar-row):not(.btn-row),
+body.path-my #region-main [class*="col-"]:not([class*="col-form"]),
+body.path-my #region-main-box,
+body.path-my #region-main-settings-menu,
+body.path-my .pagelayout-mydashboard > div,
+body.path-my .content-col,
+body.path-my .section-inner {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Hide Moodle's native Recently Accessed Courses block.
+   Its data is reused inside the hero by the JS below. We use
+   a screen-reader-style hide (NOT display:none) so any AJAX
+   that depends on the block being in layout still runs.
+   Using clip-path (modern, standards-compliant) — the older
+   `clip: rect()` syntax was tripping the SCSS preprocessor. */
+body.path-my section.block.block_recentlyaccessedcourses {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Hide Moodle's pale-blue page header entirely (display:none, not just visually hidden).
+   The hero IS the page header, and leaving #page-header in flow was pushing the hero
+   down ~64px. */
+body.path-my #page-header { display: none !important; }
+body.path-my .secondary-navigation,
+body.path-my .page-secnav { display: none !important; }
+
+/* DON'T override .header-gap or .sidebar-footer — let the theme's default
+   sidebar behavior apply, same as on every other page. Every override we
+   tried (header-gap height, sidebar height, footer margin) caused regressions
+   that only appeared on /my. The v1.6 sidebar CSS Matt already maintains is
+   self-consistent and works correctly when we don't touch it. */
+
+/* Strip leaked top padding/margin so #region-main starts immediately under
+   the subnav, aligned with the sidebar items. */
+body.path-my #page-content,
+body.path-my #region-main,
+body.path-my #region-main-box,
+body.path-my #region-main-settings-menu {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Override Moodle's .limitedwidth body class AND Bootstrap's .container-fluid
+   max-width (1270px with auto-center margins) so dashboard content fills the
+   full available width. Was being squeezed to ~1210px and offset 472px right. */
+body.path-my.limitedwidth #page,
+body.path-my.limitedwidth #page-content,
+body.path-my.limitedwidth #region-main,
+body.path-my.limitedwidth #region-main-box,
+body.path-my.limitedwidth main {
+  max-width: none !important;
+}
+body.path-my .container,
+body.path-my .container-fluid,
+body.path-my .container-sm,
+body.path-my .container-md,
+body.path-my .container-lg,
+body.path-my .container-xl,
+body.path-my .container-xxl {
+  max-width: 1800px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+/* Keep header container at theme default (1270px) so the EnGiNE
+   logo stays centered in the header instead of being flush left
+   from the wider content max-width rule above. */
+body.path-my .header-inner2 .container-fluid,
+.header-inner2 .container-fluid {
+  max-width: 1270px !important;
+}
+/* Always reserve 220px of left clearance for the sidebar regardless of
+   viewport width — auto-centering alone doesn't guarantee clearance on
+   narrower screens. */
+body.path-my #page-content {
+  padding-left: 220px !important;
+}
+
+/* Course Overview's course-card grid uses Bootstrap row-cols with gutters that
+   push single cards to the middle. Reset gutters so cards sit flush left. */
+body.path-my section.block.block_myoverview .card-grid.row,
+body.path-my section.block.block_courseoverview .card-grid.row {
+  --bs-gutter-x: 16px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+body.path-my section.block.block_myoverview .card-grid > .col,
+body.path-my section.block.block_courseoverview .card-grid > .col {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Course-card styling: brand navy border instead of light gray, brand
+   navy "Enter this course" button, brand teal progress fill, brand
+   navy percent-complete text. */
+body.path-my .myc-item.card,
+body.path-my .course-card.card,
+body.path-my .dashboard-card,
+body.path-my section.block.block_myoverview .card,
+body.path-my section.block.block_courseoverview .card {
+  border-color: #182b3c !important;
+}
+body.path-my .myc-item .btn-primary,
+body.path-my .course-card .btn-primary,
+body.path-my .dashboard-card .btn-primary,
+body.path-my section.block.block_myoverview .btn-primary,
+body.path-my section.block.block_courseoverview .btn-primary,
+body.path-my section.block.block_myoverview a.btn:not(.coursemenubtn),
+body.path-my section.block.block_courseoverview a.btn:not(.coursemenubtn) {
+  background-color: #182b3c !important;
+  border-color: #182b3c !important;
+  color: #fff !important;
+}
+body.path-my .myc-item .btn-primary:hover,
+body.path-my section.block.block_myoverview .btn-primary:hover,
+body.path-my section.block.block_courseoverview .btn-primary:hover,
+body.path-my section.block.block_myoverview a.btn:not(.coursemenubtn):hover,
+body.path-my section.block.block_courseoverview a.btn:not(.coursemenubtn):hover {
+  background-color: #1e3a56 !important;
+  border-color: #1e3a56 !important;
+}
+
+/* Progress bar: brand teal fill, brand navy text */
+body.path-my .myc-progress-bar .progress-bar,
+body.path-my section.block.block_myoverview .progress-bar,
+body.path-my section.block.block_courseoverview .progress-bar {
+  background-color: #42c3f7 !important;
+}
+body.path-my .progress-text,
+body.path-my section.block.block_myoverview .progress-text,
+body.path-my section.block.block_courseoverview .progress-text {
+  color: #182b3c !important;
+}
+
+/* Blocks panel push — translate .pagelayout-b (the wrapper for
+   breadcrumb + content + footer) so they all shift together when the
+   blocks panel opens. Was only shifting #region-main before, which
+   left the breadcrumb covered. Shift 280px to fully clear the blocks
+   panel (225-456 range = 231px wide + buffer). */
+body {
+  overflow-x: hidden !important;
+}
+body .pagelayout-b {
+  transition: transform 0.3s ease !important;
+}
+body.tgsdbb_open .pagelayout-b {
+  transform: translateX(280px) !important;
+}
+
+/* Native Moodle blocks: white card body with a dark navy header band.
+   The h3/h5 heading inside breaks out via negative margins to form the band.
+   Matches the hero's visual language: dark with subtle teal grid pattern. */
+body.path-my section.block.block_myoverview,
+body.path-my section.block.block_courseoverview,
+body.path-my section.block.block_news_items,
+body.path-my section.block.block_recentlyaccesseditems {
+  background: #fff !important;
+  border: 0 !important;
+  border-left: 4px solid #42c3f7 !important;
+  border-radius: 12px !important;
+  padding: 0 28px 16px 28px !important;  /* slimmer horizontal padding */
+  box-shadow: 0 8px 24px rgba(24,43,60, 0.08) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dark navy band header — solid gradient (no grid pattern), slimmer
+   padding and smaller font for sleeker feel per user request. */
+body.path-my section.block.block_myoverview .card-title,
+body.path-my section.block.block_myoverview h3.card-title,
+body.path-my section.block.block_myoverview h5.card-title,
+body.path-my section.block.block_courseoverview .card-title,
+body.path-my section.block.block_courseoverview h3.card-title,
+body.path-my section.block.block_courseoverview h5.card-title,
+body.path-my section.block.block_news_items h3,
+body.path-my section.block.block_news_items h5,
+body.path-my section.block.block_recentlyaccesseditems h3,
+body.path-my section.block.block_recentlyaccesseditems h5 {
+  position: relative;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  text-transform: none !important;
+  line-height: 1.2 !important;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+  color: #fff !important;
+  background-color: #182b3c !important;
+  background-image: linear-gradient(135deg, #182b3c 0%, #162d44 100%) !important;
+  margin: 0 -28px 18px -28px !important;
+  padding: 18px 28px !important;
+  border-bottom: 1px solid rgba(66,195,247, 0.22) !important;
+  display: block !important;
+}
+
+/* Make region-content a flex column so we can both space + reorder children.
+   Tighter 16px gap and 0 top padding for a more compact dashboard rhythm. */
+body.path-my #block-region-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  padding-top: 0 !important;
+  background: transparent !important;
+}
+body.path-my #block-region-content > section.block.card { order: 0; margin: 0 !important; }
+body.path-my #block-region-content > section.block.block_news_items { order: 99; }
+
+/* Remove invisible siblings from flex flow so flex gap only applies
+   between actual visible blocks. Without this, each invisible <span>
+   or sr-only link between blocks added another gap-16 to the layout,
+   creating inconsistent spacing (16px between some blocks, 48px+
+   between others). */
+body.path-my #block-region-content > h2.sr-only,
+body.path-my #block-region-content > a.sr-only-focusable,
+body.path-my #block-region-content > span[id^="sb-"] {
+  position: absolute !important;
+}
+
+/* Strip default Card chrome from the Custom HTML blocks (Hero + Disciplines).
+   They handle their own framing inside .ep-dash. */
+body.path-my section.block.block_html {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Kill TOP-LEVEL .card-body padding only — don't touch nested card-bodies
+   inside individual course cards (that'd break their layout). */
+body.path-my #block-region-content > section.block > .card-body,
+body.path-my #block-region-content > section.block > .card-body > .content {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+/* Kill stray block margins so the flex gap on #block-region-content is the
+   only spacer between sections. */
+body.path-my #block-region-content > section.block {
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+body.path-my .ep-dash { margin: 0 !important; }
+
+/* ---------- .ep-dash custom content ---------- */
+
+body.path-my .ep-dash {
+  --navy: #182b3c;
+  --navy-mid: #162d44;
+  --navy-light: #1e3a56;
+  --teal: #42c3f7;
+  --teal-glow: rgba(66,195,247, 0.5);
+  --slate: #475569;
+  --card-border: #dce4ed;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 24px;
+  --label-on-light: #075985; /* WCAG AA */
+
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  color: var(--navy-mid);
+}
+
+/* ---------- Hero ---------- */
+
+body.path-my .ep-dash__hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 40px;
+  align-items: stretch;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  border: 2px solid rgba(66,195,247, 0.4);
+  border-radius: var(--radius);
+  padding: 32px 44px;  /* top/bottom 32, sides 44 — feels more square */
+  color: #fff;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+body.path-my .ep-dash__hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(66,195,247,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(66,195,247,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  -webkit-mask-image: radial-gradient(ellipse at top right, #000 30%, transparent 80%);
+          mask-image: radial-gradient(ellipse at top right, #000 30%, transparent 80%);
+  pointer-events: none;
+}
+body.path-my .ep-dash__hero-inner { position: relative; z-index: 1; }
+
+/* Section labels — default (light bg context). Hero overrides below. */
+body.path-my .ep-dash__section-label {
+  color: var(--label-on-light);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 0 18px 0;
+}
+body.path-my .ep-dash__section-label::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 2px;
+  background: var(--label-on-light);
+}
+/* Hero's section labels sit on dark navy → teal passes contrast */
+body.path-my .ep-dash__hero .ep-dash__section-label,
+body.path-my .ep-dash__hero-recent-label {
+  color: var(--teal);
+}
+body.path-my .ep-dash__hero .ep-dash__section-label::before,
+body.path-my .ep-dash__hero-recent-label::before {
+  background: var(--teal);
+}
+
+/* Greeting — blue→green ombre clipped to text */
+body.path-my .ep-dash__hero-greeting {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0 0 8px 0;
+  color: #5cd0fa; /* fallback for browsers without background-clip */
+  background: linear-gradient(120deg, #5cd0fa 0%, #6df2c1 60%, #34d399 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body.path-my .ep-dash__hero-greeting [data-ep-firstname] {
+  background: inherit;
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body.path-my .ep-dash__hero-subhead {
+  font-size: 1.1rem;
+  color: rgba(255,255,255, 0.85);
+  max-width: 560px;
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+}
+
+/* Hero CTAs — both buttons identical (filled teal, navy text) */
+body.path-my .ep-dash__hero-ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+body.path-my .ep-dash__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 2px solid var(--teal);
+  background: var(--teal);
+  color: var(--navy);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+body.path-my .ep-dash__btn:hover {
+  background: #5cd0fa;
+  border-color: #5cd0fa;
+  box-shadow: 0 8px 24px var(--teal-glow);
+  transform: translateY(-1px);
+}
+body.path-my .ep-dash__btn:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+body.path-my .ep-dash__btn-arrow { font-weight: 400; transition: transform 0.2s; }
+body.path-my .ep-dash__btn:hover .ep-dash__btn-arrow { transform: translateX(3px); }
+
+/* Hero right column — Recently Accessed mini-list */
+body.path-my .ep-dash__hero-recent {
+  position: relative; z-index: 1;
+  border-left: 1px solid rgba(66,195,247, 0.25);
+  padding-left: 28px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+body.path-my .ep-dash__hero-recent-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 0 0 16px 0;
+  display: flex; align-items: center; gap: 12px;
+}
+body.path-my .ep-dash__hero-recent-label::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 2px;
+}
+body.path-my .ep-dash__hero-recent-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+body.path-my .ep-dash__hero-recent-item a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px;
+  color: rgba(255,255,255, 0.92);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.15s, transform 0.15s, color 0.15s;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+body.path-my .ep-dash__hero-recent-item a:hover {
+  background: rgba(66,195,247, 0.12);
+  color: #fff;
+  transform: translateX(2px);
+}
+body.path-my .ep-dash__hero-recent-item a:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+body.path-my .ep-dash__hero-recent-arrow {
+  color: var(--teal);
+  flex-shrink: 0;
+  font-size: 0.95rem;
+  transition: transform 0.15s;
+}
+body.path-my .ep-dash__hero-recent-item a:hover .ep-dash__hero-recent-arrow { transform: translateX(3px); }
+body.path-my .ep-dash__hero-recent-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body.path-my .ep-dash__hero-recent-empty {
+  color: rgba(255,255,255, 0.65);
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  line-height: 1.5;
+  margin: 0;
+}
+body.path-my .ep-dash__hero-recent-empty a {
+  color: var(--teal);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(66,195,247, 0.5);
+}
+body.path-my .ep-dash__hero-recent-empty a:hover { border-bottom-style: solid; }
+
+/* ---------- Discipline tile section — encapsulated as a card matching native blocks ---------- */
+
+body.path-my .ep-dash__section {
+  background: #fff;
+  border: 0;
+  border-left: 4px solid var(--teal);
+  border-radius: 12px;
+  padding: 0 28px 16px 28px;
+  margin: 0;
+  box-shadow: 0 8px 24px rgba(24,43,60, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+/* Dark navy band header — solid gradient (grid pattern removed) */
+body.path-my .ep-dash__section-header {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 -28px 18px -28px;
+  padding: 18px 28px;
+  background-color: #182b3c;
+  background-image: linear-gradient(135deg, #182b3c 0%, #162d44 100%);
+  border-bottom: 1px solid rgba(66,195,247, 0.22);
+}
+body.path-my .ep-dash__section-header h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+  color: #fff;
+}
+/* Hide the small "EXPLORE" label and "Tap any discipline" subhead — extra noise. */
+body.path-my .ep-dash__section-header .ep-dash__section-label,
+body.path-my .ep-dash__section-header .ep-dash__section-meta { display: none; }
+body.path-my .ep-dash__section-meta {
+  color: var(--slate);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+body.path-my .ep-dash__tile-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+/* Discipline tile — dark navy gradient bg with light text + greeting-gradient icon */
+body.path-my .ep-dash__tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  border: 1px solid rgba(255,255,255, 0.12);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 10px 10px 0;
+  text-decoration: none;
+  color: rgba(255,255,255, 0.92);
+  box-shadow: 0 4px 14px rgba(24,43,60, 0.18), inset 0 1px 0 rgba(255,255,255, 0.04);
+  transition: transform 0.15s, box-shadow 0.15s, border-left-width 0.15s, background 0.15s, border-color 0.15s;
+  min-height: 60px;
+}
+body.path-my .ep-dash__tile:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(24,43,60, 0.30), inset 0 1px 0 rgba(255,255,255, 0.08);
+  border-left-width: 5px;
+  border-color: rgba(66,195,247, 0.30);
+}
+body.path-my .ep-dash__tile:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+/* Tile icon — Font Awesome glyph in a greeting-gradient square with navy ring.
+   Carries the blue→green ombre from the hero greeting. */
+body.path-my .ep-dash__tile-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #5cd0fa 0%, #6df2c1 60%, #34d399 100%) !important;
+  border: 2px solid var(--navy-mid) !important;
+  color: var(--navy) !important; /* override existing .icon { color: #42c3f7 } */
+  flex-shrink: 0;
+  font-size: 17px;
+  line-height: 1;
+  box-shadow: 0 4px 12px rgba(24,43,60, 0.18), inset 0 1px 0 rgba(255,255,255, 0.4);
+}
+body.path-my .ep-dash__tile:hover .ep-dash__tile-icon {
+  box-shadow: 0 6px 16px rgba(24,43,60, 0.25),
+              inset 0 1px 0 rgba(255,255,255, 0.5),
+              0 0 0 3px rgba(66,195,247, 0.18);
+}
+body.path-my .ep-dash__tile-title {
+  flex: 1;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+  line-height: 1.2;
+  margin: 0;
+}
+body.path-my .ep-dash__tile-count {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255,255,255, 0.92);
+  font-weight: 600;
+  background: rgba(66,195,247, 0.16);
+  padding: 3px 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  border: 1px solid rgba(66,195,247, 0.28);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1280px) {
+  body.path-my .ep-dash__tile-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 1100px) {
+  body.path-my .ep-dash__hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  body.path-my .ep-dash__hero-recent {
+    border-left: none;
+    border-top: 1px solid rgba(66,195,247, 0.25);
+    padding-left: 0;
+    padding-top: 22px;
+  }
+}
+@media (max-width: 1000px) {
+  body.path-my .ep-dash__tile-grid { grid-template-columns: repeat(3, 1fr); }
+  body.path-my .ep-dash__hero { padding: 44px 32px; }
+  body.path-my .ep-dash__hero-greeting { font-size: 2rem; }
+}
+@media (max-width: 640px) {
+  body.path-my .ep-dash__tile-grid { grid-template-columns: repeat(2, 1fr); }
+  body.path-my .ep-dash__hero { padding: 32px 24px; }
+  body.path-my .ep-dash__hero-greeting { font-size: 1.6rem; }
+  body.path-my .ep-dash__hero-subhead { font-size: 1rem; }
+  body.path-my .ep-dash__btn { padding: 12px 20px; font-size: 0.9rem; }
+}
+@media (max-width: 420px) {
+  body.path-my .ep-dash__tile-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   GLOBAL — applies on every page, NOT scoped to body.path-my
+   ------------------------------------------------------------
+   Sidebar canonical menu support, top-bar hide, and bookmarks /
+   search styling for the items the JS moves into the sidebar.
+   ============================================================ */
+
+/* Hide the top sticky navigation entirely. Bookmarks and search
+   are moved into the sidebar by the JS; everything else in the
+   top bar duplicates what the sidebar already provides. Removing
+   this also kills the sticky-on-scroll behavior that was causing
+   the sidebar-top gap on every page. */
+#main-navigation {
+  display: none !important;
+}
+
+/* Hide unused/unwanted theme-generated sidebar items. The JS wipes
+   the sidebar for non-power users, so these rules only matter for
+   admin/manager — but they're written unscoped for safety. */
+.tgsdb-quicklinks .item-frontpage,
+.tgsdb-quicklinks .item-blog,
+.tgsdb-quicklinks .item-calendar,
+.tgsdb-quicklinks .item-badges {
+  display: none !important;
+}
+
+/* Bookmarks: the live <li class="bookmarks-item"> is moved from the
+   top nav into the sidebar UL. Its dropdown was absolute-positioned
+   for horizontal nav; restyle for vertical sidebar context so the
+   dropdown expands inline below the trigger instead of overlapping.
+
+   IMPORTANT: theme attaches a STATIC class `onhover` to .bookmarks-item
+   meaning "this dropdown opens on hover" — NOT "currently being hovered".
+   Don't use .onhover in show selectors. Real interaction is :hover or
+   the .show class that theme JS toggles on click. */
+.tgsdb-quicklinks > .ep-sidebar-bookmarks {
+  list-style: none;
+  position: relative;
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks > .mb2mm-action {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px;
+  width: 100% !important;
+  padding: 12px 16px !important;
+  background: transparent !important;
+  border: 0 !important;
+  text-align: left !important;
+  font: inherit !important;
+  cursor: pointer;
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks > .mb2mm-action > i.ri-bookmark-line {
+  flex-shrink: 0;
+  font-size: 18px !important;  /* match theme item icons (18px) */
+  color: #fff !important;       /* was rendering rgb(0,0,0) without this */
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks > .mb2mm-action .text,
+.tgsdb-quicklinks > .ep-sidebar-bookmarks > .mb2mm-action .mb2mm-label {
+  color: #fff;
+  font-size: 0.95rem;
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks > .mb2mm-action:hover,
+.tgsdb-quicklinks > .ep-sidebar-bookmarks > .mb2mm-action:focus-visible {
+  background: rgba(66,195,247, 0.08) !important;
+}
+/* Hide horizontal-nav specific decorative elements when bookmarks is
+   in sidebar context — these were arrows/chevrons for the top-bar
+   dropdown indicator and don't belong in vertical layout. */
+.tgsdb-quicklinks > .ep-sidebar-bookmarks .mb2mm-arrow,
+.tgsdb-quicklinks > .ep-sidebar-bookmarks > .mb2mm-ddarrow,
+.tgsdb-quicklinks > .ep-sidebar-bookmarks > .mb2mm-toggle {
+  display: none !important;
+}
+/* Bookmarks dropdown — flyout panel to the RIGHT of the sidebar.
+   Uses position:FIXED (not absolute) because the sidebar's parents
+   (.tgsdb-quicklinks: overflow-x hidden, .sidebar-content: overflow
+   hidden) clip absolute-positioned descendants. Fixed positioning
+   escapes those overflow contexts entirely. JS computes top/left
+   from the trigger's getBoundingClientRect on hover/focus/click.
+
+   Light panel + dark text matches the rest of the dashboard's card
+   aesthetic — sidebar is dark, content world is light. */
+.tgsdb-quicklinks > .ep-sidebar-bookmarks > .theme-bookmarks {
+  position: fixed !important;
+  width: 280px !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 6px 0 !important;
+  border: 1px solid rgba(24,43,60, 0.12) !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  box-shadow: 0 12px 28px rgba(0,0,0, 0.18) !important;
+  z-index: 10000 !important;
+  display: none;
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks:hover > .theme-bookmarks,
+.tgsdb-quicklinks > .ep-sidebar-bookmarks:focus-within > .theme-bookmarks,
+.tgsdb-quicklinks > .ep-sidebar-bookmarks.show > .theme-bookmarks {
+  display: block !important;
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks .theme-bookmarks li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks .theme-bookmarks a {
+  display: block;
+  padding: 9px 16px;
+  color: #182b3c;
+  text-decoration: none;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks .theme-bookmarks a:hover {
+  background: rgba(24,43,60, 0.06);
+  color: #182b3c;
+}
+/* "Bookmark this page" — sits at top of the panel as a quiet utility
+   action. Brand dark navy text on white. Divider underneath separates
+   it from saved bookmarks list below. */
+.tgsdb-quicklinks > .ep-sidebar-bookmarks .theme-bookmarks-add {
+  border-bottom: 1px solid rgba(24,43,60, 0.10);
+  margin-bottom: 4px;
+  padding: 0 !important;
+  background: transparent !important;
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks .theme-bookmarks-add .theme-bookmarks-form,
+.tgsdb-quicklinks > .ep-sidebar-bookmarks .theme-bookmarks-form.mb2mm-action {
+  display: block !important;
+  width: 100% !important;
+  padding: 9px 16px !important;
+  margin: 0 !important;
+  color: #182b3c !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  text-align: left !important;
+  font: inherit !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  cursor: pointer;
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks .theme-bookmarks-add .theme-bookmarks-form:hover,
+.tgsdb-quicklinks > .ep-sidebar-bookmarks .theme-bookmarks-form.mb2mm-action:hover {
+  background: rgba(24,43,60, 0.06) !important;
+  color: #182b3c !important;
+}
+.tgsdb-quicklinks > .ep-sidebar-bookmarks .theme-bookmarks-add .mb2mm-label {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* Sidebar search — plain sidebar item styling (white icon + label,
+   transparent bg, hover tint). The teal CTA the user wants is on the
+   HEADER search button, NOT this one. */
+.tgsdb-quicklinks > .ep-sidebar-search {
+  list-style: none;
+  margin: 0 !important;
+}
+.tgsdb-quicklinks > .ep-sidebar-search > .ep-sidebar-search-btn {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px;
+  width: 100% !important;
+  padding: 10px 16px !important;
+  background: transparent !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  text-align: left !important;
+  font: inherit !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+.tgsdb-quicklinks > .ep-sidebar-search > .ep-sidebar-search-btn:hover,
+.tgsdb-quicklinks > .ep-sidebar-search > .ep-sidebar-search-btn:focus-visible {
+  background: rgba(66,195,247, 0.08) !important;
+}
+/* Hide both of the theme's existing search icons (.icon FA fallback +
+   .icon1 Remix). The .icon1 class carries top-bar styling baggage we
+   couldn't fully override. JS injects a fresh <i class="ri-search-line
+   ep-sidebar-search-icon"> with no extra class names so it renders
+   exactly like other sidebar item icons. */
+.tgsdb-quicklinks > .ep-sidebar-search > .ep-sidebar-search-btn .icon,
+.tgsdb-quicklinks > .ep-sidebar-search > .ep-sidebar-search-btn .icon1 {
+  display: none !important;
+}
+.tgsdb-quicklinks > .ep-sidebar-search > .ep-sidebar-search-btn .ep-sidebar-search-icon {
+  display: inline-block !important;
+  flex-shrink: 0;
+  order: 0;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  color: #fff !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;  /* theme applies scale(1.9) to search icons */
+}
+.tgsdb-quicklinks > .ep-sidebar-search > .ep-sidebar-search-btn .text1,
+.tgsdb-quicklinks > .ep-sidebar-search > .ep-sidebar-search-btn .text {
+  display: inline-block !important;
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  clip: auto !important;
+  clip-path: none !important;
+  order: 1;
+  font-size: 0.95rem;
+  font-weight: 500 !important;
+  color: #fff !important;
+  flex: 1;
+}
+
+/* Role-label divider: ADMIN / role text sits ABOVE a thin teal line
+   (was: line above text), centered, matching the page-header
+   underline thickness for visual consistency. No flex push to the
+   bottom — let admin items flow naturally after canonical/bookmarks/
+   search. The auto-margin push was creating an awkward visual gap
+   that made the spacing read as broken. */
+.tgsdb-quicklinks > .ep-sidebar-rolelabel {
+  list-style: none;
+  margin: 18px 14px 6px 14px !important;
+  padding: 0 6px 14px 6px !important;     /* reduced from 24px — slightly less space between text and line */
+  border-top: 0;
+  border-bottom: 2px solid #42c3f7 !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #42c3f7 !important;
+  pointer-events: none;
+}
+.tgsdb-quicklinks > .ep-sidebar-rolelabel .ep-sidebar-rolelabel-text {
+  display: block;
+  color: #42c3f7 !important;
+}
+/* Tighten the gap between .tgsdb-quicklinks and .tgsdb-admin-links so
+   Theme settings / Site administration appear continuous with the admin
+   items above (instead of floating with a visible gap). */
+.tgsdb-admin-links {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Hide the Block-drawer toggle pane (.sidebar-tabs) for non-power
+   users only. Admins, managers, course creators, and teachers need
+   it to add/remove dashboard blocks. Hidden by default; whitelisted
+   for roles that legitimately need to edit. */
+.sidebar-tabs {
+  display: none !important;
+}
+body.isadmin .sidebar-tabs,
+body.roleshortname-manager .sidebar-tabs,
+body.roleshortname-coursecreator .sidebar-tabs,
+body.roleshortname-editingteacher .sidebar-tabs {
+  display: block !important;
+}
+
+/* Header FIXED (was sticky which un-sticks at end of parent).
+   Fixed always stays at viewport top. Body gets padding-top to
+   reserve the header's space so content doesn't render under it. */
+
+header#main-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 100 !important;
+}
+
+.toggle-sidebar {
+  position: fixed !important;
+  top: 157px !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 200px !important;
+  height: auto !important;
+  z-index: 50 !important;
+}
+
+/* Navy strip extending the full document height on the left side —
+   only when sidebar is OPEN (body has .tgsdb_open). When user
+   collapses the sidebar, the strip disappears too so there's no
+   phantom navy bar left behind. */
+body.tgsdb_open::before {
+  content: '';
+  position: absolute;
+  top: 157px;
+  left: 0;
+  bottom: 0;
+  width: 200px;
+  background: #182b3c;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Collapse arrow — left: 20px (theme intended), z-index 60 (above
+   sidebar's 50). Teal border ONLY when sidebar is collapsed (no
+   .tgsdb_open on body) — at that point it's a small floating
+   "bubble" that benefits from the accent. When expanded, the arrow
+   sits inside the sidebar and a border would be visually noisy. */
+button.tgsdb_btn {
+  left: 20px !important;
+  z-index: 60 !important;
+}
+body:not(.tgsdb_open) button.tgsdb_btn {
+  border: 2px solid #42c3f7 !important;
+}
+.toggle-sidebar,
+.sidebar-content,
+.sidebar-inner {
+  background-color: #182b3c !important;
+}
+
+/* Footer — dodge the sidebar by padding-left when sidebar is open
+   so the footer doesn't get hidden behind the column. Also force
+   full viewport width so it reaches the right edge. The yui_*
+   wrappers around the footer have a max-width: 100% that resolves
+   to a sub-viewport width (~1700px on a 1763px viewport) — force
+   them to full width too. */
+body.tgsdb_open .theme-footer,
+body.tgsdb_open footer.master-footer,
+body.tgsdb_open #site-footer {
+  padding-left: 220px !important;
+}
+.theme-footer,
+footer.master-footer,
+.page-c,
+.pagelayout,
+.pagelayout-b {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+/* .pagelayout is display:flex flex-row; pagelayout-b is its flex
+   item. Default flex sizing was rendering it at content width
+   (1700px) regardless of width: 100%. Force flex-grow so it fills
+   all available horizontal space. */
+.pagelayout-b {
+  flex: 1 1 100% !important;
+}
+
+/* Kill the redundant .header-gap element inside the sidebar. It was
+   a 157px-tall spacer originally pushing sidebar items below the
+   page header. With the new sidebar architecture (top: 124px,
+   already below header), this gap is dead weight creating visible
+   empty space above the first menu item. */
+.header-gap {
+  height: 0 !important;
+  min-height: 0 !important;
+  display: none !important;
+}
+
+/* Footer internal padding compression — reduce extra vertical space
+   inside the footer so it feels less dominant relative to short
+   content pages. Theme padding was 30px top / 30px bottom; tighten
+   to 24px / 20px which still gives breathing room for the content
+   inside. */
+.theme-footer,
+footer.master-footer {
+  padding-top: 24px !important;
+  padding-bottom: 20px !important;
+}
+
+/* ============================================================
+   Custom footer content (.ep-footer) — 3-col grid layout
+   ============================================================ */
+.ep-footer { color: rgba(255,255,255, 0.88); font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
+.ep-footer__grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 24px;
+}
+.ep-footer__col { min-width: 0; }
+.ep-footer__heading {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #42c3f7;
+  margin: 0 0 12px 0;
+}
+.ep-footer__address,
+.ep-footer__contact {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin: 0 0 14px 0;
+}
+.ep-footer__contact a {
+  color: rgba(255,255,255, 0.88);
+  text-decoration: none;
+}
+.ep-footer__contact a:hover { color: #42c3f7; }
+.ep-footer__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ep-footer__list li { margin-bottom: 8px; }
+.ep-footer__list a {
+  color: rgba(255,255,255, 0.88);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.ep-footer__list a:hover { color: #42c3f7; }
+.ep-footer__disclaimer,
+.ep-footer__copyright {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: rgba(255,255,255, 0.65);
+  margin: 12px 0 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255, 0.12);
+}
+.ep-footer__copyright {
+  padding-top: 0;
+  border-top: 0;
+  margin-top: 8px;
+}
+@media (max-width: 900px) {
+  .ep-footer__grid { grid-template-columns: 1fr; gap: 24px; }
+}
+
+/* Social icons — brand teal-to-mint gradient instead of brand
+   colors of individual platforms. Targets the theme's footer
+   social icon links. */
+.theme-footer .footer-social a,
+.theme-footer [class*="social"] a,
+footer .footer-social a {
+  background: linear-gradient(135deg, #5cd0fa 0%, #6df2c1 60%, #34d399 100%) !important;
+  border-radius: 9px !important;
+  color: #182b3c !important;
+  border: 0 !important;
+}
+.theme-footer .footer-social a:hover,
+.theme-footer [class*="social"] a:hover,
+footer .footer-social a:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+.theme-footer .footer-social a i,
+.theme-footer [class*="social"] a i,
+footer .footer-social a i {
+  color: #182b3c !important;
+}
+
+
+/* html bg navy — catches any white-leak above the top-bar (browser
+   default body margin, theme spacers, overscroll). Without this,
+   any small space above body renders as white showing through. */
+html {
+  background-color: #182b3c !important;
+}
+
+/* Defensive: body bg white globally, margin 0, padding-top for the
+   fixed header, position: relative for the ::before pseudo strip.
+   min-width: 1200px so when the window shrinks, the page horizontal-
+   scrolls instead of letting content slide under the sidebar. */
+body {
+  background-color: #fff !important;
+  margin: 0 !important;
+  padding-top: 157px !important;
+  position: relative !important;
+  min-width: 1200px !important;
+}
+
+/* #main-content is between body and the actual page content. Theme
+   default leaves it transparent, which means any gap between content
+   end and footer start renders with html navy showing through. White
+   bg by default; beige on /my so it blends with the dashboard bg. */
+#main-content {
+  background-color: #fff !important;
+}
+body.path-my #main-content {
+  background-color: #eee6df !important;
+}
+
+/* Force every layer inside the sidebar to the same navy bg, so any
+   theme-internal element with a slightly different default doesn't
+   create a visible color variation at the bottom (or anywhere else). */
+.toggle-sidebar,
+.toggle-sidebar .sidebar-inner,
+.toggle-sidebar .sidebar-content,
+.toggle-sidebar .sidebar-tabs,
+.toggle-sidebar .sidebar-tabs-list,
+.toggle-sidebar .sidebar-menu {
+  background-color: #182b3c !important;
+}
+
+/* Header search button (next to ML user avatar) — was theme's
+   #324f70 navy. Restyle as teal CTA matching the homepage's primary
+   button: brand teal bg, navy text, rounded. Add gap from the ML
+   avatar so they don't read as overlapping. */
+.header-buttons a.link-replace.mb2-pb-btn.typeprimary,
+a.link-replace.mb2-pb-btn.typeprimary {
+  background: #42c3f7 !important;
+  color: #182b3c !important;
+  border: 0 !important;
+  font-weight: 600 !important;
+  margin-left: 12px !important;
+}
+.header-buttons a.link-replace.mb2-pb-btn.typeprimary:hover,
+a.link-replace.mb2-pb-btn.typeprimary:hover {
+  background: #5dd4ff !important;
+  color: #182b3c !important;
+}
+
+/* Narrow-viewport sidebar clearance — apply padding-left to
+   .pagelayout-b (the wrapper for breadcrumb + content + footer) so
+   ALL the page parts shift together when window narrows. Previously
+   only #page-content had this, so the breadcrumb area slid under the
+   sidebar on narrow windows while content pushed forward correctly. */
+@media (max-width: 1700px) {
+  body.tgsdb_open .pagelayout-b {
+    padding-left: 220px !important;
+  }
+}
+
+/* Active page: mint/green for both icon AND text. Theme has rule
+   `.tgsdb-quicklinks > li.ep-canonical > a.item-link > i` with
+   specificity (0,0,3,3) that beat the simpler selector. Adding
+   .ep-canonical AND .item-link AND .ep-active to win specificity
+   battle on canonical items. */
+.tgsdb-quicklinks > li.ep-canonical.ep-active > a.item-link > i,
+.tgsdb-quicklinks > li.ep-canonical.ep-active > a > .static-icon > i,
+.tgsdb-quicklinks > li.ep-active > a.item-link > i,
+.tgsdb-quicklinks > li.ep-active > a > .static-icon > i,
+.tgsdb-quicklinks > li.ep-active > button > i,
+.tgsdb-admin-links > li.ep-active > a.item-link > i,
+.tgsdb-admin-links > li.ep-active > a > .static-icon > i {
+  color: #34d399 !important;
+}
+.tgsdb-quicklinks > li.ep-canonical.ep-active > a.item-link > .text,
+.tgsdb-quicklinks > li.ep-active > a > .text,
+.tgsdb-quicklinks > li.ep-active > button > .text,
+.tgsdb-quicklinks > li.ep-active > button > .mb2mm-label,
+.tgsdb-admin-links > li.ep-active > a > .text {
+  color: #34d399 !important;
+}
+
+/* Turn editing on — when body.editing is set (editing mode active),
+   color the menu item mint green to signal the active state, same
+   as the active-page indicator for other items. */
+body.editing .tgsdb-quicklinks > .item-turneditingcourse > a.item-link > i,
+body.editing .tgsdb-quicklinks > .item-turneditingcourse > a > .static-icon > i,
+body.editing .tgsdb-quicklinks > .item-turneditingcourse > a > .text {
+  color: #34d399 !important;
+}
+
+/* Canonical sidebar items injected by JS — flex layout to match theme's
+   horizontal item rendering. Color is intentionally NOT set here so the
+   theme's native sidebar item color cascade applies (was inheriting page
+   gray when overridden). */
+.tgsdb-quicklinks > li.ep-canonical > a.item-link {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+}
+.tgsdb-quicklinks > li.ep-canonical > a.item-link:hover {
+  background: rgba(66,195,247, 0.08);
+}
+.tgsdb-quicklinks > li.ep-canonical > a.item-link > i {
+  flex-shrink: 0;
+  font-size: 18px !important;  /* match theme item icons — was 15.75px */
+  color: #fff !important;
+}
+.tgsdb-quicklinks > li.ep-canonical > a.item-link .text {
+  font-size: 0.95rem;
+}
+
+/* ============================================================
+   GLOBAL — brand color alignment with engine.maine.gov homepage
+   ------------------------------------------------------------
+   Source palette (engine-homepage-drupal.html):
+     --navy:       #182b3c   (header, footer)
+     --navy-mid:   #162d44
+     --teal:       #42c3f7   (accents, brand mark)
+     --glass-border: rgba(255,255,255,0.15)
+   Current Moodle theme uses #324f70 in header/footer (too light) and
+   #d2451e (red-orange) under page headers — both off-brand. Override
+   to bring everything in line with the public site.
+   ============================================================ */
+
+/* Header band — gradient + thicker (157px total = top-bar 37 +
+   header-inner2 120). Vertical centering on .flexcols ONLY — that's
+   the actual flex container holding logo + tools. Avoid forcing
+   flex on .container-fluid/.row/.col-md-12 (breaks Bootstrap
+   centering and pushes elements to the left). */
+.header-inner2 {
+  background-color: #182b3c !important;
+  background-image: linear-gradient(180deg, #182b3c 0%, #1e3a56 100%) !important;
+  min-height: 120px !important;
+}
+.header-inner2 .flexcols {
+  align-items: center !important;
+  min-height: 120px !important;
+}
+
+/* Top utility bar — slightly darker than the header band for layered
+   depth (deep navy at the very top, transitioning down). */
+.top-bar {
+  background-color: #0c1926 !important;
+  background-image: linear-gradient(180deg, #0c1926 0%, #182b3c 100%) !important;
+  border-bottom: 1px solid rgba(255,255,255, 0.10) !important;
+}
+
+/* Footer — gradient ombre matching the header, slightly lighter to
+   give visual depth (avoids the all-flat-navy feel). Going from a
+   mid-navy at top down to deeper navy at bottom. */
+.theme-footer,
+footer.master-footer,
+footer .footer,
+#site-footer {
+  background-color: #182b3c !important;
+  background-image: linear-gradient(180deg, #1e3a56 0%, #182b3c 100%) !important;
+  border-top: 1px solid rgba(255,255,255, 0.15) !important;
+}
+
+/* Replace red-orange page-header underline (#d2451e) with brand teal.
+   The thin band sits below page titles / above content on internal
+   pages — was reading as a Maine.gov state-color accent that doesn't
+   belong in EnGiNE's palette. */
+#page-header {
+  border-bottom-color: #42c3f7 !important;
+}
+
+/* Sidebar-footer — hidden entirely. Theme settings + Site admin are
+   relocated into .tgsdb-quicklinks (main menu) by JS, so this footer
+   container is empty and visible only as a stray dark stripe at the
+   bottom of the sidebar. Killing it removes the "two menu" feel. */
+.sidebar-footer {
+  display: none !important;
+}
+
+/* Removed HR pseudo-element above arrow — was creating a visible
+   dark band at the bottom of the sidebar that user didn't want. */
+
+/* Unified dimensions for ALL sidebar clickable items. Padding-left
+   is 14px (matches theme canonical default) so content aligns
+   exactly across Blocks, canonical menu, bookmarks, search, admin
+   items. Blocks gets margin-left:6 to align with sidebar-menu's
+   natural inset (sidebar-tabs has no parent padding by default). */
+.toggle-sidebar .tgsdb-quicklinks > li > a.item-link,
+.toggle-sidebar .tgsdb-quicklinks > .ep-sidebar-bookmarks > .mb2mm-action,
+.toggle-sidebar .tgsdb-quicklinks > .ep-sidebar-search > .ep-sidebar-search-btn,
+.toggle-sidebar .tgsdb-admin-links > li > a.item-link,
+.toggle-sidebar .sidebar-tabs-list .tgsdb-btn {
+  height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
+  padding: 10px 14px !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+}
+.toggle-sidebar .sidebar-tabs-list .tgsdb-btn {
+  margin-left: 6px !important;  /* match sidebar-menu's natural left offset */
+}
+
+/* Unified hover state — boosted specificity with .toggle-sidebar
+   prefix so theme's button-specific hover rules can't override. */
+.toggle-sidebar .tgsdb-quicklinks > li > a:hover,
+.toggle-sidebar .tgsdb-quicklinks > li > a:focus-visible,
+.toggle-sidebar .tgsdb-quicklinks > li > button:hover,
+.toggle-sidebar .tgsdb-quicklinks > li > button:focus-visible,
+.toggle-sidebar .tgsdb-admin-links > li > a:hover,
+.toggle-sidebar .tgsdb-admin-links > li > a:focus-visible,
+.toggle-sidebar .sidebar-tabs-list .tgsdb-btn:hover,
+.toggle-sidebar .sidebar-tabs-list .tgsdb-btn:focus-visible,
+.toggle-sidebar .sidebar-tabs-list .tgsdb-btn.active {
+  background: rgba(66, 195, 247, 0.10) !important;
+  color: #fff !important;
+  border-radius: 0 !important;
+}
+
+/* Collapse arrow (button.tgsdb_btn) — DO NOT override. Theme already
+   styles this as a floating lighter-blue oval button. Earlier attempts
+   to give it a custom dark housing produced a wide ugly bar — leaving
+   theme styling alone is correct here. */
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  body.path-my .ep-dash__btn,
+  body.path-my .ep-dash__tile,
+  body.path-my .ep-dash__hero-recent-item a,
+  body.path-my .ep-dash__hero-recent-arrow,
+  body.path-my .ep-dash__btn-arrow,
+  body.path-my .ep-dash__tile-icon {
+    transition: none !important;
+  }
+  body.path-my .ep-dash__btn:hover,
+  body.path-my .ep-dash__tile:hover,
+  body.path-my .ep-dash__hero-recent-item a:hover {
+    transform: none !important;
+  }
+  body.path-my .ep-dash__hero-recent-item a:hover .ep-dash__hero-recent-arrow,
+  body.path-my .ep-dash__btn:hover .ep-dash__btn-arrow {
+    transform: none !important;
+  }
+}

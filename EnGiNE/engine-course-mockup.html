@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EnGiNE Course View — Communications Orientation Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+<style>
+:root{
+  --navy:#182b3c;
+  --navy-mid:#162d44;
+  --navy-deep:#0c1926;
+  --navy-light:#1e3a56;
+  --teal:#42c3f7;
+  --teal-light:#5cd0fa;
+  --mint:#34d399;
+  --mint-light:#6df2c1;
+  --gold:#f5b948;
+  --gold-light:#fbd384;
+  --skill:#eee6df;
+  --slate:#475569;
+  --slate-light:#94a3b8;
+  --card-border:#dce4ed;
+  --radius:14px;
+  --radius-sm:10px;
+  --radius-lg:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--skill);color:var(--navy);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+.page{max-width:1200px;margin:0 auto;padding:32px 24px 80px}
+
+/* ---------- COURSE HEADER ---------- */
+.course-hero{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);
+  color:#fff;
+  border-radius:var(--radius-lg);
+  padding:36px 40px;
+  margin-bottom:20px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 10px 32px rgba(24,43,60,0.15);
+}
+.course-hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(66,195,247,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(66,195,247,.05) 1px,transparent 1px);
+  background-size:60px 60px;
+  -webkit-mask-image:radial-gradient(ellipse at top right,#000 30%,transparent 80%);
+          mask-image:radial-gradient(ellipse at top right,#000 30%,transparent 80%);
+  pointer-events:none;
+}
+.course-hero__inner{position:relative;z-index:1;display:grid;grid-template-columns:1.5fr 1fr;gap:40px;align-items:center}
+.course-hero__label{
+  font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:10px;
+  display:flex;align-items:center;gap:10px;
+}
+.course-hero__label::before{content:'';width:20px;height:2px;background:var(--teal)}
+.course-hero__title{
+  font-size:2.2rem;font-weight:800;letter-spacing:-0.025em;line-height:1.1;
+  margin-bottom:14px;
+  background:linear-gradient(120deg,var(--teal-light) 0%,var(--mint-light) 60%,var(--mint) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.course-hero__desc{
+  font-size:0.98rem;color:rgba(255,255,255,0.78);margin-bottom:22px;max-width:540px;line-height:1.55;
+}
+.course-hero__meta{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:22px;font-size:0.84rem;color:rgba(255,255,255,0.7)}
+.course-hero__meta-item{display:flex;align-items:center;gap:8px}
+.course-hero__meta-item i{color:var(--teal);font-size:1rem}
+.course-hero__ctas{display:flex;gap:10px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;border-radius:var(--radius-sm);
+  font-size:0.88rem;font-weight:700;cursor:pointer;border:0;
+  transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+  font-family:inherit;
+}
+.btn-primary{background:var(--teal);color:var(--navy)}
+.btn-primary:hover{background:var(--teal-light);transform:translateY(-1px);box-shadow:0 8px 22px rgba(66,195,247,0.35)}
+.btn-ghost{background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.18)}
+.btn-ghost:hover{background:rgba(255,255,255,0.16)}
+
+/* Progress card on hero right side */
+.course-progress{
+  background:rgba(12,25,38,0.55);
+  border:1.5px solid rgba(66,195,247,0.3);
+  border-radius:var(--radius);
+  padding:22px;
+  backdrop-filter:blur(10px);
+}
+.course-progress__label{font-size:0.72rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+.course-progress__pct{font-size:2.2rem;font-weight:800;color:#fff;margin-bottom:6px;line-height:1}
+.course-progress__pct .denom{color:rgba(255,255,255,0.45);font-size:1.1rem;font-weight:600}
+.course-progress__bar{height:8px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden;margin:14px 0 8px}
+.course-progress__fill{height:100%;width:24%;background:linear-gradient(90deg,var(--teal) 0%,var(--mint) 100%);border-radius:999px}
+.course-progress__counts{display:flex;justify-content:space-between;font-size:0.78rem;color:rgba(255,255,255,0.7)}
+.course-progress__counts strong{color:#fff;font-weight:700}
+
+/* ---------- TABS / NAV ---------- */
+.course-tabs{
+  display:flex;gap:6px;margin-bottom:18px;padding:6px;
+  background:#fff;border-radius:var(--radius-sm);
+  box-shadow:0 4px 14px rgba(24,43,60,0.06);
+  width:fit-content;
+}
+.course-tabs a{
+  padding:8px 18px;font-size:0.85rem;font-weight:600;
+  color:var(--slate);border-radius:8px;transition:all 0.15s;
+}
+.course-tabs a:hover{background:rgba(66,195,247,0.08);color:var(--navy)}
+.course-tabs a.active{background:var(--navy);color:#fff}
+
+/* ---------- SECTION CARD (accordion) ---------- */
+.section-card{
+  background:#fff;
+  border:1px solid var(--card-border);
+  border-left:4px solid var(--teal);
+  border-radius:var(--radius);
+  margin-bottom:16px;
+  overflow:hidden;
+  box-shadow:0 6px 20px rgba(24,43,60,0.06);
+  transition:box-shadow 0.2s;
+}
+.section-card:hover{box-shadow:0 10px 28px rgba(24,43,60,0.10)}
+.section-card.is-open{box-shadow:0 12px 32px rgba(24,43,60,0.10)}
+.section-card.is-complete{border-left-color:var(--mint)}
+
+/* Default text-based section header (used when no banner) */
+.section-header{
+  display:flex;align-items:center;gap:18px;
+  padding:22px 28px;cursor:pointer;
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);
+  color:#fff;
+  position:relative;
+}
+.section-header__num{
+  width:46px;height:46px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--teal-light) 0%,var(--mint-light) 60%,var(--mint) 100%);
+  color:var(--navy);
+  border-radius:12px;
+  font-weight:800;font-size:1.15rem;
+  border:2px solid var(--navy);
+  box-shadow:0 4px 12px rgba(66,195,247,0.25);
+}
+.section-header__body{flex:1;min-width:0}
+.section-header__label{
+  font-size:0.68rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:4px;
+}
+.section-header__title{font-size:1.25rem;font-weight:700;letter-spacing:-0.015em;line-height:1.25;color:#fff}
+.section-header__meta{display:flex;align-items:center;gap:14px;font-size:0.78rem;color:rgba(255,255,255,0.7);margin-top:6px}
+.section-header__meta i{color:var(--mint);font-size:0.9rem;margin-right:4px;vertical-align:middle}
+
+.section-toggle{
+  width:38px;height:38px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;background:rgba(255,255,255,0.1);
+  border:1px solid rgba(66,195,247,0.3);
+  transition:transform 0.25s,background 0.18s;
+  color:#fff;font-size:1.2rem;
+}
+.section-card.is-open .section-toggle{transform:rotate(180deg);background:rgba(66,195,247,0.18)}
+
+/* --- BANNER variant: image fills header, scrim bottom-right --- */
+.section-header--banner{
+  padding:0;
+  background:#0c1926;
+  height:auto;
+  display:block;
+  position:relative;
+  aspect-ratio: 1575 / 300;
+  overflow:hidden;
+}
+.section-header--banner .section-header__bg{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  transition:transform 0.5s ease;
+}
+.section-card:hover .section-header--banner .section-header__bg{transform:scale(1.02)}
+
+.section-header--banner .section-header__num{
+  position:absolute;top:16px;left:18px;z-index:2;
+  width:42px;height:42px;font-size:1.05rem;
+  border:2px solid rgba(255,255,255,0.9);
+  background:linear-gradient(135deg,var(--teal-light) 0%,var(--mint-light) 60%,var(--mint) 100%);
+  box-shadow:0 6px 18px rgba(0,0,0,0.35);
+}
+.section-header--banner .section-header__scrim{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:14px 22px 14px 76px;
+  background:linear-gradient(to top, rgba(12,25,38,0.85) 20%, rgba(12,25,38,0.0) 100%);
+  color:#fff;
+  font-size:0.82rem;font-weight:600;
+}
+.section-header--banner .section-header__scrim-stats{display:flex;align-items:center;gap:18px}
+.section-header--banner .section-header__scrim-stats span{display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.92)}
+.section-header--banner .section-header__scrim-stats i.done{color:var(--mint)}
+.section-header--banner .section-header__scrim-stats i.time{color:var(--teal)}
+.section-header--banner .section-toggle{
+  position:relative;
+  width:34px;height:34px;font-size:1.05rem;
+  background:rgba(0,0,0,0.35);
+  border-color:rgba(255,255,255,0.4);
+}
+
+/* Caption strip showing the Moodle section name beneath the banner */
+.section-name-caption{
+  background:#fff;
+  padding:10px 28px;
+  font-size:0.74rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--slate-light);
+  border-bottom:1px solid var(--card-border);
+}
+
+.section-body{padding:24px 28px 28px 28px;background:#fff}
+.section-card:not(.is-open) .section-body{display:none}
+.section-body__intro{
+  font-size:0.92rem;color:var(--slate);
+  margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--card-border);
+}
+
+/* ---------- LESSON CARDS (inside section) ---------- */
+.lessons{display:flex;flex-direction:column;gap:12px}
+
+.lesson{
+  display:flex;align-items:flex-start;gap:18px;
+  background:#fff;
+  border:1.5px solid var(--card-border);
+  border-radius:var(--radius-sm);
+  padding:18px 20px;
+  transition:transform 0.15s,box-shadow 0.18s,border-color 0.18s;
+  cursor:pointer;
+  position:relative;
+}
+.lesson:hover{
+  transform:translateY(-1px);
+  border-color:var(--teal);
+  box-shadow:0 6px 18px rgba(66,195,247,0.12);
+}
+.lesson.is-complete{border-color:var(--mint)}
+.lesson.is-complete::before{
+  content:'';position:absolute;left:-1.5px;top:-1.5px;bottom:-1.5px;width:4px;
+  background:var(--mint);border-radius:var(--radius-sm) 0 0 var(--radius-sm);
+}
+.lesson.is-current{border-color:var(--teal);box-shadow:0 0 0 3px rgba(66,195,247,0.18)}
+.lesson.is-current::before{
+  content:'';position:absolute;left:-1.5px;top:-1.5px;bottom:-1.5px;width:4px;
+  background:var(--teal);border-radius:var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.lesson__icon{
+  width:48px;height:48px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--teal-light) 0%,var(--mint-light) 60%,var(--mint) 100%);
+  color:var(--navy);
+  border-radius:12px;
+  font-size:1.4rem;
+  border:2px solid var(--navy);
+  box-shadow:0 3px 10px rgba(66,195,247,0.2);
+}
+.lesson__icon.is-resource{background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 100%);color:#fff;border-color:#92400e}
+.lesson__icon.is-forum{background:linear-gradient(135deg,#a78bfa 0%,#7c3aed 100%);color:#fff;border-color:#4c1d95}
+.lesson__icon.is-quiz{background:linear-gradient(135deg,#f472b6 0%,#db2777 100%);color:#fff;border-color:#831843}
+.lesson__icon.is-task{background:linear-gradient(135deg,var(--gold-light) 0%,var(--gold) 100%);color:var(--navy);border-color:#a16207}
+.lesson__icon.is-label{background:linear-gradient(135deg,#e0f2fe 0%,#bae6fd 100%);color:var(--navy);border-color:var(--navy)}
+
+.lesson__body{flex:1;min-width:0}
+.lesson__num{
+  display:inline-block;
+  font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:4px;
+}
+.lesson__title{font-size:1.02rem;font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:4px}
+.lesson__title .task-pill{
+  display:inline-block;font-size:0.6rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;
+  background:var(--gold);color:var(--navy);padding:2px 7px;border-radius:4px;margin-right:8px;vertical-align:2px;
+}
+.lesson__desc{font-size:0.88rem;color:var(--slate);line-height:1.5}
+.lesson__footer{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:0.78rem;color:var(--slate-light);flex-wrap:wrap}
+.lesson__type{
+  display:inline-flex;align-items:center;gap:6px;
+  font-weight:600;color:var(--slate);
+}
+.lesson__type i{font-size:0.95rem}
+.lesson__time{display:inline-flex;align-items:center;gap:6px}
+.lesson__time i{font-size:0.95rem}
+
+/* Completion zone on the right of each lesson card */
+.lesson__completion{
+  flex-shrink:0;
+  display:flex;flex-direction:column;align-items:flex-end;gap:6px;
+  align-self:center;
+  min-width:120px;
+}
+.lesson__mark-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:999px;
+  font-size:0.78rem;font-weight:600;letter-spacing:0.01em;
+  border:1.5px solid var(--card-border);background:#fff;color:var(--slate);
+  cursor:pointer;transition:all 0.15s;font-family:inherit;
+  white-space:nowrap;
+}
+.lesson__mark-btn i{font-size:0.95rem}
+.lesson__mark-btn:hover{border-color:var(--teal);color:var(--teal);background:rgba(66,195,247,0.06)}
+.lesson__mark-btn--done{background:var(--mint);border-color:var(--mint);color:var(--navy)}
+.lesson__mark-btn--done:hover{background:var(--mint-light);border-color:var(--mint);color:var(--navy)}
+.lesson__mark-btn--locked{background:#f1f5f9;border-color:#e2e8f0;color:var(--slate-light);cursor:not-allowed}
+.lesson__mark-btn--locked:hover{border-color:#e2e8f0;color:var(--slate-light);background:#f1f5f9}
+
+.lesson__auto-status{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:999px;
+  font-size:0.74rem;font-weight:600;
+  background:#f1f5f9;color:var(--slate);border:1px dashed #cbd5e1;
+}
+.lesson__auto-status i{font-size:0.9rem}
+.lesson__auto-status--done{background:rgba(52,211,153,0.12);color:#047857;border:1px solid rgba(52,211,153,0.4);border-style:solid}
+
+.lesson__upnext-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:999px;
+  font-size:0.72rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
+  background:var(--teal);color:var(--navy);
+}
+
+.lesson__not-tracked{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:0.74rem;font-weight:600;color:var(--slate-light);
+  padding:6px 12px;
+}
+
+.lesson--compact{padding:14px 18px}
+.lesson--compact .lesson__icon{width:38px;height:38px;font-size:1.1rem;border-radius:9px}
+.lesson--compact .lesson__title{font-size:0.95rem;margin-bottom:2px}
+.lesson--compact .lesson__desc{font-size:0.84rem}
+
+/* Label rendered as a soft callout (no card chrome) */
+.section-label{
+  display:flex;gap:14px;align-items:flex-start;
+  background:linear-gradient(135deg,rgba(66,195,247,0.06) 0%,rgba(52,211,153,0.06) 100%);
+  border:1px solid rgba(66,195,247,0.18);
+  border-radius:var(--radius-sm);
+  padding:16px 18px;margin-bottom:12px;
+  font-size:0.9rem;color:var(--slate);
+}
+.section-label__icon{
+  width:36px;height:36px;flex-shrink:0;border-radius:9px;
+  background:#fff;border:1.5px solid var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--teal);font-size:1.1rem;
+}
+.section-label__body p{margin-bottom:6px}
+.section-label__body p:last-child{margin-bottom:0}
+
+/* ---------- CERTIFICATE TERMINAL NODE ---------- */
+.cert-node{
+  background:linear-gradient(135deg,var(--navy-deep) 0%,var(--navy-mid) 60%,var(--navy-light) 100%);
+  color:#fff;
+  border-radius:var(--radius-lg);
+  margin-top:24px;margin-bottom:16px;
+  padding:40px 44px;
+  position:relative;overflow:hidden;
+  border:1px solid rgba(245,185,72,0.4);
+  box-shadow:0 14px 40px rgba(12,25,38,0.18);
+}
+.cert-node::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at top right, rgba(245,185,72,0.18), transparent 60%),
+    radial-gradient(ellipse at bottom left, rgba(52,211,153,0.10), transparent 55%);
+}
+.cert-node::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg, var(--gold) 0%, var(--mint) 50%, var(--teal) 100%);
+}
+.cert-node__inner{position:relative;z-index:1;display:grid;grid-template-columns:auto 1fr auto;gap:32px;align-items:center}
+.cert-node__seal{
+  width:120px;height:120px;flex-shrink:0;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, var(--gold-light), var(--gold) 70%);
+  border:6px double rgba(255,255,255,0.85);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--navy-deep);font-size:3rem;
+  box-shadow:0 0 0 4px rgba(245,185,72,0.2), 0 10px 30px rgba(0,0,0,0.3);
+  position:relative;
+}
+.cert-node__seal::after{
+  content:'';position:absolute;
+  width:140%;height:14px;top:90%;left:-20%;
+  background:linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, transparent 100%);
+  border-radius:2px;
+  transform:rotate(-3deg);
+  z-index:-1;
+}
+.cert-node__body{min-width:0}
+.cert-node__label{
+  font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--gold-light);margin-bottom:8px;
+  display:flex;align-items:center;gap:10px;
+}
+.cert-node__label::before{content:'';width:24px;height:2px;background:var(--gold)}
+.cert-node__title{
+  font-size:1.7rem;font-weight:800;letter-spacing:-0.02em;line-height:1.15;
+  margin-bottom:10px;color:#fff;
+}
+.cert-node__desc{
+  font-size:0.94rem;color:rgba(255,255,255,0.8);max-width:580px;line-height:1.55;
+  margin-bottom:14px;
+}
+.cert-node__prereq{
+  display:inline-flex;align-items:center;gap:8px;font-size:0.82rem;
+  background:rgba(245,185,72,0.12);
+  border:1px solid rgba(245,185,72,0.35);
+  color:var(--gold-light);
+  padding:7px 14px;border-radius:999px;font-weight:600;
+}
+.cert-node__prereq i{font-size:1rem}
+.cert-node__cta-area{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.btn-gold{
+  background:var(--gold);color:var(--navy-deep);
+  font-weight:800;padding:14px 26px;border:none;
+}
+.btn-gold:hover{background:var(--gold-light);transform:translateY(-1px);box-shadow:0 8px 22px rgba(245,185,72,0.4)}
+.btn-gold--locked{background:rgba(245,185,72,0.18);color:rgba(255,255,255,0.5);cursor:not-allowed;border:1px dashed rgba(245,185,72,0.35)}
+.btn-gold--locked:hover{background:rgba(245,185,72,0.18);transform:none;box-shadow:none}
+.cert-node__progress-mini{font-size:0.78rem;color:rgba(255,255,255,0.6);font-weight:600}
+
+@media(max-width:900px){
+  .cert-node__inner{grid-template-columns:1fr;gap:20px;text-align:center}
+  .cert-node__seal{margin:0 auto}
+  .cert-node__label{justify-content:center}
+  .cert-node__cta-area{align-items:center}
+}
+@media(max-width:760px){
+  .course-hero__inner{grid-template-columns:1fr}
+  .section-header{padding:18px 18px}
+  .section-body{padding:18px}
+  .lesson{flex-wrap:wrap}
+  .lesson__completion{min-width:0;margin-left:auto}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- COURSE HERO -->
+  <section class="course-hero">
+    <div class="course-hero__inner">
+      <div>
+        <div class="course-hero__label">EnGiNE Experience · Marketing &amp; Communications</div>
+        <h1 class="course-hero__title">Communications Orientation</h1>
+        <p class="course-hero__desc">Maine DOE internal orientation for communications, branding, and marketing. This course covers internal communication procedures and shares the ways in which we communicate with the public.</p>
+        <div class="course-hero__meta">
+          <div class="course-hero__meta-item"><i class="ri-stack-line"></i> 8 sections · 19 activities</div>
+          <div class="course-hero__meta-item"><i class="ri-graduation-cap-line"></i> Self-paced</div>
+          <div class="course-hero__meta-item"><i class="ri-medal-line"></i> Certificate &amp; badge on completion</div>
+          <div class="course-hero__meta-item"><i class="ri-user-3-line"></i> Contact: Matt Leavitt</div>
+        </div>
+        <div class="course-hero__ctas">
+          <button class="btn btn-primary">Continue where you left off <i class="ri-arrow-right-line"></i></button>
+          <button class="btn btn-ghost"><i class="ri-information-line"></i> Course materials</button>
+        </div>
+      </div>
+      <div class="course-progress">
+        <div class="course-progress__label">Your progress</div>
+        <div class="course-progress__pct">24%<span class="denom"> complete</span></div>
+        <div class="course-progress__bar"><div class="course-progress__fill"></div></div>
+        <div class="course-progress__counts">
+          <span><strong>5</strong> of 21 activities</span>
+          <span><strong>~2h 15m</strong> remaining</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <nav class="course-tabs" role="tablist">
+    <a href="#" class="active">Overview</a>
+    <a href="#">Lessons</a>
+    <a href="#">Resources</a>
+    <a href="#">Discussion</a>
+    <a href="#">Grades</a>
+  </nav>
+
+  <!-- ===== SECTION 0: Welcome — banner, completed ===== -->
+  <section class="section-card is-complete">
+    <div class="section-header section-header--banner" onclick="this.parentElement.classList.toggle('is-open')">
+      <div class="section-header__bg" style="background-image:url(mbz-extract/assets/section-0-banner.png)"></div>
+      <div class="section-header__num">0</div>
+      <div class="section-header__scrim">
+        <div class="section-header__scrim-stats">
+          <span><i class="ri-checkbox-circle-fill done"></i> 1 of 1 complete</span>
+          <span><i class="ri-time-line time"></i> ~5 min</span>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+    </div>
+    <div class="section-name-caption">Welcome to Communications Orientation</div>
+    <div class="section-body">
+      <!-- Label rendered inline as a soft callout, NOT as a lesson card -->
+      <div class="section-label">
+        <div class="section-label__icon"><i class="ri-information-line"></i></div>
+        <div class="section-label__body">
+          <p><strong>Hello and welcome to the Maine DOE Communications Orientation module!</strong></p>
+          <p>This module explains the various roles our team plays, shares basic information about how we interact with our audiences, and provides a general overview of important things to know that affect all offices in the department.</p>
+          <p style="margin-top:8px"><em>Use the section list above to move through the course in order. As you complete each section, mark each activity as done. A few sections contain Tasks you'll need to complete to receive your certificate and profile badge.</em></p>
+        </div>
+      </div>
+
+      <!-- Forum: no completion tracking, treated as a side-channel activity -->
+      <div class="lessons">
+        <div class="lesson">
+          <div class="lesson__icon is-forum"><i class="ri-megaphone-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Announcements</div>
+            <div class="lesson__desc">General news and announcements from the communications team.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-discuss-line"></i> Announcements forum</span>
+              <span class="lesson__time"><i class="ri-eye-line"></i> Optional</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <span class="lesson__not-tracked"><i class="ri-subtract-line"></i> Not tracked</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 1: The Communications Team — banner, completed ===== -->
+  <section class="section-card is-complete">
+    <div class="section-header section-header--banner" onclick="this.parentElement.classList.toggle('is-open')">
+      <div class="section-header__bg" style="background-image:url(mbz-extract/assets/section-1-banner.png)"></div>
+      <div class="section-header__num">1</div>
+      <div class="section-header__scrim">
+        <div class="section-header__scrim-stats">
+          <span><i class="ri-checkbox-circle-fill done"></i> 3 of 3 complete</span>
+          <span><i class="ri-time-line time"></i> ~25 min</span>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+    </div>
+    <div class="section-name-caption">The Communications Team</div>
+    <div class="section-body">
+      <p class="section-body__intro">Our small but mighty communications team is here to assist offices, teams, and individuals with communications, marketing, branding, and some technical expertise. Learn who we are and what we do.</p>
+      <div class="lessons">
+
+        <div class="lesson is-complete">
+          <div class="lesson__icon"><i class="ri-team-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Meet the Team!</div>
+            <div class="lesson__desc">Photos, roles, and contact info for the three members of the Maine DOE Communications Team.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~8 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <span class="lesson__auto-status lesson__auto-status--done"><i class="ri-check-line"></i> Done</span>
+          </div>
+        </div>
+
+        <div class="lesson is-complete">
+          <div class="lesson__icon"><i class="ri-customer-service-2-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">What We Do &amp; How We Can Help</div>
+            <div class="lesson__desc">Overview of the services the communications team provides to other offices and teams in the department.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~10 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <span class="lesson__auto-status lesson__auto-status--done"><i class="ri-check-line"></i> Done</span>
+          </div>
+        </div>
+
+        <div class="lesson is-complete">
+          <div class="lesson__icon"><i class="ri-window-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Communications Portal</div>
+            <div class="lesson__desc">How to use the team's internal portal in Microsoft Teams to request communications support.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~7 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <span class="lesson__auto-status lesson__auto-status--done"><i class="ri-check-line"></i> Done</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 2: Types of Communications — banner, IN PROGRESS, expanded ===== -->
+  <section class="section-card is-open">
+    <div class="section-header section-header--banner" onclick="this.parentElement.classList.toggle('is-open')">
+      <div class="section-header__bg" style="background-image:url(mbz-extract/assets/section-2-banner.png)"></div>
+      <div class="section-header__num">2</div>
+      <div class="section-header__scrim">
+        <div class="section-header__scrim-stats">
+          <span><i class="ri-checkbox-circle-fill done"></i> 1 of 4 complete</span>
+          <span><i class="ri-time-line time"></i> ~45 min</span>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+    </div>
+    <div class="section-name-caption">Types of Communications</div>
+    <div class="section-body">
+      <p class="section-body__intro">Explore the different ways the Maine DOE communicates with our external audiences. We use a variety of methods to reach specific audiences, inform, share good news, and celebrate education in our state.</p>
+
+      <div class="lessons">
+
+        <div class="lesson is-complete">
+          <div class="lesson__icon"><i class="ri-newspaper-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Maine DOE Newsroom</div>
+            <div class="lesson__desc">How the Newsroom works, what gets posted there, and how to submit content for publication.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~12 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn lesson__mark-btn--done"><i class="ri-check-line"></i> Done</button>
+          </div>
+        </div>
+
+        <div class="lesson is-current">
+          <div class="lesson__icon"><i class="ri-instagram-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Social Media Marketing</div>
+            <div class="lesson__desc">The platforms we use, who we reach, and how to submit content for social.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~14 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <span class="lesson__upnext-badge"><i class="ri-arrow-right-line"></i> Up next</span>
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-mail-send-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Notices &amp; Releases</div>
+            <div class="lesson__desc">How official notices and press releases get drafted, reviewed, and distributed.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~12 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-mail-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Newsletters &amp; Public Information</div>
+            <div class="lesson__desc">Our newsletter program and how recurring public-information emails get assembled.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~7 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 3: Content Submission & Approval — banner ===== -->
+  <section class="section-card">
+    <div class="section-header section-header--banner" onclick="this.parentElement.classList.toggle('is-open')">
+      <div class="section-header__bg" style="background-image:url(mbz-extract/assets/section-3-banner.png)"></div>
+      <div class="section-header__num">3</div>
+      <div class="section-header__scrim">
+        <div class="section-header__scrim-stats">
+          <span><i class="ri-checkbox-circle-line"></i> 0 of 2 complete</span>
+          <span><i class="ri-time-line time"></i> ~15 min</span>
+          <span><i class="ri-flag-line" style="color:var(--gold)"></i> 1 task</span>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+    </div>
+    <div class="section-name-caption">Content Submission &amp; Approval</div>
+    <div class="section-body">
+      <p class="section-body__intro">The Maine Department of Education shares content for public consumption in numerous capacities. The following guidance is for public-facing platforms: social media, the website, the Newsroom, and email blasts.</p>
+      <div class="lessons">
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-flow-chart"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Approval Process &amp; Workflows</div>
+            <div class="lesson__desc">The end-to-end approval process for public content — who reviews, who signs off, and what timelines look like.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~10 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson__icon is-task"><i class="ri-flag-fill"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title"><span class="task-pill">Task</span>Check with your supervisor about workflows</div>
+            <div class="lesson__desc">Confirm how your office handles routing communications requests. Do not mark as done until you've checked in with your supervisor.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-checkbox-circle-line"></i> Off-platform task</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~5 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 4: Maine DOE Branding — banner (largest section: 7 activities, 3 tasks) ===== -->
+  <section class="section-card">
+    <div class="section-header section-header--banner" onclick="this.parentElement.classList.toggle('is-open')">
+      <div class="section-header__bg" style="background-image:url(mbz-extract/assets/section-4-banner.png)"></div>
+      <div class="section-header__num">4</div>
+      <div class="section-header__scrim">
+        <div class="section-header__scrim-stats">
+          <span><i class="ri-checkbox-circle-line"></i> 0 of 7 complete</span>
+          <span><i class="ri-time-line time"></i> ~60 min</span>
+          <span><i class="ri-flag-line" style="color:var(--gold)"></i> 3 tasks</span>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+    </div>
+    <div class="section-name-caption">Maine DOE Branding</div>
+    <div class="section-body">
+      <p class="section-body__intro">It is essential that our constituents know and understand the Maine DOE's mission, purpose, and brand. Consistency across the department incites trust in what we produce and ensures we are accurate, accessible, and trustworthy.</p>
+      <div class="lessons">
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-palette-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Maine DOE Brand Guide</div>
+            <div class="lesson__desc">Overview of our brand guide, where to find it, and what's covered.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~8 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson__icon is-task"><i class="ri-flag-fill"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title"><span class="task-pill">Task</span>Review the Maine DOE Brand Guide</div>
+            <div class="lesson__desc">Find the Brand Guide in the Communications Team folder in Microsoft Teams and read through it. Do not mark as done until you've reviewed it.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-checkbox-circle-line"></i> Off-platform task</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~15 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-layout-2-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Design &amp; Templates</div>
+            <div class="lesson__desc">Where to find approved templates for documents, slides, and graphics — plus when to use which.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~10 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-file-list-3-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">File Naming Convention</div>
+            <div class="lesson__desc">Our internal file naming conventions for documents, images, and assets shared department-wide.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~5 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-image-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">The Images We Use</div>
+            <div class="lesson__desc">Sourcing, licensing, and what makes a good photo for Maine DOE communications.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~7 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-mail-check-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Outlook &amp; Email Guidelines</div>
+            <div class="lesson__desc">How we use Outlook department-wide: signatures, formatting, attachments, and what NOT to send via email.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~20 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson__icon is-task"><i class="ri-flag-fill"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title"><span class="task-pill">Task</span>Email Signature</div>
+            <div class="lesson__desc">Set up your Maine DOE email signature using the standard template provided. Mark as done after you've updated yours.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-checkbox-circle-line"></i> Off-platform task</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~5 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 5: Incoming Communications — banner ===== -->
+  <section class="section-card">
+    <div class="section-header section-header--banner" onclick="this.parentElement.classList.toggle('is-open')">
+      <div class="section-header__bg" style="background-image:url(mbz-extract/assets/section-5-banner.png)"></div>
+      <div class="section-header__num">5</div>
+      <div class="section-header__scrim">
+        <div class="section-header__scrim-stats">
+          <span><i class="ri-checkbox-circle-line"></i> 0 of 1 complete</span>
+          <span><i class="ri-time-line time"></i> ~10 min</span>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+    </div>
+    <div class="section-name-caption">Incoming Communications</div>
+    <div class="section-body">
+      <p class="section-body__intro">Constituents and other interested parties often contact the department for various information. Knowing where to route requests is essential, as you may encounter them in your role.</p>
+      <div class="lessons">
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-inbox-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Types of Incoming Communications</div>
+            <div class="lesson__desc">Media inquiries, official statements, interview requests, data requests, FOAA, and constituent concerns — and who handles each.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~10 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 6: Marketing Tools & Applications — banner ===== -->
+  <section class="section-card">
+    <div class="section-header section-header--banner" onclick="this.parentElement.classList.toggle('is-open')">
+      <div class="section-header__bg" style="background-image:url(mbz-extract/assets/section-6-banner.png)"></div>
+      <div class="section-header__num">6</div>
+      <div class="section-header__scrim">
+        <div class="section-header__scrim-stats">
+          <span><i class="ri-checkbox-circle-line"></i> 0 of 2 complete</span>
+          <span><i class="ri-time-line time"></i> ~15 min</span>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+    </div>
+    <div class="section-name-caption">Marketing Tools &amp; Applications</div>
+    <div class="section-body">
+      <p class="section-body__intro">Learn about what primary communication tools the department uses to assist with outreach and marketing.</p>
+      <div class="lessons">
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-global-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Maine DOE Website</div>
+            <div class="lesson__desc">How the maine.gov/doe website is structured, who owns what, and how content gets published.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~7 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson__icon"><i class="ri-calendar-event-line"></i></div>
+          <div class="lesson__body">
+            <div class="lesson__title">Maine DOE Event Calendar</div>
+            <div class="lesson__desc">The department's public event calendar, how to add events, and what gets shown to constituents.</div>
+            <div class="lesson__footer">
+              <span class="lesson__type"><i class="ri-book-line"></i> Reading</span>
+              <span class="lesson__time"><i class="ri-time-line"></i> ~8 min</span>
+            </div>
+          </div>
+          <div class="lesson__completion">
+            <button class="lesson__mark-btn"><i class="ri-circle-line"></i> Mark as done</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 7: Certificate Terminal Node ===== -->
+  <section class="cert-node">
+    <div class="cert-node__inner">
+      <div class="cert-node__seal">
+        <i class="ri-award-fill"></i>
+      </div>
+      <div class="cert-node__body">
+        <div class="cert-node__label">Final · Section 7</div>
+        <h2 class="cert-node__title">Communications Orientation Certificate</h2>
+        <p class="cert-node__desc">Once you've completed every activity in this course, the communications team will award you a certificate and add the Communications Onboarding badge to your profile.</p>
+        <div class="cert-node__prereq">
+          <i class="ri-lock-line"></i> Complete the remaining 16 activities to unlock
+        </div>
+      </div>
+      <div class="cert-node__cta-area">
+        <button class="btn btn-gold btn-gold--locked"><i class="ri-lock-2-line"></i> Claim certificate</button>
+        <div class="cert-node__progress-mini">5 of 21 done · 24%</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
