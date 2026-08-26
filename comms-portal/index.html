@@ -502,6 +502,12 @@ function Portal(){
                         fontSize:13,fontWeight:700,boxShadow:'0 4px 16px rgba(39,79,115,0.3)',border:'1.5px solid rgba(255,255,255,0.1)'}}>
                       <I d={icons.ext} size={16} color="#42c3f7"/> Visit maine.gov/doe
                     </a>
+                    <a href="https://stateofmaine.sharepoint.com/:f:/t/DOETeam/IgA5Z26x-XMtR67bDYrVBg0eAcbc8G9dYzlzZkjdM1ovgvM?e=H75zYF" target="_blank" rel="noopener noreferrer"
+                      style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,
+                        background:'linear-gradient(135deg,#16a34a,#15803d)',color:'#fff',textDecoration:'none',
+                        fontSize:13,fontWeight:700,boxShadow:'0 4px 16px rgba(22,163,74,0.3)',border:'1.5px solid rgba(255,255,255,0.1)'}}>
+                      <I d={icons.folder} size={16} color="#a7f3d0"/> File Uploads Folder
+                    </a>
                   </div>
                 </div>
               </div>
@@ -560,6 +566,38 @@ function Portal(){
                   <div style={{fontSize:13,fontWeight:600,color:'#94a3b8'}}>No pending approvals</div>
                   <div style={{fontSize:12,fontWeight:500,color:'#c2cdd8',marginTop:4}}>Pages submitted for review will appear here.</div>
                 </div>}
+              </div>
+
+              {/* Drupal editor tips */}
+              <div style={{background:'#ffffff',borderRadius:14,border:'2.5px solid #274f7325',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
+                <div style={{padding:'14px 20px',background:'#f8fafc',display:'flex',alignItems:'center',gap:10,borderBottom:'1px solid #e2e8f0'}}>
+                  <div style={{width:28,height:28,borderRadius:8,background:'#274f7315',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <I d={icons.book} size={15} color="#274f73"/>
+                  </div>
+                  <h3 style={{fontSize:14,fontWeight:700,color:'#182b3c',margin:0}}>For Drupal editors</h3>
+                </div>
+                <div style={{padding:'18px 22px'}}>
+                  <div style={{marginBottom:16,padding:'12px 14px',borderRadius:10,background:'#eef7fd',border:'1px solid #42c3f725',borderLeft:'4px solid #42c3f7'}}>
+                    <div style={{fontSize:12,fontWeight:700,color:'#2da8d8',letterSpacing:'.05em',textTransform:'uppercase',marginBottom:6}}>Linking convention</div>
+                    <div style={{fontSize:13,color:'#334155',lineHeight:1.6,fontWeight:500}}>
+                      In content you submit, wrap the exact text you want hyperlinked in <strong>double asterisks</strong>. Example: <code style={{background:'#f1f5f9',padding:'2px 8px',borderRadius:5,color:'#182b3c',fontWeight:600,fontSize:12}}>You can learn more by checking out the **Multilingual Learners with Disability Policy Guide**.</code>
+                    </div>
+                  </div>
+
+                  <div style={{marginBottom:16,padding:'12px 14px',borderRadius:10,background:'#fef3c714',border:'1px solid #f59e0b30',borderLeft:'4px solid #f59e0b'}}>
+                    <div style={{fontSize:12,fontWeight:700,color:'#92400e',letterSpacing:'.05em',textTransform:'uppercase',marginBottom:6}}>Do not copy from Word</div>
+                    <div style={{fontSize:13,color:'#334155',lineHeight:1.6,fontWeight:500}}>
+                      Copy-pasting from Word into a Drupal page injects invisible formatting that overrides site defaults and breaks styling. Compose directly in Drupal or paste through plain-text (Cmd/Ctrl-Shift-V) first.
+                    </div>
+                  </div>
+
+                  <a href="https://www.maine.gov/doe/assets" target="_blank" rel="noopener noreferrer"
+                    style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 18px',borderRadius:10,
+                      background:'linear-gradient(135deg,#274f73,#1e3a56)',color:'#fff',textDecoration:'none',
+                      fontSize:13,fontWeight:700,boxShadow:'0 4px 16px rgba(39,79,115,0.25)'}}>
+                    <I d={icons.ext} size={15} color="#42c3f7"/> Drupal Editor Assets & Resources
+                  </a>
+                </div>
               </div>
 
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:18,paddingBottom:24}}>
