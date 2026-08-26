@@ -16,6 +16,16 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:#eee6df;color:#18
 .portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
 .portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
 .portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+.ann-msg{white-space:pre-wrap;word-wrap:break-word}
+.ann-msg p{margin:0 0 10px 0;line-height:1.65;white-space:normal}
+.ann-msg p:last-child{margin-bottom:0}
+.ann-msg a{color:#2da8d8;text-decoration:underline;font-weight:600}
+.ann-msg a:hover{color:#42c3f7}
+.ann-msg strong,.ann-msg b{font-weight:700;color:#182b3c}
+.ann-msg em,.ann-msg i{font-style:italic}
+.ann-msg ul,.ann-msg ol{padding-left:20px;margin:4px 0 10px 0}
+.ann-msg li{margin:2px 0}
+.ann-msg h1,.ann-msg h2,.ann-msg h3,.ann-msg h4{margin:8px 0 4px 0;color:#182b3c;font-weight:700}
 </style>
 </head>
 <body>
@@ -163,24 +173,28 @@ function App(){
           <p style={{fontSize:15,fontWeight:600,color:B.txtSec}}>No announcements right now</p>
           <p style={{fontSize:13,color:B.txtMute,marginTop:4}}>Check back later for updates from the Communications team.</p>
         </div>
-        :<div style={{maxHeight:500,overflowY:'auto',borderRadius:14,border:`2px solid ${B.border}30`,background:B.wh}}>
+        :<div style={{borderRadius:14,border:`2px solid ${B.border}30`,background:B.wh,overflow:'hidden'}}>
           {announcements.map((a,i)=>{
             const isUrgent=a.priority==='urgent';
             const isImportant=a.priority==='important';
             const accent=isUrgent?'#ef4444':isImportant?'#f59e0b':'#42c3f7';
             const isExp=expandedAnn===i;
-            return <div key={i} style={{padding:'16px 20px',borderBottom:i<announcements.length-1?`1px solid ${B.border}15`:'none',
+            return <div key={i} style={{padding:'18px 22px',borderBottom:i<announcements.length-1?`1px solid ${B.border}55`:'none',
               borderLeft:`4px solid ${accent}`,cursor:'pointer',transition:'background 0.15s',
               background:isExp?`${accent}06`:'transparent'}}
-              onClick={()=>setExpandedAnn(isExp?null:i)}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:isExp?8:0}}>
+              onClick={()=>setExpandedAnn(isExp?null:i)}
+              onMouseEnter={e=>{if(!isExp)e.currentTarget.style.background=`${accent}03`}}
+              onMouseLeave={e=>{if(!isExp)e.currentTarget.style.background='transparent'}}>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:isExp?10:0}}>
                 {isUrgent&&<span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'#fee2e2',color:'#991b1b',border:'1px solid #fca5a5'}}>URGENT</span>}
                 {isImportant&&<span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'#fef3c7',color:'#92400e',border:'1px solid #fcd34d'}}>IMPORTANT</span>}
                 <h4 style={{fontSize:14,fontWeight:700,color:B.navy,margin:0,flex:1}}>{a.title}</h4>
                 <span style={{fontSize:11,color:'#94a3b8',fontWeight:500,flexShrink:0}}>{a.date}</span>
-                <Sv d={isExp?["M18 15l-6-6-6 6"]:["M6 9l6 6 6-6"]} size={16} color={B.txtMute}/>
+                <div style={{width:26,height:26,borderRadius:8,background:isExp?`${accent}18`:`${B.teal}12`,display:'flex',alignItems:'center',justifyContent:'center',transition:'all 0.2s',transform:isExp?'rotate(180deg)':'none'}}>
+                  <Sv d={["M6 9l6 6 6-6"]} size={16} color={isExp?accent:B.teal}/>
+                </div>
               </div>
-              {isExp&&<p style={{fontSize:13,color:B.txtSec,lineHeight:1.65,margin:0,fontWeight:500,paddingTop:4}}>{a.message}</p>}
+              {isExp&&<div className="ann-msg" style={{fontSize:13,color:B.txtSec,fontWeight:500,paddingTop:4}} dangerouslySetInnerHTML={{__html:a.message}}/>}
             </div>;
           })}
         </div>}
@@ -269,11 +283,8 @@ function App(){
         <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
           <span style={{width:16,height:2,background:B.teal,borderRadius:1}}/>Communications Team
         </h3>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:18,marginBottom:28}}>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:18,marginBottom:28}}>
           {[
-            {name:'Chloe Teboe',title:'Communications Director',email:'chloe.teboe@maine.gov',
-              desc:'Brand strategy, media relations, press inquiries, newsroom articles, priority notices, and overall communications direction.',
-              color:'#42c3f7',gradient:'linear-gradient(135deg,#42c3f7,#2da8d8)'},
             {name:'Rachel Paling',title:'Communications Coordinator',email:'rachel.paling@maine.gov',
               desc:'Newsletters, Mailchimp campaigns, social media, event promotions, and content workflows.',
               color:'#34d399',gradient:'linear-gradient(135deg,#34d399,#16a34a)'},

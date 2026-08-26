@@ -101,6 +101,64 @@ function getDateRange(days) {
   return { startDate: Utilities.formatDate(start, 'UTC', 'yyyy-MM-dd'), endDate: Utilities.formatDate(end, 'UTC', 'yyyy-MM-dd') };
 }
 
+// Sanitize incoming message content into safe HTML.
+// Handles: strings, objects (Teams message body), stringified JSON.
+// Preserves formatting tags (p, br, strong, em, b, i, u, a, ul, ol, li, blockquote, div, h1-h6),
+// strips everything else, and cleans up dangerous content and Teams cruft attributes.
+function cleanMessage(input) {
+  if (input == null) return '';
+  var text = '';
+  if (typeof input === 'object') {
+    text = String(input.content || input.plainTextContent || input.plainText || '');
+  } else {
+    text = String(input);
+    if (text.charAt(0) === '{') {
+      try {
+        var obj = JSON.parse(text);
+        if (obj && (obj.content || obj.plainTextContent || obj.plainText)) {
+          text = String(obj.content || obj.plainTextContent || obj.plainText);
+        }
+      } catch (e) { /* not JSON — leave as-is */ }
+    }
+  }
+
+  // Strip dangerous elements entirely (tag + content)
+  text = text.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+  text = text.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
+  text = text.replace(/<iframe\b[^>]*>[\s\S]*?<\/iframe>/gi, '');
+  text = text.replace(/<object\b[^>]*>[\s\S]*?<\/object>/gi, '');
+  text = text.replace(/<embed\b[^>]*>/gi, '');
+  // Strip inline event handlers and javascript: URLs
+  text = text.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+  text = text.replace(/(?:href|src)\s*=\s*(["'])\s*javascript:[^"']*\1/gi, 'href="#"');
+
+  var allowed = { p:1, br:1, strong:1, em:1, b:1, i:1, u:1, a:1, ul:1, ol:1, li:1,
+                  blockquote:1, div:1, h1:1, h2:1, h3:1, h4:1, h5:1, h6:1 };
+
+  // Sanitize every tag: strip if not allowed; strip attributes if allowed (except <a> keeps href)
+  text = text.replace(/<(\/?)([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>/g, function(m, slash, tag, attrs) {
+    var t = tag.toLowerCase();
+    if (!allowed[t]) return '';
+    if (t === 'a') {
+      if (slash) return '</a>';
+      var hrefMatch = attrs.match(/href\s*=\s*"([^"]*)"/i) || attrs.match(/href\s*=\s*'([^']*)'/i);
+      if (!hrefMatch || !hrefMatch[1]) return '';
+      var href = hrefMatch[1].replace(/"/g, '&quot;');
+      return '<a href="' + href + '" target="_blank" rel="noopener noreferrer">';
+    }
+    return '<' + slash + t + '>';
+  });
+
+  // Collapse empty paragraph/div placeholders (Teams sends <p>&nbsp;</p> between paragraphs)
+  text = text.replace(/<p>\s*(?:&nbsp;| |\s)*\s*<\/p>/gi, '');
+  text = text.replace(/<div>\s*(?:&nbsp;| |\s)*\s*<\/div>/gi, '');
+  // Decode &nbsp; inside content to a regular space
+  text = text.replace(/&nbsp;/g, ' ');
+  // Collapse whitespace between tags for tidier storage
+  text = text.replace(/>\s+</g, '><');
+  return text.trim();
+}
+
 
 // ═══════════════════════════════════════════
 // FILE SCANNER
@@ -417,6 +475,33 @@ function getTemplates() {
 
 
 // ═══════════════════════════════════════════
+// MODERATION QUEUE PROXY
+// Fetches the Drupal admin moderation view server-side (no CORS).
+// Portal calls Apps Script instead of Drupal directly.
+// ═══════════════════════════════════════════
+
+function getModerationQueue() {
+  try {
+    var resp = UrlFetchApp.fetch('https://www.maine.gov/doe/api/moderation?_=' + Date.now(), {
+      muteHttpExceptions: true,
+      headers: { 'Accept': 'application/json' }
+    });
+    var code = resp.getResponseCode();
+    if (code !== 200) {
+      return { error: 'Drupal returned HTTP ' + code, rows: [] };
+    }
+    var data = JSON.parse(resp.getContentText());
+    if (!Array.isArray(data)) {
+      return { error: 'Unexpected response shape', rows: [] };
+    }
+    return { rows: data, type: 'moderation' };
+  } catch (e) {
+    return { error: e.message, rows: [] };
+  }
+}
+
+
+// ═══════════════════════════════════════════
 // WEB APP ENTRY POINT
 // ═══════════════════════════════════════════
 
@@ -426,9 +511,9 @@ function doGet(e) {
   var cacheKey = 'portal_' + type + '_' + days;
   var result;
 
-  // Check cache first (skip for web_stats which should always be fresh)
+  // Check cache first (skip for web_stats and moderation which should always be fresh)
   var cache = CacheService.getScriptCache();
-  if (type !== 'web_stats') {
+  if (type !== 'web_stats' && type !== 'moderation') {
     var cached = cache.get(cacheKey);
     if (cached) {
       var output = ContentService.createTextOutput(cached);
@@ -480,6 +565,9 @@ function doGet(e) {
     } else if (type === 'drupal_files') {
       result = getDrupalFiles();
 
+    } else if (type === 'moderation') {
+      result = getModerationQueue();
+
     } else if (type === 'web_stats') {
       var props = PropertiesService.getScriptProperties();
       result = {
@@ -496,7 +584,7 @@ function doGet(e) {
   var jsonStr = JSON.stringify(result);
 
   // Cache for 5 minutes (300s) for Sheet data, 10 minutes (600s) for GA4
-  if (type !== 'web_stats' && !result.error) {
+  if (type !== 'web_stats' && type !== 'moderation' && !result.error) {
     var ttl = (type === 'pages' || type === 'files') ? 600 : 300;
     try { cache.put(cacheKey, jsonStr, ttl); } catch(ce) {}
   }
@@ -758,12 +846,22 @@ function doPost(e) {
       else {
         var now = new Date();
         var dateStr = (now.getMonth()+1) + '/' + now.getDate() + '/' + now.getFullYear();
+        var cleanTitle = cleanMessage(body.title) || 'Announcement';
+        var cleanBody = cleanMessage(body.message);
         sheet.appendRow([
           dateStr,
-          body.title || 'Announcement',
-          body.message || '',
+          cleanTitle,
+          cleanBody,
           body.priority || 'normal'
         ]);
+        // Bust the announcements cache so the new row shows immediately,
+        // and re-warm with fresh data so the next read is fast.
+        try {
+          var cache = CacheService.getScriptCache();
+          cache.remove('portal_announcements_30');
+          var fresh = JSON.stringify(getAnnouncements());
+          cache.put('portal_announcements_30', fresh, 300);
+        } catch (ce) { Logger.log('Cache refresh failed: ' + ce.message); }
         result = { success: true, message: 'Announcement added' };
       }
 
@@ -1000,7 +1098,7 @@ function cacheDrupalFiles() {
     sheet.getRange(1, 1, 1, 7).setValues([['fid','name','path','ext','size','mime','created']]);
   }
 
-  var url = isResume ? resumeUrl : BASE + '/file/file?fields[file--file]=filename,uri,filemime,filesize,created,drupal_internal__fid&page[limit]=50';
+  var url = isResume ? resumeUrl : BASE + '/file/file?fields[file--file]=filename,uri,filemime,filesize,created,drupal_internal__fid&sort=-created&page[limit]=50';
   var batchFiles = [];
   var pageNum = 0;
   var MAX_PAGES = 80; // ~4000 files per run, well within 6-min limit

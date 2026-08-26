@@ -560,7 +560,7 @@ function AnalyticsDashboard() {
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{display:"flex",alignItems:"center",gap:6}}>
                       <Ico.download size={15} color={B.teal} style={{flexShrink:0}}/>
-                      {af.url ? <a href={af.url} target="_blank" rel="noopener noreferrer" title={af.file}
+                      {af.url ? <a href={af.url.startsWith('http') ? af.url : 'https://www.maine.gov'+af.url} target="_blank" rel="noopener noreferrer" title={af.file}
                         style={{fontWeight:600,fontSize:14,color:B.navy,textDecoration:"none",wordBreak:"break-word",lineHeight:1.3}}
                         onClick={e=>e.stopPropagation()}
                         onMouseEnter={e=>e.currentTarget.style.color=B.teal}

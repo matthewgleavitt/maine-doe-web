@@ -222,14 +222,6 @@ function ModuleCard({m,onClick,hovered,onHover,onLeave,delay=0,headerStyle}){
 }
 
 function Portal(){
-  const [authed,setAuthed]=useState(null); // null=checking, true=logged in, false=not
-  const [authUser,setAuthUser]=useState('');
-  const [authUid,setAuthUid]=useState(0);
-  const [isAdmin,setIsAdmin]=useState(false);
-  const [loginUser,setLoginUser]=useState('');
-  const [loginPass,setLoginPass]=useState('');
-  const [loginError,setLoginError]=useState('');
-  const [loginLoading,setLoginLoading]=useState(false);
   const [section,setSection]=useState('home');
   const [webSub,setWebSub]=useState(null);
   const [sbOpen,setSbOpen]=useState(true);
@@ -240,57 +232,6 @@ function Portal(){
   const [webStats,setWebStats]=useState({pageViews:'—',totalPages:'—',totalFiles:'—'});
 
   const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
-
-  // Admin accounts — matches against username OR email (case-insensitive)
-  const ADMIN_ACCOUNTS=['matthew.g.leavitt@maine.gov','rachel.paling@maine.gov','chloe.teboe@maine.gov'];
-
-  // Check Drupal authentication
-  useEffect(()=>{
-    (async()=>{
-      try{
-        const r=await fetch('/doe/jsonapi',{credentials:'same-origin'});
-        const j=await r.json();
-        const meLink=j?.meta?.links?.me?.href||'';
-        if(!meLink){setAuthed(false);return;}
-        // Fetch the user record to check uid
-        const ur=await fetch(meLink.replace(/^http:/,'https:'),{credentials:'same-origin'});
-        const uj=await ur.json();
-        const uid=uj?.data?.attributes?.drupal_internal__uid;
-        if(uid&&uid>0){
-          const uname=uj?.data?.attributes?.name||uj?.data?.attributes?.display_name||'';
-          const umail=uj?.data?.attributes?.mail||'';
-          setAuthUser(uname);
-          setAuthUid(uid);
-          setIsAdmin(ADMIN_ACCOUNTS.includes(uname.toLowerCase())||ADMIN_ACCOUNTS.includes(umail.toLowerCase()));
-          setAuthed(true);
-        }else{
-          setAuthed(false);
-        }
-      }catch(e){setAuthed(false);}
-    })();
-  },[]);
-
-  // Handle login
-  async function handleLogin(){
-    if(!loginUser||!loginPass){setLoginError('Please enter your username and password.');return;}
-    setLoginLoading(true);setLoginError('');
-    try{
-      const r=await fetch('/doe/user/login?_format=json',{
-        method:'POST',
-        credentials:'same-origin',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({name:loginUser,pass:loginPass})
-      });
-      if(r.ok){
-        // Session cookie is set, reload to verify
-        window.location.reload();
-      }else{
-        const j=await r.json().catch(()=>({}));
-        setLoginError(j.message||'Invalid username or password.');
-      }
-    }catch(e){setLoginError('Unable to connect. Please try again.');}
-    setLoginLoading(false);
-  }
 
   useEffect(()=>{
     const ck=()=>{const m=window.innerWidth<860;setMob(m);if(m)setSbOpen(false);};
@@ -316,12 +257,13 @@ function Portal(){
           setQueueStatus(prev=>({...prev,events:{pending,total:j.rows.length}}));
         }
       }catch(e){}
-      // Fetch moderation queue
+      // Fetch moderation queue (via Apps Script proxy — Drupal endpoint isn't CORS-friendly cross-origin)
       try{
-        const r=await fetch('https://www.maine.gov/doe/api/moderation?_='+Date.now());
+        const r=await fetch(SCRIPT_URL+'?type=moderation&_='+Date.now());
         const j=await r.json();
-        if(Array.isArray(j)){
-          const parsed=j.map(item=>{
+        const items=j.rows||(Array.isArray(j)?j:[]);
+        if(items.length>=0){
+          const parsed=items.map(item=>{
             const titleMatch=(item.title||'').match(/>([^<]+)</);
             const hrefMatch=(item.title||'').match(/href="([^"]+)"/);
             const nameMatch=(item.name||'').match(/content="([^"]+)"/)||(item.name||'').match(/>([^<…]+)/);
@@ -368,75 +310,7 @@ function Portal(){
   // Title for header
   const headerTitle=activeWebMod?activeWebMod.label:section==='website'?'Website':section==='dashboard'?'Communications Portal':activeNav?.label||'';
 
-  // ── Auth checking screen ──
-  if(authed===null) return(
-    <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',background:'linear-gradient(135deg,#0c1926,#162d44)'}}>
-      <div style={{textAlign:'center'}}>
-        <div style={{background:'#fff',borderRadius:16,display:'inline-flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px',padding:'12px 24px',boxShadow:'0 8px 32px rgba(66,195,247,0.2)'}}>
-          <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/maine-doe-logo.png" alt="Maine DOE" style={{height:46,objectFit:'contain'}}/>
-        </div>
-        <p style={{color:'#94a3b8',fontSize:14,fontWeight:500}}>Verifying access...</p>
-      </div>
-    </div>
-  );
-
-  // ── Login screen ──
-  if(authed===false) return(
-    <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',background:'linear-gradient(135deg,#0c1926,#162d44)',padding:24,position:'relative',overflow:'hidden'}}>
-      <div style={{position:'absolute',inset:0,pointerEvents:'none',
-        backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',
-        backgroundSize:'60px 60px',opacity:.4}}/>
-      <div style={{position:'relative',zIndex:1,width:'100%',maxWidth:420}}>
-        {/* Logo + Title */}
-        <div style={{textAlign:'center',marginBottom:32}}>
-          <div style={{background:'#fff',borderRadius:18,display:'inline-flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px',padding:'14px 28px',boxShadow:'0 8px 32px rgba(66,195,247,0.3)'}}>
-            <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/maine-doe-logo.png" alt="Maine DOE" style={{height:50,objectFit:'contain'}}/>
-          </div>
-          <div style={{fontSize:11,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',color:'#42c3f7',marginBottom:8}}>Maine Department of Education</div>
-          <h1 style={{fontSize:28,fontWeight:800,color:'#ffffff',lineHeight:1.2,letterSpacing:'-0.02em'}}>
-            Communications <span style={{background:'linear-gradient(135deg,#42c3f7,#34d399)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Portal</span>
-          </h1>
-          <p style={{fontSize:14,color:'#94a3b8',marginTop:8,fontWeight:500}}>Sign in with your Maine DOE account</p>
-        </div>
-
-        {/* Login form */}
-        <div style={{background:'rgba(255,255,255,0.06)',borderRadius:20,border:'1px solid rgba(255,255,255,0.1)',padding:'32px 28px',backdropFilter:'blur(16px)'}}>
-          {loginError&&<div style={{padding:'10px 14px',borderRadius:10,background:'rgba(239,68,68,0.15)',border:'1px solid rgba(239,68,68,0.3)',color:'#fca5a5',fontSize:13,fontWeight:600,marginBottom:16}}>{loginError}</div>}
-          
-          <div style={{marginBottom:16}}>
-            <label style={{display:'block',fontSize:12,fontWeight:700,color:'#94a3b8',marginBottom:6,textTransform:'uppercase',letterSpacing:'.05em'}}>Username</label>
-            <input type="text" value={loginUser} onChange={e=>setLoginUser(e.target.value)}
-              onKeyDown={e=>{if(e.key==='Enter')handleLogin();}}
-              placeholder="Username"
-              style={{width:'100%',padding:'12px 16px',borderRadius:10,border:'1.5px solid rgba(255,255,255,0.15)',background:'rgba(255,255,255,0.06)',color:'#e2e8f0',fontSize:14,fontFamily:'inherit',fontWeight:500,outline:'none'}}
-              autoFocus/>
-          </div>
-          
-          <div style={{marginBottom:24}}>
-            <label style={{display:'block',fontSize:12,fontWeight:700,color:'#94a3b8',marginBottom:6,textTransform:'uppercase',letterSpacing:'.05em'}}>Password</label>
-            <input type="password" value={loginPass} onChange={e=>setLoginPass(e.target.value)}
-              onKeyDown={e=>{if(e.key==='Enter')handleLogin();}}
-              placeholder="Password"
-              style={{width:'100%',padding:'12px 16px',borderRadius:10,border:'1.5px solid rgba(255,255,255,0.15)',background:'rgba(255,255,255,0.06)',color:'#e2e8f0',fontSize:14,fontFamily:'inherit',fontWeight:500,outline:'none'}}/>
-          </div>
-          
-          <button onClick={handleLogin} disabled={loginLoading}
-            style={{width:'100%',padding:'13px 24px',borderRadius:12,border:'none',
-              background:loginLoading?'#475569':'linear-gradient(135deg,#42c3f7,#34d399)',
-              color:loginLoading?'#94a3b8':'#0c1926',fontSize:15,fontWeight:700,cursor:loginLoading?'default':'pointer',
-              fontFamily:'inherit',boxShadow:'0 4px 16px rgba(66,195,247,0.3)',transition:'all 0.2s'}}>
-            {loginLoading?'Signing in...':'Sign In'}
-          </button>
-        </div>
-
-        <div style={{textAlign:'center',marginTop:24,fontSize:11,color:'#475569',fontWeight:500}}>
-          Maine Department of Education · Internal Use Only
-        </div>
-      </div>
-    </div>
-  );
-
-  // ── Authenticated portal ──
+  // ── Portal ──
   return(
     <div style={{display:'flex',height:'100vh',overflow:'hidden',background:C.navy}}>
       {mob&&sbOpen&&<div onClick={()=>setSbOpen(false)} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.6)',zIndex:40,backdropFilter:'blur(8px)'}}/>}
@@ -709,7 +583,7 @@ function Portal(){
               </div>
 
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:18,paddingBottom:24}}>
-                {webModules.filter(m=>!m.adminOnly||isAdmin).map((m,i)=>{
+                {webModules.map((m,i)=>{
                   const dynStat=m.statKey?webStats[m.statKey]:m.stat;
                   return <ModuleCard key={m.id} m={{...m,stat:dynStat||m.stat}} delay={i*0.07}
                     headerStyle={true}
@@ -723,7 +597,7 @@ function Portal(){
 
           {/* ── WEBSITE SUB-TOOL (iframe) ── */}
           {section==='website'&&webSub&&activeWebMod?.href&&(
-            <iframe src={activeWebMod.href+(isAdmin?'?admin=1':'')} style={{width:'100%',height:'100%',border:'none'}} title={activeWebMod.label}/>
+            <iframe src={activeWebMod.href} style={{width:'100%',height:'100%',border:'none'}} title={activeWebMod.label}/>
           )}
 
           {/* ── BRAND GUIDE (iframe) ── */}
@@ -733,12 +607,12 @@ function Portal(){
 
           {/* ── YOUTUBE TRACKER (iframe) ── */}
           {section==='youtube'&&(
-            <iframe src={'youtube-tracker.html'+(isAdmin?'?admin=1':'')} style={{width:'100%',height:'100%',border:'none'}} title="YouTube Tracker"/>
+            <iframe src="youtube-tracker.html" style={{width:'100%',height:'100%',border:'none'}} title="YouTube Tracker"/>
           )}
 
           {/* ── EVENTS TRACKER (iframe) ── */}
           {section==='events'&&(
-            <iframe src={'events-tracker.html'+(isAdmin?'?admin=1':'')} style={{width:'100%',height:'100%',border:'none'}} title="Events Tracker"/>
+            <iframe src="events-tracker.html" style={{width:'100%',height:'100%',border:'none'}} title="Events Tracker"/>
           )}
 
           {/* ── TEMPLATES (iframe) ── */}
