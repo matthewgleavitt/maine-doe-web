@@ -96,23 +96,16 @@ const webModules=[
 ];
 
 // ── Dashboard cards (top-level overview) ──
+// Dashboard cards — order matches the sidebar nav.
 const dashCards=[
-  {id:'website',label:'Website',icon:icons.globe,
-    desc:'Analytics, page explorer, file manager, and tools for maine.gov/doe.',
-    color:'#42c3f7',gradient:'linear-gradient(135deg,#42c3f7,#2da8d8)',status:'live',
-    features:['Analytics','Pages','Files','Tools'],stat:'4',statLabel:'modules'},
+  {id:'workflows',label:'Workflow',icon:icons.clip,external:'https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039',
+    desc:'Active communications workflow requests in Dynamics 365.',
+    color:'#6366f1',gradient:'linear-gradient(135deg,#6366f1,#4f46e5)',status:'live',
+    features:['Newsroom articles','Priority notices','Media advisories'],stat:'—',statLabel:'open in Dynamics'},
   {id:'brand',label:'Brand Guide',icon:icons.layers,href:'brandguide.html',
     desc:'Colors, typography, voice & tone — the complete Maine DOE brand guide.',
     color:'#c084fc',gradient:'linear-gradient(135deg,#c084fc,#a855f7)',status:'live',
     features:['Colors','Typography','Voice & tone','Logos'],stat:'8',statLabel:'sections'},
-  {id:'processes',label:'Process & Procedure',icon:icons.clip,href:'processes.html',
-    desc:'Guidelines, standard procedures, and resources for working with the communications team.',
-    color:'#16a34a',gradient:'linear-gradient(135deg,#34d399,#16a34a)',status:'live',
-    features:['Working with Comms','Voicemail','Email Signature','Resources']},
-  {id:'templates',label:'Templates',icon:icons.copy,href:'templates.html',
-    desc:'Official presentation, letterhead, and design templates for all DOE staff.',
-    color:'#f472b6',gradient:'linear-gradient(135deg,#f472b6,#ec4899)',status:'live',
-    features:['Design','Documents','Presentations'],stat:'—',statLabel:'templates'},
   {id:'commsfiles',label:'Comms Files',icon:icons.folder,external:'https://stateofmaine.sharepoint.com/teams/DOETeam/Shared%20Documents/Communications',
     desc:'Shared communications files, templates, and assets on SharePoint.',
     color:'#65a30d',gradient:'linear-gradient(135deg,#84cc16,#65a30d)',status:'live',
@@ -125,14 +118,22 @@ const dashCards=[
     desc:'Submit and track DOE calendar event requests for the Professional Development calendar.',
     color:'#f59e0b',gradient:'linear-gradient(135deg,#f59e0b,#d97706)',status:'live',
     features:['Submit events','Track status','Calendar check'],stat:'—',statLabel:'submissions'},
+  {id:'processes',label:'Process & Procedure',icon:icons.clip,href:'processes.html',
+    desc:'Guidelines, standard procedures, and resources for working with the communications team.',
+    color:'#16a34a',gradient:'linear-gradient(135deg,#34d399,#16a34a)',status:'live',
+    features:['Working with Comms','Voicemail','Email Signature','Resources']},
   {id:'publications',label:'Publications',icon:icons.mail,href:'publications.html',
     desc:'Mailchimp newsletter analytics — open rates, click rates, and campaign performance.',
     color:'#8b5cf6',gradient:'linear-gradient(135deg,#8b5cf6,#6d28d9)',status:'live',
     features:['Open rates','Click rates','Campaign history','Engagement']},
-  {id:'workflows',label:'Workflow',icon:icons.clip,external:'https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039',
-    desc:'Active communications workflow requests in Dynamics 365.',
-    color:'#6366f1',gradient:'linear-gradient(135deg,#6366f1,#4f46e5)',status:'live',
-    features:['Newsroom articles','Priority notices','Media advisories'],stat:'—',statLabel:'open in Dynamics'},
+  {id:'templates',label:'Templates',icon:icons.copy,href:'templates.html',
+    desc:'Official presentation, letterhead, and design templates for all DOE staff.',
+    color:'#f472b6',gradient:'linear-gradient(135deg,#f472b6,#ec4899)',status:'live',
+    features:['Design','Documents','Presentations'],stat:'—',statLabel:'templates'},
+  {id:'website',label:'Website',icon:icons.globe,
+    desc:'Analytics, page explorer, file manager, and tools for maine.gov/doe.',
+    color:'#42c3f7',gradient:'linear-gradient(135deg,#42c3f7,#2da8d8)',status:'live',
+    features:['Analytics','Pages','Files','Tools'],stat:'4',statLabel:'modules'},
   {id:'youtube',label:'YouTube',icon:icons.video,href:'youtube-tracker.html',
     desc:'Submit, track, and manage video uploads for the DOE YouTube channel.',
     color:'#ef4444',gradient:'linear-gradient(135deg,#ef4444,#dc2626)',status:'live',
@@ -452,25 +453,9 @@ function Portal(){
                     </h1>
                   </div>
                 </div>
-                <p style={{fontSize:15,color:'#cbd5e1',lineHeight:1.7,maxWidth:520,fontWeight:500,marginBottom:20}}>
+                <p style={{fontSize:15,color:'#cbd5e1',lineHeight:1.7,maxWidth:520,fontWeight:500,marginBottom:0}}>
                   Your one-stop hub for analytics, brand resources, templates, and communications workflows.
                 </p>
-                <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
-                  {[
-                    {val:webStats.pageViews,label:'Page views (30d)',icon:icons.chart},
-                    {val:webStats.totalPages,label:'Published pages',icon:icons.file},
-                    {val:webStats.totalFiles,label:'Files tracked',icon:icons.folder},
-                  ].map((s,i)=>(
-                    <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 16px',
-                      borderRadius:12,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)'}}>
-                      <I d={s.icon} size={16} color="#42c3f7"/>
-                      <div>
-                        <div style={{fontSize:18,fontWeight:800,color:'#fff',lineHeight:1}}>{s.val}</div>
-                        <div style={{fontSize:10,fontWeight:600,color:'#94a3b8',letterSpacing:'.03em'}}>{s.label}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
 

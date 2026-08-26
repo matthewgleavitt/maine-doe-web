@@ -70,6 +70,20 @@ const tabs=[
   {id:'contact',label:'Contact',icon:ic.mail},
 ];
 
+// Collapse redundant whitespace in announcement messages so old plain-text rows
+// (\n\n \n\n between paragraphs) don't render as huge gaps. HTML messages pass through.
+function normalizeMessage(msg){
+  if(!msg) return '';
+  // For HTML content: strip empty paragraphs (Teams often sends <p>&nbsp;</p> as spacer)
+  if(/<[a-z]/i.test(msg)){
+    return msg
+      .replace(/<p>\s*(?:&nbsp;|\s|<br\s*\/?>)*\s*<\/p>/gi,'')
+      .replace(/<div>\s*(?:&nbsp;|\s|<br\s*\/?>)*\s*<\/div>/gi,'');
+  }
+  // For plain-text content: collapse any run of newlines+whitespace to at most one blank line
+  return msg.replace(/\n\s*\n[\s]*/g,'\n\n').replace(/^\s+|\s+$/g,'');
+}
+
 function App(){
   const [tab,setTab]=useState('announcements');
   const [announcements,setAnnouncements]=useState([]);
@@ -131,12 +145,6 @@ function App(){
           Your hub for announcements, news, brand resources, templates, and communications tools.
         </p>
         <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
-          <a href="https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039" target="_blank" rel="noopener noreferrer"
-            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 22px',borderRadius:10,
-              background:'linear-gradient(135deg,#42c3f7,#34d399)',color:'#0c1926',textDecoration:'none',fontSize:13,fontWeight:700,
-              boxShadow:'0 4px 16px rgba(66,195,247,0.3)'}}>
-            <Sv d={ic.ext} size={14} color="#0c1926"/> Open Workflow
-          </a>
           <a href="https://stateofmaine.sharepoint.com/:o:/r/sites/MaineDOE/Maine%20DOE%20Information%20Library/Maine%20DOE%20Employee%20Handbook?d=w468cf35d92264d3db9d2099ad7a7595b&csf=1&web=1&e=iiNUTi" target="_blank" rel="noopener noreferrer"
             style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 22px',borderRadius:10,
               background:'linear-gradient(135deg,#42c3f7,#34d399)',color:'#0c1926',textDecoration:'none',fontSize:13,fontWeight:700,
@@ -194,7 +202,7 @@ function App(){
                   <Sv d={["M6 9l6 6 6-6"]} size={16} color={isExp?accent:B.teal}/>
                 </div>
               </div>
-              {isExp&&<div className="ann-msg" style={{fontSize:13,color:B.txtSec,fontWeight:500,paddingTop:4}} dangerouslySetInnerHTML={{__html:a.message}}/>}
+              {isExp&&<div className="ann-msg" style={{fontSize:13,color:B.txtSec,fontWeight:500,paddingTop:4}} dangerouslySetInnerHTML={{__html:normalizeMessage(a.message)}}/>}
             </div>;
           })}
         </div>}
