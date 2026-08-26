@@ -56,15 +56,36 @@ function Pill({children,color}){return <span style={{display:'inline-block',padd
   background:color?`${color}12`:'#f1f5f9',color:color||B.txtSec,border:`1px solid ${color?color+'25':'#e2e8f0'}`}}>{children}</span>}
 
 function Card({children,style,accent}){return <div style={{background:B.wh,borderRadius:14,padding:'20px 22px',
-  border:`2px solid ${B.border}30`,boxShadow:'0 2px 10px rgba(0,0,0,0.04)',
-  borderLeft:accent?`4px solid ${accent}`:undefined,...style}}>{children}</div>}
+  border:`2px solid ${B.border}70`,boxShadow:'0 4px 16px rgba(24,43,60,0.08)',
+  borderLeft:accent?`5px solid ${accent}`:undefined,...style}}>{children}</div>}
 
 function SectionHead({title,sub}){return <div style={{marginBottom:20}}>
   <h3 style={{fontSize:20,fontWeight:800,color:B.navy,marginBottom:6,letterSpacing:'-0.01em'}}>{title}</h3>
   {sub&&<p style={{fontSize:14,color:B.txtMute,lineHeight:1.6,fontWeight:500}}>{sub}</p>}
 </div>}
 
-function SubHead({children}){return <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14,marginTop:8}}>{children}</h4>}
+function SubHead({children,accent}){const a=accent||B.teal;return <h4 style={{fontSize:14,fontWeight:800,color:B.navy,textTransform:'uppercase',letterSpacing:.6,marginBottom:14,marginTop:8,display:'flex',alignItems:'center',gap:10}}><span style={{width:20,height:3,background:a,borderRadius:2}}/>{children}</h4>}
+
+// Panel: navy-gradient header + light body (matches EnGiNE's Communications Orientation card).
+// Icon + title + optional subtitle in the header, optional action button on the right.
+function Panel({icon,title,subtitle,action,children,accent}){
+  const acc=accent||B.teal;
+  return <div style={{background:B.wh,borderRadius:14,border:`2px solid ${acc}55`,overflow:'hidden',marginBottom:20,boxShadow:'0 5px 18px rgba(24,43,60,0.10)'}}>
+    <div style={{padding:'18px 24px',background:'linear-gradient(135deg,#0c1926,#162d44)',display:'flex',alignItems:'center',justifyContent:'space-between',gap:16}}>
+      <div style={{display:'flex',alignItems:'center',gap:12,minWidth:0,flex:1}}>
+        {icon&&<div style={{width:40,height:40,borderRadius:12,background:`${acc}25`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+          <I d={icon} size={18} color={acc}/>
+        </div>}
+        <div style={{minWidth:0}}>
+          <h3 style={{fontSize:16,fontWeight:700,color:'#fff',margin:0,letterSpacing:'-0.005em'}}>{title}</h3>
+          {subtitle&&<p style={{fontSize:12,color:'#94a3b8',margin:0,fontWeight:500}}>{subtitle}</p>}
+        </div>
+      </div>
+      {action}
+    </div>
+    <div style={{padding:'22px 24px'}}>{children}</div>
+  </div>;
+}
 
 function Tip({children,type}){
   const warn=type==='warn';
@@ -82,7 +103,7 @@ function ColorSwatch({hex,label,rgb,cmyk,primary}){
     style={{width:160,cursor:'pointer',transition:'transform 0.15s'}}
     onMouseEnter={e=>e.currentTarget.style.transform='translateY(-2px)'}
     onMouseLeave={e=>e.currentTarget.style.transform='none'}>
-    <div style={{height:80,borderRadius:12,background:hex,border:light?`2px solid ${B.border}30`:'none',
+    <div style={{height:80,borderRadius:12,background:hex,border:light?`2px solid ${B.border}60`:'none',
       display:'flex',alignItems:'flex-end',justifyContent:'flex-end',padding:8,
       boxShadow:`0 4px 16px ${hex}30`}}>
       {copied&&<span style={{fontSize:10,fontWeight:700,color:light?B.navy:'#fff',background:'rgba(255,255,255,0.3)',padding:'2px 8px',borderRadius:6}}>Copied!</span>}
@@ -99,7 +120,7 @@ function ColorSwatch({hex,label,rgb,cmyk,primary}){
 
 function CheckRow({items,positive,accent}){
   return <div>{items.map((x,i)=>(
-    <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:14,color:B.navy,fontWeight:500,display:'flex',alignItems:'flex-start',gap:8}}>
+    <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}40`,fontSize:14,color:B.navy,fontWeight:500,display:'flex',alignItems:'flex-start',gap:8}}>
       <I d={positive?["M20 6L9 17l-5-5"]:["M18 6L6 18","M6 6l12 12"]} size={16} color={accent||(positive?'#16a34a':B.red)} style={{flexShrink:0,marginTop:2}}/>
       <span>{x}</span>
     </div>
@@ -223,10 +244,10 @@ function BrandGuide(){
               <Card key={i}><Pill>{f.pill}</Pill>
                 <div style={{fontSize:28,fontWeight:f.weight||700,color:B.navy,margin:'12px 0 4px',fontFamily:f.family}}>{f.name}</div>
                 <div style={{fontSize:15,fontFamily:f.family,fontWeight:f.weight||400,color:B.txtSec,margin:'0 0 8px',lineHeight:1.5}}>{f.preview}</div>
-                <div style={{fontSize:14,fontFamily:f.family,fontWeight:f.weight||400,color:B.txtMute,margin:'0 0 8px',lineHeight:1.5}}>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>abcdefghijklmnopqrstuvwxyz<br/>0123456789</div>
+                <div style={{fontSize:12,fontFamily:f.family,fontWeight:f.weight||400,color:B.txtMute,margin:'0 0 8px',lineHeight:1.5,wordBreak:'break-all',letterSpacing:'.02em'}}>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>abcdefghijklmnopqrstuvwxyz<br/>0123456789</div>
                 <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:0}}>{f.desc}</p>
-                {f.download&&<a href={f.download} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:10,fontSize:12,fontWeight:700,color:'#42c3f7',textDecoration:'none',padding:'6px 12px',borderRadius:8,border:'1.5px solid #42c3f730',background:'#42c3f708'}}>
-                  <I d={["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"]} size={14} color="#42c3f7"/> Download font
+                {f.download&&<a href={f.download} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:10,fontSize:12,fontWeight:700,color:'#ffffff',textDecoration:'none',padding:'8px 14px',borderRadius:8,border:`2px solid ${B.tealDk}`,background:B.tealDk,boxShadow:'0 3px 10px rgba(45,168,216,0.3)'}}>
+                  <I d={["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"]} size={14} color="#ffffff"/> Download font
                 </a>}
               </Card>
             ))}
@@ -236,7 +257,7 @@ function BrandGuide(){
             {[{p:'Maine.gov (Drupal)',n:'Pre-set. Do not copy-paste from Word — it injects unwanted formatting.'},
               {p:'Newsroom (WordPress)',n:'Lato body. Century Gothic / League Spartan for banner graphics.'},
               {p:'Email blasts (Mailchimp)',n:'Arial body. Century Gothic / League Spartan for banner graphics.'}].map((x,i)=>(
-              <div key={i} style={{display:'flex',gap:16,fontSize:13,padding:'10px 0',borderBottom:`1px solid ${B.border}20`}}>
+              <div key={i} style={{display:'flex',gap:16,fontSize:13,padding:'10px 0',borderBottom:`1px solid ${B.border}45`}}>
                 <span style={{fontWeight:700,minWidth:180,color:B.navy}}>{x.p}</span>
                 <span style={{color:B.txtMute}}>{x.n}</span>
               </div>
@@ -255,7 +276,7 @@ function BrandGuide(){
               </h4>
               {['Clear, conversational, and human','Helpful and solution-oriented','Friendly yet professional','Kind, compassionate, and respectful',
                 'Optimistic yet grounded','Inclusive','Student-, educator-, and school-centered','Creative and innovative (when appropriate)'].map((x,i)=>(
-                <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:14,color:B.navy,fontWeight:500}}>{x}</div>
+                <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}40`,fontSize:14,color:B.navy,fontWeight:500}}>{x}</div>
               ))}
             </Card>
             <Card accent={B.red}>
@@ -263,7 +284,7 @@ function BrandGuide(){
                 <I d={["M18 6L6 18","M6 6l12 12"]} size={18} color={B.red}/> Never
               </h4>
               {['Overly punitive, harsh, critical, or negative','Bureaucratic','Using lots of words when fewer will do','Jargony','Exclusive'].map((x,i)=>(
-                <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:14,color:B.navy,fontWeight:500}}>{x}</div>
+                <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}40`,fontSize:14,color:B.navy,fontWeight:500}}>{x}</div>
               ))}
             </Card>
           </div>
@@ -282,7 +303,7 @@ function BrandGuide(){
                 <code style={{background:'#f1f5f9',padding:'3px 10px',borderRadius:6,color:B.txtSec,fontSize:12,fontWeight:600}}>{r.t}</code>
               </div>
             ))}
-            <div style={{marginTop:16,paddingTop:16,borderTop:`1px solid ${B.border}20`}}>
+            <div style={{marginTop:16,paddingTop:16,borderTop:`1px solid ${B.border}45`}}>
               <div style={{fontSize:13,fontWeight:700,color:B.navy,marginBottom:6}}>Referring to a specific office or team</div>
               <div style={{fontSize:13,color:B.txtSec,lineHeight:1.6}}>
                 <strong>Initial:</strong> "The Maine Department of Education (DOE) [office or team name]"<br/>
@@ -305,7 +326,7 @@ function BrandGuide(){
             <SubHead>Commonly-used conventions</SubHead>
             {['Oxford comma','One space after a period (not two)','Spell out a number when it begins a sentence or if it is less than 10 (e.g., "five"). Otherwise, use the numeral.',
               'Dates: January 1, 2026; 1/1/2026 (NOT 01/01/2026); January 1 (NOT January 1st)','Times: 10:30 a.m., 1 p.m., noon, midnight','MSAD 28, RSU 40 (no #)'].map((x,i)=>(
-              <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:13,color:B.navy,fontWeight:500}}>{x}</div>
+              <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}40`,fontSize:13,color:B.navy,fontWeight:500}}>{x}</div>
             ))}
           </Card>
 
@@ -401,7 +422,7 @@ function BrandGuide(){
               'All logos should have a transparent-background version.',
               'All logos should have a high-resolution version.',
               'Use on backgrounds with enough contrast. A dark-background version of the official logo is available.'].map((r,i)=>(
-              <div key={i} style={{padding:'8px 0 8px 14px',borderBottom:`1px solid ${B.border}15`,borderLeft:`3px solid ${B.teal}30`,fontSize:13,color:B.navy,fontWeight:500,marginBottom:4}}>{r}</div>
+              <div key={i} style={{padding:'8px 0 8px 14px',borderBottom:`1px solid ${B.border}40`,borderLeft:`3px solid ${B.teal}30`,fontSize:13,color:B.navy,fontWeight:500,marginBottom:4}}>{r}</div>
             ))}
           </Card>
 
@@ -419,7 +440,7 @@ function BrandGuide(){
               {r:'Use real photographs for professional headshots.',n:'The use of AI to generate or doctor headshots is strongly discouraged. Contact the Comms Team if you need one taken.'},
               {r:'High resolution required.',n:'If pixelated, find another. Most images should be no larger than 1920×1280 to avoid slow page loads.'},
               {r:'Never distort images.',n:'Resize proportionally. The Comms Team can assist with resizing.'}].map((x,i)=>(
-              <div key={i} style={{padding:'12px 0',borderBottom:i<5?`1px solid ${B.border}15`:'none'}}>
+              <div key={i} style={{padding:'12px 0',borderBottom:i<5?`1px solid ${B.border}40`:'none'}}>
                 <div style={{fontSize:14,fontWeight:600,color:B.navy}}>{x.r}</div>
                 <div style={{fontSize:12,color:B.txtMute,marginTop:4,fontWeight:500}}>{x.n}</div>
               </div>
@@ -430,10 +451,10 @@ function BrandGuide(){
             <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
               {[{n:'Pexels',u:'https://www.pexels.com/'},{n:'Pixabay',u:'https://pixabay.com/'},{n:'Unsplash',u:'https://unsplash.com/'}].map((s,i)=>(
                 <a key={i} href={s.u} target="_blank" rel="noopener noreferrer"
-                  style={{display:'flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,border:`2px solid ${B.border}30`,
+                  style={{display:'flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,border:`2px solid ${B.border}60`,
                     textDecoration:'none',color:B.navy,fontSize:14,fontWeight:600,background:B.wh,transition:'all 0.15s'}}
                   onMouseEnter={e=>{e.currentTarget.style.borderColor=B.teal;e.currentTarget.style.transform='translateY(-1px)';}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor=`${B.border}30`;e.currentTarget.style.transform='none';}}>
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor=`${B.border}60`;e.currentTarget.style.transform='none';}}>
                   <I d={["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"]} size={14} color={B.teal}/> {s.n}
                 </a>
               ))}
@@ -445,8 +466,7 @@ function BrandGuide(){
         {tab==='correspondence'&&<div>
           <SectionHead title="Correspondence" sub="How Maine DOE staff represent themselves in email, out-of-office replies, and voicemail. Templates are designed for accessibility and readability for internal and external audiences."/>
 
-          <Card style={{marginBottom:16}}>
-            <SubHead>Email signature guidelines</SubHead>
+          <Panel icon={["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"]} title="Email signature" subtitle="12pt, Calibri, black — no images or backgrounds">
             <CheckRow positive={true} items={[
               'Written/displayed in 12pt, Calibri, black font.',
               'Lead with the Maine DOE logo, then include an office/team/project logo if applicable.',
@@ -455,11 +475,8 @@ function BrandGuide(){
               'Include a space, then a pipe (Shift + \\), then another space, and hyperlink your text.',
               'Match link color across all links, and do not use acronyms (e.g., "Workforce Development" not "WDIP").',
             ]}/>
-          </Card>
-
-          <Card style={{marginBottom:16}}>
-            <SubHead>Example</SubHead>
-            <div style={{padding:24,background:'#f8fafc',borderRadius:12,fontFamily:'Calibri,sans-serif',fontSize:13,lineHeight:1.9,color:'#000',border:`1px solid ${B.border}20`}}>
+            <div style={{fontSize:11,fontWeight:700,color:B.txtMute,letterSpacing:.5,textTransform:'uppercase',marginTop:20,marginBottom:10}}>Example</div>
+            <div style={{padding:24,background:'#f8fafc',borderRadius:12,fontFamily:'Calibri,sans-serif',fontSize:13,lineHeight:1.9,color:'#000',border:`1px solid ${B.border}60`}}>
               <div style={{borderTop:`2px solid ${B.navyMid}`,width:200,marginBottom:16}}/>
               <strong>Matthew Leavitt</strong> (He/Him)<br/>Website & Technology Coordinator<br/>Maine Department of Education<br/>
               23 State House Station<br/>Augusta, Maine 04333-0023<br/>
@@ -467,15 +484,14 @@ function BrandGuide(){
               <strong>Phone:</strong> 207-355-4615<br/>
               <span style={{color:B.teal}}>Maine DOE</span> | <span style={{color:B.teal}}>Facebook</span> | <span style={{color:B.teal}}>Instagram</span> | <span style={{color:B.teal}}>Maine DOE Newsroom</span>
             </div>
-          </Card>
+          </Panel>
 
-          <Card style={{marginBottom:16}}>
-            <SubHead>Auto-reply templates</SubHead>
-            <p style={{fontSize:13,color:B.txtSec,marginBottom:14,fontWeight:500,lineHeight:1.6}}>Activate an out-of-office message through Outlook whenever you're out. Messages should be brief, indicate return date, and note whom to contact in your absence. Avoid extended descriptions of why you're out.</p>
+          <Panel icon={["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 6v6l4 2"]} title="Auto-reply templates" subtitle="Set through Outlook when you're out of office">
+            <p style={{fontSize:13,color:B.txtSec,marginBottom:14,fontWeight:500,lineHeight:1.6}}>Messages should be brief, indicate return date, and note whom to contact in your absence. Avoid extended descriptions of why you're out.</p>
 
             <div style={{marginBottom:14}}>
               <Pill color={B.navy}>Vacation / personal / sick / summer flex</Pill>
-              <div style={{marginTop:8,padding:'14px 18px',background:'#f8fafc',borderRadius:10,border:`1px solid ${B.border}20`,fontSize:13,color:B.txtSec,lineHeight:1.7,fontFamily:'Calibri,sans-serif'}}>
+              <div style={{marginTop:8,padding:'14px 18px',background:'#f8fafc',borderRadius:10,border:`1px solid ${B.border}60`,fontSize:13,color:B.txtSec,lineHeight:1.7,fontFamily:'Calibri,sans-serif'}}>
                 Thank you for your email. I am out of the office from <strong>[DATE]</strong> to <strong>[DATE]</strong>. During that time, I will not have access to my inbox. If your message is urgent, please contact <strong>[ALTERNATIVE CONTACT]</strong>. Otherwise, I will respond as soon as I can.<br/><br/>
                 Best,<br/>
                 <strong>[NAME]</strong>
@@ -484,7 +500,7 @@ function BrandGuide(){
 
             <div style={{marginBottom:14}}>
               <Pill color={B.navy}>State of Maine offices closed</Pill>
-              <div style={{marginTop:8,padding:'14px 18px',background:'#f8fafc',borderRadius:10,border:`1px solid ${B.border}20`,fontSize:13,color:B.txtSec,lineHeight:1.7,fontFamily:'Calibri,sans-serif'}}>
+              <div style={{marginTop:8,padding:'14px 18px',background:'#f8fafc',borderRadius:10,border:`1px solid ${B.border}60`,fontSize:13,color:B.txtSec,lineHeight:1.7,fontFamily:'Calibri,sans-serif'}}>
                 Thank you for your email. State of Maine offices are closed on <strong>[DATE]</strong> in observance of <strong>[REASON]</strong>. I will respond as soon as I can.<br/><br/>
                 Best,<br/>
                 <strong>[NAME]</strong>
@@ -493,17 +509,15 @@ function BrandGuide(){
 
             <div>
               <Pill color={B.navy}>Limited access (conference, retreat)</Pill>
-              <div style={{marginTop:8,padding:'14px 18px',background:'#f8fafc',borderRadius:10,border:`1px solid ${B.border}20`,fontSize:13,color:B.txtSec,lineHeight:1.7,fontFamily:'Calibri,sans-serif'}}>
+              <div style={{marginTop:8,padding:'14px 18px',background:'#f8fafc',borderRadius:10,border:`1px solid ${B.border}60`,fontSize:13,color:B.txtSec,lineHeight:1.7,fontFamily:'Calibri,sans-serif'}}>
                 Thank you for your email. I am attending a <strong>[TYPE OF EVENT]</strong> on <strong>[DATE]</strong>. During that time, I will have limited access to my inbox. If your message is urgent, please contact <strong>[ALTERNATIVE CONTACT]</strong>. Otherwise, I will respond as soon as I can.<br/><br/>
                 Best,<br/>
                 <strong>[NAME]</strong>
               </div>
             </div>
-          </Card>
+          </Panel>
 
-          <Card>
-            <SubHead>Voicemail</SubHead>
-            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.6,marginBottom:12,fontWeight:500}}>When staff can't answer the phone, record a voicemail using these guidelines:</p>
+          <Panel icon={["M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"]} title="Voicemail" subtitle="For when you can't answer the phone">
             <CheckRow positive={true} items={[
               'Include a greeting, your name, and your title.',
               'Briefly apologize for missing the call.',
@@ -512,7 +526,7 @@ function BrandGuide(){
               'Use a friendly but professional tone.',
               'Keep your message short and succinct.',
             ]}/>
-          </Card>
+          </Panel>
         </div>}
 
         {/* ── CONTENT & APPROVAL ── */}
@@ -538,7 +552,7 @@ function BrandGuide(){
               {t:'Maine DOE Update',d:'Weekly Friday newsletter with all Newsroom articles from that week.'},
               {t:'Social media',d:'Facebook, Instagram, LinkedIn. Requires goal, audience, dates, caption, imagery, and (for ads) budget + funding code.'},
               {t:'Newsletters',d:'Some offices/teams run their own regular newsletters. Contact the Comms Team before starting one.'}].map((x,i)=>(
-              <div key={i} style={{padding:'10px 0',borderBottom:i<8?`1px solid ${B.border}15`:'none'}}>
+              <div key={i} style={{padding:'10px 0',borderBottom:i<8?`1px solid ${B.border}40`:'none'}}>
                 <div style={{fontSize:14,fontWeight:700,color:B.navy}}>{x.t}</div>
                 <div style={{fontSize:12,color:B.txtMute,marginTop:3,fontWeight:500,lineHeight:1.55}}>{x.d}</div>
               </div>
@@ -565,14 +579,14 @@ function BrandGuide(){
           <Card>
             <SubHead>File naming convention for website uploads</SubHead>
             <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500,marginBottom:12}}>When uploading files that will be linked from maine.gov/doe, name your file so it's easy to find, share, and understand out of context:</p>
-            <code style={{display:'block',background:'#f1f5f9',padding:'12px 14px',borderRadius:8,color:B.navy,fontSize:13,fontWeight:600,marginBottom:14,border:`1px solid ${B.border}30`}}>Team/Area - Title of File - Full Date.pdf</code>
+            <code style={{display:'block',background:'#f1f5f9',padding:'12px 14px',borderRadius:8,color:B.navy,fontSize:13,fontWeight:600,marginBottom:14,border:`1px solid ${B.border}60`}}>Team/Area - Title of File - Full Date.pdf</code>
             <CheckRow positive={true} items={[
               'Spaces between hyphens.',
               'No abbreviations or acronyms (unless universal).',
               'Date with periods between, full year written out, no leading zeros — 6.1.2024 (not 06.01.24 or 6.1.24).',
               'Prioritize using PDFs.',
             ]}/>
-            <div style={{marginTop:14,padding:'12px 14px',background:'#f8fafc',borderRadius:8,border:`1px solid ${B.border}20`}}>
+            <div style={{marginTop:14,padding:'12px 14px',background:'#f8fafc',borderRadius:8,border:`1px solid ${B.border}45`}}>
               <div style={{fontSize:11,fontWeight:700,color:B.txtMute,letterSpacing:'.05em',textTransform:'uppercase',marginBottom:8}}>Examples</div>
               {[
                 'Multilingual Learning - Multilingual Learners with Disabilities Policy Guide - 3.11.2025.pdf',
@@ -603,7 +617,7 @@ function BrandGuide(){
               {name:'Maine DOE Newsroom',desc:"The department's WordPress newsroom for articles and updates.",href:'https://mainedoenews.net/',color:'#42c3f7'},
             ].map((r,i)=>(
               <a key={i} href={r.href} target="_blank" rel="noopener noreferrer"
-                style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'16px 18px',textDecoration:'none',
+                style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}60`,padding:'16px 18px',textDecoration:'none',
                   display:'flex',alignItems:'flex-start',gap:12,transition:'all 0.15s'}}
                 onMouseEnter={e=>{e.currentTarget.style.borderColor=r.color+'60';e.currentTarget.style.transform='translateY(-2px)';}}
                 onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
@@ -627,7 +641,7 @@ function BrandGuide(){
               {name:'Maine Community Inclusion Through Technology',desc:'Statewide program helping people with disabilities increase independence through assistive technology.',href:'https://mainecite.org/'},
             ].map((r,i)=>(
               <a key={i} href={r.href} target="_blank" rel="noopener noreferrer"
-                style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'14px 16px',textDecoration:'none',
+                style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}60`,padding:'14px 16px',textDecoration:'none',
                   transition:'all 0.15s'}}
                 onMouseEnter={e=>{e.currentTarget.style.borderColor='#34d39960';e.currentTarget.style.transform='translateY(-2px)';}}
                 onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
@@ -645,7 +659,7 @@ function BrandGuide(){
               {name:'APA Style',desc:'For citing external references.',href:'https://apastyle.apa.org/'},
             ].map((r,i)=>(
               <a key={i} href={r.href} target="_blank" rel="noopener noreferrer"
-                style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'14px 16px',textDecoration:'none',
+                style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}60`,padding:'14px 16px',textDecoration:'none',
                   transition:'all 0.15s'}}
                 onMouseEnter={e=>{e.currentTarget.style.borderColor='#a78bfa60';e.currentTarget.style.transform='translateY(-2px)';}}
                 onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
@@ -658,14 +672,14 @@ function BrandGuide(){
           <SubHead>Comms team</SubHead>
           <p style={{fontSize:13,color:B.txtMute,marginBottom:14,fontWeight:500}}>For questions and requests:</p>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-            <a href="mailto:rachel.paling@maine.gov" style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'14px 16px',textDecoration:'none',transition:'all 0.15s'}}
+            <a href="mailto:rachel.paling@maine.gov" style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}60`,padding:'14px 16px',textDecoration:'none',transition:'all 0.15s'}}
               onMouseEnter={e=>{e.currentTarget.style.borderColor='#34d39960';e.currentTarget.style.transform='translateY(-2px)';}}
               onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
               <div style={{fontSize:14,fontWeight:700,color:B.navy}}>Rachel Paling</div>
               <div style={{fontSize:12,color:'#34d399',fontWeight:600}}>rachel.paling@maine.gov</div>
               <div style={{fontSize:12,color:B.txtMute,marginTop:4,fontWeight:500}}>Communications Coordinator</div>
             </a>
-            <a href="mailto:matthew.g.leavitt@maine.gov" style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'14px 16px',textDecoration:'none',transition:'all 0.15s'}}
+            <a href="mailto:matthew.g.leavitt@maine.gov" style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}60`,padding:'14px 16px',textDecoration:'none',transition:'all 0.15s'}}
               onMouseEnter={e=>{e.currentTarget.style.borderColor='#c084fc60';e.currentTarget.style.transform='translateY(-2px)';}}
               onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
               <div style={{fontSize:14,fontWeight:700,color:B.navy}}>Matt Leavitt</div>

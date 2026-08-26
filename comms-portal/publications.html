@@ -55,12 +55,15 @@ function rateColor(rate,type){
   return rate>=4?'#16a34a':rate>=2?'#f59e0b':'#ef4444';
 }
 
+const NEWSLETTER_BUILDER_URL='https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/newsletter-builder/?backend=drupal';
+
 function App(){
   const [data,setData]=useState(null);
   const [loading,setLoading]=useState(true);
   const [expanded,setExpanded]=useState(null);
   const [search,setSearch]=useState('');
   const [page,setPage]=useState(1);
+  const [nbInfo,setNbInfo]=useState(false);
   const PER_PAGE=25;
 
   useEffect(()=>{
@@ -118,7 +121,7 @@ function App(){
         {l:'Avg open rate',v:(s.avgOpenRate||0)+'%',c:rateColor(s.avgOpenRate||0,'open'),icon:ic.eye},
         {l:'Avg click rate',v:(s.avgClickRate||0)+'%',c:rateColor(s.avgClickRate||0,'click'),icon:ic.cursor},
       ].map((m,i)=>(
-        <div key={i} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}30`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+        <div key={i} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}55`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
           <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:700,letterSpacing:.4,marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
             <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
           </div>
@@ -127,9 +130,68 @@ function App(){
       ))}
     </div>
 
+    {/* Newsletter Builder panel */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.teal}55`,overflow:'hidden',marginBottom:24,boxShadow:'0 5px 18px rgba(24,43,60,0.10)'}}>
+      <div style={{padding:'18px 24px',background:'linear-gradient(135deg,#0c1926,#162d44)',display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,flexWrap:'wrap'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12,minWidth:0,flex:1}}>
+          <div style={{width:40,height:40,borderRadius:12,background:`${B.teal}25`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            <Sv d={["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"]} size={18} color={B.teal}/>
+          </div>
+          <div style={{minWidth:0}}>
+            <h3 style={{fontSize:16,fontWeight:700,color:'#fff',margin:0,letterSpacing:'-0.005em'}}>Newsletter Builder</h3>
+            <p style={{fontSize:12,color:'#94a3b8',margin:0,fontWeight:500}}>Build branded newsletters for your team or audience</p>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+          <button onClick={()=>setNbInfo(true)}
+            style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:50,
+              background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',
+              fontSize:13,fontWeight:600,cursor:'pointer'}}>
+            How to use
+          </button>
+          <a href={NEWSLETTER_BUILDER_URL} target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 18px',borderRadius:50,
+              background:B.teal,color:B.navy,textDecoration:'none',fontSize:13,fontWeight:700}}>
+            Open Builder <Sv d={ic.ext} size={14} color={B.navy}/>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Newsletter Builder — How to use modal */}
+    {nbInfo&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(6px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
+      onClick={e=>{if(e.target===e.currentTarget)setNbInfo(false);}}>
+      <div style={{background:B.wh,borderRadius:20,width:'100%',maxWidth:640,maxHeight:'90vh',overflow:'auto',boxShadow:'0 24px 80px rgba(0,0,0,0.2)'}}>
+        <div style={{padding:'24px 28px 16px',borderBottom:`2px solid ${B.border}55`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <div style={{width:40,height:40,borderRadius:12,background:`linear-gradient(135deg,${B.teal},#2da8d8)`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <Sv d={["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"]} size={20} color="#fff"/>
+            </div>
+            <h2 style={{fontSize:18,fontWeight:800,color:B.navy,margin:0}}>Newsletter Builder — How to use</h2>
+          </div>
+          <button onClick={()=>setNbInfo(false)} style={{background:'none',border:'none',cursor:'pointer',padding:4,display:'flex'}}>
+            <Sv d={["M18 6L6 18","M6 6l12 12"]} size={20} color={B.txtMute}/>
+          </button>
+        </div>
+        <div style={{padding:'22px 28px 28px'}}>
+          <div style={{padding:'14px 18px',borderRadius:10,background:'#fef3c714',border:'1.5px solid #f59e0b30',borderLeft:'4px solid #f59e0b',marginBottom:16,fontSize:13,color:B.txtSec,fontWeight:500,lineHeight:1.6}}>
+            <strong>Guidance coming soon.</strong> Detailed instructions from the Communications Team will land here — when to use the builder, who to notify before starting a newsletter, brand and content standards, and how the delivery workflow ties into Mailchimp.
+          </div>
+          <p style={{fontSize:14,color:B.txtSec,lineHeight:1.7,fontWeight:500,marginBottom:14}}>
+            In the meantime, contact the Communications Team before you start a new newsletter so we can align on messaging, cadence, and audience. Some newsletters are already established and sent through Mailchimp — check first before creating a new one.
+          </p>
+          <a href={NEWSLETTER_BUILDER_URL} target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:6,padding:'10px 20px',borderRadius:10,
+              background:B.teal,color:B.navy,textDecoration:'none',fontSize:13,fontWeight:700,boxShadow:'0 4px 12px rgba(66,195,247,0.25)'}}>
+            <Sv d={ic.ext} size={14} color={B.navy}/> Open the Builder
+          </a>
+        </div>
+      </div>
+    </div>}
+
     {/* Search */}
     <div style={{display:'flex',gap:8,marginBottom:16}}>
-      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}30`,flex:1}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}55`,flex:1}}>
         <Sv d={ic.ext} size={16} color={B.txtMute}/>
         <input type="text" placeholder="Search campaigns by subject, title, or date..." value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} style={{border:'none',outline:'none',flex:1,fontSize:14,color:B.txt,fontWeight:500,background:'transparent'}}/>
         {search&&<span onClick={()=>{setSearch('');setPage(1);}} style={{cursor:'pointer'}}><Sv d={["M18 6L6 18","M6 6l12 12"]} size={14} color={B.txtMute}/></span>}
@@ -137,25 +199,25 @@ function App(){
     </div>
 
     {/* Campaigns table */}
-    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:40}}>
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:40}}>
       <div style={{padding:'16px 20px',background:B.navy,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <h3 style={{fontSize:15,fontWeight:700,color:B.teal,margin:0}}>Recent campaigns</h3>
         <span style={{fontSize:12,color:'#94a3b8',fontWeight:500}}>{filtered.length} campaign{filtered.length!==1?'s':''}{search&&` matching "${search}"`}{totalPages>1&&` · Page ${page} of ${totalPages}`}</span>
       </div>
       <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
-        <thead><tr style={{background:'#f8fafc'}}>
-          <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Campaign</th>
-          <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Sent</th>
-          <th style={{padding:'10px 16px',textAlign:'center',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Recipients</th>
-          <th style={{padding:'10px 16px',textAlign:'center',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Open rate</th>
-          <th style={{padding:'10px 16px',textAlign:'center',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Click rate</th>
-          <th style={{padding:'10px 16px',textAlign:'center',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Actions</th>
+        <thead><tr style={{background:'#e2e8f0',borderBottom:`2px solid ${B.border}80`}}>
+          <th style={{padding:'12px 16px',textAlign:'left',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.06em'}}>Campaign</th>
+          <th style={{padding:'12px 16px',textAlign:'left',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.06em'}}>Sent</th>
+          <th style={{padding:'12px 16px',textAlign:'center',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.06em'}}>Recipients</th>
+          <th style={{padding:'12px 16px',textAlign:'center',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.06em'}}>Open rate</th>
+          <th style={{padding:'12px 16px',textAlign:'center',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.06em'}}>Click rate</th>
+          <th style={{padding:'12px 16px',textAlign:'center',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.06em'}}>Actions</th>
         </tr></thead>
         <tbody>
           {paginated.map((c,i)=>{
             const isExp=expanded===i;
             return <React.Fragment key={c.id}>
-              <tr style={{borderBottom:isExp?'none':`1px solid ${B.border}15`,cursor:'pointer'}}
+              <tr style={{borderBottom:isExp?'none':`1px solid ${B.border}55`,cursor:'pointer'}}
                 onClick={()=>setExpanded(isExp?null:i)}
                 onMouseEnter={e=>e.currentTarget.style.background=`${B.teal}06`}
                 onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
@@ -175,13 +237,13 @@ function App(){
                 </td>
                 <td style={{padding:'14px 16px',textAlign:'center'}}>
                   {c.webViewUrl&&<a href={c.webViewUrl} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}
-                    style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:`2px solid ${B.border}30`,
+                    style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:`2px solid ${B.border}55`,
                       background:B.wh,color:B.teal,textDecoration:'none',fontSize:11,fontWeight:700}}>
                     <Sv d={ic.ext} size={12} color={B.teal}/> View
                   </a>}
                 </td>
               </tr>
-              {isExp&&<tr style={{borderBottom:`1px solid ${B.border}15`}}>
+              {isExp&&<tr style={{borderBottom:`1px solid ${B.border}45`}}>
                 <td colSpan={6} style={{padding:0}}>
                   <div style={{padding:'16px 24px',background:`${B.navy}03`,display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16}}>
                     <div>
@@ -212,11 +274,11 @@ function App(){
           {paginated.length===0&&<tr><td colSpan={6} style={{padding:40,textAlign:'center',color:B.txtMute}}>{search?'No campaigns match your search.':'No campaigns found.'}</td></tr>}
         </tbody>
       </table>
-      {totalPages>1&&<div style={{padding:'14px 20px',borderTop:`1px solid ${B.border}15`,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+      {totalPages>1&&<div style={{padding:'14px 20px',borderTop:`1px solid ${B.border}45`,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
         <button onClick={()=>setPage(1)} disabled={page===1}
-          style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}30`,background:B.wh,color:page===1?B.border:B.txtSec,fontSize:12,fontWeight:600,cursor:page===1?'default':'pointer'}}>First</button>
+          style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}55`,background:B.wh,color:page===1?B.border:B.txtSec,fontSize:12,fontWeight:600,cursor:page===1?'default':'pointer'}}>First</button>
         <button onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page===1}
-          style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}30`,background:B.wh,color:page===1?B.border:B.txtSec,fontSize:12,fontWeight:600,cursor:page===1?'default':'pointer'}}>Prev</button>
+          style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}55`,background:B.wh,color:page===1?B.border:B.txtSec,fontSize:12,fontWeight:600,cursor:page===1?'default':'pointer'}}>Prev</button>
         {Array.from({length:Math.min(5,totalPages)},(_,i)=>{
           let p;
           if(totalPages<=5)p=i+1;
@@ -224,14 +286,14 @@ function App(){
           else if(page>=totalPages-2)p=totalPages-4+i;
           else p=page-2+i;
           return <button key={p} onClick={()=>setPage(p)}
-            style={{padding:'6px 12px',borderRadius:8,border:page===p?'none':`1.5px solid ${B.border}30`,
+            style={{padding:'6px 12px',borderRadius:8,border:page===p?'none':`1.5px solid ${B.border}55`,
               background:page===p?B.navy:B.wh,color:page===p?B.teal:B.txtSec,
               fontSize:12,fontWeight:700,cursor:'pointer',minWidth:36}}>{p}</button>;
         })}
         <button onClick={()=>setPage(p=>Math.min(totalPages,p+1))} disabled={page===totalPages}
-          style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}30`,background:B.wh,color:page===totalPages?B.border:B.txtSec,fontSize:12,fontWeight:600,cursor:page===totalPages?'default':'pointer'}}>Next</button>
+          style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}55`,background:B.wh,color:page===totalPages?B.border:B.txtSec,fontSize:12,fontWeight:600,cursor:page===totalPages?'default':'pointer'}}>Next</button>
         <button onClick={()=>setPage(totalPages)} disabled={page===totalPages}
-          style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}30`,background:B.wh,color:page===totalPages?B.border:B.txtSec,fontSize:12,fontWeight:600,cursor:page===totalPages?'default':'pointer'}}>Last</button>
+          style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}55`,background:B.wh,color:page===totalPages?B.border:B.txtSec,fontSize:12,fontWeight:600,cursor:page===totalPages?'default':'pointer'}}>Last</button>
       </div>}
     </div>
 
