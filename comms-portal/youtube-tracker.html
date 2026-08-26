@@ -51,7 +51,8 @@ const ic={
 
 const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',green:'#16a34a'};
 const API='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
-const SP='https://stateofmaine.sharepoint.com/:f:/r/teams/DOETeam/Shared%20Documents/Communications/YouTube%20Uploads?csf=1&web=1&e=GLuU3e';
+const DRIVE_MAIN='https://drive.google.com/drive/folders/1i5Hp9HSxyya3sgVA4HSMmMosIYRCLlv1';
+const DRIVE_ENGINE='https://drive.google.com/drive/folders/1tVV6XLt33yNhfrgqqfxaW1bzH0Q9s6Dc';
 
 const ST={Received:{bg:'#dbeafe',color:'#1e40af',border:'#93c5fd'},Processing:{bg:'#fef3c7',color:'#92400e',border:'#fcd34d'},Complete:{bg:'#d1fae5',color:'#065f46',border:'#6ee7b7'}};
 
@@ -173,8 +174,11 @@ function App(){
           <button onClick={()=>setShowForm(true)} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'linear-gradient(135deg,#ef4444,#dc2626)',color:'#fff',border:'none',fontSize:14,fontWeight:700,boxShadow:'0 4px 16px rgba(239,68,68,0.3)',cursor:'pointer'}}>
             <Sv d={ic.upload} size={18} color="#fff"/> Submit New Video
           </button>
-          <a href={SP} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
-            <Sv d={ic.folder} size={18} color="#94a3b8"/> Video Files Folder
+          <a href={DRIVE_MAIN} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
+            <Sv d={ic.folder} size={18} color="#94a3b8"/> Main Channel Uploads
+          </a>
+          <a href={DRIVE_ENGINE} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
+            <Sv d={ic.folder} size={18} color="#94a3b8"/> EnGiNE Uploads
           </a>
         </div>
       </div>
@@ -296,7 +300,7 @@ function App(){
             </div>
             <div>
               <h2 style={{fontSize:18,fontWeight:800,color:B.navy,margin:0}}>Submit a Video</h2>
-              <p style={{fontSize:12,color:B.txtMute,margin:0}}>Upload files to SharePoint first</p>
+              <p style={{fontSize:12,color:B.txtMute,margin:0}}>After submitting, upload your video file to the correct Drive folder</p>
             </div>
           </div>
           <button onClick={()=>setShowForm(false)} style={{background:'none',border:'none',cursor:'pointer',padding:4}}><Sv d={ic.x} size={20} color={B.txtMute}/></button>
@@ -358,14 +362,31 @@ function App(){
               <div style={{fontSize:14,fontWeight:700,color:B.navy}}>Upload your video file</div>
             </div>
             <p style={{fontSize:12,color:B.txtMute,lineHeight:1.6,fontWeight:500,marginBottom:12}}>
-              After submitting this form, upload your video to our shared Google Drive folder. It will be automatically uploaded to YouTube and matched to this submission.
+              After submitting this form, upload your video to the correct Drive folder for its channel. It will be uploaded to YouTube automatically within 2 hours (business hours only) and matched to this submission.
             </p>
-            <a href="https://drive.google.com/drive/folders/1i5Hp9HSxyya3sgVA4HSMmMosIYRCLlv1" target="_blank" rel="noopener noreferrer"
-              style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,
-                background:B.teal,color:'#0c1926',textDecoration:'none',fontSize:13,fontWeight:700,
-                boxShadow:'0 4px 12px rgba(66,195,247,0.25)'}}>
-              <Sv d={ic.ext} size={14} color="#0c1926"/> Open Upload Folder
-            </a>
+            <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+              <a href={DRIVE_MAIN} target="_blank" rel="noopener noreferrer"
+                style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 18px',borderRadius:10,
+                  background:form.engine==='Yes'?'rgba(66,195,247,0.15)':B.teal,
+                  color:form.engine==='Yes'?B.navy:'#0c1926',
+                  textDecoration:'none',fontSize:13,fontWeight:700,
+                  border:form.engine==='Yes'?`1.5px solid ${B.teal}40`:'none',
+                  boxShadow:form.engine==='Yes'?'none':'0 4px 12px rgba(66,195,247,0.25)'}}>
+                <Sv d={ic.ext} size={14} color={form.engine==='Yes'?B.navy:'#0c1926'}/> Main Channel Folder
+              </a>
+              <a href={DRIVE_ENGINE} target="_blank" rel="noopener noreferrer"
+                style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 18px',borderRadius:10,
+                  background:form.engine==='Yes'?B.teal:'rgba(66,195,247,0.15)',
+                  color:form.engine==='Yes'?'#0c1926':B.navy,
+                  textDecoration:'none',fontSize:13,fontWeight:700,
+                  border:form.engine==='Yes'?'none':`1.5px solid ${B.teal}40`,
+                  boxShadow:form.engine==='Yes'?'0 4px 12px rgba(66,195,247,0.25)':'none'}}>
+                <Sv d={ic.ext} size={14} color={form.engine==='Yes'?'#0c1926':B.navy}/> EnGiNE Folder
+              </a>
+            </div>
+            {form.engine==='Yes'&&<p style={{fontSize:11,color:B.tealDk||'#2da8d8',marginTop:10,fontWeight:600}}>
+              Since you selected EnGiNE, upload to the EnGiNE folder.
+            </p>}
           </div>
 
           {/* Proofread checkbox */}
@@ -374,11 +395,6 @@ function App(){
               {form.proofread&&<Sv d={ic.tick} size={14} color="#fff"/>}
             </div>
             <div style={{fontSize:13,color:B.navy,fontWeight:600,lineHeight:1.5}}>I have proofread all content and there are no spelling or grammatical errors.</div>
-          </div>
-
-          {/* SharePoint reminder */}
-          <div style={{padding:'12px 16px',borderRadius:10,background:'#fef3c714',border:'1.5px solid #f59e0b30',borderLeft:'4px solid #f59e0b',marginBottom:20,fontSize:13,color:B.txtSec,fontWeight:500}}>
-            Upload your video file(s) to the <a href={SP} target="_blank" style={{color:B.teal,fontWeight:700}}>SharePoint folder</a>.
           </div>
 
           {submitMsg&&<div style={{padding:'10px 16px',borderRadius:10,marginBottom:14,fontSize:13,fontWeight:600,background:submitMsg.ok?'#d1fae5':'#fee2e2',color:submitMsg.ok?'#065f46':'#991b1b',border:`1.5px solid ${submitMsg.ok?'#6ee7b7':'#fca5a5'}`}}>{submitMsg.t}</div>}
