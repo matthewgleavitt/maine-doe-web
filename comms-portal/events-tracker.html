@@ -204,6 +204,19 @@ function App(){
       </div>
     </div>
 
+    {/* SUBMISSION TIPS */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,borderLeft:`4px solid ${B.teal}`,padding:'14px 18px',marginBottom:20,display:'flex',alignItems:'flex-start',gap:14}}>
+      <div style={{width:32,height:32,borderRadius:8,background:`${B.teal}12`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+        <Sv d={["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 16v-4","M12 8h.01"]} size={16} color={B.teal}/>
+      </div>
+      <div style={{flex:1}}>
+        <div style={{fontSize:11,fontWeight:700,color:B.tealDk,letterSpacing:'.05em',textTransform:'uppercase',marginBottom:4}}>Before you submit</div>
+        <div style={{fontSize:13,color:B.txtSec,lineHeight:1.65,fontWeight:500}}>
+          <strong>Proofread and check grammar.</strong> Spell out acronyms — not everyone knows education-specific terminology. Do not submit until all details are confirmed. Only events hosted or co-hosted by the Maine DOE. Check the calendar for conflicts (same day, time, and audience) before scheduling. Newsroom posts for DOE events won't publish unless the event is on the calendar.
+        </div>
+      </div>
+    </div>
+
     {/* STATS */}
     <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
       {[{l:'Total',v:stats.total,c:B.teal,f:''},{l:'Received',v:stats.received,c:'#3b82f6',f:'Received'},{l:'Processing',v:stats.processing,c:'#f59e0b',f:'Processing'},{l:'Complete',v:stats.complete,c:'#16a34a',f:'Complete'}].map((m,i)=>(

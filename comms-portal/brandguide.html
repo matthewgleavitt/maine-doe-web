@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brand Guide | Maine DOE Communications Portal</title>
+<title>Branding & Comms | Maine DOE Communications Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -21,7 +21,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#18
 </style>
 </head>
 <body>
-<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><span class="current">Brand Guide</span></div></div>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><span class="current">Branding & Comms</span></div></div>
 <div id="root"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
@@ -40,14 +40,16 @@ const B={navy:'#182b3c',navyMid:'#274f73',teal:'#42c3f7',tealDk:'#2da8d8',
   border:'#a8bdd0',warm:'#eee6df',red:'#8a2e13',green:'#16a34a'};
 
 const tabs=[
+  {id:'intro',label:'Intro',icon:["M8 12h.01","M12 12h.01","M16 12h.01","M21 12c0 4.97-4.03 9-9 9a9.72 9.72 0 01-4.5-1.1L3 21l1.1-5.5A9.72 9.72 0 013 12c0-4.97 4.03-9 9-9s9 4.03 9 9z"]},
   {id:'colors',label:'Colors',icon:["M12 2L2 7l10 5 10-5-10-5z","M2 17l10 5 10-5","M2 12l10 5 10-5"]},
   {id:'type',label:'Typography',icon:["M4 7V4h16v3","M9 20h6","M12 4v16"]},
-  {id:'voice',label:'Voice & Tone',icon:["M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"]},
+  {id:'voice',label:'Voice',icon:["M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"]},
   {id:'language',label:'Language',icon:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"]},
-  {id:'logos',label:'Logos',icon:["M12 2L2 7l10 5 10-5-10-5z","M2 17l10 5 10-5","M2 12l10 5 10-5"]},
+  {id:'logos',label:'Logos',icon:["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"]},
   {id:'images',label:'Images',icon:["M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z","M8.5 10a1.5 1.5 0 100-3 1.5 1.5 0 000 3z","M21 15l-5-5L5 21"]},
-  {id:'email',label:'Email',icon:["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"]},
-  {id:'links',label:'Links',icon:["M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71","M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"]},
+  {id:'correspondence',label:'Correspondence',icon:["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"]},
+  {id:'content',label:'Content & Approval',icon:["M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2","M9 5a2 2 0 002 2h2a2 2 0 002-2","M9 12l2 2 4-4"]},
+  {id:'resources',label:'Resources',icon:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"]},
 ];
 
 function Pill({children,color}){return <span style={{display:'inline-block',padding:'3px 12px',borderRadius:20,fontSize:11,fontWeight:700,
@@ -61,6 +63,8 @@ function SectionHead({title,sub}){return <div style={{marginBottom:20}}>
   <h3 style={{fontSize:20,fontWeight:800,color:B.navy,marginBottom:6,letterSpacing:'-0.01em'}}>{title}</h3>
   {sub&&<p style={{fontSize:14,color:B.txtMute,lineHeight:1.6,fontWeight:500}}>{sub}</p>}
 </div>}
+
+function SubHead({children}){return <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14,marginTop:8}}>{children}</h4>}
 
 function Tip({children,type}){
   const warn=type==='warn';
@@ -93,8 +97,17 @@ function ColorSwatch({hex,label,rgb,cmyk,primary}){
     </div>
   </div>}
 
+function CheckRow({items,positive,accent}){
+  return <div>{items.map((x,i)=>(
+    <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:14,color:B.navy,fontWeight:500,display:'flex',alignItems:'flex-start',gap:8}}>
+      <I d={positive?["M20 6L9 17l-5-5"]:["M18 6L6 18","M6 6l12 12"]} size={16} color={accent||(positive?'#16a34a':B.red)} style={{flexShrink:0,marginTop:2}}/>
+      <span>{x}</span>
+    </div>
+  ))}</div>
+}
+
 function BrandGuide(){
-  const [tab,setTab]=useState('colors');
+  const [tab,setTab]=useState('intro');
 
   return(
     <div style={{maxWidth:1100,margin:'0 auto',padding:'0 28px'}}>
@@ -110,7 +123,7 @@ function BrandGuide(){
               <I d={["M12 2L2 7l10 5 10-5-10-5z","M2 17l10 5 10-5","M2 12l10 5 10-5"]} size={22} color="#fff"/>
             </div>
             <div>
-              <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0}}>Brand Resources</h1>
+              <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0}}>Branding & Comms</h1>
               <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Maine DOE Communications Portal</p>
             </div>
           </div>
@@ -135,11 +148,53 @@ function BrandGuide(){
       {/* Content */}
       <div key={tab} style={{animation:'fadeIn 0.3s ease',paddingBottom:60}}>
 
+        {/* ── INTRO ── */}
+        {tab==='intro'&&<div>
+          <SectionHead title="Welcome to the Branding & Comms Guide" sub="A single home for how the Maine DOE looks, sounds, and works with the field."/>
+          <Card style={{marginBottom:20}}>
+            <p style={{fontSize:14,color:B.txtSec,lineHeight:1.7,fontWeight:500,margin:'0 0 12px'}}>
+              This guide ensures that all Maine Department of Education (DOE) materials and communications have a cohesive appearance, voice, and identity. A strong, cohesive brand strengthens the impact of our collective work, builds deeper connections with our audiences, and promotes our values, vision, and mission.
+            </p>
+            <p style={{fontSize:14,color:B.txtSec,lineHeight:1.7,fontWeight:500,margin:0}}>
+              When creating anything for publication, consult the sections here related to the work you are doing to ensure your product stays on brand.
+            </p>
+          </Card>
+          <Tip>There may be certain instances when material is created outside of these brand guidelines (e.g., material intended for students). Contact the Communications Team in those instances with questions.</Tip>
+
+          <SubHead>Involving the Comms Team</SubHead>
+          <Tip>Bring the Communications Team in at the <strong>ground level</strong> of any project. This will save you time and energy!</Tip>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
+            <Card accent="#16a34a">
+              <h4 style={{fontSize:15,fontWeight:700,color:'#16a34a',margin:'0 0 12px'}}>Please Do</h4>
+              <CheckRow positive={true} items={[
+                'Bring the Communications Team in at the ground level of an idea or project.',
+                'Invite the Communications Team to your first planning meeting so we can understand your goals.',
+                'Share your goals so we can develop a strategy together.',
+                'Contact us early and often.',
+                'Bring your project, goals, and audiences to us — we\'ll work together to plan announcements.',
+                'Adhere to the Maine DOE Brand Guide.',
+                'Use appropriate workflows.',
+              ]}/>
+            </Card>
+            <Card accent={B.red}>
+              <h4 style={{fontSize:15,fontWeight:700,color:B.red,margin:'0 0 12px'}}>Please Do Not</h4>
+              <CheckRow positive={false} items={[
+                'Wait to contact the Communications Team until you send us a Maine DOE Newsroom post.',
+                'Utilize just one tactic to achieve your goal.',
+                'Only ask for a video, social media campaign, etc., without providing additional context.',
+                'Talk to the press without approval.',
+                'Plan events without informing the Communications Team.',
+              ]}/>
+            </Card>
+          </div>
+          <Tip type="warn">Submit to the <strong>Communications Workflow at least two weeks</strong> before you want content posted or sent. See the <strong>Content & Approval</strong> tab for detail.</Tip>
+        </div>}
+
         {/* ── COLORS ── */}
         {tab==='colors'&&<div>
-          <SectionHead title="Color usage" sub="Three primary and three secondary colors. Primary colors are most prominent; secondary are accents."/>
+          <SectionHead title="Color usage" sub="Three primary and three secondary colors. Primary colors are the most prominent; secondary are accents."/>
           <Card style={{marginBottom:20}}>
-            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:16}}>Primary colors</h4>
+            <SubHead>Primary colors</SubHead>
             <div style={{display:'flex',gap:24,flexWrap:'wrap'}}>
               <ColorSwatch hex="#182b3c" label="Dark Navy" rgb="24 - 43 - 60" cmyk="90 - 74 - 51 - 54" primary/>
               <ColorSwatch hex="#274f73" label="Mid Blue" rgb="39 - 79 - 115" cmyk="91 - 69 - 33 - 17" primary/>
@@ -147,24 +202,24 @@ function BrandGuide(){
             </div>
           </Card>
           <Card style={{marginBottom:20}}>
-            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:16}}>Secondary colors</h4>
+            <SubHead>Secondary colors</SubHead>
             <div style={{display:'flex',gap:24,flexWrap:'wrap'}}>
               <ColorSwatch hex="#8a2e13" label="Rust Red" rgb="138 - 46 - 19" cmyk="29 - 89 - 100 - 31"/>
               <ColorSwatch hex="#eee6df" label="Warm White" rgb="238 - 230 - 223" cmyk="6 - 8 - 10 - 0"/>
               <ColorSwatch hex="#42c3f7" label="Teal" rgb="66 - 195 - 247" cmyk="60 - 3 - 0 - 0"/>
             </div>
           </Card>
-          <Tip>Teal (#42c3f7) is a <strong>secondary/accent color</strong> — use it for borders, divider strips, and hover states, not as a dominant background.</Tip>
+          <Tip>Click any swatch to copy the hex code. Teal (<code style={{background:'#f1f5f9',padding:'1px 6px',borderRadius:4,fontSize:12}}>#42c3f7</code>) is a <strong>secondary accent</strong> — use it for borders, dividers, and hover states, not as a dominant background.</Tip>
         </div>}
 
         {/* ── TYPOGRAPHY ── */}
         {tab==='type'&&<div>
-          <SectionHead title="Typography (fonts)" sub="Four primary font types for all graphics, promotional materials, and digital spaces."/>
+          <SectionHead title="Typography (fonts)" sub="Four primary font types for graphics, promotional materials, and digital spaces. All fonts may be used in the various forms available (bold, italics, etc.)."/>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:16,marginBottom:20}}>
-            {[{pill:'Body text',name:'Calibri',family:'Calibri, sans-serif',desc:'Emails, letters, body text. Sans-serif for accessibility.',preview:'The quick brown fox jumps over the lazy dog.'},
+            {[{pill:'Body text',name:'Calibri',family:'Calibri, sans-serif',desc:'Emails, letters, body text. Sans-serif for accessibility — recommended by the U.S. Secretary of State\'s Office of Diversity and Inclusion.',preview:'The quick brown fox jumps over the lazy dog.'},
               {pill:'Headers & graphics',name:'Century Gothic',family:'"Century Gothic", sans-serif',desc:'Primary font for graphics and promotional materials.',preview:'THE QUICK BROWN FOX'},
               {pill:'Headers & graphics',name:'League Spartan',family:'"League Spartan", sans-serif',desc:'Used alongside Century Gothic. Free on Google Fonts.',preview:'THE QUICK BROWN FOX',download:'https://fonts.google.com/specimen/League+Spartan'},
-              {pill:'PowerPoint headers',name:'Montserrat Black',family:'"Montserrat", sans-serif',desc:'Used for PowerPoint presentation headers.',preview:'THE QUICK BROWN FOX',weight:900}].map((f,i)=>(
+              {pill:'PowerPoint headers',name:'Arial Black',family:'"Arial Black", "Helvetica Black", sans-serif',desc:'Used for PowerPoint presentation headers.',preview:'THE QUICK BROWN FOX',weight:900}].map((f,i)=>(
               <Card key={i}><Pill>{f.pill}</Pill>
                 <div style={{fontSize:28,fontWeight:f.weight||700,color:B.navy,margin:'12px 0 4px',fontFamily:f.family}}>{f.name}</div>
                 <div style={{fontSize:15,fontFamily:f.family,fontWeight:f.weight||400,color:B.txtSec,margin:'0 0 8px',lineHeight:1.5}}>{f.preview}</div>
@@ -177,7 +232,7 @@ function BrandGuide(){
             ))}
           </div>
           <Card>
-            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Web-specific fonts</h4>
+            <SubHead>Web-specific fonts</SubHead>
             {[{p:'Maine.gov (Drupal)',n:'Pre-set. Do not copy-paste from Word — it injects unwanted formatting.'},
               {p:'Newsroom (WordPress)',n:'Lato body. Century Gothic / League Spartan for banner graphics.'},
               {p:'Email blasts (Mailchimp)',n:'Arial body. Century Gothic / League Spartan for banner graphics.'}].map((x,i)=>(
@@ -187,9 +242,10 @@ function BrandGuide(){
               </div>
             ))}
           </Card>
+          <Tip>When writing a communication, use bold and italic sparingly and for the purpose of emphasis.</Tip>
         </div>}
 
-        {/* ── VOICE & TONE ── */}
+        {/* ── VOICE ── */}
         {tab==='voice'&&<div>
           <SectionHead title="Brand voice" sub="Our voice connects to the values in our vision and mission. Consistent across all communications."/>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
@@ -211,91 +267,166 @@ function BrandGuide(){
               ))}
             </Card>
           </div>
+          <Tip><strong>Proofreading:</strong> Grammarly is an AI tool approved for use by the State of Maine that may be helpful for copyediting. The Maine DOE utilizes AP Style for most communications — search "AP Style [item]" or contact the Director of Communications for guidance.</Tip>
         </div>}
 
         {/* ── LANGUAGE ── */}
         {tab==='language'&&<div>
-          <SectionHead title="Language guidelines" sub="Refer to AP Stylebook for anything not listed. Contact Chloe Teboe for guidance."/>
+          <SectionHead title="Language guidelines" sub="Writing conventions across all Maine DOE communications."/>
+
           <Card style={{marginBottom:16}}>
-            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Referring to the Maine DOE</h4>
+            <SubHead>Referring to the Maine DOE</SubHead>
             {[{l:'Initial',t:'"the Maine Department of Education (DOE)"'},{l:'Subsequent',t:'"the Maine DOE" or "the department" (lowercase)'},{l:'Never',t:'"MDOE"',bad:true}].map((r,i)=>(
               <div key={i} style={{display:'flex',gap:12,fontSize:13,padding:'6px 0',alignItems:'center'}}>
                 <span style={{fontWeight:700,color:r.bad?B.red:B.navy,minWidth:90}}>{r.l}:</span>
                 <code style={{background:'#f1f5f9',padding:'3px 10px',borderRadius:6,color:B.txtSec,fontSize:12,fontWeight:600}}>{r.t}</code>
               </div>
             ))}
+            <div style={{marginTop:16,paddingTop:16,borderTop:`1px solid ${B.border}20`}}>
+              <div style={{fontSize:13,fontWeight:700,color:B.navy,marginBottom:6}}>Referring to a specific office or team</div>
+              <div style={{fontSize:13,color:B.txtSec,lineHeight:1.6}}>
+                <strong>Initial:</strong> "The Maine Department of Education (DOE) [office or team name]"<br/>
+                <strong>Subsequent:</strong> "The Maine DOE [office or team name]"
+              </div>
+            </div>
           </Card>
+
           <Card style={{marginBottom:16}}>
-            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Commonly-used conventions</h4>
-            {['Oxford comma — always','One space after a period (not two)','Spell out numbers under 10 (e.g., "five")','Dates: January 1, 2025 (not January 1st)',
-              'Times: 10:30 a.m., 1 p.m., noon, midnight','MSAD 28, RSU 40 (no #)','pre-K (hyphenated, lowercase p)'].map((x,i)=>(
+            <SubHead>Abbreviations & acronyms</SubHead>
+            <CheckRow positive={false} accent={B.red} items={[
+              'Do not create new ones that are not needed.',
+              'Do not use your Maine DOE office acronym in public documents/spaces.',
+              'Use them sparingly.',
+            ]}/>
+            <div style={{marginTop:10,fontSize:13,color:B.txtSec,lineHeight:1.6}}>Spell out the full name/title in the first reference before using the acronym. If you only reference the name/title once, you do not need the acronym. Example: <em>Every Student Succeeds Act (ESSA)</em> → subsequently <em>ESSA</em>.</div>
+          </Card>
+
+          <Card style={{marginBottom:16}}>
+            <SubHead>Commonly-used conventions</SubHead>
+            {['Oxford comma','One space after a period (not two)','Spell out a number when it begins a sentence or if it is less than 10 (e.g., "five"). Otherwise, use the numeral.',
+              'Dates: January 1, 2026; 1/1/2026 (NOT 01/01/2026); January 1 (NOT January 1st)','Times: 10:30 a.m., 1 p.m., noon, midnight','MSAD 28, RSU 40 (no #)'].map((x,i)=>(
               <div key={i} style={{padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:13,color:B.navy,fontWeight:500}}>{x}</div>
             ))}
           </Card>
+
+          <Card style={{marginBottom:16}}>
+            <SubHead>When making a reference</SubHead>
+            <div style={{fontSize:13,color:B.txtSec,lineHeight:1.7}}>
+              <div style={{marginBottom:6}}><strong>To a statute:</strong> "Maine Revised Statutes, Title 20-A, §1101, subsection 1"</div>
+              <div style={{marginBottom:6}}><strong>To a law:</strong> "Public Law 2005, Chapter 457, Part KK, Section 3"</div>
+              <div style={{marginBottom:6}}><strong>To a rule:</strong> "Rule Chapter 115"</div>
+              <div style={{marginBottom:6}}><strong>To a biennium:</strong> "2020-2021 biennium"</div>
+              <div style={{marginBottom:6}}><strong>To a fiscal year:</strong> "Fiscal Year 2018-19" or "FY19"</div>
+              <div style={{marginBottom:6}}><strong>To a school year:</strong> "2025-2026 school year"</div>
+              <div><strong>To a person:</strong> FULL NAME on first reference, LAST NAME after that</div>
+            </div>
+          </Card>
+
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}}>
             <Card accent="#16a34a">
               <h4 style={{fontSize:13,fontWeight:700,color:B.navy,marginBottom:12}}>Hyphenate</h4>
-              {['Cost-effective','Federally-funded','In-state','Limited-period','Low-income','One-time','State-owned','In-person'].map((w,i)=>
+              {['One-time','In-person','Cost-effective','Up-to-date','Long-term','State-of-the-art'].map((w,i)=>
                 <div key={i} style={{fontSize:13,color:B.navy,padding:'4px 0',fontWeight:500}}>{w}</div>)}
             </Card>
             <Card accent={B.red}>
               <h4 style={{fontSize:13,fontWeight:700,color:B.navy,marginBottom:12}}>Do not hyphenate</h4>
-              {['Departmentwide','Ongoing','Statewide','Wellbeing'].map((w,i)=>
+              {['Ongoing','Statewide','High school','Nonprofit','Health care'].map((w,i)=>
                 <div key={i} style={{fontSize:13,color:B.navy,padding:'4px 0',fontWeight:500}}>{w}</div>)}
             </Card>
           </div>
+          <Tip>Avoid hyphens if one word is an adverb (ends in "-ly") or if the compound adjective comes AFTER the noun. Example: "The meeting was in person."</Tip>
+
+          <Card style={{marginBottom:16}}>
+            <SubHead>Capitalization</SubHead>
+            <p style={{fontSize:13,color:B.txtSec,marginBottom:10,fontWeight:500}}>Capitalize words when they are part of an actual title or name:</p>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
+              {['State Board of Education','Office of Innovation','Department of Labor','Bureau of Motor Vehicles','Governor Janet Mills','Commissioner Pender Makin','Maine Legislature','State of Maine','Early Learning Team'].map((x,i)=>(
+                <div key={i} style={{fontSize:13,color:B.navy,padding:'4px 0',fontWeight:500}}>{x}</div>
+              ))}
+            </div>
+          </Card>
+
+          <Card style={{marginBottom:16}}>
+            <SubHead>Citations</SubHead>
+            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500,marginBottom:10}}>As leaders and experts in education, always try to generate unique content. Partnerships and external references should supplement our work rather than be the primary focus. Use APA style when citing external references.</p>
+            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500,margin:0}}>When linking to files, resources, or external websites, use descriptive full-text links (e.g., "View the FY27 report"). Avoid "Click here" or "Read more" — especially when sufficient context has not been provided.</p>
+          </Card>
+
           <Card>
-            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Inclusive language</h4>
-            {[{y:'"schools across Maine"',n:'"Maine schools"'},{y:'"school administrative unit (SAU)"',n:'"district"'},
-              {y:'"individuals with a vested interest"',n:'"stakeholder"'},{y:'"Maine\'s education workforce"',n:'"the field"'}].map((r,i)=>(
-              <div key={i} style={{display:'flex',gap:16,padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontSize:13,fontWeight:500}}>
-                <span style={{flex:1,color:'#16a34a'}}>✓ {r.y}</span>
-                <span style={{flex:1,color:B.red}}>✗ {r.n}</span>
-              </div>
-            ))}
+            <SubHead>Inclusive language</SubHead>
+            <CheckRow positive={true} items={[
+              'Use person-first language.',
+              'Use "schools across Maine" rather than "Maine schools".',
+              'Use "school administrative unit (SAU)" rather than "district" (as applicable and in accordance with statutory definition).',
+              'For office-specific language (Special Services, Wabanaki Studies, etc.), contact the office director/team leader.',
+            ]}/>
           </Card>
         </div>}
 
         {/* ── LOGOS ── */}
         {tab==='logos'&&<div>
-          <SectionHead title="Logos" sub="Think of a logo like a flag. The Maine DOE logo must always be used."/>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:16,marginBottom:20}}>
-            {[{t:'Official logo (primary)',d:'All official documents, letters, contracts, forms, presentations, and digital spaces.',p:true},
-              {t:'Informal logo (primary)',d:'When official doesn\'t fit, square orientation works better, or when scaled very small.',p:true},
-              {t:'Office/team logos (secondary)',d:'Must be approved by Comms Team. Must use Maine DOE colors/fonts and appear alongside a primary logo.'}].map((x,i)=>(
-              <Card key={i}><Pill color={x.p?B.teal:undefined}>{x.p?'Primary':'Secondary'}</Pill>
-                <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'10px 0 6px'}}>{x.t}</h4>
-                <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:0}}>{x.d}</p>
-              </Card>
-            ))}
+          <SectionHead title="Logos" sub="Think of a logo like a flag. Logos identify and brand an organization, product, or campaign. The Maine DOE logo must always be used."/>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
+            <Card accent={B.teal}>
+              <Pill color={B.teal}>Primary</Pill>
+              <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'10px 0 6px'}}>Official logo</h4>
+              <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:0}}>Used for all official documents, letters, contracts, forms, presentations, promotional materials (print & digital), and digital spaces including websites, systems, social platforms, and hubs (e.g., NEO).</p>
+            </Card>
+            <Card accent={B.teal}>
+              <Pill color={B.teal}>Primary</Pill>
+              <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'10px 0 6px'}}>Informal logo</h4>
+              <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:0}}>Used in more informal ways: when the official logo doesn't fit, when square orientation works better, or when scaled small (the "DOE" shows up better as an icon). Example: Facebook profile picture.</p>
+            </Card>
           </div>
-          <Card>
-            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Rules for all logos</h4>
-            {['Primary logo required on all official documents, presentations, and digital spaces',
-              'Secondary logos must appear alongside a primary logo','Never stretch, distort, or blur',
-              'Don\'t scale down so small words can\'t be read','Don\'t change coloring without Comms Team approval',
-              'Must have transparent background and high-resolution versions','Use on backgrounds with enough contrast'].map((r,i)=>(
+
+          <Card style={{marginBottom:20}}>
+            <Pill>Secondary</Pill>
+            <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'10px 0 8px'}}>Office / team / initiative logos</h4>
+            <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:'0 0 12px'}}>Many offices, teams, projects, and initiatives have their own branded logo. All secondary logos must be approved by the Communications Team and should be created by the Communications Team or a trained professional (with approval).</p>
+            <CheckRow positive={true} items={[
+              'Must be branded with Maine DOE colors/fonts — should look like a relative of other team logos and the primary logos.',
+              'Must be used alongside a Maine DOE primary logo.',
+              'May be used for presentations, swag, and other promotional materials.',
+            ]}/>
+          </Card>
+
+          <Card style={{marginBottom:20}}>
+            <SubHead>Rules for all logos</SubHead>
+            {['Primary logo required on all official documents, presentations, promotional materials, and digital spaces.',
+              'Secondary logos must appear alongside a primary logo.',
+              'Do not stretch, distort, or blur logos.',
+              "Do not scale down so small that words can't be read. Similarly, do not oversize compared to other visual elements.",
+              'Do not change original coloring unless for special circumstances (e.g., grayscale printing) — must be approved by the Comms Team.',
+              'All logos should have a transparent-background version.',
+              'All logos should have a high-resolution version.',
+              'Use on backgrounds with enough contrast. A dark-background version of the official logo is available.'].map((r,i)=>(
               <div key={i} style={{padding:'8px 0 8px 14px',borderBottom:`1px solid ${B.border}15`,borderLeft:`3px solid ${B.teal}30`,fontSize:13,color:B.navy,fontWeight:500,marginBottom:4}}>{r}</div>
             ))}
           </Card>
-          <Tip>All logos are in the <strong>DOE Team Logos & Images SharePoint folder</strong>.</Tip>
+
+          <Tip>All logos live in the <strong>DOE Team Logos & Images SharePoint folder</strong>. Direct download links coming soon — check the Resources tab in the meantime.</Tip>
         </div>}
 
         {/* ── IMAGES ── */}
         {tab==='images'&&<div>
           <SectionHead title="Graphics & images" sub="Standards for website, social media, and promotional images."/>
           <Card style={{marginBottom:16}}>
-            {[{r:'All images should be real photographs — no cartoons or clipart.',n:'Exception: icons. Contact Comms Team for custom icons.'},
-              {r:'High resolution required.',n:'If pixelated, find another. Max 1920×1280 to avoid slow loads.'},
-              {r:'Never distort images.',n:'Resize proportionally.'}].map((x,i)=>(
-              <div key={i} style={{padding:'12px 0',borderBottom:i<2?`1px solid ${B.border}15`:'none'}}>
+            <SubHead>Photo standards</SubHead>
+            {[{r:'All images should be real photographs.',n:'No AI-generated images, cartoons, or clipart. Exception: icons — contact Comms Team for custom icons.'},
+              {r:'Whenever possible, use real Maine students, schools, etc.',n:'If you plan to use photos, video, or audio of an individual, ensure they have provided the Maine DOE with media consent.'},
+              {r:'Graphics, flyers, and other materials should NOT be built using generative AI.',n:'Maine State Government GenAI Policy 6.4.6: an output from a GenAI tool must never be used to impersonate individuals or organizations.'},
+              {r:'Use real photographs for professional headshots.',n:'The use of AI to generate or doctor headshots is strongly discouraged. Contact the Comms Team if you need one taken.'},
+              {r:'High resolution required.',n:'If pixelated, find another. Most images should be no larger than 1920×1280 to avoid slow page loads.'},
+              {r:'Never distort images.',n:'Resize proportionally. The Comms Team can assist with resizing.'}].map((x,i)=>(
+              <div key={i} style={{padding:'12px 0',borderBottom:i<5?`1px solid ${B.border}15`:'none'}}>
                 <div style={{fontSize:14,fontWeight:600,color:B.navy}}>{x.r}</div>
                 <div style={{fontSize:12,color:B.txtMute,marginTop:4,fontWeight:500}}>{x.n}</div>
               </div>
             ))}
           </Card>
           <Card>
-            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Copyright-compliant sources</h4>
+            <SubHead>Copyright-compliant photo sources</SubHead>
             <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
               {[{n:'Pexels',u:'https://www.pexels.com/'},{n:'Pixabay',u:'https://pixabay.com/'},{n:'Unsplash',u:'https://unsplash.com/'}].map((s,i)=>(
                 <a key={i} href={s.u} target="_blank" rel="noopener noreferrer"
@@ -310,18 +441,24 @@ function BrandGuide(){
           </Card>
         </div>}
 
-        {/* ── EMAIL ── */}
-        {tab==='email'&&<div>
-          <SectionHead title="Email signature policy" sub="All staff must follow official formatting for email signatures and out-of-office messages."/>
+        {/* ── CORRESPONDENCE ── */}
+        {tab==='correspondence'&&<div>
+          <SectionHead title="Correspondence" sub="How Maine DOE staff represent themselves in email, out-of-office replies, and voicemail. Templates are designed for accessibility and readability for internal and external audiences."/>
+
           <Card style={{marginBottom:16}}>
-            {['12pt, Calibri, black font','Lead with Maine DOE logo, then team logo if applicable',
-              'No quotes, backgrounds, or extra info','One additional link allowed after Maine DOE Newsroom (pipe-separated)'].map((r,i)=>(
-              <div key={i} style={{fontSize:13,color:B.navy,padding:'8px 0',borderBottom:`1px solid ${B.border}15`,fontWeight:500,
-                paddingLeft:14,borderLeft:`3px solid ${B.teal}30`}}>• {r}</div>
-            ))}
+            <SubHead>Email signature guidelines</SubHead>
+            <CheckRow positive={true} items={[
+              'Written/displayed in 12pt, Calibri, black font.',
+              'Lead with the Maine DOE logo, then include an office/team/project logo if applicable.',
+              'Avoid additional information, text, backgrounds, or images.',
+              'You may add one additional link after the Maine DOE Newsroom.',
+              'Include a space, then a pipe (Shift + \\), then another space, and hyperlink your text.',
+              'Match link color across all links, and do not use acronyms (e.g., "Workforce Development" not "WDIP").',
+            ]}/>
           </Card>
-          <Card>
-            <h4 style={{fontSize:13,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:.5,marginBottom:14}}>Example</h4>
+
+          <Card style={{marginBottom:16}}>
+            <SubHead>Example</SubHead>
             <div style={{padding:24,background:'#f8fafc',borderRadius:12,fontFamily:'Calibri,sans-serif',fontSize:13,lineHeight:1.9,color:'#000',border:`1px solid ${B.border}20`}}>
               <div style={{borderTop:`2px solid ${B.navyMid}`,width:200,marginBottom:16}}/>
               <strong>Matthew Leavitt</strong> (He/Him)<br/>Website & Technology Coordinator<br/>Maine Department of Education<br/>
@@ -331,27 +468,188 @@ function BrandGuide(){
               <span style={{color:B.teal}}>Maine DOE</span> | <span style={{color:B.teal}}>Facebook</span> | <span style={{color:B.teal}}>Instagram</span> | <span style={{color:B.teal}}>Maine DOE Newsroom</span>
             </div>
           </Card>
+
+          <Card style={{marginBottom:16}}>
+            <SubHead>Auto-reply templates</SubHead>
+            <p style={{fontSize:13,color:B.txtSec,marginBottom:14,fontWeight:500,lineHeight:1.6}}>Activate an out-of-office message through Outlook whenever you're out. Messages should be brief, indicate return date, and note whom to contact in your absence. Avoid extended descriptions of why you're out.</p>
+
+            <div style={{marginBottom:14}}>
+              <Pill color={B.navy}>Vacation / personal / sick / summer flex</Pill>
+              <div style={{marginTop:8,padding:'14px 18px',background:'#f8fafc',borderRadius:10,border:`1px solid ${B.border}20`,fontSize:13,color:B.txtSec,lineHeight:1.7,fontFamily:'Calibri,sans-serif'}}>
+                Thank you for your email. I am out of the office from <strong>[DATE]</strong> to <strong>[DATE]</strong>. During that time, I will not have access to my inbox. If your message is urgent, please contact <strong>[ALTERNATIVE CONTACT]</strong>. Otherwise, I will respond as soon as I can.<br/><br/>
+                Best,<br/>
+                <strong>[NAME]</strong>
+              </div>
+            </div>
+
+            <div style={{marginBottom:14}}>
+              <Pill color={B.navy}>State of Maine offices closed</Pill>
+              <div style={{marginTop:8,padding:'14px 18px',background:'#f8fafc',borderRadius:10,border:`1px solid ${B.border}20`,fontSize:13,color:B.txtSec,lineHeight:1.7,fontFamily:'Calibri,sans-serif'}}>
+                Thank you for your email. State of Maine offices are closed on <strong>[DATE]</strong> in observance of <strong>[REASON]</strong>. I will respond as soon as I can.<br/><br/>
+                Best,<br/>
+                <strong>[NAME]</strong>
+              </div>
+            </div>
+
+            <div>
+              <Pill color={B.navy}>Limited access (conference, retreat)</Pill>
+              <div style={{marginTop:8,padding:'14px 18px',background:'#f8fafc',borderRadius:10,border:`1px solid ${B.border}20`,fontSize:13,color:B.txtSec,lineHeight:1.7,fontFamily:'Calibri,sans-serif'}}>
+                Thank you for your email. I am attending a <strong>[TYPE OF EVENT]</strong> on <strong>[DATE]</strong>. During that time, I will have limited access to my inbox. If your message is urgent, please contact <strong>[ALTERNATIVE CONTACT]</strong>. Otherwise, I will respond as soon as I can.<br/><br/>
+                Best,<br/>
+                <strong>[NAME]</strong>
+              </div>
+            </div>
+          </Card>
+
+          <Card>
+            <SubHead>Voicemail</SubHead>
+            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.6,marginBottom:12,fontWeight:500}}>When staff can't answer the phone, record a voicemail using these guidelines:</p>
+            <CheckRow positive={true} items={[
+              'Include a greeting, your name, and your title.',
+              'Briefly apologize for missing the call.',
+              'Ask for the info you need to return a call (name, number, date/time, reason for calling, etc.).',
+              'Provide other pertinent info for the caller to reach you.',
+              'Use a friendly but professional tone.',
+              'Keep your message short and succinct.',
+            ]}/>
+          </Card>
         </div>}
 
-        {/* ── LINKS ── */}
-        {tab==='links'&&<div>
-          <SectionHead title="Links" sub="Key rules for using links on the website, newsletters, and other spaces."/>
-          <Card>{[
-            {r:'Vet all links',d:'Check accuracy. Avoid for-profit articles or resources.'},
-            {r:'Always use HTTPS',d:'Ensures a secure connection for visitors.'},
-            {r:'Don\'t copy from Outlook',d:'Click the link first, copy from browser address bar.'},
-            {r:'Use descriptive text',d:'Don\'t use "click here" or "link."'},
-            {r:'Keep URLs short',d:'Use URL shortening tools for long links.'},
-            {r:'QR codes for print only',d:'Not for digital. Canva has a generator.'},
-            {r:'Hyperlink full descriptions',d:'Link meaningful phrases, not bare URLs.'},
-            {r:'Disclaimer for external resources',d:'"Organizations and resources included are for reference only."'},
-          ].map((x,i)=><div key={i} style={{padding:'12px 0',borderBottom:`1px solid ${B.border}15`}}>
-            <div style={{fontSize:14,fontWeight:700,color:B.navy}}>{x.r}</div>
-            <div style={{fontSize:13,color:B.txtMute,marginTop:4,lineHeight:1.5,fontWeight:500}}>{x.d}</div>
-          </div>)}</Card>
+        {/* ── CONTENT & APPROVAL ── */}
+        {tab==='content'&&<div>
+          <SectionHead title="Content & approval" sub="Guidance for content intended for publicly-facing platforms — social media, website, Newsroom, email blasts."/>
+
+          <Tip type="warn">Submit priority notices, Maine DOE Newsroom articles, and media advisories/releases to the <strong>Communications Workflow at least two weeks</strong> before you want your communication posted or sent.</Tip>
+
+          <Card style={{marginBottom:16}}>
+            <SubHead>Content ownership</SubHead>
+            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,marginBottom:10,fontWeight:500}}>Content posted or contained in priority notices, Newsroom articles, administrative letters, media advisories/releases, social posts, or YouTube uploads should be <strong>Maine DOE-owned content only</strong> — written, organized, coordinated, planned, and sponsored by the Maine DOE.</p>
+            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500}}>Other acceptable content: from organizations with a specific partnership, or for initiatives the Maine DOE sponsors or has special involvement in. Content not owned by the Maine DOE is permitted only if fully vetted or if it includes clear disclaimer language.</p>
+          </Card>
+
+          <Card style={{marginBottom:16}}>
+            <SubHead>Communications materials at a glance</SubHead>
+            {[{t:'Priority notice',d:'Targeted message to a specific audience via Mailchimp. Not typically intended for the general public.'},
+              {t:'Administrative letter',d:'New/changed laws or regulations. Multi-step review/approval through the Communications Workflow.'},
+              {t:'Newsroom article',d:'Professional learning, school highlights, grant opportunities. Our digital newspaper — posted on the Newsroom, included in the weekly Maine DOE Update.'},
+              {t:'Media advisory',d:'Sent only to press to invite them to cover a specific event. Connect with the Director of Communications.'},
+              {t:'Media release',d:'Announcements and news for the press and a larger audience. Connect with the Director of Communications.'},
+              {t:'Letters of support',d:'Occasional, case-by-case. Review with your office director and associate/deputy commissioner before writing or signing.'},
+              {t:'Maine DOE Update',d:'Weekly Friday newsletter with all Newsroom articles from that week.'},
+              {t:'Social media',d:'Facebook, Instagram, LinkedIn. Requires goal, audience, dates, caption, imagery, and (for ads) budget + funding code.'},
+              {t:'Newsletters',d:'Some offices/teams run their own regular newsletters. Contact the Comms Team before starting one.'}].map((x,i)=>(
+              <div key={i} style={{padding:'10px 0',borderBottom:i<8?`1px solid ${B.border}15`:'none'}}>
+                <div style={{fontSize:14,fontWeight:700,color:B.navy}}>{x.t}</div>
+                <div style={{fontSize:12,color:B.txtMute,marginTop:3,fontWeight:500,lineHeight:1.55}}>{x.d}</div>
+              </div>
+            ))}
+          </Card>
+
+          <Card style={{marginBottom:16}}>
+            <SubHead>Social media approval checklist</SubHead>
+            <p style={{fontSize:13,color:B.txtSec,marginBottom:12,fontWeight:500}}>Before submitting to the team leader/office director and then to Rachel Paling:</p>
+            <CheckRow positive={true} items={[
+              'Goal of post and intended audience.',
+              'Date or span of dates for promotion.',
+              'Post caption (for all posts, if multiple).',
+              'Images or graphics appropriate to the content.',
+              'Budget and funding code (for advertisements).',
+            ]}/>
+          </Card>
+
+          <Card>
+            <SubHead>Official letters</SubHead>
+            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500}}>An official letter from the Maine DOE must be written on Maine DOE letterhead, approved by the team leader/office director, and sent to the Director of Communications for approval before being sent by U.S. post. Letters must be signed by a member of leadership and should include a member of the Commissioner's Office administrative support team.</p>
+          </Card>
         </div>}
 
-        {/* ── COMMS TEAM ── */}
+        {/* ── RESOURCES ── */}
+        {tab==='resources'&&<div>
+          <SectionHead title="Resources" sub="Links to reference materials, shared folders, and external tools."/>
+
+          <SubHead>Maine DOE resources</SubHead>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:24}}>
+            {[
+              {name:'Communications Workflow',desc:'Submit newsroom articles, priority notices, media requests.',href:'https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039',color:'#6366f1'},
+              {name:'Comms Files (SharePoint)',desc:'Shared team files, templates, and assets.',href:'https://stateofmaine.sharepoint.com/teams/DOETeam/Shared%20Documents/Communications',color:'#65a30d'},
+              {name:'Employee Handbook',desc:'The full Maine DOE Employee Handbook.',href:'https://stateofmaine.sharepoint.com/:o:/r/sites/MaineDOE/Maine%20DOE%20Information%20Library/Maine%20DOE%20Employee%20Handbook?d=w468cf35d92264d3db9d2099ad7a7595b&csf=1&web=1&e=iiNUTi',color:'#0891b2'},
+              {name:'DOE Team Logos & Images',desc:'SharePoint folder with all logos and image assets.',href:'#',color:'#c084fc',placeholder:true},
+              {name:'Communications Orientation',desc:'The onboarding module on EnGiNE covering all comms processes.',href:'https://learn.moodle.rrev-engine.com/course/view.php?id=174',color:'#16a34a'},
+              {name:'Maine DOE Newsroom',desc:"The department's WordPress newsroom for articles and updates.",href:'https://mainedoenews.net/',color:'#42c3f7'},
+            ].map((r,i)=>(
+              <a key={i} href={r.href} target="_blank" rel="noopener noreferrer"
+                style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'16px 18px',textDecoration:'none',
+                  display:'flex',alignItems:'flex-start',gap:12,transition:'all 0.15s'}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor=r.color+'60';e.currentTarget.style.transform='translateY(-2px)';}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
+                <div style={{width:36,height:36,borderRadius:10,background:`${r.color}12`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                  <I d={["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"]} size={16} color={r.color}/>
+                </div>
+                <div>
+                  <div style={{fontSize:14,fontWeight:700,color:B.navy,marginBottom:2}}>{r.name}{r.placeholder&&<span style={{marginLeft:6,fontSize:10,fontWeight:600,color:'#f59e0b',background:'#fef3c7',padding:'1px 6px',borderRadius:6}}>link pending</span>}</div>
+                  <div style={{fontSize:12,color:B.txtMute,fontWeight:500,lineHeight:1.5}}>{r.desc}</div>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <SubHead>Accessibility</SubHead>
+          <p style={{fontSize:13,color:B.txtMute,marginBottom:14,fontWeight:500,lineHeight:1.6}}>Accessibility is important to how our constituents interact with our resources. Beyond our own commitment, MaineIT and the State of Maine provide policy and resources to ensure equitable access.</p>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:24}}>
+            {[
+              {name:'State of Maine Accessibility Guide',desc:'Tutorials, documentation, and examples of accessible content.',href:'https://www.maine.gov/oit/accessibility'},
+              {name:'WAVE Web Accessibility Evaluation',desc:'Enter your page URL to see accessibility issues and suggestions.',href:'https://wave.webaim.org/'},
+              {name:'Maine Community Inclusion Through Technology',desc:'Statewide program helping people with disabilities increase independence through assistive technology.',href:'https://mainecite.org/'},
+            ].map((r,i)=>(
+              <a key={i} href={r.href} target="_blank" rel="noopener noreferrer"
+                style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'14px 16px',textDecoration:'none',
+                  transition:'all 0.15s'}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor='#34d39960';e.currentTarget.style.transform='translateY(-2px)';}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
+                <div style={{fontSize:14,fontWeight:700,color:B.navy,marginBottom:3}}>{r.name}</div>
+                <div style={{fontSize:12,color:B.txtMute,fontWeight:500,lineHeight:1.5}}>{r.desc}</div>
+              </a>
+            ))}
+          </div>
+
+          <SubHead>External standards</SubHead>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:24}}>
+            {[
+              {name:'AP Stylebook',desc:'Reference for AP Style formatting.',href:'https://www.apstylebook.com/'},
+              {name:'Grammarly',desc:'Approved by the State of Maine for copyediting assistance.',href:'https://www.grammarly.com/'},
+              {name:'APA Style',desc:'For citing external references.',href:'https://apastyle.apa.org/'},
+            ].map((r,i)=>(
+              <a key={i} href={r.href} target="_blank" rel="noopener noreferrer"
+                style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'14px 16px',textDecoration:'none',
+                  transition:'all 0.15s'}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor='#a78bfa60';e.currentTarget.style.transform='translateY(-2px)';}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
+                <div style={{fontSize:14,fontWeight:700,color:B.navy,marginBottom:3}}>{r.name}</div>
+                <div style={{fontSize:12,color:B.txtMute,fontWeight:500,lineHeight:1.5}}>{r.desc}</div>
+              </a>
+            ))}
+          </div>
+
+          <SubHead>Comms team</SubHead>
+          <p style={{fontSize:13,color:B.txtMute,marginBottom:14,fontWeight:500}}>For questions and requests:</p>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+            <a href="mailto:rachel.paling@maine.gov" style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'14px 16px',textDecoration:'none',transition:'all 0.15s'}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor='#34d39960';e.currentTarget.style.transform='translateY(-2px)';}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
+              <div style={{fontSize:14,fontWeight:700,color:B.navy}}>Rachel Paling</div>
+              <div style={{fontSize:12,color:'#34d399',fontWeight:600}}>rachel.paling@maine.gov</div>
+              <div style={{fontSize:12,color:B.txtMute,marginTop:4,fontWeight:500}}>Communications Coordinator</div>
+            </a>
+            <a href="mailto:matthew.g.leavitt@maine.gov" style={{background:B.wh,borderRadius:12,border:`2px solid ${B.border}30`,padding:'14px 16px',textDecoration:'none',transition:'all 0.15s'}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor='#c084fc60';e.currentTarget.style.transform='translateY(-2px)';}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';}}>
+              <div style={{fontSize:14,fontWeight:700,color:B.navy}}>Matt Leavitt</div>
+              <div style={{fontSize:12,color:'#c084fc',fontWeight:600}}>matthew.g.leavitt@maine.gov</div>
+              <div style={{fontSize:12,color:B.txtMute,marginTop:4,fontWeight:500}}>Website & Technology Coordinator</div>
+            </a>
+          </div>
+        </div>}
+
       </div>
 
       <div style={{textAlign:'center',padding:'0 0 40px',fontSize:12,color:B.txtMute,fontWeight:500}}>

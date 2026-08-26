@@ -60,11 +60,10 @@ const navItems=[
   {id:'home',label:'Home',icon:icons.home,href:'welcome.html'},
   {id:'dashboard',label:'Dashboard',icon:["M10 3H3v7h7V3z","M21 3h-7v7h7V3z","M21 14h-7v7h7v-7z","M10 14H3v7h7v-7z"]},
   {id:'workflows',label:'Workflow',icon:icons.clip,external:'https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039'},
-  {id:'brand',label:'Brand Guide',icon:icons.layers,href:'brandguide.html'},
+  {id:'brand',label:'Branding & Comms',icon:icons.layers,href:'brandguide.html'},
   {id:'commsfiles',label:'Comms Files',icon:icons.folder,external:'https://stateofmaine.sharepoint.com/teams/DOETeam/Shared%20Documents/Communications'},
   {id:'engine',label:'EnGiNE',icon:icons.globe,href:'engine.html'},
   {id:'events',label:'Events',icon:icons.cal,href:'events-tracker.html'},
-  {id:'processes',label:'Process & Procedure',icon:icons.clip,href:'processes.html'},
   {id:'publications',label:'Publications',icon:icons.mail,href:'publications.html'},
   {id:'templates',label:'Templates',icon:icons.copy,href:'templates.html'},
   {id:'website',label:'Website',icon:icons.globe},
@@ -102,10 +101,10 @@ const dashCards=[
     desc:'Active communications workflow requests in Dynamics 365.',
     color:'#6366f1',gradient:'linear-gradient(135deg,#6366f1,#4f46e5)',status:'live',
     features:['Newsroom articles','Priority notices','Media advisories'],stat:'—',statLabel:'open in Dynamics'},
-  {id:'brand',label:'Brand Guide',icon:icons.layers,href:'brandguide.html',
-    desc:'Colors, typography, voice & tone — the complete Maine DOE brand guide.',
+  {id:'brand',label:'Branding & Comms',icon:icons.layers,href:'brandguide.html',
+    desc:'Colors, typography, voice, logos, correspondence, and comms workflows — the complete Maine DOE guide.',
     color:'#c084fc',gradient:'linear-gradient(135deg,#c084fc,#a855f7)',status:'live',
-    features:['Colors','Typography','Voice & tone','Logos'],stat:'8',statLabel:'sections'},
+    features:['Colors','Typography','Voice','Logos','Correspondence','Content & Approval'],stat:'10',statLabel:'sections'},
   {id:'commsfiles',label:'Comms Files',icon:icons.folder,external:'https://stateofmaine.sharepoint.com/teams/DOETeam/Shared%20Documents/Communications',
     desc:'Shared communications files, templates, and assets on SharePoint.',
     color:'#65a30d',gradient:'linear-gradient(135deg,#84cc16,#65a30d)',status:'live',
@@ -118,10 +117,6 @@ const dashCards=[
     desc:'Submit and track DOE calendar event requests for the Professional Development calendar.',
     color:'#f59e0b',gradient:'linear-gradient(135deg,#f59e0b,#d97706)',status:'live',
     features:['Submit events','Track status','Calendar check'],stat:'—',statLabel:'submissions'},
-  {id:'processes',label:'Process & Procedure',icon:icons.clip,href:'processes.html',
-    desc:'Guidelines, standard procedures, and resources for working with the communications team.',
-    color:'#16a34a',gradient:'linear-gradient(135deg,#34d399,#16a34a)',status:'live',
-    features:['Working with Comms','Voicemail','Email Signature','Resources']},
   {id:'publications',label:'Publications',icon:icons.mail,href:'publications.html',
     desc:'Mailchimp newsletter analytics — open rates, click rates, and campaign performance.',
     color:'#8b5cf6',gradient:'linear-gradient(135deg,#8b5cf6,#6d28d9)',status:'live',
@@ -305,8 +300,8 @@ function Portal(){
   // Determine what's showing
   const activeNav=navItems.find(n=>n.id===section);
   const activeWebMod=webSub?webModules.find(m=>m.id===webSub):null;
-  const iframeUrl=section==='home'?'welcome.html':section==='brand'?'brandguide.html':section==='youtube'?'youtube-tracker.html':section==='events'?'events-tracker.html':section==='templates'?'templates.html':section==='publications'?'publications.html':section==='engine'?'engine.html':section==='processes'?'processes.html':activeWebMod?.href||null;
-  const showIframe=(section==='home')||(section==='brand')||(section==='youtube')||(section==='events')||(section==='templates')||(section==='publications')||(section==='engine')||(section==='processes')||activeWebMod?.href;
+  const iframeUrl=section==='home'?'welcome.html':section==='brand'?'brandguide.html':section==='youtube'?'youtube-tracker.html':section==='events'?'events-tracker.html':section==='templates'?'templates.html':section==='publications'?'publications.html':section==='engine'?'engine.html':activeWebMod?.href||null;
+  const showIframe=(section==='home')||(section==='brand')||(section==='youtube')||(section==='events')||(section==='templates')||(section==='publications')||(section==='engine')||activeWebMod?.href;
 
   // Title for header
   const headerTitle=activeWebMod?activeWebMod.label:section==='website'?'Website':section==='dashboard'?'Communications Portal':activeNav?.label||'';
@@ -375,9 +370,9 @@ function Portal(){
 
       {/* ── Main ── */}
       <main style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',
-        background:section==='website'?'#f3f6f9':section==='brand'?'#f3f0f8':section==='templates'?'#fdf2f6':section==='commsfiles'?'#fefce8':section==='youtube'?'#fef2f2':section==='events'?'#fffbeb':section==='publications'?'#f5f3ff':section==='engine'?'#f0f9ff':section==='processes'?'#f0fdf4':'#eee6df'}}>
+        background:section==='website'?'#f3f6f9':section==='brand'?'#f3f0f8':section==='templates'?'#fdf2f6':section==='commsfiles'?'#fefce8':section==='youtube'?'#fef2f2':section==='events'?'#fffbeb':section==='publications'?'#f5f3ff':section==='engine'?'#f0f9ff':'#eee6df'}}>
         <header style={{height:56,padding:'0 24px',display:'flex',alignItems:'center',gap:14,
-          background:'#ffffff',borderBottom:`2px solid ${section==='website'?'#e2e8f0':section==='brand'?'#ddd6ee':section==='templates'?'#f0d6e4':section==='commsfiles'?'#ede9c8':section==='youtube'?'#f0d4d4':section==='events'?'#ede5c4':section==='publications'?'#ddd6f0':section==='engine'?'#c8e6f4':section==='processes'?'#c8e8d4':'#d4ccc4'}`,flexShrink:0,boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+          background:'#ffffff',borderBottom:`2px solid ${section==='website'?'#e2e8f0':section==='brand'?'#ddd6ee':section==='templates'?'#f0d6e4':section==='commsfiles'?'#ede9c8':section==='youtube'?'#f0d4d4':section==='events'?'#ede5c4':section==='publications'?'#ddd6f0':section==='engine'?'#c8e6f4':'#d4ccc4'}`,flexShrink:0,boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
           <button onClick={()=>setSbOpen(!sbOpen)} style={{background:'none',border:'none',cursor:'pointer',padding:4,borderRadius:6,display:'flex'}}>
             <I d={sbOpen&&mob?icons.x:icons.menu} size={20} color="#182b3c"/>
           </button>
@@ -587,7 +582,7 @@ function Portal(){
 
           {/* ── BRAND GUIDE (iframe) ── */}
           {section==='brand'&&(
-            <iframe src="brandguide.html" style={{width:'100%',height:'100%',border:'none'}} title="Brand Guide"/>
+            <iframe src="brandguide.html" style={{width:'100%',height:'100%',border:'none'}} title="Branding & Comms"/>
           )}
 
           {/* ── YOUTUBE TRACKER (iframe) ── */}
@@ -616,10 +611,6 @@ function Portal(){
           )}
 
           {/* ── PROCESS & PROCEDURE (iframe) ── */}
-          {section==='processes'&&(
-            <iframe src="processes.html" style={{width:'100%',height:'100%',border:'none'}} title="Process & Procedure"/>
-          )}
-
         </div>
       </main>
     </div>
