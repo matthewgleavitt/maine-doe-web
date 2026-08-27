@@ -1,11 +1,21 @@
-<title>DOE Events Calendar</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&display=swap">
+// Maine DOE Calendar - JS Injector rule for /doe/calendar
+// Renders the calendar into #doe-calendar-root, fetches events from Apps Script.
+(function() {
+  function boot() {
+    var root = document.getElementById('doe-calendar-root');
+    if (!root) { return; }
 
-<style>
-  :root {
-    --warm-white: #eee6df;
+    // Inject the calendar CSS via a <style> tag. This bypasses CSS Injector
+    // entirely, which some Drupal installs block with a mod_security filter.
+    if (!document.getElementById('doe-cal-styles')) {
+      var style = document.createElement('style');
+      style.id = 'doe-cal-styles';
+      style.textContent = `
+
+
+
+#doe-calendar-root {
+--warm-white: #eee6df;
     --warm-white-2: #eef2f6;
     --warm-white-3: #c9d3dc;
     --navy: #182b3c;
@@ -33,43 +43,22 @@
     --font-body: 'Calibri', 'Segoe UI', system-ui, -apple-system, sans-serif;
     --pad: clamp(20px, 4vw, 56px);
     --maxw: 1180px;
-  }
-  :root:not([data-theme="light"]) {
-    @media (prefers-color-scheme: dark) {
-      --warm-white: #10161d; --warm-white-2: #1a2330; --warm-white-3: rgba(238,230,223,0.15);
-      --navy: #eee6df; --navy-2: #a8bccb; --navy-3: #8ba8c4; --steel: #7b95ad; --steel-soft: #4a5f76;
-      --teal: #55d0ff; --teal-ink: #55d0ff; --teal-tint: #0d3947;
-      --rust: #d97a5b; --rust-tint: #3a1a10;
-      --mint-ink: #6bc088; --mint-tint: #163a25;
-      --mid-tint: #2a3a48;
-      --ink: var(--navy); --ink-2: #c8d5e0; --ink-3: var(--steel);
-      --ground: var(--warm-white); --panel: #1a2330; --panel-2: #1a2330;
-      --rule: rgba(238,230,223,0.15); --rule-strong: rgba(238,230,223,0.28);
-    }
-  }
-  :root[data-theme="dark"] {
-    --warm-white: #1a1613; --warm-white-2: #221c17; --warm-white-3: #33291f;
-    --navy: #eee6df; --navy-2: #a8bccb; --steel: #7b95ad; --steel-soft: #4a5f76;
-    --teal: #55d0ff; --teal-ink: #55d0ff; --teal-tint: #0d3947;
-    --rust: #d97a5b; --rust-tint: #3a1a10;
-    --mint-ink: #6bc088; --mint-tint: #163a25;
-    --mid-tint: #2a3a48;
-    --ink: var(--navy); --ink-2: #c8bcae; --ink-3: var(--steel);
-    --ground: var(--warm-white); --panel: #211a15; --rule: var(--warm-white-3);
-  }
+  
+  
+  
 
-  html, body { background:transparent !important;  margin: 0; padding: 0; }
-  body { background:transparent !important;  background: var(--ground); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  
+  & { background: transparent; color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
   * { box-sizing: border-box; }
   button { cursor: pointer; }
 
-  /* ─── Portal chrome ─────────────────────────────────── */
+  
   .doe-bar { background: var(--navy); color: #eee6df; padding: 10px var(--pad); font-family: var(--font-display); font-weight: 600; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; gap: 24px; }
   .doe-bar .crumbs { opacity: 0.65; font-weight: 500; font-size: 12px; }
   .doe-bar .crumbs strong { color: #eee6df; opacity: 1; font-weight: 700; }
   .container { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
 
-  /* ─── Hero ─────────────────────────────────────────── */
+  
   .hero { padding: clamp(48px, 8vw, 104px) 0 clamp(32px, 5vw, 56px); border-bottom: 1px solid var(--rule); }
   .hero .eyebrow { font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--teal-ink); margin: 0 0 20px; }
   .hero h1 { font-family: var(--font-display); font-weight: 900; font-size: clamp(56px, 11vw, 156px); line-height: 0.85; letter-spacing: -0.03em; color: var(--ink); margin: 0; text-wrap: balance; }
@@ -79,7 +68,7 @@
   .hero .stats .stat .num { font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
   .hero .stats .stat .lbl { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-top: 8px; }
 
-  /* ─── Filter bar ───────────────────────────────────── */
+  
   .filter-bar { padding: 32px 0 28px; border-bottom: 1px solid var(--rule); }
   .filter-bar .label { font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px; }
   .filter-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 24px; align-items: flex-start; }
@@ -143,10 +132,10 @@
   .chip.active { background: var(--ink); color: var(--ground); border-color: var(--ink); }
   .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: 0.9; }
   .chip.active .dot { background: var(--ground); }
-  .cat-learning-chip { color: var(--teal-ink); border-color: color-mix(in srgb, var(--teal-ink) 30%, transparent); }
-  .cat-convening-chip { color: var(--navy-2); border-color: color-mix(in srgb, var(--navy-2) 40%, transparent); }
-  .cat-public-chip { color: var(--rust); border-color: color-mix(in srgb, var(--rust) 40%, transparent); }
-  .cat-students-chip { color: var(--mint-ink); border-color: color-mix(in srgb, var(--mint-ink) 40%, transparent); }
+  .cat-learning-chip { color: var(--teal-ink); border-color: rgba(13, 123, 160, 0.3); }
+  .cat-convening-chip { color: var(--navy-2); border-color: rgba(39, 79, 115, 0.4); }
+  .cat-public-chip { color: var(--rust); border-color: rgba(138, 46, 19, 0.4); }
+  .cat-students-chip { color: var(--mint-ink); border-color: rgba(63, 127, 94, 0.4); }
   .cat-learning-chip.active, .cat-convening-chip.active, .cat-public-chip.active, .cat-students-chip.active { background: currentColor; border-color: currentColor; }
   .cat-learning-chip.active > *, .cat-convening-chip.active > *, .cat-public-chip.active > *, .cat-students-chip.active > * { color: var(--ground); }
 
@@ -160,13 +149,13 @@
   .view-toggle button { all: unset; padding: 7px 18px; border-radius: 100px; font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); cursor: pointer; }
   .view-toggle button.active { background: var(--ink); color: var(--ground); }
 
-  /* ─── Category tokens ──────────────────────────────── */
+  
   .cat-learning { --cat-color: var(--teal-ink); --cat-tint: var(--teal-tint); }
   .cat-convening { --cat-color: var(--navy-2); --cat-tint: var(--mid-tint); }
   .cat-public { --cat-color: var(--rust); --cat-tint: var(--rust-tint); }
   .cat-students { --cat-color: var(--mint-ink); --cat-tint: var(--mint-tint); }
 
-  /* ─── Date chip (top of card) ──────────────────────── */
+  
   .dt-chip {
     display: inline-flex;
     align-items: baseline;
@@ -209,7 +198,7 @@
     flex-wrap: wrap;
   }
 
-  /* ─── Chips: focus area + type ─────────────────────── */
+  
   .card-chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .info-chip {
     display: inline-flex;
@@ -259,7 +248,7 @@
   }
   .focus-chip .dot { display: none; }
 
-  /* Full-length focus strip on cards */
+  
   .focus-strip {
     background: var(--teal-tint);
     color: var(--navy);
@@ -281,7 +270,7 @@
     flex-shrink: 0;
   }
 
-  /* ─── Card ─────────────────────────────────────────── */
+  
   .card {
     background: #f5eee5;
     border: 1px solid var(--rule);
@@ -438,7 +427,7 @@
   .title-block .card-title { margin: 0; }
   .m-title-block { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; margin-bottom: 14px; }
 
-  /* ─── CTA button (rounded square) ──────────────────── */
+  
   .btn-cta {
     display: inline-flex;
     align-items: center;
@@ -465,12 +454,12 @@
   .btn-cta.lg { padding: 14px 22px; font-size: 13px; letter-spacing: 0.1em; }
   .btn-cta.lg svg { width: 14px; height: 14px; }
 
-  /* ─── Card grid ────────────────────────────────────── */
+  
   .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 40px 0 96px; }
   @media (max-width: 980px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 620px) { .card-grid { grid-template-columns: 1fr; } }
 
-  /* ─── Agenda view ──────────────────────────────────── */
+  
   .agenda { padding: 40px 0 96px; }
   .month-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; padding-bottom: 20px; margin-bottom: 24px; border-bottom: 2px solid var(--ink); }
   .month-head:not(:first-of-type) { margin-top: 56px; }
@@ -495,14 +484,14 @@
     transition: background 0.15s;
   }
   .agenda-row:last-child { border-bottom: 0; }
-  .agenda-row:hover { background: color-mix(in srgb, var(--cat-color, var(--steel)) 4%, transparent); }
+  .agenda-row:hover { background: rgba(109, 139, 166, 0.04); }
   .agenda-row:hover .row-title { color: var(--cat-color); }
 
   .row-date { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; padding-left: 20px; border-left: 3px solid var(--cat-color, var(--steel)); padding-top: 4px; }
   .row-date .day-num { font-family: var(--font-display); font-weight: 800; font-size: 56px; line-height: 0.9; color: var(--ink); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
   .row-date .day-wd { font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); }
 
-  .row-body { background:transparent !important;  min-width: 0; padding-top: 4px; }
+  .row-& { min-width: 0; padding-top: 4px; }
   .row-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .row-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(20px, 2.2vw, 26px); line-height: 1.15; color: var(--ink); margin: 0 0 8px; letter-spacing: -0.01em; text-wrap: balance; transition: color 0.15s; }
   .row-desc { font-size: 14px; color: var(--ink-2); line-height: 1.5; margin: 0 0 10px; max-width: 62ch; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -532,7 +521,7 @@
     .row-date .day-num { font-size: 40px; }
   }
 
-  /* ─── Month grid view ──────────────────────────────── */
+  
   .month-grid-view { padding: 24px 0 96px; }
   .mg-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 2px solid var(--ink); }
   .mg-head h2 { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 5vw, 56px); line-height: 0.9; letter-spacing: -0.02em; color: var(--ink); margin: 0; }
@@ -544,7 +533,7 @@
   .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
   .dow { background: var(--warm-white-2); padding: 10px; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); text-align: center; }
   .day-cell { background: var(--panel); min-height: 96px; padding: 8px; display: flex; flex-direction: column; gap: 4px; position: relative; }
-  .day-cell.other { background: color-mix(in srgb, var(--panel) 60%, transparent); opacity: 0.5; }
+  .day-cell.other { background: rgba(255, 255, 255, 0.6); opacity: 0.5; }
   .day-cell .num { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--ink); align-self: flex-start; padding: 2px 4px; }
   .day-cell.today .num { background: var(--ink); color: var(--ground); border-radius: 3px; }
   .day-dot {
@@ -569,18 +558,18 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .day-dot:hover { filter: brightness(0.95); }
+  .day-dot:hover { }
   @media (max-width: 720px) {
     .day-cell { min-height: 64px; padding: 4px; }
     .day-dot { font-size: 9px; padding: 2px 4px; }
   }
 
-  /* ─── Empty state ──────────────────────────────────── */
+  
   .empty { padding: 80px 20px; text-align: center; font-family: var(--font-display); color: var(--ink-3); }
   .empty .big { font-weight: 800; font-size: 24px; color: var(--ink); margin-bottom: 8px; }
   .empty .sm { font-size: 14px; font-weight: 500; }
 
-  /* ─── Widget showcase (still static examples) ──────── */
+  
   .widget-intro { background: var(--ink); color: var(--ground); padding: clamp(48px, 8vw, 88px) var(--pad); text-align: center; }
   .widget-intro .eyebrow { font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--teal); margin: 0 0 20px; }
   .widget-intro h2 { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 5.5vw, 62px); line-height: 1; letter-spacing: -0.02em; color: var(--ground); margin: 0 auto; max-width: 780px; text-wrap: balance; }
@@ -661,12 +650,11 @@
   .featured .feat-cta:hover { background: var(--cat-color, var(--rust)); }
   .featured .feat-cta:hover svg { stroke: var(--warm-white); }
 
-  /* ─── Modal ────────────────────────────────────────── */
+  
   .modal-scrim {
     position: fixed;
     inset: 0;
-    background: color-mix(in srgb, var(--navy) 78%, transparent);
-    backdrop-filter: blur(4px);
+    background: rgba(24, 43, 60, 0.78);
     display: none;
     align-items: center;
     justify-content: center;
@@ -730,7 +718,7 @@
   .modal .m-cta:hover svg { stroke: var(--warm-white) !important; }
   .modal .m-meta { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: 0.06em; color: var(--ink-3); margin-top: 12px; text-transform: none; }
 
-  /* ─── Design notes ─────────────────────────────────── */
+  
   .design-notes { background: var(--warm-white-2); padding: clamp(48px, 7vw, 80px) 0; border-top: 1px solid var(--rule); }
   .design-notes h2 { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 4.5vw, 46px); line-height: 1; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 12px; }
   .design-notes .sub { color: var(--ink-2); font-size: 16px; max-width: 620px; margin: 0 0 40px; }
@@ -746,16 +734,90 @@
   .cat-samp { display: flex; flex-direction: column; gap: 8px; }
   .use-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: var(--ink-2); line-height: 1.5; }
   .use-list li { padding-left: 18px; position: relative; }
-  .use-list li::before { content: '→'; position: absolute; left: 0; color: var(--teal-ink); font-weight: 700; }
+  .use-list li::before { content: ''; position: absolute; left: 0; color: var(--teal-ink); font-weight: 700; }
 
   footer.page-foot { padding: 32px var(--pad); background: var(--navy); color: var(--steel-soft); font-family: var(--font-display); font-weight: 500; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; text-align: center; }
-</style>
+}
 
-<div class="container">
+
+
+.modal-scrim { --warm-white: #eee6df; --warm-white-2: #eef2f6; --warm-white-3: #c9d3dc; --navy: #182b3c; --navy-2: #274f73; --navy-3: #3d5a7a; --steel: #6d8ba6; --steel-soft: #a8bccb; --teal: #42c3f7; --teal-ink: #0d7ba0; --teal-tint: #d5f0fb; --rust: #8a2e13; --rust-tint: #f0d9d0; --mint-ink: #3f7f5e; --mint-tint: #d5ecdd; --mid-tint: #d5dfe9; --ink: var(--navy); --ink-2: #33475a; --ink-3: var(--steel); --ground: var(--warm-white); --panel: #ffffff; --panel-2: #eef2f6; --rule: rgba(24, 43, 60, 0.13); --rule-strong: rgba(24, 43, 60, 0.22); --font-display: 'League Spartan', 'Century Gothic', 'Segoe UI', system-ui, -apple-system, sans-serif; --font-body: 'Calibri', 'Segoe UI', system-ui, -apple-system, sans-serif; --pad: clamp(20px, 4vw, 56px); --maxw: 1180px; --cat-color: var(--teal-ink); --cat-tint: var(--teal-tint); --cat-color: var(--navy-2); --cat-tint: var(--mid-tint); --cat-color: var(--rust); --cat-tint: var(--rust-tint); --cat-color: var(--mint-ink); --cat-tint: var(--mint-tint); }
+.modal-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 43, 60, 0.78);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 100;
+  }
+.modal-scrim.open { display: flex; }
+.modal {
+    background: var(--ground);
+    max-width: 640px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    border-radius: 10px;
+    padding: 36px 40px 32px;
+    position: relative;
+    box-shadow: 0 40px 80px -20px rgba(0,0,0,0.4);
+  }
+.modal { padding: 24px 24px 20px; }
+.modal::before { content: ''; position: absolute; left: 0; top: 0; right: 0; height: 6px; background: var(--cat-color, var(--rust)); border-radius: 10px 10px 0 0; }
+.modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 36px; height: 36px;
+    border: 0; background: transparent; color: var(--ink-2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+.modal-close:hover { background: var(--warm-white-2); color: var(--ink); }
+.modal-close svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+.modal .m-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; margin-bottom: 12px; }
+.modal h3 { font-family: var(--font-display); font-weight: 800; font-size: clamp(24px, 3.4vw, 32px); line-height: 1.1; letter-spacing: -0.015em; color: var(--ink); margin: 6px 0 20px; text-wrap: balance; }
+.modal .m-desc { font-size: 15px; line-height: 1.65; color: var(--ink-2); margin: 0 0 24px; }
+.modal .m-facts { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 20px 22px; background: var(--navy); color: var(--warm-white); border-radius: 6px; margin-bottom: 24px; }
+.modal .m-facts svg { stroke: var(--steel-soft) !important; }
+.modal .m-facts strong { color: var(--steel-soft) !important; }
+.modal .m-facts .val { color: var(--warm-white) !important; display: block; }
+.modal .m-mail {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--teal) !important;
+    text-decoration: none;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+.modal .m-mail svg { width: 13px !important; height: 13px !important; stroke: var(--teal) !important; }
+.modal .m-mail:hover { color: var(--warm-white) !important; }
+.modal .m-mail:hover svg { stroke: var(--warm-white) !important; }
+.modal .m-fact { display: grid; grid-template-columns: 20px 1fr; gap: 12px; align-items: flex-start; font-size: 14px; color: var(--ink-2); font-family: var(--font-body); }
+.modal .m-fact svg { width: 16px; height: 16px; stroke: var(--ink-3); stroke-width: 1.6; fill: none; margin-top: 2px; }
+.modal .m-fact strong { display: block; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
+.modal .m-fact .val { color: var(--ink); font-family: var(--font-display); font-weight: 600; font-size: 15px; letter-spacing: 0; text-transform: none; }
+.modal .m-cta { display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border-radius: 6px; background: var(--ink); color: var(--ground); text-decoration: none; font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.15s; }
+.modal .m-cta svg { stroke: var(--teal) !important; transition: stroke 0.15s; }
+.modal .m-cta:hover { background: var(--cat-color); transform: translateX(2px); }
+.modal .m-cta:hover svg { stroke: var(--warm-white) !important; }
+.modal .m-meta { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: 0.06em; color: var(--ink-3); margin-top: 12px; text-transform: none; }
+`;
+      document.head.appendChild(style);
+    }
+
+    // Inject the shell HTML (hero, filter bar, events container, modal, widgets)
+    root.innerHTML = `<div class="container">
   <section class="hero-compact" style="padding:10px 20px 12px;border-bottom:1px solid rgba(24,43,60,0.13);display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-  <h2 style="font-family:League Spartan,sans-serif;font-weight:800;font-size:20px;line-height:1.2;color:#182b3c;margin:0;">Events &amp; Professional Development Calendar</h2>
-  <span style="font-family:League Spartan,sans-serif;font-size:12px;color:#475569;"><b id="stat-events" style="color:#182b3c;font-weight:800;font-size:16px;">-</b> upcoming</span>
-</section>
+      <h2 style="font-family:'League Spartan','Century Gothic','Segoe UI',system-ui,sans-serif;font-weight:800;font-size:20px;line-height:1.2;letter-spacing:-.005em;color:#182b3c;margin:0;">Events &amp; Professional Development Calendar</h2>
+      <span style="font-family:'League Spartan',sans-serif;font-size:12px;color:#475569;letter-spacing:.02em;"><b id="stat-events" style="color:#182b3c;font-weight:800;font-size:16px;">-</b> upcoming</span>
+    </section>
 
   <section class="filter-bar">
     <div class="filter-search">
@@ -795,405 +857,424 @@
 </div>
 <div class="modal-scrim" id="modal-scrim" onclick="if(event.target===this)closeModal()">
   <div class="modal" id="modal"></div>
-</div>
+</div>`;
 
-<script>
-// ─── EVENT DATA ────────────────────────────────────────
-let EVENTS = [];
-const CALENDAR_ENDPOINT = "https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec?type=calendar";
-async function loadEvents() {
-  try {
-    const container = document.getElementById('events-container');
-    if (container) container.innerHTML = '<div class="empty"><div class="big">Loading events…</div></div>';
-    const res = await fetch(CALENDAR_ENDPOINT, { cache: 'no-store' });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    EVENTS = data.events || [];
-    populateFocusSelect();
-    populateTypeSelect();
-    renderWidgets();
-    render();
-  } catch (err) {
-    document.getElementById('events-container').innerHTML =
-      '<div class="empty"><div class="big">Could not load events</div><div class="sm">' +
-      String(err.message || err) + '</div></div>';
-  }
-}
-
-const CLUSTER_OF = {
-  'Webinar': 'learning', 'Training': 'learning', 'Workshop': 'learning', 'Information Session': 'learning',
-  'Conference': 'convening', 'Discussion Group': 'convening', 'Office Hours': 'convening',
-  'Public Hearing': 'public',
-  'Student Opportunity': 'students'
-};
-
-// Per-type color — every event type gets its own hue, distinct from the teal topic strip.
-const TYPE_COLOR = {
-  'Webinar':             { color: '#274f73', tint: '#d5dfe9' },  // Mid Blue
-  'Training':            { color: '#8a2e13', tint: '#f0d9d0' },  // Rust
-  'Workshop':            { color: '#a86018', tint: '#f4e3cd' },  // Amber
-  'Information Session': { color: '#4a6a80', tint: '#dce4ec' },  // Steel Blue
-  'Conference':          { color: '#182b3c', tint: '#c9d3dc' },  // Navy
-  'Discussion Group':    { color: '#6b3a5a', tint: '#e8dae5' },  // Plum
-  'Office Hours':        { color: '#3f7f5e', tint: '#d5ecdd' },  // Sage
-  'Public Hearing':      { color: '#a63c1e', tint: '#f5d4c9' },  // Deep Coral
-  'Student Opportunity': { color: '#0d7ba0', tint: '#d5f0fb' },
-  'Other':              { color: '#5c6a78', tint: '#d5dae0' }   // Deep Teal (used only here since topic strip is teal-tint bg)
-};
-function typeColor(type) { return TYPE_COLOR[type] || { color: '#274f73', tint: '#d5dfe9' }; }
-
-const ICON_OF = {
-  learning: '<svg viewBox="0 0 24 24"><polygon points="9 7 17 12 9 17 9 7" fill="currentColor" stroke="none"/></svg>',
-  convening: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M4 20c0-3 3-5 5-5s5 2 5 5"/><path d="M14 20c0-2 2-3 3-3s3 1 3 3"/></svg>',
-  public: '<svg viewBox="0 0 24 24"><rect x="9" y="4" width="6" height="10" rx="3"/><path d="M6 12a6 6 0 0 0 12 0"/><path d="M12 18v3"/><path d="M8 21h8"/></svg>',
-  students: '<svg viewBox="0 0 24 24"><path d="M2 9l10-4 10 4-10 4L2 9z"/><path d="M6 11v4c0 1.5 2.7 3 6 3s6-1.5 6-3v-4"/><path d="M22 9v6"/></svg>'
-};
-
-const CLOCK_SVG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>';
-const PIN_SVG = '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
-const USERS_SVG = '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>';
-const USER_SVG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1-4 4-6 8-6s7 2 8 6"/></svg>';
-const MAIL_SVG = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>';
-
-// Team contact lookup keyed on focus area. Real production contacts get plugged in here.
-const CONTACT_BY_FOCUS = {
-  'Assessment': { name: 'Assessment Team', email: 'assessment.doe@maine.gov' },
-  'Multilingual Learning': { name: 'Multilingual Learning Team', email: 'mll.doe@maine.gov' },
-  'Special Services & Inclusive Education': { name: 'Special Services & Inclusive Education', email: 'specialservices.doe@maine.gov' },
-  'Federal Programs': { name: 'Federal Programs Team', email: 'federalprograms.doe@maine.gov' },
-  'Early Learning': { name: 'Early Learning Team', email: 'earlylearning.doe@maine.gov' },
-  'Policy/Rulemaking': { name: 'Office of Policy & Government Affairs', email: 'policy.doe@maine.gov' },
-  'Educator Supports': { name: 'Educator Supports Team', email: 'educatorsupports.doe@maine.gov' },
-  'School Health': { name: 'School Health Services', email: 'schoolhealth.doe@maine.gov' },
-  'Career & Technical Education': { name: 'CTE Office', email: 'cte.doe@maine.gov' },
-  'Outdoor Education': { name: 'Outdoor Learning Team', email: 'outdoorlearning.doe@maine.gov' },
-  'Data': { name: 'Data & Research Team', email: 'data.doe@maine.gov' },
-  'Instructional Supports': { name: 'K-12 Instructional Supports', email: 'instruction.doe@maine.gov' },
-  'Attendance & Engagement': { name: 'Attendance & Engagement Team', email: 'attendance.doe@maine.gov' },
-  'School Safety': { name: 'School Safety Center', email: 'schoolsafety.doe@maine.gov' },
-  'Child Nutrition': { name: 'Child Nutrition Programs', email: 'childnutrition.doe@maine.gov' },
-  'Higher Education': { name: 'Higher Education Team', email: 'highered.doe@maine.gov' }
-};
-function contactFor(e) {
-  return { name: e.contactName || '', email: e.contactEmail || '' };
-}
-
-// ─── STATE ─────────────────────────────────────────────
-const state = { focus: 'all', type: 'all', view: 'cards', search: '' };
-
-// ─── HELPERS ───────────────────────────────────────────
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const WEEKDAYS_LONG = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
-function parseDate(iso) { const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d); }
-function dayShort(iso) { return WEEKDAYS[parseDate(iso).getDay()]; }
-function dayLong(iso) { return WEEKDAYS_LONG[parseDate(iso).getDay()]; }
-function monthShort(iso) { return MONTHS[parseDate(iso).getMonth()]; }
-function monthLong(iso) { return MONTHS_LONG[parseDate(iso).getMonth()]; }
-function dayNum(iso) { const d = parseDate(iso).getDate(); return String(d).padStart(2,'0'); }
-function dateLong(iso) { const d = parseDate(iso); return WEEKDAYS_LONG[d.getDay()] + ', ' + MONTHS_LONG[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
-function monthYearKey(iso) { const d = parseDate(iso); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
-function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-function getCluster(type) { return CLUSTER_OF[type] || 'convening'; }
-
-function filtered() {
-  const q = state.search.trim().toLowerCase();
-  return EVENTS.filter(e => {
-    if (state.focus !== 'all' && e.focusArea !== state.focus) return false;
-    if (state.type !== 'all' && e.type !== state.type) return false;
-    if (q) {
-      const hay = (e.title + ' ' + e.desc + ' ' + e.long + ' ' + e.focusArea + ' ' + e.type + ' ' + e.location + ' ' + e.audience).toLowerCase();
-      if (!hay.includes(q)) return false;
+    // Move modal-scrim to <body> so its position:fixed can't be trapped by a
+    // Drupal parent element with transform/filter/perspective (a common gotcha).
+    var _scrim = root.querySelector('.modal-scrim');
+    if (_scrim && _scrim.parentNode !== document.body) {
+      document.body.appendChild(_scrim);
     }
-    return true;
-  }).sort((a,b) => a.date.localeCompare(b.date));
-}
 
-function cardBanner(e) {
-  return `<div class="card-banner">
-    <span class="b-date">${monthShort(e.date).toUpperCase()} ${parseDate(e.date).getDate()}<span class="pipe">|</span><span class="wd">${dayShort(e.date).toUpperCase()}</span></span>
-    <span class="b-time"><svg class="time-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>${esc(e.time)}</span>
-  </div>`;
-}
-// Kept for compatibility with agenda / month / other views that don't use banner
-function dtChip(e) {
-  return `<span class="dt-chip">
-    ${monthShort(e.date).toUpperCase()} ${parseDate(e.date).getDate()}
-    <span class="wd">${dayShort(e.date).toUpperCase()}</span>
-  </span>`;
-}
-function timeText(e) {
-  return `<span class="card-time">${CLOCK_SVG}${esc(e.time)}</span>`;
-}
-
-function typeChip(e) {
-  const cluster = getCluster(e.type);
-  const tc = typeColor(e.type);
-  return `<span class="info-chip type-chip" style="background:${tc.tint};color:${tc.color}">${ICON_OF[cluster]}${esc(e.type)}</span>`;
-}
-
-function focusChip(e) {
-  const cluster = getCluster(e.type);
-  return `<span class="info-chip focus-chip cat-${cluster}"><span class="dot"></span>${esc(e.focusArea)}</span>`;
-}
-
-function cardHTML(e) {
-  const tc = typeColor(e.type);
-  const styleVars = `--cat-color:${tc.color};--cat-tint:${tc.tint}`;
-  return `<div class="card" style="${styleVars}" onclick="openModal('${e.id}')">
-    ${cardBanner(e)}
-    <div class="focus-strip">${esc(e.focusArea)}</div>
-    <div class="card-inner">
-      <h3 class="card-title">${esc(e.title)}</h3>
-      <div class="card-chips">${typeChip(e)}${e.contactHours ? '<span class="badge-hours"><svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>Contact Hours</span>' : ''}</div>
-      <hr class="card-hr">
-      <p class="card-desc">${esc(e.desc)}</p>
-      <div class="card-foot">
-        <div class="card-loc">${PIN_SVG}<span>${esc(e.location)}</span></div>
-        <button class="btn-cta" onclick="event.stopPropagation();openModal('${e.id}')">Register <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-      </div>
-    </div>
-  </div>`;
-}
-
-function agendaRowHTML(e) {
-  const cluster = getCluster(e.type);
-  const isRange = e.end && e.end !== e.date;
-  const dayLabel = isRange ? `${parseDate(e.date).getDate()}–${parseDate(e.end).getDate()}` : parseDate(e.date).getDate();
-  return `<button class="agenda-row cat-${cluster}" onclick="openModal('${e.id}')">
-    <div class="row-date">
-      <span class="day-num">${dayLabel}</span>
-      <span class="day-wd">${dayShort(e.date)} · ${monthShort(e.date)}</span>
-    </div>
-    <div class="row-body">
-      <div class="row-chips">${focusChip(e)}</div>
-      <h3 class="row-title">${esc(e.title)}</h3>
-      <div class="row-chips" style="margin-top:-4px;margin-bottom:8px">${typeChip(e)}</div>
-      <p class="row-desc">${esc(e.desc)}</p>
-      <div class="row-loc">
-        ${CLOCK_SVG}<span class="time-mark">${esc(e.time)}</span>
-        <span class="dot-sep">·</span>
-        ${PIN_SVG}<span>${esc(e.location)}</span>
-      </div>
-    </div>
-    <div class="row-arrow"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
-  </button>`;
-}
-
-// ─── VIEW RENDERERS ────────────────────────────────────
-function renderCards() {
-  const events = filtered();
-  if (!events.length) return renderEmpty();
-  document.getElementById('events-container').innerHTML = `<div class="card-grid" style="padding-top:40px">${events.map(cardHTML).join('')}</div>`;
-}
-
-function renderAgenda() {
-  const events = filtered();
-  if (!events.length) return renderEmpty();
-  const byMonth = {};
-  for (const e of events) {
-    const k = monthYearKey(e.date);
-    (byMonth[k] ||= []).push(e);
-  }
-  let html = '<div class="agenda">';
-  Object.keys(byMonth).sort().forEach(k => {
-    const [y,m] = k.split('-');
-    const monthName = MONTHS_LONG[Number(m)-1];
-    const list = byMonth[k];
-    html += `<div class="month-head"><h2>${monthName}<span class="year">${y}</span></h2><div class="count">${list.length} event${list.length===1?'':'s'}</div></div>`;
-    html += list.map(agendaRowHTML).join('');
-  });
-  html += '</div>';
-  document.getElementById('events-container').innerHTML = html;
-}
-
-function renderMonth() {
-  const events = filtered();
-  const byDate = {};
-  for (const e of events) (byDate[e.date] ||= []).push(e);
-
-  const firstEventDate = events.length ? parseDate(events[0].date) : new Date();
-  const year = firstEventDate.getFullYear();
-  const month = firstEventDate.getMonth();
-  const first = new Date(year, month, 1);
-  const startPad = first.getDay();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const prevDays = new Date(year, month, 0).getDate();
-
-  let cells = '';
-  WEEKDAYS.forEach(d => cells += `<div class="dow">${d}</div>`);
-
-  for (let i = startPad; i > 0; i--) {
-    cells += `<div class="day-cell other"><span class="num">${prevDays - i + 1}</span></div>`;
-  }
-
-  const today = new Date();
-  for (let d = 1; d <= daysInMonth; d++) {
-    const iso = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
-    const dayEvents = byDate[iso] || [];
-    let dots = '';
-    for (let i = 0; i < Math.min(3, dayEvents.length); i++) {
-      const e = dayEvents[i];
-      dots += `<button class="day-dot cat-${getCluster(e.type)}" onclick="event.stopPropagation();openModal('${e.id}')" title="${esc(e.title)}">${esc(e.title)}</button>`;
+    // ---- Original mockup script ----
+    //  EVENT DATA 
+    let EVENTS = [];
+    const CALENDAR_ENDPOINT = "https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec?type=calendar";
+    async function loadEvents() {
+      try {
+        const container = document.getElementById('events-container');
+        if (container) container.innerHTML = '<div class="empty"><div class="big">Loading events</div></div>';
+        const res = await fetch(CALENDAR_ENDPOINT, { cache: 'no-store' });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        EVENTS = data.events || [];
+        populateFocusSelect();
+        populateTypeSelect();
+        /* renderWidgets call skipped */;
+        render();
+      } catch (err) {
+        document.getElementById('events-container').innerHTML =
+          '<div class="empty"><div class="big">Could not load events</div><div class="sm">' +
+          String(err.message || err) + '</div></div>';
+      }
     }
-    if (dayEvents.length > 3) dots += `<span style="font-size:10px;color:var(--ink-3);font-weight:600;padding:0 6px">+${dayEvents.length-3} more</span>`;
-    cells += `<div class="day-cell${isToday?' today':''}"><span class="num">${d}</span>${dots}</div>`;
-  }
-
-  const totalCells = startPad + daysInMonth;
-  const trailingPad = (7 - (totalCells % 7)) % 7;
-  for (let i = 1; i <= trailingPad; i++) {
-    cells += `<div class="day-cell other"><span class="num">${i}</span></div>`;
-  }
-
-  document.getElementById('events-container').innerHTML = `<div class="month-grid-view">
-    <div class="mg-head">
-      <h2>${MONTHS_LONG[month]}<span class="year">${year}</span></h2>
-      <div class="mg-nav"><button>Prev</button><button>Today</button><button>Next</button></div>
-    </div>
-    <div class="month-grid">${cells}</div>
-    ${!events.length ? renderEmptyMarkup() : ''}
-  </div>`;
-}
-
-function renderEmpty() {
-  document.getElementById('events-container').innerHTML = renderEmptyMarkup();
-}
-function renderEmptyMarkup() {
-  return `<div class="empty"><div class="big">No events match your filters.</div><div class="sm">Try widening the focus area or clearing the type filter.</div></div>`;
-}
-
-function render() {
-  updateStats();
-  if (state.view === 'cards') renderCards();
-  else if (state.view === 'agenda') renderAgenda();
-  else renderMonth();
-}
-
-function updateStats() {
-  const events = filtered();
-  document.getElementById('stat-events').textContent = events.length;
-  const focusSet = new Set(events.map(e => e.focusArea));
-  document.getElementById('stat-focus').textContent = focusSet.size;
-  const typeSet = new Set(events.map(e => e.type));
-  document.getElementById('stat-types').textContent = typeSet.size;
-}
-
-// ─── MODAL ─────────────────────────────────────────────
-function openModal(id) {
-  const e = EVENTS.find(x => x.id === id);
-  if (!e) return;
-  const cluster = getCluster(e.type);
-  const c = contactFor(e);
-  document.getElementById('modal').className = 'modal cat-' + cluster;
-  document.getElementById('modal').innerHTML = `
-    <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></svg></button>
-    <div class="m-title-block">
-      ${focusChip(e)}
-      <h3>${esc(e.title)}</h3>
-      <div class="m-chips">${typeChip(e)}</div>
-    </div>
-    <div class="m-desc">${e.long || esc(e.desc)}</div>
-    <div class="m-facts">
-      <div class="m-fact">${CLOCK_SVG}<div><strong>When</strong><span class="val">${dateLong(e.date)} · ${esc(e.time)}</span></div></div>
-      <div class="m-fact">${PIN_SVG}<div><strong>Where</strong><span class="val">${esc(e.venueName || e.location)}${e.venueAddress ? '<br><span style="font-weight:500;font-size:13px;opacity:0.85">' + esc(e.venueAddress) + '</span>' : ''}</span></div></div>
-      <div class="m-fact">${USERS_SVG}<div><strong>Audience</strong><span class="val">${esc(e.audience)}</span></div></div>
-      <div class="m-fact">${USER_SVG}<div><strong>Contact</strong><span class="val">${esc(c.name)}</span><a href="mailto:${esc(c.email)}" class="m-mail">${MAIL_SVG}${esc(c.email)}</a></div></div>
-    </div>
-    <a class="m-cta" href="${esc(e.register)}">Register <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;stroke-width:2.4;fill:none"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <div class="m-meta">Focus area · ${esc(e.focusArea)}</div>
-  `;
-  document.getElementById('modal-scrim').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal() {
-  document.getElementById('modal-scrim').classList.remove('open');
-  document.body.style.overflow = '';
-}
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-// ─── FILTER WIRING ─────────────────────────────────────
-function populateFocusSelect() {
-  const counts = {};
-  EVENTS.forEach(e => counts[e.focusArea] = (counts[e.focusArea] || 0) + 1);
-  const areas = Object.keys(counts).sort();
-  const sel = document.getElementById('focus-select');
-  sel.innerHTML = `<option value="all">All focus areas (${EVENTS.length})</option>` + areas.map(a => `<option value="${esc(a)}">${esc(a)} (${counts[a]})</option>`).join('');
-  sel.addEventListener('change', () => { state.focus = sel.value; render(); });
-}
-function populateTypeSelect() {
-  const counts = {};
-  EVENTS.forEach(e => counts[e.type] = (counts[e.type] || 0) + 1);
-  const types = Object.keys(counts).sort();
-  const sel = document.getElementById('type-select');
-  sel.innerHTML = `<option value="all">All types (${EVENTS.length})</option>` + types.map(t => `<option value="${esc(t)}">${esc(t)} (${counts[t]})</option>`).join('');
-  sel.addEventListener('change', () => { state.type = sel.value; render(); });
-}
-
-// Search
-const searchInput = document.getElementById('search-input');
-const searchClear = document.getElementById('search-clear');
-searchInput.addEventListener('input', () => {
-  state.search = searchInput.value;
-  searchClear.hidden = !state.search;
-  render();
-});
-searchClear.addEventListener('click', () => {
-  searchInput.value = '';
-  state.search = '';
-  searchClear.hidden = true;
-  searchInput.focus();
-  render();
-});
-
-document.getElementById('view-toggle').addEventListener('click', e => {
-  const b = e.target.closest('button[data-view]');
-  if (!b) return;
-  document.querySelectorAll('#view-toggle button').forEach(x => x.classList.remove('active'));
-  b.classList.add('active');
-  state.view = b.dataset.view;
-  render();
-});
-
-// ─── WIDGET SHOWCASE (static example markup, uses same components) ──
-function renderWidgets() {
-  // Card grid: first 3 upcoming
-  const upcoming = EVENTS.slice(0, 3);
-  document.getElementById('widget-grid').innerHTML = upcoming.map(cardHTML).join('');
-  // Carousel: first 6
-  document.getElementById('widget-carousel').innerHTML = EVENTS.slice(0, 6).map(cardHTML).join('');
-  // Featured: the public hearing
-  const feat = EVENTS.find(e => e.type === 'Public Hearing');
-  if (feat) {
-    const cluster = getCluster(feat.type);
-    const tc = typeColor(feat.type);
-    document.getElementById('widget-featured').innerHTML = `<div class="featured" style="--cat-color:${tc.color};--cat-tint:${tc.tint}">
-      ${cardBanner(feat)}
-      <div class="focus-strip">${esc(feat.focusArea)}</div>
-      <div class="feat-content">
-        <h4>${esc(feat.title)}</h4>
-        <div class="feat-chips">${typeChip(feat)}</div>
-        <hr class="card-hr">
-        <p>${esc(feat.desc)}</p>
-        <div class="feat-foot">
-          <div class="feat-facts">
-            <div class="card-loc">${PIN_SVG}<span>${esc(feat.location)}</span></div>
+    
+    const CLUSTER_OF = {
+      'Webinar': 'learning', 'Training': 'learning', 'Workshop': 'learning', 'Information Session': 'learning',
+      'Conference': 'convening', 'Discussion Group': 'convening', 'Office Hours': 'convening',
+      'Public Hearing': 'public',
+      'Student Opportunity': 'students'
+    };
+    
+    // Per-type color  every event type gets its own hue, distinct from the teal topic strip.
+    const TYPE_COLOR = {
+      'Webinar':             { color: '#274f73', tint: '#d5dfe9' },  // Mid Blue
+      'Training':            { color: '#8a2e13', tint: '#f0d9d0' },  // Rust
+      'Workshop':            { color: '#a86018', tint: '#f4e3cd' },  // Amber
+      'Information Session': { color: '#4a6a80', tint: '#dce4ec' },  // Steel Blue
+      'Conference':          { color: '#182b3c', tint: '#c9d3dc' },  // Navy
+      'Discussion Group':    { color: '#6b3a5a', tint: '#e8dae5' },  // Plum
+      'Office Hours':        { color: '#3f7f5e', tint: '#d5ecdd' },  // Sage
+      'Public Hearing':      { color: '#a63c1e', tint: '#f5d4c9' },  // Deep Coral
+      'Student Opportunity': { color: '#0d7ba0', tint: '#d5f0fb' },
+      'Other':              { color: '#5c6a78', tint: '#d5dae0' }   // Deep Teal (used only here since topic strip is teal-tint bg)
+    };
+    function typeColor(type) { return TYPE_COLOR[type] || { color: '#274f73', tint: '#d5dfe9' }; }
+    
+    const ICON_OF = {
+      learning: '<svg viewBox="0 0 24 24"><polygon points="9 7 17 12 9 17 9 7" fill="currentColor" stroke="none"/></svg>',
+      convening: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M4 20c0-3 3-5 5-5s5 2 5 5"/><path d="M14 20c0-2 2-3 3-3s3 1 3 3"/></svg>',
+      public: '<svg viewBox="0 0 24 24"><rect x="9" y="4" width="6" height="10" rx="3"/><path d="M6 12a6 6 0 0 0 12 0"/><path d="M12 18v3"/><path d="M8 21h8"/></svg>',
+      students: '<svg viewBox="0 0 24 24"><path d="M2 9l10-4 10 4-10 4L2 9z"/><path d="M6 11v4c0 1.5 2.7 3 6 3s6-1.5 6-3v-4"/><path d="M22 9v6"/></svg>'
+    };
+    
+    const CLOCK_SVG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>';
+    const PIN_SVG = '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+    const USERS_SVG = '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>';
+    const USER_SVG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1-4 4-6 8-6s7 2 8 6"/></svg>';
+    const MAIL_SVG = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>';
+    
+    // Team contact lookup keyed on focus area. Real production contacts get plugged in here.
+    const CONTACT_BY_FOCUS = {
+      'Assessment': { name: 'Assessment Team', email: 'assessment.doe@maine.gov' },
+      'Multilingual Learning': { name: 'Multilingual Learning Team', email: 'mll.doe@maine.gov' },
+      'Special Services & Inclusive Education': { name: 'Special Services & Inclusive Education', email: 'specialservices.doe@maine.gov' },
+      'Federal Programs': { name: 'Federal Programs Team', email: 'federalprograms.doe@maine.gov' },
+      'Early Learning': { name: 'Early Learning Team', email: 'earlylearning.doe@maine.gov' },
+      'Policy/Rulemaking': { name: 'Office of Policy & Government Affairs', email: 'policy.doe@maine.gov' },
+      'Educator Supports': { name: 'Educator Supports Team', email: 'educatorsupports.doe@maine.gov' },
+      'School Health': { name: 'School Health Services', email: 'schoolhealth.doe@maine.gov' },
+      'Career & Technical Education': { name: 'CTE Office', email: 'cte.doe@maine.gov' },
+      'Outdoor Education': { name: 'Outdoor Learning Team', email: 'outdoorlearning.doe@maine.gov' },
+      'Data': { name: 'Data & Research Team', email: 'data.doe@maine.gov' },
+      'Instructional Supports': { name: 'K-12 Instructional Supports', email: 'instruction.doe@maine.gov' },
+      'Attendance & Engagement': { name: 'Attendance & Engagement Team', email: 'attendance.doe@maine.gov' },
+      'School Safety': { name: 'School Safety Center', email: 'schoolsafety.doe@maine.gov' },
+      'Child Nutrition': { name: 'Child Nutrition Programs', email: 'childnutrition.doe@maine.gov' },
+      'Higher Education': { name: 'Higher Education Team', email: 'highered.doe@maine.gov' }
+    };
+    function contactFor(e) {
+      return { name: e.contactName || '', email: e.contactEmail || '' };
+    }
+    
+    //  STATE 
+    const state = { focus: 'all', type: 'all', view: 'cards', search: '' };
+    
+    //  HELPERS 
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const WEEKDAYS_LONG = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    
+    function parseDate(iso) { const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d); }
+    function dayShort(iso) { return WEEKDAYS[parseDate(iso).getDay()]; }
+    function dayLong(iso) { return WEEKDAYS_LONG[parseDate(iso).getDay()]; }
+    function monthShort(iso) { return MONTHS[parseDate(iso).getMonth()]; }
+    function monthLong(iso) { return MONTHS_LONG[parseDate(iso).getMonth()]; }
+    function dayNum(iso) { const d = parseDate(iso).getDate(); return String(d).padStart(2,'0'); }
+    function dateLong(iso) { const d = parseDate(iso); return WEEKDAYS_LONG[d.getDay()] + ', ' + MONTHS_LONG[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
+    function monthYearKey(iso) { const d = parseDate(iso); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
+    function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    
+    function getCluster(type) { return CLUSTER_OF[type] || 'convening'; }
+    
+    function filtered() {
+      const q = state.search.trim().toLowerCase();
+      return EVENTS.filter(e => {
+        if (state.focus !== 'all' && e.focusArea !== state.focus) return false;
+        if (state.type !== 'all' && e.type !== state.type) return false;
+        if (q) {
+          const hay = (e.title + ' ' + e.desc + ' ' + e.long + ' ' + e.focusArea + ' ' + e.type + ' ' + e.location + ' ' + e.audience).toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      }).sort((a,b) => a.date.localeCompare(b.date));
+    }
+    
+    function cardBanner(e) {
+      return `<div class="card-banner">
+        <span class="b-date">${monthShort(e.date).toUpperCase()} ${parseDate(e.date).getDate()}<span class="pipe">|</span><span class="wd">${dayShort(e.date).toUpperCase()}</span></span>
+        <span class="b-time"><svg class="time-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>${esc(e.time)}</span>
+      </div>`;
+    }
+    // Kept for compatibility with agenda / month / other views that don't use banner
+    function dtChip(e) {
+      return `<span class="dt-chip">
+        ${monthShort(e.date).toUpperCase()} ${parseDate(e.date).getDate()}
+        <span class="wd">${dayShort(e.date).toUpperCase()}</span>
+      </span>`;
+    }
+    function timeText(e) {
+      return `<span class="card-time">${CLOCK_SVG}${esc(e.time)}</span>`;
+    }
+    
+    function typeChip(e) {
+      const cluster = getCluster(e.type);
+      const tc = typeColor(e.type);
+      return `<span class="info-chip type-chip" style="background:${tc.tint};color:${tc.color}">${ICON_OF[cluster]}${esc(e.type)}</span>`;
+    }
+    
+    function focusChip(e) {
+      const cluster = getCluster(e.type);
+      return `<span class="info-chip focus-chip cat-${cluster}"><span class="dot"></span>${esc(e.focusArea)}</span>`;
+    }
+    
+    function cardHTML(e) {
+      const tc = typeColor(e.type);
+      const styleVars = `--cat-color:${tc.color};--cat-tint:${tc.tint}`;
+      return `<div class="card" style="${styleVars}" onclick="openModal('${e.id}')">
+        ${cardBanner(e)}
+        <div class="focus-strip">${esc(e.focusArea)}</div>
+        <div class="card-inner">
+          <h3 class="card-title">${esc(e.title)}</h3>
+          <div class="card-chips">${typeChip(e)}${e.contactHours ? '<span class="badge-hours"><svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>Contact Hours</span>' : ''}</div>
+          <hr class="card-hr">
+          <p class="card-desc">${esc(e.desc)}</p>
+          <div class="card-foot">
+            <div class="card-loc">${PIN_SVG}<span>${esc(e.location)}</span></div>
+            <button class="btn-cta" onclick="event.stopPropagation();openModal('${e.id}')">Register <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
           </div>
-          <button class="feat-cta" onclick="openModal('${feat.id}')">View details <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         </div>
-      </div>
-    </div>`;
-  }
-}
-function scrollCarousel(dir) {
-  const c = document.getElementById('widget-carousel');
-  c.scrollBy({ left: dir * 340, behavior: 'smooth' });
-}
+      </div>`;
+    }
+    
+    function agendaRowHTML(e) {
+      const cluster = getCluster(e.type);
+      const isRange = e.end && e.end !== e.date;
+      const dayLabel = isRange ? `${parseDate(e.date).getDate()}${parseDate(e.end).getDate()}` : parseDate(e.date).getDate();
+      return `<button class="agenda-row cat-${cluster}" onclick="openModal('${e.id}')">
+        <div class="row-date">
+          <span class="day-num">${dayLabel}</span>
+          <span class="day-wd">${dayShort(e.date)}  ${monthShort(e.date)}</span>
+        </div>
+        <div class="row-body">
+          <div class="row-chips">${focusChip(e)}</div>
+          <h3 class="row-title">${esc(e.title)}</h3>
+          <div class="row-chips" style="margin-top:-4px;margin-bottom:8px">${typeChip(e)}</div>
+          <p class="row-desc">${esc(e.desc)}</p>
+          <div class="row-loc">
+            ${CLOCK_SVG}<span class="time-mark">${esc(e.time)}</span>
+            <span class="dot-sep"></span>
+            ${PIN_SVG}<span>${esc(e.location)}</span>
+          </div>
+        </div>
+        <div class="row-arrow"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      </button>`;
+    }
+    
+    //  VIEW RENDERERS 
+    function renderCards() {
+      const events = filtered();
+      if (!events.length) return renderEmpty();
+      document.getElementById('events-container').innerHTML = `<div class="card-grid" style="padding-top:40px">${events.map(cardHTML).join('')}</div>`;
+    }
+    
+    function renderAgenda() {
+      const events = filtered();
+      if (!events.length) return renderEmpty();
+      const byMonth = {};
+      for (const e of events) {
+        const k = monthYearKey(e.date);
+        (byMonth[k] ||= []).push(e);
+      }
+      let html = '<div class="agenda">';
+      Object.keys(byMonth).sort().forEach(k => {
+        const [y,m] = k.split('-');
+        const monthName = MONTHS_LONG[Number(m)-1];
+        const list = byMonth[k];
+        html += `<div class="month-head"><h2>${monthName}<span class="year">${y}</span></h2><div class="count">${list.length} event${list.length===1?'':'s'}</div></div>`;
+        html += list.map(agendaRowHTML).join('');
+      });
+      html += '</div>';
+      document.getElementById('events-container').innerHTML = html;
+    }
+    
+    function renderMonth() {
+      const events = filtered();
+      const byDate = {};
+      for (const e of events) (byDate[e.date] ||= []).push(e);
+    
+      const firstEventDate = events.length ? parseDate(events[0].date) : new Date();
+      const year = firstEventDate.getFullYear();
+      const month = firstEventDate.getMonth();
+      const first = new Date(year, month, 1);
+      const startPad = first.getDay();
+      const daysInMonth = new Date(year, month+1, 0).getDate();
+      const prevDays = new Date(year, month, 0).getDate();
+    
+      let cells = '';
+      WEEKDAYS.forEach(d => cells += `<div class="dow">${d}</div>`);
+    
+      for (let i = startPad; i > 0; i--) {
+        cells += `<div class="day-cell other"><span class="num">${prevDays - i + 1}</span></div>`;
+      }
+    
+      const today = new Date();
+      for (let d = 1; d <= daysInMonth; d++) {
+        const iso = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+        const dayEvents = byDate[iso] || [];
+        let dots = '';
+        for (let i = 0; i < Math.min(3, dayEvents.length); i++) {
+          const e = dayEvents[i];
+          dots += `<button class="day-dot cat-${getCluster(e.type)}" onclick="event.stopPropagation();openModal('${e.id}')" title="${esc(e.title)}">${esc(e.title)}</button>`;
+        }
+        if (dayEvents.length > 3) dots += `<span style="font-size:10px;color:var(--ink-3);font-weight:600;padding:0 6px">+${dayEvents.length-3} more</span>`;
+        cells += `<div class="day-cell${isToday?' today':''}"><span class="num">${d}</span>${dots}</div>`;
+      }
+    
+      const totalCells = startPad + daysInMonth;
+      const trailingPad = (7 - (totalCells % 7)) % 7;
+      for (let i = 1; i <= trailingPad; i++) {
+        cells += `<div class="day-cell other"><span class="num">${i}</span></div>`;
+      }
+    
+      document.getElementById('events-container').innerHTML = `<div class="month-grid-view">
+        <div class="mg-head">
+          <h2>${MONTHS_LONG[month]}<span class="year">${year}</span></h2>
+          <div class="mg-nav"><button>Prev</button><button>Today</button><button>Next</button></div>
+        </div>
+        <div class="month-grid">${cells}</div>
+        ${!events.length ? renderEmptyMarkup() : ''}
+      </div>`;
+    }
+    
+    function renderEmpty() {
+      document.getElementById('events-container').innerHTML = renderEmptyMarkup();
+    }
+    function renderEmptyMarkup() {
+      return `<div class="empty"><div class="big">No events match your filters.</div><div class="sm">Try widening the focus area or clearing the type filter.</div></div>`;
+    }
+    
+    function render() {
+      updateStats();
+      if (state.view === 'cards') renderCards();
+      else if (state.view === 'agenda') renderAgenda();
+      else renderMonth();
+    }
+    
+    function updateStats() {
+      const events = filtered();
+      document.getElementById('stat-events').textContent = events.length;
+      const focusSet = new Set(events.map(e => e.focusArea));
+      var _sf = document.getElementById('stat-focus'); if (_sf) _sf.textContent = focusSet.size;
+      const typeSet = new Set(events.map(e => e.type));
+      var _st = document.getElementById('stat-types'); if (_st) _st.textContent = typeSet.size;
+    }
+    
+    //  MODAL 
+    function openModal(id) {
+      const e = EVENTS.find(x => x.id === id);
+      if (!e) return;
+      const cluster = getCluster(e.type);
+      const c = contactFor(e);
+      document.getElementById('modal').className = 'modal cat-' + cluster;
+      document.getElementById('modal').innerHTML = `
+        <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></svg></button>
+        <div class="m-title-block">
+          ${focusChip(e)}
+          <h3>${esc(e.title)}</h3>
+          <div class="m-chips">${typeChip(e)}</div>
+        </div>
+        <div class="m-desc">${e.long || esc(e.desc)}</div>
+        <div class="m-facts">
+          <div class="m-fact">${CLOCK_SVG}<div><strong>When</strong><span class="val">${dateLong(e.date)}  ${esc(e.time)}</span></div></div>
+          <div class="m-fact">${PIN_SVG}<div><strong>Where</strong><span class="val">${esc(e.venueName || e.location)}${e.venueAddress ? '<br><span style="font-weight:500;font-size:13px;opacity:0.85">' + esc(e.venueAddress) + '</span>' : ''}</span></div></div>
+          <div class="m-fact">${USERS_SVG}<div><strong>Audience</strong><span class="val">${esc(e.audience)}</span></div></div>
+          <div class="m-fact">${USER_SVG}<div><strong>Contact</strong><span class="val">${esc(c.name)}</span><a href="mailto:${esc(c.email)}" class="m-mail">${MAIL_SVG}${esc(c.email)}</a></div></div>
+        </div>
+        <a class="m-cta" href="${esc(e.register)}">Register <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;stroke-width:2.4;fill:none"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <div class="m-meta">Focus area  ${esc(e.focusArea)}</div>
+      `;
+      document.getElementById('modal-scrim').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      document.getElementById('modal-scrim').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    
+    //  FILTER WIRING 
+    function populateFocusSelect() {
+      const counts = {};
+      EVENTS.forEach(e => counts[e.focusArea] = (counts[e.focusArea] || 0) + 1);
+      const areas = Object.keys(counts).sort();
+      const sel = document.getElementById('focus-select');
+      sel.innerHTML = `<option value="all">All focus areas (${EVENTS.length})</option>` + areas.map(a => `<option value="${esc(a)}">${esc(a)} (${counts[a]})</option>`).join('');
+      sel.addEventListener('change', () => { state.focus = sel.value; render(); });
+    }
+    function populateTypeSelect() {
+      const counts = {};
+      EVENTS.forEach(e => counts[e.type] = (counts[e.type] || 0) + 1);
+      const types = Object.keys(counts).sort();
+      const sel = document.getElementById('type-select');
+      sel.innerHTML = `<option value="all">All types (${EVENTS.length})</option>` + types.map(t => `<option value="${esc(t)}">${esc(t)} (${counts[t]})</option>`).join('');
+      sel.addEventListener('change', () => { state.type = sel.value; render(); });
+    }
+    
+    // Search
+    const searchInput = document.getElementById('search-input');
+    const searchClear = document.getElementById('search-clear');
+    searchInput.addEventListener('input', () => {
+      state.search = searchInput.value;
+      searchClear.hidden = !state.search;
+      render();
+    });
+    searchClear.addEventListener('click', () => {
+      searchInput.value = '';
+      state.search = '';
+      searchClear.hidden = true;
+      searchInput.focus();
+      render();
+    });
+    
+    document.getElementById('view-toggle').addEventListener('click', e => {
+      const b = e.target.closest('button[data-view]');
+      if (!b) return;
+      document.querySelectorAll('#view-toggle button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      state.view = b.dataset.view;
+      render();
+    });
+    
+    //  WIDGET SHOWCASE (static example markup, uses same components) 
+    function renderWidgets() {
+      // Card grid: first 3 upcoming
+      const upcoming = EVENTS.slice(0, 3);
+      document.getElementById('widget-grid').innerHTML = upcoming.map(cardHTML).join('');
+      // Carousel: first 6
+      document.getElementById('widget-carousel').innerHTML = EVENTS.slice(0, 6).map(cardHTML).join('');
+      // Featured: the public hearing
+      const feat = EVENTS.find(e => e.type === 'Public Hearing');
+      if (feat) {
+        const cluster = getCluster(feat.type);
+        const tc = typeColor(feat.type);
+        document.getElementById('widget-featured').innerHTML = `<div class="featured" style="--cat-color:${tc.color};--cat-tint:${tc.tint}">
+          ${cardBanner(feat)}
+          <div class="focus-strip">${esc(feat.focusArea)}</div>
+          <div class="feat-content">
+            <h4>${esc(feat.title)}</h4>
+            <div class="feat-chips">${typeChip(feat)}</div>
+            <hr class="card-hr">
+            <p>${esc(feat.desc)}</p>
+            <div class="feat-foot">
+              <div class="feat-facts">
+                <div class="card-loc">${PIN_SVG}<span>${esc(feat.location)}</span></div>
+              </div>
+              <button class="feat-cta" onclick="openModal('${feat.id}')">View details <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            </div>
+          </div>
+        </div>`;
+      }
+    }
+    function scrollCarousel(dir) {
+      const c = document.getElementById('widget-carousel');
+      c.scrollBy({ left: dir * 340, behavior: 'smooth' });
+    }
+    
+    //  INIT 
+    loadEvents();
 
-// ─── INIT ──────────────────────────────────────────────
-loadEvents();
-</script>
+    // Expose modal/carousel helpers to window scope so the inline onclick
+    // attributes in the rendered card HTML can find them.
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    if (typeof scrollCarousel === 'function') window.scrollCarousel = scrollCarousel;
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
