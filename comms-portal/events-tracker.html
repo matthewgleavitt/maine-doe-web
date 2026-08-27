@@ -85,7 +85,7 @@ function Section({label,icon,children}){
   return <div style={{marginBottom:28}}>
     <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:14,paddingBottom:10,borderBottom:`1px solid ${B.rule}`}}>
       {icon&&<Sv d={icon} size={16} c={B.tealInk}/>}
-      <h3 style={{fontFamily:'League Spartan',fontWeight:800,fontSize:16,letterSpacing:'.06em',textTransform:'uppercase',color:B.navy,margin:0}}>{label}</h3>
+      <h3 style={{fontFamily:'League Spartan',fontWeight:800,fontSize:14,letterSpacing:'.08em',textTransform:'uppercase',color:B.navy,margin:0}}>{label}</h3>
     </div>
     <div>{children}</div>
   </div>;
@@ -737,17 +737,21 @@ function App(){
   function confirm2(msg){return window.confirm(msg);}
 
   return <div style={{maxWidth:1280,margin:'0 auto',padding:'24px'}}>
-    {/* Hero */}
-    <div style={{padding:'32px 0 24px',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:16}}>
-      <div>
-        <div style={{fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.24em',textTransform:'uppercase',color:B.tealInk,marginBottom:8}}>Maine DOE</div>
-        <h1 style={{fontFamily:'League Spartan',fontSize:44,fontWeight:900,margin:0,color:B.navy,letterSpacing:'-.02em'}}>Events Tracker</h1>
-        <p style={{color:B.ink3,fontSize:15,marginTop:6}}>Submit and manage DOE calendar events</p>
+    {/* Hero — matches other portal trackers (dark navy panel) */}
+    <div style={{background:'linear-gradient(135deg,#0c1926,#182b3c)',borderRadius:16,padding:'22px 28px',marginBottom:20,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16,boxShadow:'0 8px 24px rgba(12,25,38,0.15)'}}>
+      <div style={{display:'flex',alignItems:'center',gap:14}}>
+        <div style={{width:44,height:44,borderRadius:12,background:'linear-gradient(135deg,#42c3f7,#34d399)',display:'flex',alignItems:'center',justifyContent:'center',color:'#0c1926'}}>
+          <Sv d={ic.cal} size={22} c="#0c1926"/>
+        </div>
+        <div>
+          <h1 style={{fontFamily:'League Spartan',fontSize:26,fontWeight:800,color:'#fff',margin:0,letterSpacing:'.01em'}}>Events Tracker</h1>
+          <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Submit and manage DOE calendar events</p>
+        </div>
       </div>
-      <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-        {!editMode&&<Btn onClick={()=>{setForm(EMPTY);setEditing(null);setShowForm(true);}} variant="primary" icon={ic.plus}>Submit new event</Btn>}
-        <Btn onClick={()=>window.open(CAL_URL,'_blank')} variant="ghost" icon={ic.cal}>View calendar</Btn>
-        {isAdmin?<Btn onClick={exitAdmin} variant="ghost" icon={ic.lock}>Exit admin</Btn>:<Btn onClick={enterAdmin} variant="ghost" icon={ic.lock}>Admin mode</Btn>}
+      <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+        {!editMode&&<button onClick={()=>{setForm(EMPTY);setEditing(null);setShowForm(true);}} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 22px',borderRadius:12,background:'linear-gradient(135deg,#42c3f7,#0d7ba0)',color:'#fff',border:0,fontSize:14,fontWeight:700,boxShadow:'0 4px 16px rgba(66,195,247,0.3)',cursor:'pointer',fontFamily:'inherit'}}><Sv d={ic.plus} size={16} c="#fff"/> Submit new event</button>}
+        <a href={CAL_URL} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 22px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600,fontFamily:'inherit'}}><Sv d={ic.cal} size={16} c="#e2e8f0"/> View calendar</a>
+        {isAdmin?<button onClick={exitAdmin} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 22px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',fontSize:14,fontWeight:600,cursor:'pointer',fontFamily:'inherit'}}><Sv d={ic.lock} size={16} c="#e2e8f0"/> Exit admin</button>:<button onClick={enterAdmin} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 22px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',fontSize:14,fontWeight:600,cursor:'pointer',fontFamily:'inherit'}}><Sv d={ic.lock} size={16} c="#e2e8f0"/> Admin mode</button>}
       </div>
     </div>
 

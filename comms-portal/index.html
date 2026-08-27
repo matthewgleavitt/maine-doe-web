@@ -5,7 +5,7 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Communications Portal | Maine DOE</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=League+Spartan:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'DM Sans',-apple-system,sans-serif;background:#0e1c2a;color:#e2e8f0;height:100vh;overflow:hidden}
@@ -248,11 +248,12 @@ function Portal(){
         }
       }catch(e){}
       try{
-        const r=await fetch(SCRIPT_URL+'?type=events');
+        // Events auto-publish now — no "pending approval" queue.
+        // Show upcoming event count instead of a pending badge.
+        const r=await fetch(SCRIPT_URL+'?type=calendar&_='+Date.now());
         const j=await r.json();
-        if(j.rows){
-          const pending=j.rows.filter(s=>s.status!=='Complete').length;
-          setQueueStatus(prev=>({...prev,events:{pending,total:j.rows.length}}));
+        if(j.events){
+          setQueueStatus(prev=>({...prev,events:{pending:0,total:j.events.length}}));
         }
       }catch(e){}
       // Fetch moderation queue (via Apps Script proxy — Drupal endpoint isn't CORS-friendly cross-origin)
