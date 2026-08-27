@@ -1088,9 +1088,9 @@ function updateStats() {
   const events = filtered();
   document.getElementById('stat-events').textContent = events.length;
   const focusSet = new Set(events.map(e => e.focusArea));
-  document.getElementById('stat-focus').textContent = focusSet.size;
+  var _sf = document.getElementById('stat-focus'); if (_sf) _sf.textContent = focusSet.size;
   const typeSet = new Set(events.map(e => e.type));
-  document.getElementById('stat-types').textContent = typeSet.size;
+  var _st = document.getElementById('stat-types'); if (_st) _st.textContent = typeSet.size;
 }
 
 // Accessibility: remember opener so we can return focus on close.
