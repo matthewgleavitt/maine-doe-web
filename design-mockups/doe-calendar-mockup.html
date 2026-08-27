@@ -1002,9 +1002,9 @@ const WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const WEEKDAYS_LONG = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 function parseDate(iso) { const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d); }
-function dayShort(iso) { return WEEKDAYS[parseDate(iso).getDay()]; }
-function dayLong(iso) { return WEEKDAYS_LONG[parseDate(iso).getDay()]; }
-function monthShort(iso) { return MONTHS[parseDate(iso).getMonth()]; }
+function dayShort(iso) { if(!iso)return''; var d=parseDate(iso).getDay(); return isNaN(d)?'':WEEKDAYS[d]||''; }
+function dayLong(iso) { if(!iso)return''; var d=parseDate(iso).getDay(); return isNaN(d)?'':WEEKDAYS_LONG[d]||''; }
+function monthShort(iso) { if(!iso)return''; var m=parseDate(iso).getMonth(); return isNaN(m)?'':MONTHS[m]||''; }
 function monthLong(iso) { return MONTHS_LONG[parseDate(iso).getMonth()]; }
 function dayNum(iso) { const d = parseDate(iso).getDate(); return String(d).padStart(2,'0'); }
 function dateLong(iso) { const d = parseDate(iso); return WEEKDAYS_LONG[d.getDay()] + ', ' + MONTHS_LONG[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }

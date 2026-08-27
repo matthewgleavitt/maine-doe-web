@@ -192,7 +192,7 @@ const EMPTY={
   description:'',
   startDate:'',endDate:'',startTime:'',endTime:'',allDay:false,
   locationType:'',venueName:'',venueAddress:'',
-  registerUrl:'',registerText:'Register',registrationDeadline:'',
+  registerUrl:'',registerText:'Register',
   contactHours:false,approved:false,
   // Recurrence
   isRecurring:false,recurFreq:'weekly',recurWeeklyDays:[],recurMonthlyMode:'weekday',recurMonthlyOrdinal:'1st',recurMonthlyWeekday:'Monday',recurMonthlyDay:'1',recurEnd:'',exceptions:[],
@@ -249,7 +249,6 @@ function serialize(form){
     'All Day':form.allDay?'Yes':'No',
     'Location Type':form.locationType,'Venue Name':form.venueName,'Venue Address':form.venueAddress,
     'Register URL':form.registerUrl,'Register Text':form.registerText||'Register',
-    'Registration Deadline':form.registrationDeadline,
     'Contact Hours':form.contactHours?'Yes':'No',
     'Recurrence Pattern':buildRecurrencePattern(form),'Recurrence End':form.recurEnd,
     'Exceptions':(form.exceptions||[]).join(','),
@@ -268,7 +267,6 @@ function deserialize(rec){
   f.allDay=(rec['All Day']||'').toString().toLowerCase()==='yes';
   f.locationType=rec['Location Type']||'';f.venueName=rec['Venue Name']||'';f.venueAddress=rec['Venue Address']||'';
   f.registerUrl=rec['Register URL']||'';f.registerText=rec['Register Text']||'Register';
-  f.registrationDeadline=(rec['Registration Deadline']||'').substring(0,10);
   f.contactHours=(rec['Contact Hours']||'').toString().toLowerCase()==='yes';
   if(pat){
     f.isRecurring=true;
@@ -527,7 +525,6 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
         <Field>
           <Check value={form.contactHours} onChange={v=>uf('contactHours',v)} label="Includes contact hours" hint="Shows a badge on the calendar card."/>
         </Field>
-        <Field label="Registration deadline" hint="Last day to register (optional)"><Text type="date" value={form.registrationDeadline} onChange={v=>uf('registrationDeadline',v)}/></Field>
       </Section>
 
       <Section label="Confirm & submit" icon={ic.check}>
