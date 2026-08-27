@@ -761,10 +761,7 @@
 
 <a href="#events-container" class="skip-link">Skip to events</a>
 <div class="container">
-  <section class="hero-compact" aria-labelledby="cal-heading" style="padding:10px 20px 12px;border-bottom:1px solid rgba(24,43,60,0.13);display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-  <h1 id="cal-heading" style="font-family:League Spartan,sans-serif;font-weight:800;font-size:20px;line-height:1.2;color:#182b3c;margin:0;">Events &amp; Professional Development Calendar</h1>
-  <span style="font-family:League Spartan,sans-serif;font-size:12px;color:#475569;"><b id="stat-events" style="color:#182b3c;font-weight:800;font-size:16px;">-</b> upcoming</span>
-</section>
+  <section class="hero-compact" aria-labelledby="cal-heading" style="padding:10px 20px 12px;border-bottom:1px solid rgba(24,43,60,0.13);display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;"><h1 id="cal-heading" style="font-family:League Spartan,sans-serif;font-weight:800;font-size:20px;line-height:1.2;color:#182b3c;margin:0;">Events &amp; Professional Development Calendar</h1><span style="font-family:League Spartan,sans-serif;font-size:12px;color:#475569;"><b id="stat-events" style="color:#182b3c;font-weight:800;font-size:16px;">-</b> upcoming</span></section>
 
   <section class="filter-bar">
     <div class="filter-search">
@@ -901,6 +898,8 @@ function parseDate(iso) { const [y,m,d] = iso.split('-').map(Number); return new
 function dayShort(iso) { if(!iso)return''; var d=parseDate(iso).getDay(); return isNaN(d)?'':WEEKDAYS[d]||''; }
 function dayLong(iso) { if(!iso)return''; var d=parseDate(iso).getDay(); return isNaN(d)?'':WEEKDAYS_LONG[d]||''; }
 function monthShort(iso) { if(!iso)return''; var m=parseDate(iso).getMonth(); return isNaN(m)?'':MONTHS[m]||''; }
+function dayNum(iso) { if(!iso)return''; var n=parseDate(iso).getDate(); return isNaN(n)?'':n; }
+function normUrl(u) { if(!u)return'#'; var s=String(u).trim(); if(!s||s==='#')return'#'; if(/^https?:\/\//i.test(s))return s; if(/^mailto:/i.test(s))return s; return 'https://'+s.replace(/^\/+/,''); }
 function monthLong(iso) { return MONTHS_LONG[parseDate(iso).getMonth()]; }
 function dayNum(iso) { const d = parseDate(iso).getDate(); return String(d).padStart(2,'0'); }
 function dateLong(iso) { const d = parseDate(iso); return WEEKDAYS_LONG[d.getDay()] + ', ' + MONTHS_LONG[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
@@ -924,14 +923,14 @@ function filtered() {
 
 function cardBanner(e) {
   return `<div class="card-banner">
-    <span class="b-date">${monthShort(e.date).toUpperCase()} ${parseDate(e.date).getDate()}<span class="pipe">|</span><span class="wd">${dayShort(e.date).toUpperCase()}</span></span>
+    <span class="b-date">${monthShort(e.date).toUpperCase()} ${dayNum(e.date)}<span class="pipe">|</span><span class="wd">${dayShort(e.date).toUpperCase()}</span></span>
     <span class="b-time"><svg class="time-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>${esc(e.time)}</span>
   </div>`;
 }
 // Kept for compatibility with agenda / month / other views that don't use banner
 function dtChip(e) {
   return `<span class="dt-chip">
-    ${monthShort(e.date).toUpperCase()} ${parseDate(e.date).getDate()}
+    ${monthShort(e.date).toUpperCase()} ${dayNum(e.date)}
     <span class="wd">${dayShort(e.date).toUpperCase()}</span>
   </span>`;
 }
@@ -973,7 +972,7 @@ function cardHTML(e) {
 function agendaRowHTML(e) {
   const cluster = getCluster(e.type);
   const isRange = e.end && e.end !== e.date;
-  const dayLabel = isRange ? `${parseDate(e.date).getDate()}–${parseDate(e.end).getDate()}` : parseDate(e.date).getDate();
+  const dayLabel = isRange ? `${dayNum(e.date)}–${dayNum(e.end)}` : dayNum(e.date);
   return `<button class="agenda-row cat-${cluster}" onclick="openModal('${e.id}')">
     <div class="row-date">
       <span class="day-num">${dayLabel}</span>
@@ -1123,7 +1122,7 @@ function openModal(id) {
       <div class="m-fact"><span aria-hidden="true">${USERS_SVG}</span><div><strong>Audience</strong><span class="val">${esc(e.audience)}</span></div></div>
       <div class="m-fact"><span aria-hidden="true">${USER_SVG}</span><div><strong>Contact</strong><span class="val">${esc(c.name)}</span><a href="mailto:${esc(c.email)}" class="m-mail" aria-label="Email ${esc(c.name)}"><span aria-hidden="true">${MAIL_SVG}</span>${esc(c.email)}</a></div></div>
     </div>
-    <a class="m-cta" href="${esc(e.register)}" aria-label="Register for this event (opens new page)">Register <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;stroke-width:2.4;fill:none" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="m-cta" href="${normUrl(e.register)}" target="_blank" rel="noopener" aria-label="Register for this event (opens new page)">Register <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;stroke-width:2.4;fill:none" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <div class="m-meta">Focus area - ${esc(e.focusArea)}</div>
   `;
   scrim.classList.add('open');
