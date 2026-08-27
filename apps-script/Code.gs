@@ -1606,6 +1606,9 @@ function _rowToEvent(row, idx, status) {
   function get(name) {
     return (typeof idx[name] === 'number') ? String(row[idx[name]] || '').trim() : '';
   }
+  function getRaw(name) {
+    return (typeof idx[name] === 'number') ? row[idx[name]] : '';
+  }
   function getBool(name) {
     var v = get(name).toLowerCase();
     return v === 'yes' || v === 'true' || v === '1';
@@ -1615,9 +1618,9 @@ function _rowToEvent(row, idx, status) {
     title: get('Title'),
     focusArea: get('Focus Area'),
     type: get('Type'),
-    startDate: _isoDate(get('Start Date')),
+    startDate: _isoDate(getRaw('Start Date')),
     startTime: get('Start Time'),
-    endDate: _isoDate(get('End Date')) || _isoDate(get('Start Date')),
+    endDate: _isoDate(getRaw('End Date')) || _isoDate(getRaw('Start Date')),
     endTime: get('End Time'),
     allDay: getBool('All Day'),
     locationType: get('Location Type'),
@@ -1633,10 +1636,10 @@ function _rowToEvent(row, idx, status) {
     registerText: get('Register Text') || 'Register',
     materialsUrl: get('Materials URL'),
     recordingUrl: get('Recording URL'),
-    registrationDeadline: _isoDate(get('Registration Deadline')),
+    registrationDeadline: _isoDate(getRaw('Registration Deadline')),
     contactHours: getBool('Contact Hours'),
     recurrencePattern: get('Recurrence Pattern'),
-    recurrenceEnd: _isoDate(get('Recurrence End')),
+    recurrenceEnd: _isoDate(getRaw('Recurrence End')),
     exceptions: get('Exceptions'),
     additionalDates: get('Additional Dates'),
     status: status,

@@ -894,16 +894,16 @@ const MONTHS_LONG = ['January','February','March','April','May','June','July','A
 const WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const WEEKDAYS_LONG = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-function parseDate(iso) { const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d); }
-function dayShort(iso) { if(!iso)return''; var d=parseDate(iso).getDay(); return isNaN(d)?'':WEEKDAYS[d]||''; }
-function dayLong(iso) { if(!iso)return''; var d=parseDate(iso).getDay(); return isNaN(d)?'':WEEKDAYS_LONG[d]||''; }
-function monthShort(iso) { if(!iso)return''; var m=parseDate(iso).getMonth(); return isNaN(m)?'':MONTHS[m]||''; }
-function dayNum(iso) { if(!iso)return''; var n=parseDate(iso).getDate(); return isNaN(n)?'':n; }
+function parseDate(iso) { if(!iso)return new Date(NaN); const [y,m,d] = String(iso).split('-').map(Number); return new Date(y, m-1, d); }
+function isValidISO(iso) { return !!iso && !isNaN(parseDate(iso).getTime()); }
+function dayShort(iso) { if(!isValidISO(iso))return''; return WEEKDAYS[parseDate(iso).getDay()]||''; }
+function dayLong(iso) { if(!isValidISO(iso))return''; return WEEKDAYS_LONG[parseDate(iso).getDay()]||''; }
+function monthShort(iso) { if(!isValidISO(iso))return''; return MONTHS[parseDate(iso).getMonth()]||''; }
+function monthLong(iso) { if(!isValidISO(iso))return''; return MONTHS_LONG[parseDate(iso).getMonth()]||''; }
+function dayNum(iso) { if(!isValidISO(iso))return''; return String(parseDate(iso).getDate()).padStart(2,'0'); }
 function normUrl(u) { if(!u)return'#'; var s=String(u).trim(); if(!s||s==='#')return'#'; var md=s.match(/\]\(([^)]+)\)/); if(md)s=md[1].trim(); if(/^https?:\/\//i.test(s))return s; if(/^mailto:/i.test(s))return s; if(/^www\./i.test(s))return 'https://'+s; return 'https://'+s.replace(/^\/+/,''); }
-function monthLong(iso) { return MONTHS_LONG[parseDate(iso).getMonth()]; }
-function dayNum(iso) { const d = parseDate(iso).getDate(); return String(d).padStart(2,'0'); }
-function dateLong(iso) { const d = parseDate(iso); return WEEKDAYS_LONG[d.getDay()] + ', ' + MONTHS_LONG[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
-function monthYearKey(iso) { const d = parseDate(iso); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
+function dateLong(iso) { if(!isValidISO(iso))return''; const d = parseDate(iso); return WEEKDAYS_LONG[d.getDay()] + ', ' + MONTHS_LONG[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
+function monthYearKey(iso) { if(!isValidISO(iso))return''; const d = parseDate(iso); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 function getCluster(type) { return CLUSTER_OF[type] || 'convening'; }
