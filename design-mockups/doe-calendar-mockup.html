@@ -64,6 +64,13 @@
   button { cursor: pointer; }
 
   /* ─── Portal chrome ─────────────────────────────────── */
+  /* Accessibility utilities */
+  .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  .skip-link { position: absolute; left: 8px; top: -40px; padding: 8px 14px; background: var(--navy); color: var(--warm-white); text-decoration: none; font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.06em; border-radius: 4px; z-index: 200; transition: top 0.15s; }
+  .skip-link:focus { top: 8px; outline: 2px solid var(--teal); outline-offset: 2px; }
+  /* Focus indicators (WCAG 2.4.7) */
+  a:focus-visible, button:focus-visible, [role="button"]:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: 4px; }
+  .card:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
   .doe-bar { background: var(--navy); color: #eee6df; padding: 10px var(--pad); font-family: var(--font-display); font-weight: 600; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; gap: 24px; }
   .doe-bar .crumbs { opacity: 0.65; font-weight: 500; font-size: 12px; }
   .doe-bar .crumbs strong { color: #eee6df; opacity: 1; font-weight: 700; }
@@ -756,6 +763,7 @@
   <div class="crumbs">Home · <strong>Event Calendar</strong></div>
 </div>
 
+<a href="#events-container" class="skip-link">Skip to events</a>
 <div class="container">
   <section class="hero">
     <p class="eyebrow">Maine Department of Education</p>
@@ -772,7 +780,8 @@
     <div class="filter-search">
       <div class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.35-4.35"/></svg>
-        <input type="search" id="search-input" class="search-input" placeholder="Search events by title, description, location, or topic..." autocomplete="off">
+        <label for="search-input" class="visually-hidden">Search events</label>
+        <input type="search" id="search-input" class="search-input" placeholder="Search events by title, description, location, or topic..." autocomplete="off" aria-label="Search events by title, description, location, or topic">
         <button class="search-clear" id="search-clear" aria-label="Clear search" hidden><svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></svg></button>
       </div>
     </div>
@@ -1048,20 +1057,21 @@ function focusChip(e) {
 function cardHTML(e) {
   const tc = typeColor(e.type);
   const styleVars = `--cat-color:${tc.color};--cat-tint:${tc.tint}`;
-  return `<div class="card" style="${styleVars}" onclick="openModal('${e.id}')">
+  const label = `${e.title}, ${e.focusArea}, ${e.type}, ${dateLong(e.date)}, ${e.time}, ${e.location}`;
+  return `<article class="card" style="${styleVars}" role="button" tabindex="0" aria-label="${esc(label)} — press Enter for full details" onclick="openModal('${e.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${e.id}')}">
     ${cardBanner(e)}
     <div class="focus-strip">${esc(e.focusArea)}</div>
     <div class="card-inner">
       <h3 class="card-title">${esc(e.title)}</h3>
-      <div class="card-chips">${typeChip(e)}${e.contactHours ? '<span class="badge-hours"><svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>Contact Hours</span>' : ''}</div>
-      <hr class="card-hr">
+      <div class="card-chips">${typeChip(e)}${e.contactHours ? '<span class="badge-hours" aria-label="Includes contact hours"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>Contact Hours</span>' : ''}</div>
+      <hr class="card-hr" aria-hidden="true">
       <p class="card-desc">${esc(e.desc)}</p>
       <div class="card-foot">
-        <div class="card-loc">${PIN_SVG}<span>${esc(e.location)}</span></div>
-        <button class="btn-cta" onclick="event.stopPropagation();openModal('${e.id}')">Register <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <div class="card-loc"><span aria-hidden="true">${PIN_SVG}</span><span>${esc(e.location)}</span></div>
+        <button class="btn-cta" type="button" aria-label="Register for ${esc(e.title)}" onclick="event.stopPropagation();openModal('${e.id}')">Register <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </div>
     </div>
-  </div>`;
+  </article>`;
 }
 
 function agendaRowHTML(e) {
@@ -1188,38 +1198,67 @@ function updateStats() {
   document.getElementById('stat-types').textContent = typeSet.size;
 }
 
-// ─── MODAL ─────────────────────────────────────────────
+// Accessibility: remember opener so we can return focus on close.
+let _lastFocused = null;
+
 function openModal(id) {
   const e = EVENTS.find(x => x.id === id);
   if (!e) return;
   const cluster = getCluster(e.type);
   const c = contactFor(e);
-  document.getElementById('modal').className = 'modal cat-' + cluster;
-  document.getElementById('modal').innerHTML = `
-    <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></svg></button>
+  _lastFocused = document.activeElement;
+  const scrim = document.getElementById('modal-scrim');
+  scrim.setAttribute('role', 'dialog');
+  scrim.setAttribute('aria-modal', 'true');
+  scrim.setAttribute('aria-labelledby', 'modal-title');
+  const modal = document.getElementById('modal');
+  modal.className = 'modal cat-' + cluster;
+  modal.innerHTML = `
+    <button class="modal-close" type="button" aria-label="Close" onclick="closeModal()"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M6 18L18 6"/></svg></button>
     <div class="m-title-block">
       ${focusChip(e)}
-      <h3>${esc(e.title)}</h3>
+      <h3 id="modal-title">${esc(e.title)}</h3>
       <div class="m-chips">${typeChip(e)}</div>
     </div>
     <div class="m-desc">${e.long || esc(e.desc)}</div>
     <div class="m-facts">
-      <div class="m-fact">${CLOCK_SVG}<div><strong>When</strong><span class="val">${dateLong(e.date)} · ${esc(e.time)}</span></div></div>
-      <div class="m-fact">${PIN_SVG}<div><strong>Where</strong><span class="val">${esc(e.venueName || e.location)}${e.venueAddress ? '<br><span style="font-weight:500;font-size:13px;opacity:0.85">' + esc(e.venueAddress) + '</span>' : ''}</span></div></div>
-      <div class="m-fact">${USERS_SVG}<div><strong>Audience</strong><span class="val">${esc(e.audience)}</span></div></div>
-      <div class="m-fact">${USER_SVG}<div><strong>Contact</strong><span class="val">${esc(c.name)}</span><a href="mailto:${esc(c.email)}" class="m-mail">${MAIL_SVG}${esc(c.email)}</a></div></div>
+      <div class="m-fact"><span aria-hidden="true">${CLOCK_SVG}</span><div><strong>When</strong><span class="val">${dateLong(e.date)} - ${esc(e.time)}</span></div></div>
+      <div class="m-fact"><span aria-hidden="true">${PIN_SVG}</span><div><strong>Where</strong><span class="val">${esc(e.venueName || e.location)}${e.venueAddress ? '<br><span style="font-weight:500;font-size:13px;opacity:0.85">' + esc(e.venueAddress) + '</span>' : ''}</span></div></div>
+      <div class="m-fact"><span aria-hidden="true">${USERS_SVG}</span><div><strong>Audience</strong><span class="val">${esc(e.audience)}</span></div></div>
+      <div class="m-fact"><span aria-hidden="true">${USER_SVG}</span><div><strong>Contact</strong><span class="val">${esc(c.name)}</span><a href="mailto:${esc(c.email)}" class="m-mail" aria-label="Email ${esc(c.name)}"><span aria-hidden="true">${MAIL_SVG}</span>${esc(c.email)}</a></div></div>
     </div>
-    <a class="m-cta" href="${esc(e.register)}">Register <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;stroke-width:2.4;fill:none"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <div class="m-meta">Focus area · ${esc(e.focusArea)}</div>
+    <a class="m-cta" href="${esc(e.register)}" aria-label="Register for this event (opens new page)">Register <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;stroke-width:2.4;fill:none" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <div class="m-meta">Focus area - ${esc(e.focusArea)}</div>
   `;
-  document.getElementById('modal-scrim').classList.add('open');
+  scrim.classList.add('open');
   document.body.style.overflow = 'hidden';
+  // Move focus into the modal (close button is a safe landing).
+  setTimeout(() => modal.querySelector('.modal-close')?.focus(), 0);
 }
 function closeModal() {
   document.getElementById('modal-scrim').classList.remove('open');
   document.body.style.overflow = '';
+  // Return focus to whatever triggered the modal.
+  if (_lastFocused && typeof _lastFocused.focus === 'function') {
+    _lastFocused.focus();
+  }
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Global keyboard handler for modal: Escape closes, Tab is trapped within.
+document.addEventListener('keydown', (e) => {
+  const scrim = document.getElementById('modal-scrim');
+  if (!scrim || !scrim.classList.contains('open')) return;
+  if (e.key === 'Escape') { e.preventDefault(); closeModal(); return; }
+  if (e.key === 'Tab') {
+    const modal = document.getElementById('modal');
+    const focusable = modal.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"]), input, select, textarea');
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
 
 // ─── FILTER WIRING ─────────────────────────────────────
 function populateFocusSelect() {
