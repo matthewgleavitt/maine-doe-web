@@ -899,7 +899,7 @@ function dayShort(iso) { if(!iso)return''; var d=parseDate(iso).getDay(); return
 function dayLong(iso) { if(!iso)return''; var d=parseDate(iso).getDay(); return isNaN(d)?'':WEEKDAYS_LONG[d]||''; }
 function monthShort(iso) { if(!iso)return''; var m=parseDate(iso).getMonth(); return isNaN(m)?'':MONTHS[m]||''; }
 function dayNum(iso) { if(!iso)return''; var n=parseDate(iso).getDate(); return isNaN(n)?'':n; }
-function normUrl(u) { if(!u)return'#'; var s=String(u).trim(); if(!s||s==='#')return'#'; if(/^https?:\/\//i.test(s))return s; if(/^mailto:/i.test(s))return s; return 'https://'+s.replace(/^\/+/,''); }
+function normUrl(u) { if(!u)return'#'; var s=String(u).trim(); if(!s||s==='#')return'#'; var md=s.match(/\]\(([^)]+)\)/); if(md)s=md[1].trim(); if(/^https?:\/\//i.test(s))return s; if(/^mailto:/i.test(s))return s; if(/^www\./i.test(s))return 'https://'+s; return 'https://'+s.replace(/^\/+/,''); }
 function monthLong(iso) { return MONTHS_LONG[parseDate(iso).getMonth()]; }
 function dayNum(iso) { const d = parseDate(iso).getDate(); return String(d).padStart(2,'0'); }
 function dateLong(iso) { const d = parseDate(iso); return WEEKDAYS_LONG[d.getDay()] + ', ' + MONTHS_LONG[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
