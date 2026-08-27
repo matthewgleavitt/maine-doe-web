@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=League+Spartan:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Events Tracker | Maine DOE Communications Portal</title>
 <style>
@@ -11,13 +12,16 @@
 body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
-.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
-.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#a8bdd060;border-radius:4px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1)}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926}
 .portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
 .portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500}
-.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .sep{color:#475569}
 .portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+.ql-toolbar{border-top-left-radius:8px;border-top-right-radius:8px;border-color:#a8bdd050 !important}
+.ql-container{border-bottom-left-radius:8px;border-bottom-right-radius:8px;border-color:#a8bdd050 !important;font-family:'DM Sans',sans-serif;font-size:14px;min-height:140px}
+.ql-editor{min-height:140px}
 </style>
 </head>
 <body>
@@ -26,432 +30,720 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#18
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 <script type="text/babel">
-const {useState,useEffect,useMemo} = React;
+const {useState,useEffect,useMemo,useRef} = React;
 
-const Sv=({d,size=20,color='currentColor',style})=>(
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+const API='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
+const CAL_URL='https://www.maine.gov/doe/calendar';
+const B={navy:'#182b3c',navy2:'#274f73',teal:'#42c3f7',tealInk:'#0d7ba0',tealTint:'#d5f0fb',wh:'#ffffff',warm:'#f5eee5',ink:'#182b3c',ink2:'#1e2f42',ink3:'#475569',border:'#a8bdd0',green:'#16a34a',rust:'#8a2e13',mint:'#3f7f5e',rule:'rgba(24,43,60,0.13)'};
+
+const FOCUS_AREAS=['Adult Education','Assessment','Attendance & Engagement','Career & Technical Education','Child Nutrition','Data','Early Learning','Educator Supports','Extended Learning','Federal Programs','Higher Education','Home Instruction','Instructional Supports','Interdisciplinary Instruction','Multilingual Learning','Outdoor Education','Policy/Rulemaking','School Climate','School Facilities','School Finance','School Safety','School Health','Special Services & Inclusive Education','Special & Inclusive Education','Student Supports','Technology & Learning','Transition'];
+const EVENT_TYPES=['Conference','Discussion Group','Information Session','Office Hours','Public Hearing','Student Opportunity','Training','Webinar','Workshop'];
+const WEEKDAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const ORDINALS=['1st','2nd','3rd','4th','Last'];
+const ST={Received:{bg:'#dbeafe',color:'#1e40af',border:'#93c5fd'},Published:{bg:'#d1fae5',color:'#065f46',border:'#6ee7b7'},Cancelled:{bg:'#fee2e2',color:'#991b1b',border:'#fca5a5'},Draft:{bg:'#f1f5f9',color:'#475569',border:'#cbd5e1'}};
+
+const TYPE_COLOR={
+  'Webinar':{c:'#274f73',t:'#d5dfe9'},'Training':{c:'#8a2e13',t:'#f0d9d0'},'Workshop':{c:'#a86018',t:'#f4e3cd'},
+  'Information Session':{c:'#4a6a80',t:'#dce4ec'},'Conference':{c:'#182b3c',t:'#c9d3dc'},'Discussion Group':{c:'#6b3a5a',t:'#e8dae5'},
+  'Office Hours':{c:'#3f7f5e',t:'#d5ecdd'},'Public Hearing':{c:'#a63c1e',t:'#f5d4c9'},'Student Opportunity':{c:'#0d7ba0',t:'#d5f0fb'}
+};
+
+// ---- SVG helper + icons ----
+const Sv=({d,size=20,c='currentColor',s})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...s}}>
     {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
   </svg>
 );
-
 const ic={
   cal:["M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z","M16 2v4","M8 2v4","M3 10h18"],
-  plus:["M12 5v14","M5 12h14"],
-  clock:["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 6v6l4 2"],
-  check:["M22 11.08V12a10 10 0 11-5.93-9.14","M22 4L12 14.01l-3-3"],
-  tick:["M20 6L9 17l-5-5"],
-  play:["M5 3l14 9-14 9V3z"],
-  search:"M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",
-  x:["M18 6L6 18","M6 6l12 12"],
+  plus:["M12 5v14","M5 12h14"],clock:["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 6v6l4 2"],
+  check:"M20 6L9 17l-5-5",tick:"M20 6L9 17l-5-5",play:"M5 3l14 9-14 9V3z",
+  search:"M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",x:["M18 6L6 18","M6 6l12 12"],
   ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
-  spin:["M12 2v4","M12 18v4","M4.93 4.93l2.83 2.83","M16.24 16.24l2.83 2.83","M2 12h4","M18 12h4"],
-  map:["M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z","M12 13a3 3 0 100-6 3 3 0 000 6z"],
-  globe:["M12 22a10 10 0 100-20 10 10 0 000 20z","M2 12h20"],
-  users:["M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2","M9 11a4 4 0 100-8 4 4 0 000 8z","M23 21v-2a4 4 0 00-3-3.87","M16 3.13a4 4 0 010 7.75"],
-  folder:["M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"],
+  pin:["M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z","M12 13a3 3 0 100-6 3 3 0 000 6z"],
+  users:["M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2","M9 11a4 4 0 100-8 4 4 0 000 8z"],
+  user:["M12 12a4 4 0 100-8 4 4 0 000 8z","M4 20c1-4 4-6 8-6s7 2 8 6"],
+  mail:["M3 5h18v14H3z","M3 7l9 6 9-6"],phone:"M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z",
+  trash:["M3 6h18","M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2","M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"],
+  edit:["M12 20h9","M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"],
+  chev:"M6 9l6 6 6-6",left:"M15 18l-6-6 6-6",right:"M9 18l6-6-6-6",
+  info:["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 16v-4","M12 8h.01"],
+  warn:["M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z","M12 9v4","M12 17h.01"],
+  hours:"M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z",
+  lock:["M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z","M7 11V7a5 5 0 0110 0v4"],
+  save:["M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z","M17 21v-8H7v8","M7 3v5h8"],
+  repeat:["M17 1l4 4-4 4","M3 11V9a4 4 0 014-4h14","M7 23l-4-4 4-4","M21 13v2a4 4 0 01-4 4H3"],
 };
 
-const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',green:'#16a34a'};
-const API='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
-const CAL_URL='https://www.maine.gov/doe/calendar';
-
-const ST={Received:{bg:'#dbeafe',color:'#1e40af',border:'#93c5fd'},Processing:{bg:'#fef3c7',color:'#92400e',border:'#fcd34d'},Complete:{bg:'#d1fae5',color:'#065f46',border:'#6ee7b7'}};
-
-const FOCUS_AREAS=['Adult Education','Assessment','Attendance & Engagement','Career & Technical Education','Child Nutrition','Data','Early Learning','Educator Supports','Extended Learning','Federal Programs','Higher Education','Home Instruction','Instructional Supports','Interdisciplinary Instruction','Multilingual Learning','Outdoor Education','Policy/Rulemaking','School Climate','School Facilities','School Finance','School Safety','School Health','Special Services & Inclusive Education','Technology & Learning','Transition'];
-const EVENT_TYPES=['Conference','Discussion Group','Information Session','Office Hours','Public Hearing','Student Opportunity','Training','Webinar','Workshop'];
-
-function Input({label,required,hint,children}){
-  return <div style={{marginBottom:14}}>
-    <label style={{display:'block',fontSize:12,fontWeight:700,color:B.navy,marginBottom:5,textTransform:'uppercase',letterSpacing:'.03em'}}>{label}{required&&' *'}</label>
-    {children}
-    {hint&&<div style={{fontSize:11,color:B.txtMute,marginTop:4,fontWeight:500}}>{hint}</div>}
+// ---- Layout components ----
+function Card({children,style,pad=24}){
+  return <div style={{background:B.wh,borderRadius:14,border:`1px solid ${B.rule}`,padding:pad,boxShadow:'0 2px 4px rgba(24,43,60,0.04)',...style}}>{children}</div>;
+}
+function Section({label,icon,children}){
+  return <div style={{marginBottom:28}}>
+    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:14,paddingBottom:10,borderBottom:`1px solid ${B.rule}`}}>
+      {icon&&<Sv d={icon} size={16} c={B.tealInk}/>}
+      <h3 style={{fontFamily:'League Spartan',fontWeight:800,fontSize:16,letterSpacing:'.06em',textTransform:'uppercase',color:B.navy,margin:0}}>{label}</h3>
+    </div>
+    <div>{children}</div>
   </div>;
 }
-
-function Field({value,onChange,placeholder,type}){
-  const s={width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:B.txt,outline:'none',background:B.wh};
-  const f=e=>e.currentTarget.style.borderColor=B.teal;
-  const b=e=>e.currentTarget.style.borderColor=`${B.border}30`;
-  if(type==='textarea') return <textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={{...s,resize:'vertical',minHeight:100}} onFocus={f} onBlur={b}/>;
-  return <input type={type||'text'} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={f} onBlur={b}/>;
+function Row({children,cols,gap=12}){
+  return <div style={{display:'grid',gridTemplateColumns:cols||'1fr',gap,marginBottom:12}}>{children}</div>;
 }
-
-function Select({value,onChange,options,placeholder}){
-  return <select value={value} onChange={e=>onChange(e.target.value)} style={{width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:value?B.txt:B.txtMute,background:B.wh,cursor:'pointer',outline:'none'}}>
+function Field({label,required,hint,error,children}){
+  return <div>
+    {label&&<label style={{display:'block',fontSize:11,fontWeight:700,color:B.navy,marginBottom:6,textTransform:'uppercase',letterSpacing:'.06em'}}>{label}{required&&<span style={{color:B.rust,marginLeft:3}}>*</span>}</label>}
+    {children}
+    {hint&&<div style={{fontSize:11,color:B.ink3,marginTop:5,fontWeight:500}}>{hint}</div>}
+    {error&&<div style={{fontSize:11,color:B.rust,marginTop:5,fontWeight:600}}>{error}</div>}
+  </div>;
+}
+const inputSty={width:'100%',padding:'10px 14px',borderRadius:8,border:`1px solid ${B.border}50`,fontSize:14,fontFamily:'inherit',color:B.ink,outline:'none',background:B.wh,transition:'border-color .15s'};
+function Text({value,onChange,placeholder,type,max}){
+  return <input type={type||'text'} value={value||''} onChange={e=>onChange(e.target.value)} placeholder={placeholder} maxLength={max}
+    style={inputSty} onFocus={e=>e.currentTarget.style.borderColor=B.teal} onBlur={e=>e.currentTarget.style.borderColor=`${B.border}50`}/>;
+}
+function TextArea({value,onChange,placeholder,rows=3}){
+  return <textarea value={value||''} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={rows}
+    style={{...inputSty,resize:'vertical',minHeight:60}} onFocus={e=>e.currentTarget.style.borderColor=B.teal} onBlur={e=>e.currentTarget.style.borderColor=`${B.border}50`}/>;
+}
+function Sel({value,onChange,options,placeholder}){
+  return <select value={value||''} onChange={e=>onChange(e.target.value)} style={{...inputSty,cursor:'pointer'}}>
     <option value="">{placeholder||'Select...'}</option>
     {options.map(o=><option key={o} value={o}>{o}</option>)}
   </select>;
 }
-
-function App(){
-  const [data,setData]=useState([]);
-  const [loading,setLoading]=useState(true);
-  const [search,setSearch]=useState('');
-  const [filter,setFilter]=useState('');
-  const [expanded,setExpanded]=useState(null);
-  const [showForm,setShowForm]=useState(false);
-  const [submitting,setSubmitting]=useState(false);
-  const [submitMsg,setSubmitMsg]=useState(null);
-  const [completeModal,setCompleteModal]=useState(null);
-  const [completing,setCompleting]=useState(false);
-  const emptyForm={requestor:'',email:'',focus:'',eventTitle:'',eventType:'',dateTime:'',audience:'',description:'',location:'',regLink:'',address:'',coincides:'',notes:'',proofread:false};
-  const [form,setForm]=useState(emptyForm);
-  const uf=(k,v)=>setForm(p=>({...p,[k]:v}));
-
-  async function load(){
-    try{const r=await fetch(API+'?type=events');const j=await r.json();setData(j.rows||[]);}
-    catch(e){}
-    setLoading(false);
-  }
-  useEffect(()=>{load();},[]);
-
-  const stats=useMemo(()=>({
-    total:data.length,
-    received:data.filter(s=>s.status==='Received').length,
-    processing:data.filter(s=>s.status==='Processing').length,
-    complete:data.filter(s=>s.status==='Complete').length,
-  }),[data]);
-
-  const filtered=useMemo(()=>{
-    let r=data;
-    if(search){const q=search.toLowerCase();r=r.filter(s=>(s.eventTitle||'').toLowerCase().includes(q)||(s.requestor||'').toLowerCase().includes(q)||(s.focus||'').toLowerCase().includes(q)||(s.eventType||'').toLowerCase().includes(q));}
-    if(filter)r=r.filter(s=>s.status===filter);
-    return r;
-  },[data,search,filter]);
-
-  async function handleSubmit(){
-    if(!form.requestor||!form.email||!form.eventTitle||!form.focus||!form.eventType||!form.dateTime||!form.audience||!form.description||!form.location){
-      setSubmitMsg({ok:false,t:'Please fill in all required fields.'});return;}
-    if(!form.proofread){setSubmitMsg({ok:false,t:'Please acknowledge that you have proofread all content.'});return;}
-    setSubmitting(true);setSubmitMsg(null);
-    try{
-      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'event_submit',...form})});
-      const j=await r.json();
-      if(j.success){
-        // Optimistic insert — add to local state immediately
-        const now=new Date();
-        const newRow={
-          requestor:form.requestor,email:form.email,focus:form.focus,
-          eventTitle:form.eventTitle,eventType:form.eventType,
-          dateTime:form.dateTime,location:form.location,
-          description:form.description,audience:form.audience,
-          regLink:form.regLink,address:form.address,
-          coincides:form.coincides,notes:form.notes,
-          status:'Received',
-          dateSubmitted:now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
-        };
-        setData(prev=>[newRow,...prev]);
-        setSubmitMsg({ok:true,t:'Event submitted successfully!'});
-        setForm(emptyForm);
-        setTimeout(()=>{setShowForm(false);setSubmitMsg(null);},1500);
-      }
-      else setSubmitMsg({ok:false,t:j.error||'Something went wrong.'});
-    }catch(e){setSubmitMsg({ok:false,t:e.message});}
-    setSubmitting(false);
-  }
-
-  async function handleComplete(){
-    if(!completeModal?.calUrl)return;
-    setCompleting(true);
-    try{
-      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'event_complete',eventTitle:completeModal.eventTitle,requestor:completeModal.requestor,calUrl:completeModal.calUrl})});
-      const j=await r.json();
-      if(j.success&&j.email){
-        const subj=encodeURIComponent('Your event is now on the Maine DOE Calendar: '+completeModal.eventTitle);
-        const body=encodeURIComponent('Hi '+(j.name||completeModal.requestor)+',\r\n\r\nYour event "'+completeModal.eventTitle+'" has been added to the Maine DOE Professional Development Calendar and can be viewed here:\r\n\r\n'+completeModal.calUrl+'\r\n\r\nPlease review and let me know if there are any edits needed.\r\n\r\nThanks,\r\nMatt Leavitt\r\nWebsite & Technology Coordinator\r\nMaine Department of Education');
-        const a=document.createElement('a');a.href='mailto:'+encodeURIComponent(j.email)+'?subject='+subj+'&body='+body;a.click();
-      }
-      await load();setCompleteModal(null);
-    }catch(e){console.error(e);}
-    setCompleting(false);
-  }
-
-  if(loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'80vh',gap:12}}>
-    <Sv d={ic.spin} size={24} color={B.teal} style={{animation:'spin 1s linear infinite'}}/><span style={{color:B.txtSec,fontSize:14,fontWeight:600}}>Loading events...</span>
+function Check({value,onChange,label,hint}){
+  return <label style={{display:'flex',alignItems:'flex-start',gap:10,cursor:'pointer',padding:'8px 12px',borderRadius:8,background:value?B.tealTint:'transparent',border:`1px solid ${value?B.teal+'40':B.rule}`}}>
+    <input type="checkbox" checked={!!value} onChange={e=>onChange(e.target.checked)} style={{marginTop:2,cursor:'pointer',accentColor:B.tealInk}}/>
+    <div>
+      <div style={{fontSize:13,fontWeight:600,color:B.ink}}>{label}</div>
+      {hint&&<div style={{fontSize:11,color:B.ink3,marginTop:3}}>{hint}</div>}
+    </div>
+  </label>;
+}
+function BtnGroup({value,onChange,options}){
+  return <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+    {options.map(o=>{
+      const sel=value===o;
+      return <button key={o} type="button" onClick={()=>onChange(o)} style={{padding:'8px 14px',borderRadius:8,border:`1px solid ${sel?B.tealInk:B.border+'60'}`,background:sel?B.tealInk:B.wh,color:sel?B.wh:B.ink2,fontFamily:'inherit',fontWeight:sel?700:500,fontSize:13,cursor:'pointer'}}>{o}</button>;
+    })}
   </div>;
+}
+function Btn({onClick,children,variant='primary',size='md',disabled,icon,style}){
+  const base={fontFamily:'inherit',fontWeight:700,fontSize:size==='sm'?12:14,padding:size==='sm'?'8px 14px':'12px 20px',borderRadius:8,cursor:disabled?'not-allowed':'pointer',border:'none',display:'inline-flex',alignItems:'center',gap:8,letterSpacing:'.03em',opacity:disabled?0.5:1,transition:'all .15s'};
+  const v={primary:{background:B.navy,color:B.wh},teal:{background:B.tealInk,color:B.wh},ghost:{background:'transparent',color:B.ink2,border:`1px solid ${B.border}60`},danger:{background:B.rust,color:B.wh},success:{background:B.green,color:B.wh}};
+  return <button type="button" onClick={onClick} disabled={disabled} style={{...base,...v[variant],...style}}>{icon&&<Sv d={icon} size={14}/>}{children}</button>;
+}
+function Callout({tone='info',children,title}){
+  const tones={info:{bg:B.tealTint,br:B.tealInk,c:B.navy},warn:{bg:'#fef3c7',br:'#d97706',c:'#78350f'},err:{bg:'#fee2e2',br:B.rust,c:'#7f1d1d'},ok:{bg:'#d1fae5',br:B.green,c:'#065f46'}};
+  const t=tones[tone];
+  return <div style={{background:t.bg,borderLeft:`3px solid ${t.br}`,padding:'12px 14px',borderRadius:6,color:t.c,fontSize:13,lineHeight:1.5,margin:'12px 0'}}>
+    {title&&<div style={{fontWeight:700,marginBottom:4}}>{title}</div>}
+    {children}
+  </div>;
+}
+function Modal({open,onClose,title,children,wide}){
+  if(!open) return null;
+  return <div onClick={e=>e.target===e.currentTarget&&onClose()} style={{position:'fixed',inset:0,background:'rgba(10,21,32,0.7)',backdropFilter:'blur(3px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20,animation:'fadeIn .2s'}}>
+    <div style={{background:B.wh,borderRadius:14,maxWidth:wide?1080:640,width:'100%',maxHeight:'92vh',overflowY:'auto',position:'relative',boxShadow:'0 30px 80px rgba(0,0,0,0.4)'}}>
+      <div style={{position:'sticky',top:0,background:B.wh,borderBottom:`1px solid ${B.rule}`,padding:'18px 24px',display:'flex',justifyContent:'space-between',alignItems:'center',zIndex:1}}>
+        <h2 style={{fontFamily:'League Spartan',fontSize:22,fontWeight:800,margin:0,color:B.navy}}>{title}</h2>
+        <button onClick={onClose} style={{background:'transparent',border:0,cursor:'pointer',padding:8,borderRadius:6,color:B.ink3}}><Sv d={ic.x} size={20}/></button>
+      </div>
+      <div style={{padding:'20px 24px 24px'}}>{children}</div>
+    </div>
+  </div>;
+}
 
-  return <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px',animation:'fadeIn 0.3s ease'}}>
+// ---- Quill wrapper ----
+function QuillEditor({value,onChange}){
+  const holder=useRef(null);
+  const quill=useRef(null);
+  useEffect(()=>{
+    if(!holder.current||quill.current) return;
+    quill.current=new Quill(holder.current,{
+      theme:'snow',
+      placeholder:'Describe the event — who it\'s for, what people will learn, why they should attend...',
+      modules:{toolbar:[['bold','italic','underline'],[{'list':'ordered'},{'list':'bullet'}],['link'],['clean']]}
+    });
+    if(value) quill.current.clipboard.dangerouslyPasteHTML(value);
+    quill.current.on('text-change',()=>{
+      const html=quill.current.root.innerHTML;
+      onChange(html==='<p><br></p>'?'':html);
+    });
+  },[]);
+  useEffect(()=>{
+    if(!quill.current) return;
+    const cur=quill.current.root.innerHTML;
+    const norm=v=>(v||'').replace(/\s+/g,'').replace('<p><br></p>','');
+    if(norm(cur)!==norm(value||'')) quill.current.clipboard.dangerouslyPasteHTML(value||'');
+  },[value]);
+  return <div style={{background:B.wh}}><div ref={holder}/></div>;
+}
 
-    {/* HERO */}
-    <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:32,marginBottom:28,position:'relative',overflow:'hidden'}}>
-      <div style={{position:'absolute',inset:0,pointerEvents:'none',backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
-      <div style={{position:'relative',zIndex:1}}>
-        <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:20}}>
-          <div style={{width:48,height:48,borderRadius:14,background:'linear-gradient(135deg,#f59e0b,#d97706)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 16px rgba(245,158,11,0.3)'}}>
-            <Sv d={ic.cal} size={24} color="#fff"/>
-          </div>
-          <div>
-            <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0}}>Events Tracker</h1>
-            <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Submit and track DOE calendar event requests</p>
-          </div>
+// ---- Utils ----
+const EMPTY={
+  contactName:'',contactEmail:'',contactPhone:'',
+  focusArea:'',eventType:'',title:'',intendedAudience:'',
+  description:'',descriptionTeaser:'',
+  startDate:'',endDate:'',startTime:'',endTime:'',allDay:false,
+  locationType:'',venueName:'',venueAddress:'',
+  registerUrl:'',registerText:'Register',materialsUrl:'',registrationDeadline:'',
+  contactHours:false,coincides:'',specialNotes:'',proofread:false,
+  // Recurrence
+  isRecurring:false,recurFreq:'weekly',recurWeeklyDays:[],recurMonthlyMode:'weekday',recurMonthlyOrdinal:'1st',recurMonthlyWeekday:'Monday',recurMonthlyDay:'1',recurEnd:'',exceptions:[],
+  // Additional dates
+  hasAdditionalDates:false,additionalDates:[],
+};
+
+function autoTeaser(html,max=180){
+  const t=(html||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+  if(t.length<=max) return t;
+  const cut=t.slice(0,max).replace(/\s+\S*$/,'');
+  return cut+'...';
+}
+function to12h(t){
+  if(!t) return '';
+  const [H,M]=t.split(':').map(Number);
+  const ap=H>=12?'PM':'AM';
+  const h=(H%12)||12;
+  return `${h}:${String(M).padStart(2,'0')} ${ap}`;
+}
+function from12h(t){
+  if(!t) return '';
+  const m=String(t).trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+  if(!m) return '';
+  let H=parseInt(m[1],10);
+  if((m[3]||'').toUpperCase()==='PM'&&H<12) H+=12;
+  if((m[3]||'').toUpperCase()==='AM'&&H===12) H=0;
+  return `${String(H).padStart(2,'0')}:${m[2]}`;
+}
+function buildRecurrencePattern(form){
+  if(!form.isRecurring) return '';
+  if(form.recurFreq==='weekly'){
+    return 'weekly:'+form.recurWeeklyDays.map(d=>d.toLowerCase()).join(',');
+  }
+  if(form.recurFreq==='monthly-weekday'){
+    return `monthly:${form.recurMonthlyOrdinal.toLowerCase()}-${form.recurMonthlyWeekday.toLowerCase()}`;
+  }
+  if(form.recurFreq==='monthly-date'){
+    return `monthly:${form.recurMonthlyDay}`;
+  }
+  if(form.recurFreq==='daily'){
+    return 'daily';
+  }
+  return '';
+}
+function serialize(form){
+  return {
+    'Contact Name':form.contactName,'Contact Email':form.contactEmail,'Contact Phone':form.contactPhone,
+    'Focus Area':form.focusArea,'Type':form.eventType,'Title':form.title,
+    'Intended Audience':form.intendedAudience,
+    'Description':form.description,'Description Teaser':form.descriptionTeaser||autoTeaser(form.description),
+    'Start Date':form.startDate,'End Date':form.endDate||form.startDate,
+    'Start Time':to12h(form.startTime),'End Time':to12h(form.endTime),
+    'All Day':form.allDay?'Yes':'No',
+    'Location Type':form.locationType,'Venue Name':form.venueName,'Venue Address':form.venueAddress,
+    'Register URL':form.registerUrl,'Register Text':form.registerText||'Register',
+    'Materials URL':form.materialsUrl,'Registration Deadline':form.registrationDeadline,
+    'Contact Hours':form.contactHours?'Yes':'No',
+    'Recurrence Pattern':buildRecurrencePattern(form),'Recurrence End':form.recurEnd,
+    'Exceptions':(form.exceptions||[]).join(','),
+    'Additional Dates':form.hasAdditionalDates&&form.additionalDates.length?JSON.stringify(form.additionalDates):'',
+    'Coincides':form.coincides,'Special Notes':form.specialNotes,
+  };
+}
+function deserialize(rec){
+  const pat=(rec['Recurrence Pattern']||'').toLowerCase().trim();
+  const f={...EMPTY};
+  f.contactName=rec['Contact Name']||'';f.contactEmail=rec['Contact Email']||'';f.contactPhone=rec['Contact Phone']||'';
+  f.focusArea=rec['Focus Area']||'';f.eventType=rec['Type']||'';f.title=rec['Title']||'';
+  f.intendedAudience=rec['Intended Audience']||'';
+  f.description=rec['Description']||'';f.descriptionTeaser=rec['Description Teaser']||'';
+  f.startDate=(rec['Start Date']||'').substring(0,10);f.endDate=(rec['End Date']||'').substring(0,10);
+  f.startTime=from12h(rec['Start Time']);f.endTime=from12h(rec['End Time']);
+  f.allDay=(rec['All Day']||'').toString().toLowerCase()==='yes';
+  f.locationType=rec['Location Type']||'';f.venueName=rec['Venue Name']||'';f.venueAddress=rec['Venue Address']||'';
+  f.registerUrl=rec['Register URL']||'';f.registerText=rec['Register Text']||'Register';
+  f.materialsUrl=rec['Materials URL']||'';f.registrationDeadline=(rec['Registration Deadline']||'').substring(0,10);
+  f.contactHours=(rec['Contact Hours']||'').toString().toLowerCase()==='yes';
+  f.coincides=rec['Coincides']||'';f.specialNotes=rec['Special Notes']||'';
+  if(pat){
+    f.isRecurring=true;
+    if(pat==='daily'){f.recurFreq='daily'}
+    else if(pat.startsWith('weekly:')){f.recurFreq='weekly';f.recurWeeklyDays=pat.slice(7).split(',').map(d=>d.charAt(0).toUpperCase()+d.slice(1))}
+    else if(pat.startsWith('monthly:')){
+      const spec=pat.slice(8);
+      if(/^\d+$/.test(spec)){f.recurFreq='monthly-date';f.recurMonthlyDay=spec}
+      else{const [ord,dow]=spec.split('-');f.recurFreq='monthly-weekday';f.recurMonthlyOrdinal=ord.charAt(0).toUpperCase()+ord.slice(1);f.recurMonthlyWeekday=dow.charAt(0).toUpperCase()+dow.slice(1)}
+    }
+    f.recurEnd=(rec['Recurrence End']||'').substring(0,10);
+    f.exceptions=(rec['Exceptions']||'').split(',').map(x=>x.trim()).filter(Boolean);
+  }
+  const adds=rec['Additional Dates'];
+  if(adds){try{const arr=JSON.parse(adds);if(Array.isArray(arr)&&arr.length){f.hasAdditionalDates=true;f.additionalDates=arr}}catch(e){}}
+  return f;
+}
+
+// ---- Recurrence UI ----
+function RecurrenceSection({form,uf}){
+  if(!form.isRecurring) return null;
+  return <div style={{background:'#f8fafc',padding:16,borderRadius:10,marginTop:10,border:`1px solid ${B.rule}`}}>
+    <Row cols="200px 1fr">
+      <Field label="Frequency">
+        <Sel value={form.recurFreq} onChange={v=>uf('recurFreq',v)} options={['daily','weekly','monthly-weekday','monthly-date']}/>
+      </Field>
+      <Field label="Recurring end date" hint="Last date the pattern runs">
+        <Text type="date" value={form.recurEnd} onChange={v=>uf('recurEnd',v)}/>
+      </Field>
+    </Row>
+    {form.recurFreq==='weekly'&&<Field label="On which day(s)">
+      <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+        {WEEKDAYS.map(d=>{
+          const on=form.recurWeeklyDays.includes(d);
+          return <button key={d} type="button" onClick={()=>uf('recurWeeklyDays',on?form.recurWeeklyDays.filter(x=>x!==d):[...form.recurWeeklyDays,d])}
+            style={{padding:'8px 14px',borderRadius:8,border:`1px solid ${on?B.tealInk:B.border+'60'}`,background:on?B.tealInk:B.wh,color:on?B.wh:B.ink2,fontFamily:'inherit',fontSize:13,fontWeight:on?700:500,cursor:'pointer'}}>{d.slice(0,3)}</button>;
+        })}
+      </div>
+    </Field>}
+    {form.recurFreq==='monthly-weekday'&&<Row cols="1fr 1fr">
+      <Field label="Which occurrence"><Sel value={form.recurMonthlyOrdinal} onChange={v=>uf('recurMonthlyOrdinal',v)} options={ORDINALS}/></Field>
+      <Field label="Weekday"><Sel value={form.recurMonthlyWeekday} onChange={v=>uf('recurMonthlyWeekday',v)} options={WEEKDAYS}/></Field>
+    </Row>}
+    {form.recurFreq==='monthly-date'&&<Field label="Day of month" hint="1–31">
+      <Text type="number" value={form.recurMonthlyDay} onChange={v=>uf('recurMonthlyDay',v)}/>
+    </Field>}
+    <Field label="Skip these specific dates" hint="Holidays, one-off cancellations">
+      <ExceptionsList value={form.exceptions} onChange={v=>uf('exceptions',v)}/>
+    </Field>
+  </div>;
+}
+function ExceptionsList({value,onChange}){
+  const [add,setAdd]=useState('');
+  return <div>
+    <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:8}}>
+      {value.map(d=><span key={d} style={{display:'inline-flex',alignItems:'center',gap:6,padding:'5px 10px',background:B.warm,borderRadius:6,fontSize:12,fontWeight:600,color:B.ink}}>
+        {d}<button type="button" onClick={()=>onChange(value.filter(x=>x!==d))} style={{background:'transparent',border:0,cursor:'pointer',padding:0,color:B.ink3,display:'flex'}}><Sv d={ic.x} size={12}/></button>
+      </span>)}
+    </div>
+    <div style={{display:'flex',gap:6}}>
+      <input type="date" value={add} onChange={e=>setAdd(e.target.value)} style={{...inputSty,maxWidth:200}}/>
+      <Btn size="sm" variant="ghost" onClick={()=>{if(add){onChange([...value,add]);setAdd('')}}}>Add</Btn>
+    </div>
+  </div>;
+}
+function AdditionalDatesList({value,onChange}){
+  return <div>
+    {value.map((d,i)=><div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr auto',gap:6,marginBottom:6}}>
+      <input type="date" value={d.date||''} onChange={e=>onChange(value.map((x,j)=>j===i?{...x,date:e.target.value}:x))} style={inputSty}/>
+      <input type="time" value={from12h(d.start)||''} onChange={e=>onChange(value.map((x,j)=>j===i?{...x,start:to12h(e.target.value)}:x))} style={inputSty}/>
+      <input type="time" value={from12h(d.end)||''} onChange={e=>onChange(value.map((x,j)=>j===i?{...x,end:to12h(e.target.value)}:x))} style={inputSty}/>
+      <Btn size="sm" variant="ghost" onClick={()=>onChange(value.filter((_,j)=>j!==i))} icon={ic.x}>Remove</Btn>
+    </div>)}
+    <Btn size="sm" variant="ghost" onClick={()=>value.length<12&&onChange([...value,{date:'',start:'',end:''}])} icon={ic.plus} disabled={value.length>=12}>Add another date {value.length>=12&&'(max 12)'}</Btn>
+  </div>;
+}
+
+// ---- Live card preview ----
+function CardPreview({form}){
+  const tc=TYPE_COLOR[form.eventType]||{c:B.ink3,t:'#e2e8f0'};
+  const dateStr=form.startDate?(()=>{
+    const d=new Date(form.startDate+'T12:00:00');
+    const M=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][d.getMonth()];
+    const W=['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()];
+    return `${M} ${d.getDate()} | ${W}`;
+  })():'—';
+  const time=form.allDay?'All day':(form.startTime&&form.endTime?`${to12h(form.startTime)} – ${to12h(form.endTime)}`:'—');
+  return <div style={{position:'sticky',top:20}}>
+    <div style={{fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.14em',textTransform:'uppercase',color:B.ink3,marginBottom:10}}>Preview</div>
+    <div style={{background:'#f5eee5',borderRadius:8,border:`1px solid ${B.rule}`,overflow:'hidden',boxShadow:'0 4px 12px rgba(24,43,60,0.06)'}}>
+      <div style={{background:B.navy,color:B.warm,padding:'12px 20px',display:'flex',alignItems:'center',justifyContent:'space-between',fontFamily:'League Spartan'}}>
+        <span style={{fontWeight:600,fontSize:18}}>{dateStr.split('|')[0]}<span style={{color:'rgba(255,255,255,0.7)',fontSize:11,fontWeight:500,letterSpacing:'.2em',marginLeft:8}}>{dateStr.split('|')[1]}</span></span>
+        <span style={{fontSize:12,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',display:'flex',alignItems:'center',gap:6}}><Sv d={ic.clock} size={13} c={B.teal}/>{time}</span>
+      </div>
+      <div style={{background:B.tealTint,color:B.navy,padding:'9px 22px',fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.14em',textTransform:'uppercase',display:'flex',alignItems:'center',gap:8,borderBottom:`1px solid ${B.rule}`}}>
+        <span style={{width:6,height:6,borderRadius:'50%',background:B.tealInk}}/>{form.focusArea||'Focus area'}
+      </div>
+      <div style={{padding:'20px 22px 18px'}}>
+        <h3 style={{fontFamily:'League Spartan',fontWeight:700,fontSize:20,lineHeight:1.2,color:B.navy,margin:0,letterSpacing:'-.01em'}}>{form.title||'Event title'}</h3>
+        <div style={{display:'flex',gap:6,flexWrap:'wrap',margin:'12px 0 8px'}}>
+          <span style={{background:tc.t,color:tc.c,padding:'5px 10px',borderRadius:6,fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.1em',textTransform:'uppercase'}}>{form.eventType||'Type'}</span>
+          {form.contactHours&&<span style={{background:'#eef2f6',color:B.navy2,padding:'5px 10px',borderRadius:6,fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.1em',textTransform:'uppercase',display:'inline-flex',alignItems:'center',gap:5}}><Sv d={ic.hours} size={12}/>Contact Hours</span>}
         </div>
-        <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
-          <button onClick={()=>setShowForm(true)} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'linear-gradient(135deg,#f59e0b,#d97706)',color:'#fff',border:'none',fontSize:14,fontWeight:700,boxShadow:'0 4px 16px rgba(245,158,11,0.3)',cursor:'pointer'}}>
-            <Sv d={ic.plus} size={18} color="#fff"/> Submit New Event
+        <hr style={{border:0,height:1,background:B.rule,margin:'4px 0 2px'}}/>
+        <p style={{fontSize:14,color:B.ink2,lineHeight:1.5,margin:'8px 0',fontWeight:500}}>{form.descriptionTeaser||autoTeaser(form.description)||'Description teaser will appear here…'}</p>
+        <div style={{marginTop:12,padding:'14px 0 0',borderTop:`1px solid ${B.rule}`,display:'flex',flexDirection:'column',gap:10}}>
+          <div style={{display:'flex',alignItems:'flex-start',gap:8,fontSize:13,color:B.ink2}}>
+            <Sv d={ic.pin} size={14} c={B.ink}/>
+            <span>{form.venueName||form.locationType||'Location'}</span>
+          </div>
+          <button style={{width:'100%',padding:'12px 20px',borderRadius:6,background:B.navy,color:B.warm,fontFamily:'League Spartan',fontWeight:700,fontSize:12,letterSpacing:'.1em',textTransform:'uppercase',border:0,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6}}>
+            {form.registerText||'Register'} <Sv d={"M5 12h14M13 6l6 6-6 6"} size={12} c={B.teal}/>
           </button>
-          <a href={CAL_URL} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
-            <Sv d={ic.ext} size={18} color="#94a3b8"/> View Calendar
-          </a>
-          <span style={{color:'rgba(255,255,255,0.2)',fontSize:20,fontWeight:300}}>|</span>
-          <a href="https://www.maine.gov/doe/certificate/create.shtml" target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
-            <Sv d={ic.plus} size={18} color="#94a3b8"/> Create Certificate
-          </a>
-          <a href="https://www.maine.gov/doe/certificate/view.shtml" target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
-            <Sv d={ic.search} size={18} color="#94a3b8"/> View Certificates
-          </a>
         </div>
       </div>
     </div>
+    <div style={{fontSize:11,color:B.ink3,marginTop:12,textAlign:'center'}}>This is a live preview — updates as you type.</div>
+  </div>;
+}
 
-    {/* SUBMISSION TIPS */}
-    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,borderLeft:`4px solid ${B.teal}`,padding:'14px 18px',marginBottom:20,display:'flex',alignItems:'flex-start',gap:14}}>
-      <div style={{width:32,height:32,borderRadius:8,background:`${B.teal}12`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-        <Sv d={["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 16v-4","M12 8h.01"]} size={16} color={B.teal}/>
-      </div>
-      <div style={{flex:1}}>
-        <div style={{fontSize:11,fontWeight:700,color:B.tealDk,letterSpacing:'.05em',textTransform:'uppercase',marginBottom:4}}>Before you submit</div>
-        <div style={{fontSize:13,color:B.txtSec,lineHeight:1.65,fontWeight:500}}>
-          <strong>Proofread and check grammar.</strong> Spell out acronyms — not everyone knows education-specific terminology. Do not submit until all details are confirmed. Only events hosted or co-hosted by the Maine DOE. Check the calendar for conflicts (same day, time, and audience) before scheduling. Newsroom posts for DOE events won't publish unless the event is on the calendar.
-        </div>
-      </div>
-    </div>
+// ---- Full submission/edit form ----
+function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
+  const uf=(k,v)=>setForm(p=>({...p,[k]:v}));
+  const err=useMemo(()=>{
+    const e={};
+    if(!form.contactName) e.contactName='Required';
+    if(!form.contactEmail||!/^[\w.+-]+@[\w.-]+\.\w+$/.test(form.contactEmail)) e.contactEmail='Valid email required';
+    if(!form.focusArea) e.focusArea='Required';
+    if(!form.eventType) e.eventType='Required';
+    if(!form.title) e.title='Required';
+    if(!form.intendedAudience) e.intendedAudience='Required';
+    const descText=(form.description||'').replace(/<[^>]+>/g,'').trim();
+    if(!descText) e.description='Required';
+    if(!form.startDate) e.startDate='Required';
+    if(!form.startTime) e.startTime='Required';
+    if(!form.endTime) e.endTime='Required';
+    if(!form.locationType) e.locationType='Required';
+    if((form.locationType==='In-Person'||form.locationType==='Hybrid')&&!form.venueAddress) e.venueAddress='Address required for in-person';
+    if(!form.registerUrl) e.registerUrl='Required';
+    if(!form.coincides) e.coincides='Required';
+    if(!form.proofread&&!editing) e.proofread='Please confirm';
+    return e;
+  },[form,editing]);
+  const canSubmit=Object.keys(err).length===0&&!submitting;
 
-    {/* STATS */}
-    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
-      {[{l:'Total',v:stats.total,c:B.teal,f:''},{l:'Received',v:stats.received,c:'#3b82f6',f:'Received'},{l:'Processing',v:stats.processing,c:'#f59e0b',f:'Processing'},{l:'Complete',v:stats.complete,c:'#16a34a',f:'Complete'}].map((m,i)=>(
-        <div key={i} onClick={()=>setFilter(filter===m.f?'':m.f)} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${filter===m.f||(m.f===''&&!filter)?m.c+'50':B.border+'30'}`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)',cursor:'pointer',transition:'all 0.15s'}}>
-          <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:700,letterSpacing:.4,marginBottom:4,display:'flex',alignItems:'center',gap:5}}>
-            <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
+  return <div style={{display:'grid',gridTemplateColumns:'1fr 380px',gap:32}}>
+    <div>
+      <Section label="Contact" icon={ic.user}>
+        <Row cols="1fr 1fr">
+          <Field label="Contact name" required error={err.contactName}><Text value={form.contactName} onChange={v=>uf('contactName',v)} placeholder="First Last"/></Field>
+          <Field label="Contact email" required error={err.contactEmail}><Text value={form.contactEmail} onChange={v=>uf('contactEmail',v)} placeholder="name@maine.gov"/></Field>
+        </Row>
+        <Field label="Contact phone" hint="Optional. Shown on the modal for questions."><Text value={form.contactPhone} onChange={v=>uf('contactPhone',v)} placeholder="207-XXX-XXXX"/></Field>
+      </Section>
+
+      <Section label="About the event" icon={ic.cal}>
+        <Field label="Title" required hint="Shorter titles appear cleanest on the calendar." error={err.title}>
+          <Text value={form.title} onChange={v=>uf('title',v)} placeholder="Short, descriptive title" max={120}/>
+        </Field>
+        <Row cols="1fr 1fr">
+          <Field label="Focus area" required error={err.focusArea}><Sel value={form.focusArea} onChange={v=>uf('focusArea',v)} options={FOCUS_AREAS} placeholder="Select focus area..."/></Field>
+          <Field label="Event type" required error={err.eventType}><Sel value={form.eventType} onChange={v=>uf('eventType',v)} options={EVENT_TYPES} placeholder="Select type..."/></Field>
+        </Row>
+        <Field label="Intended audience" required hint="Who's this for? e.g., K-12 educators, District administrators" error={err.intendedAudience}>
+          <Text value={form.intendedAudience} onChange={v=>uf('intendedAudience',v)} placeholder="Educators, administrators..."/>
+        </Field>
+        <Field label="Description" required hint="This is your primary marketing tool. Explain what people will learn, who should attend, and why." error={err.description}>
+          <QuillEditor value={form.description} onChange={v=>uf('description',v)}/>
+        </Field>
+        <Field label="Short teaser" hint="Optional. Overrides the auto-generated snippet on the card. Leave blank to auto-generate from Description.">
+          <TextArea value={form.descriptionTeaser} onChange={v=>uf('descriptionTeaser',v)} placeholder="One sentence, ~180 chars."/>
+        </Field>
+      </Section>
+
+      <Section label="When" icon={ic.clock}>
+        <Row cols="1fr 1fr">
+          <Field label="Start date" required error={err.startDate}><Text type="date" value={form.startDate} onChange={v=>{uf('startDate',v);if(!form.endDate||form.endDate<v)uf('endDate',v)}}/></Field>
+          <Field label="End date" hint="Same as start for single-day events"><Text type="date" value={form.endDate} onChange={v=>uf('endDate',v)}/></Field>
+        </Row>
+        <Row cols="1fr 1fr 1fr">
+          <Field label="Start time" required error={err.startTime}><Text type="time" value={form.startTime} onChange={v=>uf('startTime',v)}/></Field>
+          <Field label="End time" required error={err.endTime}><Text type="time" value={form.endTime} onChange={v=>uf('endTime',v)}/></Field>
+          <Field label="All day">
+            <Check value={form.allDay} onChange={v=>uf('allDay',v)} label="All-day event" hint="Times still required"/>
+          </Field>
+        </Row>
+        <Field>
+          <Check value={form.isRecurring} onChange={v=>uf('isRecurring',v)} label="Does this repeat on a pattern?" hint="Every Thursday, monthly, etc."/>
+        </Field>
+        <RecurrenceSection form={form} uf={uf}/>
+        <Field>
+          <Check value={form.hasAdditionalDates} onChange={v=>uf('hasAdditionalDates',v)} label="Are there additional one-off dates?" hint={`3 sessions at different times, etc. Up to 12.`}/>
+        </Field>
+        {form.hasAdditionalDates&&<div style={{background:'#f8fafc',padding:16,borderRadius:10,marginTop:10,border:`1px solid ${B.rule}`}}>
+          <AdditionalDatesList value={form.additionalDates} onChange={v=>uf('additionalDates',v)}/>
+        </div>}
+      </Section>
+
+      <Section label="Where" icon={ic.pin}>
+        <Field label="Location type" required error={err.locationType}>
+          <BtnGroup value={form.locationType} onChange={v=>uf('locationType',v)} options={['Virtual','In-Person','Hybrid']}/>
+        </Field>
+        {(form.locationType==='In-Person'||form.locationType==='Hybrid')&&<>
+          <Field label="Venue name" hint="e.g., Augusta Civic Center, Littleton High School"><Text value={form.venueName} onChange={v=>uf('venueName',v)}/></Field>
+          <Field label="Venue address" required hint="Full address with ZIP" error={err.venueAddress}><Text value={form.venueAddress} onChange={v=>uf('venueAddress',v)} placeholder="123 Main St, Augusta, ME 04330"/></Field>
+        </>}
+        <Row cols="2fr 1fr">
+          <Field label="Register / Join URL" required error={err.registerUrl}><Text value={form.registerUrl} onChange={v=>uf('registerUrl',v)} placeholder="https://..."/></Field>
+          <Field label="Button text" hint="Register, Join Here, Sign Up, etc."><Text value={form.registerText} onChange={v=>uf('registerText',v)} placeholder="Register"/></Field>
+        </Row>
+      </Section>
+
+      <Section label="Optional extras" icon={ic.info}>
+        <Field>
+          <Check value={form.contactHours} onChange={v=>uf('contactHours',v)} label="Includes contact hours" hint="Shows a badge on the calendar card."/>
+        </Field>
+        <Row cols="1fr 1fr">
+          <Field label="Materials URL" hint="Agenda, handouts (optional)"><Text value={form.materialsUrl} onChange={v=>uf('materialsUrl',v)} placeholder="https://..."/></Field>
+          <Field label="Registration deadline" hint="Last day to register (optional)"><Text type="date" value={form.registrationDeadline} onChange={v=>uf('registrationDeadline',v)}/></Field>
+        </Row>
+      </Section>
+
+      <Section label="Confirm & submit" icon={ic.check}>
+        <Callout tone="info" title="Check the calendar first">
+          Make sure nothing else is planned for the same day, time, and audience.
+          <a href={CAL_URL} target="_blank" style={{marginLeft:6,color:B.tealInk,fontWeight:700}}>View calendar →</a>
+        </Callout>
+        <Field label="Does your event coincide with another DOE event?" required error={err.coincides}>
+          <BtnGroup value={form.coincides} onChange={v=>uf('coincides',v)} options={['No','Yes']}/>
+        </Field>
+        <Field label="Special notes" hint="Private notes to the Comms team, not shown on the calendar">
+          <TextArea value={form.specialNotes} onChange={v=>uf('specialNotes',v)} placeholder="Anything else we should know?" rows={3}/>
+        </Field>
+        {!editing&&<Field error={err.proofread}>
+          <Check value={form.proofread} onChange={v=>uf('proofread',v)} label="I have proofread all content — no spelling or grammatical errors." hint="Required before submitting."/>
+        </Field>}
+        <div style={{display:'flex',gap:10,marginTop:20,flexWrap:'wrap',justifyContent:'space-between'}}>
+          <div style={{display:'flex',gap:10}}>
+            <Btn onClick={onSubmit} disabled={!canSubmit||busy} variant={editing?'success':'primary'} icon={editing?ic.save:ic.check}>
+              {busy?'Working...':(editing?'Save changes':'Submit event')}
+            </Btn>
+            {editing&&onDelete&&<Btn onClick={onDelete} variant="danger" icon={ic.trash}>Cancel this event</Btn>}
           </div>
-          <div style={{fontSize:28,fontWeight:800,color:B.navy,lineHeight:1}}>{m.v}</div>
         </div>
-      ))}
+        {Object.keys(err).length>0&&<Callout tone="warn" title="Fix these before submitting">
+          {Object.keys(err).map(k=><div key={k}>• {k}: {err[k]}</div>)}
+        </Callout>}
+      </Section>
     </div>
+    <div><CardPreview form={form}/></div>
+  </div>;
+}
 
-    {/* SEARCH */}
-    <div style={{display:'flex',gap:8,marginBottom:14}}>
-      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}30`,flex:1}}>
-        <Sv d={ic.search} size={16} color={B.txtMute}/>
-        <input type="text" placeholder="Search by title, requestor, focus area, or type..." value={search} onChange={e=>setSearch(e.target.value)} style={{border:'none',outline:'none',flex:1,fontSize:14,color:B.txt,fontWeight:500,background:'transparent'}}/>
-        {search&&<span onClick={()=>setSearch('')} style={{cursor:'pointer'}}><Sv d={ic.x} size={14} color={B.txtMute}/></span>}
-      </div>
+// ---- Admin tracker table ----
+function Tracker({rows,onEdit,onCancel,loading,adminMode}){
+  const [q,setQ]=useState('');
+  const [filter,setFilter]=useState('');
+  const stats=useMemo(()=>({total:rows.length,pub:rows.filter(r=>r['Status']==='Published').length,rec:rows.filter(r=>r['Status']==='Received').length,can:rows.filter(r=>r['Status']==='Cancelled').length}),[rows]);
+  const filtered=useMemo(()=>rows.filter(r=>{
+    if(filter&&r['Status']!==filter) return false;
+    if(q){
+      const hay=[r['Title'],r['Contact Name'],r['Focus Area'],r['Type']].join(' ').toLowerCase();
+      if(!hay.includes(q.toLowerCase())) return false;
+    }
+    return true;
+  }),[rows,q,filter]);
+
+  const cell={padding:'12px 14px',fontSize:13,color:B.ink2,borderBottom:`1px solid ${B.rule}`};
+  const th={...cell,fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.08em',textTransform:'uppercase',color:B.ink3,background:'#f8fafc',position:'sticky',top:0};
+
+  return <Card style={{marginTop:24,padding:0,overflow:'hidden'}}>
+    <div style={{padding:'20px 24px',borderBottom:`1px solid ${B.rule}`,display:'flex',gap:12,alignItems:'center',flexWrap:'wrap'}}>
+      <h2 style={{fontFamily:'League Spartan',fontSize:20,fontWeight:800,margin:0,color:B.navy,flex:1}}>{adminMode?'All submissions':'Recent submissions'} <span style={{color:B.ink3,fontSize:14,fontWeight:500}}>({filtered.length})</span></h2>
+      <input placeholder="Search title, contact, focus area..." value={q} onChange={e=>setQ(e.target.value)} style={{...inputSty,maxWidth:280}}/>
+      <Sel value={filter} onChange={setFilter} options={['Received','Published','Cancelled','Draft']} placeholder="All statuses"/>
     </div>
-
-    <div style={{fontSize:13,color:B.txtSec,fontWeight:600,marginBottom:10}}>{filtered.length} event{filtered.length!==1?'s':''}{filter&&` — ${filter}`}</div>
-
-    {/* TABLE */}
-    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:40}}>
-      <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
-        <thead><tr style={{background:B.navy,color:'#fff'}}>
-          {['Date','Event Title','Focus Area','Type','Location','Status',''].map((h,i)=>(
-            <th key={i} style={{padding:'12px 14px',fontWeight:700,textAlign:i===5?'center':'left',fontSize:12}}>{h}</th>
-          ))}
-        </tr></thead>
+    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:0,borderBottom:`1px solid ${B.rule}`}}>
+      {[['Total',stats.total,B.navy],['Published',stats.pub,B.green],['Received',stats.rec,'#1e40af'],['Cancelled',stats.can,B.rust]].map(([l,n,c])=>
+        <div key={l} style={{padding:'16px 20px',borderRight:`1px solid ${B.rule}`,display:'flex',flexDirection:'column',gap:4}}>
+          <span style={{fontFamily:'League Spartan',fontWeight:800,fontSize:26,color:c,lineHeight:1}}>{n}</span>
+          <span style={{fontSize:11,fontWeight:700,letterSpacing:'.14em',textTransform:'uppercase',color:B.ink3}}>{l}</span>
+        </div>
+      )}
+    </div>
+    <div style={{overflowX:'auto',maxHeight:'60vh'}}>
+      <table style={{width:'100%',borderCollapse:'collapse',minWidth:900}}>
+        <thead><tr><th style={th}>Date</th><th style={th}>Title</th><th style={th}>Focus Area</th><th style={th}>Type</th><th style={th}>Location</th><th style={th}>Status</th><th style={th}></th></tr></thead>
         <tbody>
-          {filtered.map((s,i)=>{
-            const st=ST[s.status]||ST.Received;
-            const isExp=expanded===i;
-            const locIcon=s.location==='Virtual'?ic.globe:s.location==='Hybrid'?ic.users:ic.map;
-            return <React.Fragment key={i}>
-              <tr style={{borderBottom:isExp?'none':`1px solid ${B.border}20`,cursor:'pointer'}} onClick={()=>setExpanded(isExp?null:i)}
-                onMouseEnter={e=>e.currentTarget.style.background=`${B.teal}06`} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-                <td style={{padding:'14px',fontSize:12,color:B.txtMute,whiteSpace:'nowrap',fontWeight:500}}>{s.dateSubmitted}</td>
-                <td style={{padding:'14px',fontWeight:600,color:B.txt}}>{s.eventTitle}</td>
-                <td style={{padding:'14px',color:B.txtSec,fontWeight:500,fontSize:12}}>{s.focus}</td>
-                <td style={{padding:'14px',color:B.txtSec,fontWeight:500,fontSize:12}}>{s.eventType}</td>
-                <td style={{padding:'14px'}}>
-                  <span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:11,fontWeight:600,color:B.txtSec}}>
-                    <Sv d={locIcon} size={12} color={B.txtMute}/>{s.location}
-                  </span>
-                </td>
-                <td style={{padding:'14px',textAlign:'center'}}>
-                  <span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'4px 14px',borderRadius:20,fontSize:11,fontWeight:700,background:st.bg,color:st.color,border:`1.5px solid ${st.border}`}}>
-                    {s.status==='Complete'&&<Sv d={ic.check} size={12} color={st.color}/>}
-                    {s.status==='Processing'&&<Sv d={ic.clock} size={12} color={st.color}/>}
-                    {s.status}
-                  </span>
-                </td>
-                <td style={{padding:'14px',textAlign:'center'}}>
-                  {s.calUrl?<a href={s.calUrl} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}
-                    style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:`2px solid ${B.border}30`,background:B.wh,color:B.teal,textDecoration:'none',fontSize:11,fontWeight:700}}>
-                    <Sv d={ic.ext} size={12} color={B.teal}/> View
-                  </a>:s.status!=='Complete'?<button onClick={e=>{e.stopPropagation();setCompleteModal({eventTitle:s.eventTitle,requestor:s.requestor,calUrl:''});}}
-                    style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:`2px solid ${B.green}40`,background:`${B.green}08`,color:B.green,fontSize:11,fontWeight:700,cursor:'pointer'}}>
-                    <Sv d={ic.check} size={12} color={B.green}/> Complete
-                  </button>:<span style={{color:B.txtMute,fontSize:11}}>—</span>}
-                </td>
-              </tr>
-              {isExp&&<tr style={{borderBottom:`1px solid ${B.border}20`}}>
-                <td colSpan={7} style={{padding:0}}>
-                  <div style={{padding:'16px 20px 16px 48px',background:`${B.navy}03`,display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
-                    <div>
-                      <div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:8}}>Event Details</div>
-                      {s.description&&<div style={{fontSize:13,color:B.txtSec,lineHeight:1.6,marginBottom:10,fontWeight:500}}>{s.description}</div>}
-                      {s.dateTime&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Date & Time:</strong> {s.dateTime}</div>}
-                      {s.audience&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Audience:</strong> {s.audience}</div>}
-                      {s.location&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Location:</strong> {s.location}</div>}
-                    </div>
-                    <div>
-                      <div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:8}}>Contact & Links</div>
-                      {s.requestor&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Requestor:</strong> {s.requestor}</div>}
-                      {s.email&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Email:</strong> {s.email}</div>}
-                      {s.regLink&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Registration:</strong> <a href={s.regLink} target="_blank" style={{color:B.teal}}>{s.regLink.substring(0,50)}...</a></div>}
-                      {s.address&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Address:</strong> {s.address}</div>}
-                      {s.notes&&<div style={{marginTop:8}}><div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:4}}>Notes</div><div style={{fontSize:12,color:B.txtSec,lineHeight:1.5}}>{s.notes}</div></div>}
-                    </div>
-                  </div>
-                </td>
-              </tr>}
-            </React.Fragment>;
+          {loading&&<tr><td colSpan="7" style={{...cell,padding:40,textAlign:'center',color:B.ink3}}>Loading…</td></tr>}
+          {!loading&&filtered.length===0&&<tr><td colSpan="7" style={{...cell,padding:40,textAlign:'center',color:B.ink3}}>No submissions match.</td></tr>}
+          {filtered.map((r,i)=>{
+            const status=r['Status']||'Received';
+            const sty=ST[status]||ST.Received;
+            return <tr key={r['Event ID']||i} style={{background:i%2?'#fafbfc':B.wh}}>
+              <td style={cell}>{(r['Start Date']||'').substring(0,10)||'—'}</td>
+              <td style={{...cell,fontWeight:600,color:B.ink,maxWidth:280}}>{r['Title']}</td>
+              <td style={cell}>{r['Focus Area']}</td>
+              <td style={cell}>{r['Type']}</td>
+              <td style={cell}>{r['Venue Name']||r['Location Type']||'—'}</td>
+              <td style={cell}><span style={{background:sty.bg,color:sty.color,padding:'3px 10px',borderRadius:12,fontSize:11,fontWeight:700,border:`1px solid ${sty.border}`}}>{status}</span></td>
+              <td style={{...cell,whiteSpace:'nowrap'}}>
+                {adminMode&&<>
+                  <button onClick={()=>onEdit(r)} title="Edit" style={{background:'transparent',border:`1px solid ${B.border}60`,padding:'6px 12px',borderRadius:6,cursor:'pointer',fontSize:12,fontWeight:600,color:B.ink2,marginRight:6,fontFamily:'inherit',display:'inline-flex',alignItems:'center',gap:5}}><Sv d={ic.edit} size={12}/>Edit</button>
+                  {status!=='Cancelled'&&<button onClick={()=>onCancel(r)} title="Cancel event" style={{background:'transparent',border:`1px solid ${B.rust}40`,padding:'6px 12px',borderRadius:6,cursor:'pointer',fontSize:12,fontWeight:600,color:B.rust,fontFamily:'inherit',display:'inline-flex',alignItems:'center',gap:5}}><Sv d={ic.trash} size={12}/>Cancel</button>}
+                </>}
+              </td>
+            </tr>;
           })}
-          {filtered.length===0&&<tr><td colSpan={7} style={{padding:40,textAlign:'center',color:B.txtMute}}>No events found.</td></tr>}
         </tbody>
       </table>
     </div>
+  </Card>;
+}
 
-    {/* SUBMIT FORM MODAL */}
-    {showForm&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(6px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
-      onClick={e=>{if(e.target===e.currentTarget)setShowForm(false);}}>
-      <div style={{background:B.wh,borderRadius:20,width:'100%',maxWidth:680,maxHeight:'90vh',overflow:'auto',boxShadow:'0 24px 80px rgba(0,0,0,0.2)',animation:'fadeIn 0.2s ease'}}>
-        <div style={{padding:'24px 28px 16px',borderBottom:`2px solid ${B.border}30`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-          <div style={{display:'flex',alignItems:'center',gap:12}}>
-            <div style={{width:40,height:40,borderRadius:12,background:'linear-gradient(135deg,#f59e0b,#d97706)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <Sv d={ic.cal} size={20} color="#fff"/>
-            </div>
-            <div>
-              <h2 style={{fontSize:18,fontWeight:800,color:B.navy,margin:0}}>Request a Calendar Event</h2>
-              <p style={{fontSize:12,color:B.txtMute,margin:0}}>Submit at least 1 week in advance (2+ weeks recommended)</p>
-            </div>
-          </div>
-          <button onClick={()=>setShowForm(false)} style={{background:'none',border:'none',cursor:'pointer',padding:4}}><Sv d={ic.x} size={20} color={B.txtMute}/></button>
-        </div>
-        <div style={{padding:'20px 28px 28px'}}>
+// ---- Main App ----
+function App(){
+  const params=useMemo(()=>{const p={};new URLSearchParams(location.search).forEach((v,k)=>p[k]=v);return p;},[]);
+  const editMode=!!params.edit;
+  const [adminToken,setAdminToken]=useState(()=>localStorage.getItem('doe_events_admin_token')||'');
+  const [rows,setRows]=useState([]);
+  const [loadingRows,setLoadingRows]=useState(false);
+  const [showForm,setShowForm]=useState(false);
+  const [form,setForm]=useState(EMPTY);
+  const [editing,setEditing]=useState(null);      // {id,token,fromAdmin}
+  const [busy,setBusy]=useState(false);
+  const [message,setMessage]=useState(null);
+  const [confirm,setConfirm]=useState(null);
 
-          {/* Guidelines */}
-          <div style={{padding:'12px 16px',borderRadius:10,background:'#fef3c714',border:'1.5px solid #f59e0b30',borderLeft:'4px solid #f59e0b',marginBottom:20,fontSize:13,color:B.txtSec,fontWeight:500,lineHeight:1.7}}>
-            <strong>Guidelines:</strong> Proofread all content. Follow Maine DOE branding. Spell out acronyms. Only submit when all details are confirmed. Events must be hosted or co-hosted by a DOE team.
-          </div>
+  const isAdmin=!!adminToken;
 
-          <Input label="Your Name" required><Field value={form.requestor} onChange={v=>uf('requestor',v)} placeholder="First Last"/></Input>
-          <Input label="Contact Email" required><Field value={form.email} onChange={v=>uf('email',v)} placeholder="name@maine.gov" type="email"/></Input>
-
-          <Input label="Area of Focus" required>
-            <Select value={form.focus} onChange={v=>uf('focus',v)} options={FOCUS_AREAS} placeholder="Select area of focus..."/>
-          </Input>
-
-          <Input label="Event Title" required hint="Shorter titles appear better on the calendar — we may shorten if needed.">
-            <Field value={form.eventTitle} onChange={v=>uf('eventTitle',v)} placeholder="Event title"/>
-          </Input>
-
-          <Input label="Event Type" required>
-            <Select value={form.eventType} onChange={v=>uf('eventType',v)} options={EVENT_TYPES} placeholder="Select event type..."/>
-          </Input>
-
-          <Input label="Event Date(s) & Time" required hint="If recurring, list all dates. Include end time or it will be assumed 1 hour.">
-            <Field value={form.dateTime} onChange={v=>uf('dateTime',v)} placeholder="e.g., April 15, 2026, 2:00 - 3:30 PM"/>
-          </Input>
-
-          <Input label="Intended Audience" required>
-            <Field value={form.audience} onChange={v=>uf('audience',v)} placeholder="e.g., K-12 Educators, School Administrators"/>
-          </Input>
-
-          <Input label="Event Description" required hint="Be descriptive — this is your primary marketing tool. More than one sentence.">
-            <Field value={form.description} onChange={v=>uf('description',v)} type="textarea" placeholder="Give visitors information about this specific event and what they can expect."/>
-          </Input>
-
-          <Input label="Event Location / Platform" required>
-            <div style={{display:'flex',gap:8}}>
-              {['Virtual','In-Person','Hybrid'].map(o=>(
-                <button key={o} onClick={()=>uf('location',o)} style={{flex:1,padding:'10px 16px',borderRadius:10,fontSize:13,fontWeight:600,cursor:'pointer',textAlign:'center',
-                  border:`2px solid ${form.location===o?B.teal:B.border+'30'}`,background:form.location===o?`${B.teal}10`:B.wh,color:form.location===o?B.navy:B.txtSec,
-                  display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
-                  <Sv d={o==='Virtual'?ic.globe:o==='Hybrid'?ic.users:ic.map} size={14} color={form.location===o?B.teal:B.txtMute}/>{o}
-                </button>
-              ))}
-            </div>
-          </Input>
-
-          {(form.location==='Virtual'||form.location==='Hybrid')&&
-            <Input label="Registration or Join Link" required><Field value={form.regLink} onChange={v=>uf('regLink',v)} placeholder="https://..."/></Input>
+  // Load edit mode from URL
+  useEffect(()=>{
+    if(editMode){
+      (async()=>{
+        setBusy(true);
+        try{
+          const r=await fetch(`${API}?type=event&id=${encodeURIComponent(params.edit)}&token=${encodeURIComponent(params.token||'')}`);
+          const j=await r.json();
+          if(j.error) setMessage({tone:'err',text:j.error});
+          else if(j.event){
+            setForm(deserialize(j.event));
+            setEditing({id:params.edit,token:params.token,fromAdmin:!!j.event.isAdmin});
+            setShowForm(true);
           }
+        }catch(e){setMessage({tone:'err',text:'Could not load event.'});}
+        setBusy(false);
+      })();
+    }
+  },[editMode]);
 
-          {(form.location==='In-Person'||form.location==='Hybrid')&&
-            <Input label="Event Address" required hint="Include full address with zip code.">
-              <Field value={form.address} onChange={v=>uf('address',v)} placeholder="123 Main St, Augusta, ME 04330"/>
-            </Input>
-          }
+  // Load admin rows
+  useEffect(()=>{
+    if(!isAdmin) return;
+    setLoadingRows(true);
+    (async()=>{
+      try{
+        const r=await fetch(`${API}?type=events&token=${encodeURIComponent(adminToken)}&_=${Date.now()}`);
+        const j=await r.json();
+        if(j.error){setMessage({tone:'err',text:j.error+' — is the admin token correct?'});setAdminToken('');localStorage.removeItem('doe_events_admin_token');}
+        else setRows((j.rows||[]).map(x=>({['Start Date']:x.dateTime,'Title':x.eventTitle,'Focus Area':x.focus,'Type':x.eventType,'Venue Name':'','Location Type':x.location,'Status':x.status,'Event ID':x.eventId||'','Contact Name':x.requestor,...x})));
+      }catch(e){}
+      setLoadingRows(false);
+    })();
+  },[isAdmin,adminToken]);
 
-          {form.location==='In-Person'&&
-            <Input label="Registration Link"><Field value={form.regLink} onChange={v=>uf('regLink',v)} placeholder="https://... (if applicable)"/></Input>
-          }
+  async function submit(){
+    setBusy(true);setMessage(null);
+    try{
+      const fields=serialize(form);
+      const body=editing?{action:'event_update',id:editing.id,token:editing.token||adminToken,fields}:{action:'event_submit',fields};
+      const r=await fetch(API,{method:'POST',body:JSON.stringify(body)});
+      const j=await r.json();
+      if(j.error){setMessage({tone:'err',text:j.error});}
+      else{
+        setMessage({tone:'ok',text:editing?'Changes saved. Calendar updates within 5 minutes.':'Event submitted! It will appear on the calendar shortly.'});
+        if(!editing){setForm(EMPTY);setShowForm(false);}
+      }
+    }catch(e){setMessage({tone:'err',text:'Network error — please try again.'});}
+    setBusy(false);
+  }
+  async function del(){
+    setBusy(true);setMessage(null);
+    try{
+      const r=await fetch(API,{method:'POST',body:JSON.stringify({action:'event_delete',id:editing.id,token:editing.token||adminToken})});
+      const j=await r.json();
+      if(j.error) setMessage({tone:'err',text:j.error});
+      else{setMessage({tone:'ok',text:'Event cancelled. It will show as cancelled on the calendar and be hidden after a week.'});setShowForm(false);setEditing(null);setForm(EMPTY);}
+    }catch(e){setMessage({tone:'err',text:'Network error.'});}
+    setBusy(false);setConfirm(null);
+  }
+  async function cancelRow(r){
+    setConfirm({title:`Cancel "${r['Title']}"?`,body:'This will mark the event as Cancelled. It shows on the calendar with a strikethrough for a week, then disappears.',onOk:async()=>{
+      try{
+        const res=await fetch(API,{method:'POST',body:JSON.stringify({action:'event_delete',id:r['Event ID'],token:adminToken})});
+        const j=await res.json();
+        if(j.error) setMessage({tone:'err',text:j.error});
+        else{setMessage({tone:'ok',text:'Event cancelled.'});setRows(rows.map(x=>x['Event ID']===r['Event ID']?{...x,Status:'Cancelled'}:x));}
+      }catch(e){}
+      setConfirm(null);
+    }});
+  }
+  function editRow(r){
+    (async()=>{
+      setBusy(true);
+      try{
+        const res=await fetch(`${API}?type=event&id=${encodeURIComponent(r['Event ID'])}&token=${encodeURIComponent(adminToken)}`);
+        const j=await res.json();
+        if(j.error) setMessage({tone:'err',text:j.error});
+        else if(j.event){
+          setForm(deserialize(j.event));
+          setEditing({id:r['Event ID'],token:adminToken,fromAdmin:true});
+          setShowForm(true);
+        }
+      }catch(e){}
+      setBusy(false);
+    })();
+  }
+  function enterAdmin(){
+    const t=prompt('Enter admin token (get from the Apps Script EVENTS_ADMIN_TOKEN property):');
+    if(t){localStorage.setItem('doe_events_admin_token',t);setAdminToken(t);}
+  }
+  function exitAdmin(){
+    if(confirm2('Exit admin mode? You\'ll need to re-enter the token next time.'))
+      {localStorage.removeItem('doe_events_admin_token');setAdminToken('');setRows([]);}
+  }
+  function confirm2(msg){return window.confirm(msg);}
 
-          {/* Calendar check */}
-          <div style={{padding:'14px 16px',borderRadius:10,background:`${B.teal}08`,border:`1.5px solid ${B.teal}20`,marginBottom:14,display:'flex',alignItems:'flex-start',gap:12}}>
-            <Sv d={ic.cal} size={18} color={B.teal} style={{flexShrink:0,marginTop:2}}/>
-            <div style={{fontSize:13,color:B.txtSec,fontWeight:500,lineHeight:1.6}}>
-              <strong>Check the calendar first!</strong> Make sure nothing else is planned for the same day, time, and audience. <a href={CAL_URL} target="_blank" rel="noopener noreferrer" style={{color:B.teal,fontWeight:700}}>View the calendar →</a>
-            </div>
-          </div>
-
-          <Input label="Does your event coincide with another DOE event?" required>
-            <div style={{display:'flex',gap:8}}>
-              {['No','Yes'].map(o=>(
-                <button key={o} onClick={()=>uf('coincides',o)} style={{padding:'8px 20px',borderRadius:10,fontSize:14,fontWeight:600,cursor:'pointer',
-                  border:`2px solid ${form.coincides===o?(o==='Yes'?'#f59e0b':B.teal):B.border+'30'}`,
-                  background:form.coincides===o?(o==='Yes'?'#fef3c7':`${B.teal}10`):B.wh,
-                  color:form.coincides===o?B.navy:B.txtMute}}>{o}</button>
-              ))}
-            </div>
-          </Input>
-
-          <Input label="Special Notes"><Field value={form.notes} onChange={v=>uf('notes',v)} type="textarea" placeholder="Anything else we should know?"/></Input>
-
-          {/* Proofread */}
-          <div style={{padding:'14px 16px',borderRadius:10,background:'#f8fafc',border:`2px solid ${form.proofread?B.teal:B.border+'30'}`,marginBottom:20,cursor:'pointer',display:'flex',alignItems:'flex-start',gap:12}} onClick={()=>uf('proofread',!form.proofread)}>
-            <div style={{width:22,height:22,borderRadius:6,border:`2px solid ${form.proofread?B.teal:B.border}`,background:form.proofread?B.teal:'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
-              {form.proofread&&<Sv d={ic.tick} size={14} color="#fff"/>}
-            </div>
-            <div style={{fontSize:13,color:B.navy,fontWeight:600,lineHeight:1.5}}>I have proofread all content and there are no spelling or grammatical errors.</div>
-          </div>
-
-          {submitMsg&&<div style={{padding:'10px 16px',borderRadius:10,marginBottom:14,fontSize:13,fontWeight:600,background:submitMsg.ok?'#d1fae5':'#fee2e2',color:submitMsg.ok?'#065f46':'#991b1b',border:`1.5px solid ${submitMsg.ok?'#6ee7b7':'#fca5a5'}`}}>{submitMsg.t}</div>}
-
-          <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
-            <button onClick={()=>setShowForm(false)} style={{padding:'12px 24px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:14,fontWeight:600,cursor:'pointer'}}>Cancel</button>
-            <button onClick={handleSubmit} disabled={submitting} style={{padding:'12px 28px',borderRadius:10,border:'none',background:submitting?'#94a3b8':'linear-gradient(135deg,#f59e0b,#d97706)',color:'#fff',fontSize:14,fontWeight:700,cursor:submitting?'default':'pointer',display:'flex',alignItems:'center',gap:8}}>
-              {submitting?<><Sv d={ic.spin} size={16} color="#fff" style={{animation:'spin 1s linear infinite'}}/> Submitting...</>:<><Sv d={ic.cal} size={16} color="#fff"/> Submit Event</>}
-            </button>
-          </div>
-        </div>
+  return <div style={{maxWidth:1280,margin:'0 auto',padding:'24px'}}>
+    {/* Hero */}
+    <div style={{padding:'32px 0 24px',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:16}}>
+      <div>
+        <div style={{fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.24em',textTransform:'uppercase',color:B.tealInk,marginBottom:8}}>Maine DOE</div>
+        <h1 style={{fontFamily:'League Spartan',fontSize:44,fontWeight:900,margin:0,color:B.navy,letterSpacing:'-.02em'}}>Events Tracker</h1>
+        <p style={{color:B.ink3,fontSize:15,marginTop:6}}>Submit and manage DOE calendar events</p>
       </div>
-    </div>}
-
-    {/* COMPLETE MODAL */}
-    {completeModal&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(6px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
-      onClick={e=>{if(e.target===e.currentTarget)setCompleteModal(null);}}>
-      <div style={{background:B.wh,borderRadius:20,width:'100%',maxWidth:480,boxShadow:'0 24px 80px rgba(0,0,0,0.2)',animation:'fadeIn 0.2s ease',padding:28}}>
-        <h2 style={{fontSize:18,fontWeight:800,color:B.navy,marginBottom:4}}>Mark as Complete</h2>
-        <p style={{fontSize:13,color:B.txtMute,marginBottom:20}}><strong>{completeModal.eventTitle}</strong> by {completeModal.requestor}</p>
-        <Input label="Calendar Event URL" required><Field value={completeModal.calUrl} onChange={v=>setCompleteModal(p=>({...p,calUrl:v}))} placeholder="https://www.maine.gov/doe/calendar/..."/></Input>
-        <div style={{padding:'12px 16px',borderRadius:10,background:'#f0fdf4',border:'1.5px solid #bbf7d0',marginBottom:20,fontSize:13,color:'#065f46',fontWeight:500,lineHeight:1.6}}>
-          This will update the status to <strong>Complete</strong>, notify the team in Teams, and open a pre-filled email to the requestor in Outlook.
-        </div>
-        <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
-          <button onClick={()=>setCompleteModal(null)} style={{padding:'10px 20px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:14,fontWeight:600,cursor:'pointer'}}>Cancel</button>
-          <button onClick={handleComplete} disabled={completing||!completeModal.calUrl} style={{padding:'10px 24px',borderRadius:10,border:'none',background:completing||!completeModal.calUrl?'#94a3b8':'linear-gradient(135deg,#16a34a,#15803d)',color:'#fff',fontSize:14,fontWeight:700,cursor:completing?'default':'pointer',display:'flex',alignItems:'center',gap:6}}>
-            {completing?<><Sv d={ic.spin} size={14} color="#fff" style={{animation:'spin 1s linear infinite'}}/> Sending...</>:<><Sv d={ic.check} size={14} color="#fff"/> Complete & Notify</>}
-          </button>
-        </div>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+        {!editMode&&<Btn onClick={()=>{setForm(EMPTY);setEditing(null);setShowForm(true);}} variant="primary" icon={ic.plus}>Submit new event</Btn>}
+        <Btn onClick={()=>window.open(CAL_URL,'_blank')} variant="ghost" icon={ic.cal}>View calendar</Btn>
+        {isAdmin?<Btn onClick={exitAdmin} variant="ghost" icon={ic.lock}>Exit admin</Btn>:<Btn onClick={enterAdmin} variant="ghost" icon={ic.lock}>Admin mode</Btn>}
       </div>
-    </div>}
+    </div>
 
-    <div style={{textAlign:'center',padding:'0 0 40px',fontSize:12,color:B.txtMute,fontWeight:500}}>Maine Department of Education · Communications Portal</div>
+    {/* Submission tips */}
+    {!editMode&&!showForm&&<Callout tone="info" title="Before you submit">
+      <strong>Proofread and check grammar.</strong> Spell out acronyms. Do not submit until all details are confirmed. Only events hosted or co-hosted by the Maine DOE. <strong>Check the calendar for conflicts</strong> (same day, time, and audience) before scheduling. Newsroom posts won't publish unless the event is on the calendar. Submit at least 1 week in advance (2+ weeks recommended).
+    </Callout>}
+
+    {message&&<Callout tone={message.tone==='ok'?'ok':message.tone==='err'?'err':'info'}>{message.text}</Callout>}
+
+    {isAdmin&&!showForm&&!editMode&&<Tracker rows={rows} loading={loadingRows} onEdit={editRow} onCancel={cancelRow} adminMode={true}/>}
+    {!isAdmin&&!showForm&&!editMode&&<Card style={{marginTop:24,textAlign:'center',padding:'40px 24px'}}>
+      <Sv d={ic.cal} size={48} c={B.ink3}/>
+      <h3 style={{fontFamily:'League Spartan',fontWeight:800,fontSize:20,color:B.navy,marginTop:14,marginBottom:8}}>Ready to submit an event?</h3>
+      <p style={{color:B.ink3,fontSize:14,marginBottom:20}}>Click "Submit new event" above to get started.</p>
+    </Card>}
+
+    {/* Form modal */}
+    <Modal open={showForm} onClose={()=>{if(!busy)setShowForm(false);}} title={editing?'Edit event':'Submit an event'} wide={true}>
+      <EventForm form={form} setForm={setForm} onSubmit={submit} onDelete={editing?()=>setConfirm({title:'Cancel this event?',body:'This marks the event as Cancelled. It shows with a strikethrough for a week, then hides.',onOk:del}):null} editing={!!editing} busy={busy}/>
+    </Modal>
+
+    {/* Confirm modal */}
+    <Modal open={!!confirm} onClose={()=>setConfirm(null)} title={confirm?.title||'Confirm'}>
+      <p style={{fontSize:14,color:B.ink2,lineHeight:1.6,marginBottom:20}}>{confirm?.body}</p>
+      <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+        <Btn variant="ghost" onClick={()=>setConfirm(null)}>Keep event</Btn>
+        <Btn variant="danger" icon={ic.trash} onClick={()=>confirm?.onOk?.()}>Yes, cancel</Btn>
+      </div>
+    </Modal>
   </div>;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
-<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
 </body>
 </html>
