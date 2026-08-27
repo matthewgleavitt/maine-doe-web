@@ -820,7 +820,7 @@ async function loadEvents() {
     EVENTS = data.events || [];
     populateFocusSelect();
     populateTypeSelect();
-    renderWidgets();
+    /* renderWidgets skipped */
     render();
   } catch (err) {
     document.getElementById('events-container').innerHTML =
