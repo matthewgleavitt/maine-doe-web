@@ -2110,5 +2110,47 @@ function submitNewEvent(fields) {
 
   ctx.sheet.appendRow(row);
   purgeCalendarCache();
-  return { ok: true, id: eventId, editToken: editToken };
+
+  // Email the submitter their edit link so they can modify/cancel later
+  // without contacting the Comms team.
+  var editUrl = 'https://gateway.maine.gov/doe/communications/events-tracker.html?edit=' + eventId + '&token=' + editToken;
+  try {
+    var contactEmail = String(fields['Contact Email'] || '').trim();
+    var title = String(fields['Title'] || 'Your event');
+    if (contactEmail && contactEmail.indexOf('@') > 0) {
+      var startDate = String(fields['Start Date'] || '');
+      var startTime = String(fields['Start Time'] || '');
+      var html =
+        '<div style="font-family:Arial,sans-serif;max-width:560px;color:#182b3c;">' +
+          '<div style="background:#182b3c;color:#eee6df;padding:18px 24px;">' +
+            '<div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.7;">Maine DOE Communications</div>' +
+            '<div style="font-size:20px;font-weight:700;margin-top:4px;">Your calendar event is live</div>' +
+          '</div>' +
+          '<div style="padding:22px 24px;background:#ffffff;border:1px solid #e2e8f0;border-top:0;">' +
+            '<p style="margin:0 0 14px;font-size:15px;line-height:1.5;">Thanks for submitting <strong>' + title.replace(/</g,'&lt;') + '</strong>' +
+              (startDate ? ' on ' + startDate + (startTime ? ' at ' + startTime : '') : '') +
+              '. It is now visible on <a href="https://www.maine.gov/doe/calendar" style="color:#0d7ba0;">the DOE calendar</a>.</p>' +
+            '<div style="background:#fef2f2;border-left:3px solid #8a2e13;padding:14px 16px;border-radius:6px;margin:18px 0;">' +
+              '<div style="font-weight:700;color:#8a2e13;margin-bottom:6px;">Save this email</div>' +
+              '<div style="font-size:14px;line-height:1.5;">If you need to update details, change the date, or cancel this event, use the link below. Anyone with this link can edit the event, so keep it private.</div>' +
+            '</div>' +
+            '<a href="' + editUrl + '" style="display:inline-block;padding:12px 22px;background:#182b3c;color:#eee6df;text-decoration:none;font-weight:700;border-radius:6px;letter-spacing:.06em;">Edit or cancel this event</a>' +
+            '<p style="font-size:12px;color:#475569;margin-top:22px;line-height:1.5;word-break:break-all;"><strong>Link:</strong> ' + editUrl + '</p>' +
+            '<p style="font-size:12px;color:#475569;margin-top:14px;">Questions? Reply to this email or contact Matt Leavitt (matthew.g.leavitt@maine.gov) or Rachel Paling (rachel.paling@maine.gov).</p>' +
+          '</div>' +
+        '</div>';
+      MailApp.sendEmail({
+        to: contactEmail,
+        subject: 'DOE Event Submitted: ' + title,
+        htmlBody: html,
+        name: 'Maine DOE Communications',
+        replyTo: 'matthew.g.leavitt@maine.gov'
+      });
+    }
+  } catch (mailErr) {
+    Logger.log('Confirmation email failed: ' + mailErr.message);
+    // Don't fail the whole submission if email doesn't send.
+  }
+
+  return { ok: true, id: eventId, editToken: editToken, editUrl: editUrl };
 }

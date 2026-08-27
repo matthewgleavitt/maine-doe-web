@@ -187,13 +187,13 @@ function QuillEditor({value,onChange}){
 
 // ---- Utils ----
 const EMPTY={
-  contactName:'',contactEmail:'',contactPhone:'',
+  contactName:'',contactEmail:'',
   focusArea:'',eventType:'',title:'',intendedAudience:'',
-  description:'',descriptionTeaser:'',
+  description:'',
   startDate:'',endDate:'',startTime:'',endTime:'',allDay:false,
   locationType:'',venueName:'',venueAddress:'',
-  registerUrl:'',registerText:'Register',materialsUrl:'',registrationDeadline:'',
-  contactHours:false,coincides:'',specialNotes:'',proofread:false,
+  registerUrl:'',registerText:'Register',registrationDeadline:'',
+  contactHours:false,approved:false,
   // Recurrence
   isRecurring:false,recurFreq:'weekly',recurWeeklyDays:[],recurMonthlyMode:'weekday',recurMonthlyOrdinal:'1st',recurMonthlyWeekday:'Monday',recurMonthlyDay:'1',recurEnd:'',exceptions:[],
   // Additional dates
@@ -240,38 +240,36 @@ function buildRecurrencePattern(form){
 }
 function serialize(form){
   return {
-    'Contact Name':form.contactName,'Contact Email':form.contactEmail,'Contact Phone':form.contactPhone,
+    'Contact Name':form.contactName,'Contact Email':form.contactEmail,
     'Focus Area':form.focusArea,'Type':form.eventType,'Title':form.title,
     'Intended Audience':form.intendedAudience,
-    'Description':form.description,'Description Teaser':form.descriptionTeaser||autoTeaser(form.description),
+    'Description':form.description,'Description Teaser':autoTeaser(form.description),
     'Start Date':form.startDate,'End Date':form.endDate||form.startDate,
     'Start Time':to12h(form.startTime),'End Time':to12h(form.endTime),
     'All Day':form.allDay?'Yes':'No',
     'Location Type':form.locationType,'Venue Name':form.venueName,'Venue Address':form.venueAddress,
     'Register URL':form.registerUrl,'Register Text':form.registerText||'Register',
-    'Materials URL':form.materialsUrl,'Registration Deadline':form.registrationDeadline,
+    'Registration Deadline':form.registrationDeadline,
     'Contact Hours':form.contactHours?'Yes':'No',
     'Recurrence Pattern':buildRecurrencePattern(form),'Recurrence End':form.recurEnd,
     'Exceptions':(form.exceptions||[]).join(','),
     'Additional Dates':form.hasAdditionalDates&&form.additionalDates.length?JSON.stringify(form.additionalDates):'',
-    'Coincides':form.coincides,'Special Notes':form.specialNotes,
   };
 }
 function deserialize(rec){
   const pat=(rec['Recurrence Pattern']||'').toLowerCase().trim();
   const f={...EMPTY};
-  f.contactName=rec['Contact Name']||'';f.contactEmail=rec['Contact Email']||'';f.contactPhone=rec['Contact Phone']||'';
+  f.contactName=rec['Contact Name']||'';f.contactEmail=rec['Contact Email']||'';
   f.focusArea=rec['Focus Area']||'';f.eventType=rec['Type']||'';f.title=rec['Title']||'';
   f.intendedAudience=rec['Intended Audience']||'';
-  f.description=rec['Description']||'';f.descriptionTeaser=rec['Description Teaser']||'';
+  f.description=rec['Description']||'';
   f.startDate=(rec['Start Date']||'').substring(0,10);f.endDate=(rec['End Date']||'').substring(0,10);
   f.startTime=from12h(rec['Start Time']);f.endTime=from12h(rec['End Time']);
   f.allDay=(rec['All Day']||'').toString().toLowerCase()==='yes';
   f.locationType=rec['Location Type']||'';f.venueName=rec['Venue Name']||'';f.venueAddress=rec['Venue Address']||'';
   f.registerUrl=rec['Register URL']||'';f.registerText=rec['Register Text']||'Register';
-  f.materialsUrl=rec['Materials URL']||'';f.registrationDeadline=(rec['Registration Deadline']||'').substring(0,10);
+  f.registrationDeadline=(rec['Registration Deadline']||'').substring(0,10);
   f.contactHours=(rec['Contact Hours']||'').toString().toLowerCase()==='yes';
-  f.coincides=rec['Coincides']||'';f.specialNotes=rec['Special Notes']||'';
   if(pat){
     f.isRecurring=true;
     if(pat==='daily'){f.recurFreq='daily'}
@@ -358,8 +356,8 @@ function CardPreview({form}){
     return `${M} ${d.getDate()} | ${W}`;
   })():'—';
   const time=form.allDay?'All day':(form.startTime&&form.endTime?`${to12h(form.startTime)} – ${to12h(form.endTime)}`:'—');
-  return <div style={{position:'sticky',top:20}}>
-    <div style={{fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.14em',textTransform:'uppercase',color:B.ink3,marginBottom:10}}>Preview</div>
+  return <div>
+    <div style={{fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.14em',textTransform:'uppercase',color:B.ink3,marginBottom:10}}>Card view (calendar)</div>
     <div style={{background:'#f5eee5',borderRadius:8,border:`1px solid ${B.rule}`,overflow:'hidden',boxShadow:'0 4px 12px rgba(24,43,60,0.06)'}}>
       <div style={{background:B.navy,color:B.warm,padding:'12px 20px',display:'flex',alignItems:'center',justifyContent:'space-between',fontFamily:'League Spartan'}}>
         <span style={{fontWeight:600,fontSize:18}}>{dateStr.split('|')[0]}<span style={{color:'rgba(255,255,255,0.7)',fontSize:11,fontWeight:500,letterSpacing:'.2em',marginLeft:8}}>{dateStr.split('|')[1]}</span></span>
@@ -375,7 +373,7 @@ function CardPreview({form}){
           {form.contactHours&&<span style={{background:'#eef2f6',color:B.navy2,padding:'5px 10px',borderRadius:6,fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.1em',textTransform:'uppercase',display:'inline-flex',alignItems:'center',gap:5}}><Sv d={ic.hours} size={12}/>Contact Hours</span>}
         </div>
         <hr style={{border:0,height:1,background:B.rule,margin:'4px 0 2px'}}/>
-        <p style={{fontSize:14,color:B.ink2,lineHeight:1.5,margin:'8px 0',fontWeight:500}}>{form.descriptionTeaser||autoTeaser(form.description)||'Description teaser will appear here…'}</p>
+        <p style={{fontSize:14,color:B.ink2,lineHeight:1.5,margin:'8px 0',fontWeight:500}}>{autoTeaser(form.description)||'Short teaser (auto-generated from description) will appear here'}</p>
         <div style={{marginTop:12,padding:'14px 0 0',borderTop:`1px solid ${B.rule}`,display:'flex',flexDirection:'column',gap:10}}>
           <div style={{display:'flex',alignItems:'flex-start',gap:8,fontSize:13,color:B.ink2}}>
             <Sv d={ic.pin} size={14} c={B.ink}/>
@@ -387,7 +385,54 @@ function CardPreview({form}){
         </div>
       </div>
     </div>
-    <div style={{fontSize:11,color:B.ink3,marginTop:12,textAlign:'center'}}>This is a live preview — updates as you type.</div>
+    <div style={{fontSize:11,color:B.ink3,marginTop:12,textAlign:'center'}}>Card as it appears on the calendar</div>
+  </div>;
+}
+
+function ModalPreview({form}){
+  const tc=TYPE_COLOR[form.eventType]||{c:B.ink3,t:'#e2e8f0'};
+  const dateStr=form.startDate?(()=>{
+    const d=new Date(form.startDate+'T12:00:00');
+    const W=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()];
+    const M=['January','February','March','April','May','June','July','August','September','October','November','December'][d.getMonth()];
+    return `${W}, ${M} ${d.getDate()}, ${d.getFullYear()}`;
+  })():'—';
+  const time=form.allDay?'All day':(form.startTime&&form.endTime?`${to12h(form.startTime)} – ${to12h(form.endTime)}`:'—');
+  const contact={name:form.contactName||'Contact name',email:form.contactEmail||'contact@maine.gov'};
+  return <div style={{marginTop:24}}>
+    <div style={{fontFamily:'League Spartan',fontWeight:700,fontSize:11,letterSpacing:'.14em',textTransform:'uppercase',color:B.ink3,marginBottom:10}}>Detail view (click card to open)</div>
+    <div style={{background:'#f5eee5',borderRadius:10,border:`1px solid ${B.rule}`,overflow:'hidden',padding:'24px 22px',position:'relative',boxShadow:'0 6px 20px rgba(24,43,60,0.08)'}}>
+      <div style={{position:'absolute',left:0,top:0,right:0,height:5,background:tc.c}}></div>
+      <div style={{display:'flex',gap:6,marginBottom:10,flexWrap:'wrap',marginTop:4}}>
+        <span style={{background:B.teal,color:B.navy,padding:'4px 10px',borderRadius:6,fontFamily:'League Spartan',fontWeight:700,fontSize:10,letterSpacing:'.1em',textTransform:'uppercase'}}>{form.focusArea||'Focus area'}</span>
+        <span style={{background:tc.t,color:tc.c,padding:'4px 10px',borderRadius:6,fontFamily:'League Spartan',fontWeight:700,fontSize:10,letterSpacing:'.1em',textTransform:'uppercase'}}>{form.eventType||'Type'}</span>
+        {form.contactHours&&<span style={{background:'#eef2f6',color:B.navy2,padding:'4px 10px',borderRadius:6,fontFamily:'League Spartan',fontWeight:700,fontSize:10,letterSpacing:'.1em',textTransform:'uppercase'}}>Contact Hours</span>}
+      </div>
+      <h3 style={{fontFamily:'League Spartan',fontWeight:800,fontSize:22,lineHeight:1.15,color:B.navy,margin:'6px 0 12px',letterSpacing:'-.015em'}}>{form.title||'Event title'}</h3>
+      <div style={{fontSize:13,color:B.ink2,lineHeight:1.55,marginBottom:16,fontFamily:'inherit'}} dangerouslySetInnerHTML={{__html:form.description||'<p><em>Full description will appear here as you type it in the Description field above.</em></p>'}}/>
+      <div style={{background:B.navy,borderRadius:8,padding:'16px 18px',marginBottom:14,fontFamily:'inherit'}}>
+        <div style={{marginBottom:10}}>
+          <div style={{fontFamily:'League Spartan',fontWeight:700,fontSize:10,letterSpacing:'.14em',textTransform:'uppercase',color:'#a8bccb',marginBottom:2}}>When</div>
+          <div style={{fontFamily:'League Spartan',fontWeight:600,fontSize:14,color:B.wh}}>{dateStr} · {time}</div>
+        </div>
+        <div style={{marginBottom:10}}>
+          <div style={{fontFamily:'League Spartan',fontWeight:700,fontSize:10,letterSpacing:'.14em',textTransform:'uppercase',color:'#a8bccb',marginBottom:2}}>Where</div>
+          <div style={{fontFamily:'League Spartan',fontWeight:600,fontSize:14,color:B.wh}}>{form.venueName||form.locationType||'Location'}{form.venueAddress&&<div style={{fontWeight:500,fontSize:13,opacity:.85,marginTop:2}}>{form.venueAddress}</div>}</div>
+        </div>
+        <div style={{marginBottom:10}}>
+          <div style={{fontFamily:'League Spartan',fontWeight:700,fontSize:10,letterSpacing:'.14em',textTransform:'uppercase',color:'#a8bccb',marginBottom:2}}>Audience</div>
+          <div style={{fontFamily:'League Spartan',fontWeight:600,fontSize:14,color:B.wh}}>{form.intendedAudience||'Audience'}</div>
+        </div>
+        <div>
+          <div style={{fontFamily:'League Spartan',fontWeight:700,fontSize:10,letterSpacing:'.14em',textTransform:'uppercase',color:'#a8bccb',marginBottom:2}}>Contact</div>
+          <div style={{fontFamily:'League Spartan',fontWeight:600,fontSize:14,color:B.wh}}>{contact.name}</div>
+          <div style={{fontSize:12,color:B.teal,marginTop:3}}>{contact.email}</div>
+        </div>
+      </div>
+      <button style={{width:'100%',padding:'14px 20px',borderRadius:6,background:B.navy,color:B.wh,fontFamily:'League Spartan',fontWeight:700,fontSize:13,letterSpacing:'.1em',textTransform:'uppercase',border:0,cursor:'default'}}>
+        {form.registerText||'Register'} →
+      </button>
+    </div>
   </div>;
 }
 
@@ -410,8 +455,7 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
     if(!form.locationType) e.locationType='Required';
     if((form.locationType==='In-Person'||form.locationType==='Hybrid')&&!form.venueAddress) e.venueAddress='Address required for in-person';
     if(!form.registerUrl) e.registerUrl='Required';
-    if(!form.coincides) e.coincides='Required';
-    if(!form.proofread&&!editing) e.proofread='Please confirm';
+    if(!form.approved&&!editing) e.approved='Approval confirmation required';
     return e;
   },[form,editing]);
   const canSubmit=Object.keys(err).length===0&&!submitting;
@@ -423,7 +467,6 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
           <Field label="Contact name" required error={err.contactName}><Text value={form.contactName} onChange={v=>uf('contactName',v)} placeholder="First Last"/></Field>
           <Field label="Contact email" required error={err.contactEmail}><Text value={form.contactEmail} onChange={v=>uf('contactEmail',v)} placeholder="name@maine.gov"/></Field>
         </Row>
-        <Field label="Contact phone" hint="Optional. Shown on the modal for questions."><Text value={form.contactPhone} onChange={v=>uf('contactPhone',v)} placeholder="207-XXX-XXXX"/></Field>
       </Section>
 
       <Section label="About the event" icon={ic.cal}>
@@ -439,9 +482,6 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
         </Field>
         <Field label="Description" required hint="This is your primary marketing tool. Explain what people will learn, who should attend, and why." error={err.description}>
           <QuillEditor value={form.description} onChange={v=>uf('description',v)}/>
-        </Field>
-        <Field label="Short teaser" hint="Optional. Overrides the auto-generated snippet on the card. Leave blank to auto-generate from Description.">
-          <TextArea value={form.descriptionTeaser} onChange={v=>uf('descriptionTeaser',v)} placeholder="One sentence, ~180 chars."/>
         </Field>
       </Section>
 
@@ -487,26 +527,22 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
         <Field>
           <Check value={form.contactHours} onChange={v=>uf('contactHours',v)} label="Includes contact hours" hint="Shows a badge on the calendar card."/>
         </Field>
-        <Row cols="1fr 1fr">
-          <Field label="Materials URL" hint="Agenda, handouts (optional)"><Text value={form.materialsUrl} onChange={v=>uf('materialsUrl',v)} placeholder="https://..."/></Field>
-          <Field label="Registration deadline" hint="Last day to register (optional)"><Text type="date" value={form.registrationDeadline} onChange={v=>uf('registrationDeadline',v)}/></Field>
-        </Row>
+        <Field label="Registration deadline" hint="Last day to register (optional)"><Text type="date" value={form.registrationDeadline} onChange={v=>uf('registrationDeadline',v)}/></Field>
       </Section>
 
       <Section label="Confirm & submit" icon={ic.check}>
-        <Callout tone="info" title="Check the calendar first">
-          Make sure nothing else is planned for the same day, time, and audience.
-          <a href={CAL_URL} target="_blank" style={{marginLeft:6,color:B.tealInk,fontWeight:700}}>View calendar →</a>
-        </Callout>
-        <Field label="Does your event coincide with another DOE event?" required error={err.coincides}>
-          <BtnGroup value={form.coincides} onChange={v=>uf('coincides',v)} options={['No','Yes']}/>
-        </Field>
-        <Field label="Special notes" hint="Private notes to the Comms team, not shown on the calendar">
-          <TextArea value={form.specialNotes} onChange={v=>uf('specialNotes',v)} placeholder="Anything else we should know?" rows={3}/>
-        </Field>
-        {!editing&&<Field error={err.proofread}>
-          <Check value={form.proofread} onChange={v=>uf('proofread',v)} label="I have proofread all content — no spelling or grammatical errors." hint="Required before submitting."/>
-        </Field>}
+        {!editing && <div style={{background:'#fef2f2',border:`2px solid ${B.rust}`,borderRadius:10,padding:'16px 18px',marginBottom:18}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+            <Sv d={ic.warn} size={18} c={B.rust}/>
+            <div style={{fontFamily:'League Spartan',fontWeight:800,fontSize:14,color:B.rust,letterSpacing:'.04em',textTransform:'uppercase'}}>Publishes directly to the public calendar</div>
+          </div>
+          <p style={{fontSize:13,color:B.ink2,lineHeight:1.55,margin:'0 0 12px'}}>
+            When you submit, this event goes live on <strong>www.maine.gov/doe/calendar</strong> immediately. There is no review step. Make sure everything is proofread, all details are confirmed, and you have approval from the appropriate DOE supervisor(s) to post this event publicly.
+          </p>
+          <Field error={err.approved}>
+            <Check value={form.approved} onChange={v=>uf('approved',v)} label="I have checked with the appropriate DOE supervisor(s) and have approval to publish this event."/>
+          </Field>
+        </div>}
         <div style={{display:'flex',gap:10,marginTop:20,flexWrap:'wrap',justifyContent:'space-between'}}>
           <div style={{display:'flex',gap:10}}>
             <Btn onClick={onSubmit} disabled={!canSubmit||busy} variant={editing?'success':'primary'} icon={editing?ic.save:ic.check}>
@@ -520,7 +556,7 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
         </Callout>}
       </Section>
     </div>
-    <div><CardPreview form={form}/></div>
+    <div><div style={{position:'sticky',top:20}}><CardPreview form={form}/><ModalPreview form={form}/></div></div>
   </div>;
 }
 
@@ -644,11 +680,13 @@ function App(){
       const r=await fetch(API,{method:'POST',body:JSON.stringify(body)});
       const j=await r.json();
       if(j.error){setMessage({tone:'err',text:j.error});}
-      else{
-        setMessage({tone:'ok',text:editing?'Changes saved. Calendar updates within 5 minutes.':'Event submitted! It will appear on the calendar shortly.'});
-        if(!editing){setForm(EMPTY);setShowForm(false);}
+      else if(editing){
+        setMessage({tone:'ok',text:'Changes saved. Calendar updates within 5 minutes.'});
+      } else {
+        setMessage({tone:'ok',text:'Event submitted and posted to the calendar. A confirmation with an edit link has been sent to '+(form.contactEmail||'the contact email')+'. (Save that email — for now it\'s the only way to edit later. A better edit flow is coming soon.)'});
+        setForm(EMPTY);setShowForm(false);
       }
-    }catch(e){setMessage({tone:'err',text:'Network error — please try again.'});}
+    }catch(e){setMessage({tone:'err',text:'Network error - please try again.'});}
     setBusy(false);
   }
   async function del(){
