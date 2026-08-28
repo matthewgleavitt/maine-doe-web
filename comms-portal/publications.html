@@ -66,6 +66,14 @@ const COMMONS_HOME_URL='https://www.maine.gov/doe/commons/';
 const COMMONS_ADD_URL='https://www.maine.gov/doe/node/add/blog_post';
 const COMMONS_DIRECTIONS_URL='commons-directions.html';
 
+// WordPress.com public API — no auth required for public site posts.
+const NEWSROOM_URL='https://mainedoenews.net/';
+const NEWSROOM_SITE='mainedoenews.net';
+const NEWSROOM_WP_STATS_URL='https://wordpress.com/stats/day/mainedoenews.net';
+const NEWSROOM_SUBMIT_URL='https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039';
+
+function stripHtml(s){return String(s||'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&#8217;/g,"'").replace(/&#8216;/g,"'").replace(/&#8220;/g,'"').replace(/&#8221;/g,'"').replace(/&#8230;/g,'…').replace(/\s+/g,' ').trim();}
+
 // Fallback if the Commons feed can't be fetched (Apps Script down, CORS, etc.)
 const FALLBACK_POSTS=[
   {title:'Teaching 9/11: The 25th Anniversary',team:'Interdisciplinary Instruction',url:'https://www.maine.gov/doe/commons/interdisciplinary-instruction/teaching-911-25th-anniversary',excerpt:'The Maine Department of Education would like to introduce resources that help educators address this important and challenging milestone.',image:'',date:''},
@@ -102,6 +110,9 @@ function App(){
   const [tab,setTab]=useState('overview');
   const [commonsPosts,setCommonsPosts]=useState(null);
   const [commonsLoading,setCommonsLoading]=useState(true);
+  const [newsroomPosts,setNewsroomPosts]=useState(null);
+  const [newsroomMeta,setNewsroomMeta]=useState(null);
+  const [newsroomLoading,setNewsroomLoading]=useState(true);
   const PER_PAGE=25;
 
   useEffect(()=>{
@@ -123,6 +134,37 @@ function App(){
     })();
   },[]);
 
+  useEffect(()=>{
+    (async()=>{
+      try{
+        // WordPress.com REST v1.1 — CORS-enabled, no auth needed for public posts.
+        const [postsRes,siteRes]=await Promise.all([
+          fetch(`https://public-api.wordpress.com/rest/v1.1/sites/${NEWSROOM_SITE}/posts?number=6&fields=ID,title,URL,excerpt,date,featured_image,author`),
+          fetch(`https://public-api.wordpress.com/rest/v1.1/sites/${NEWSROOM_SITE}?fields=name,description,subscribers_count`),
+        ]);
+        const postsJ=await postsRes.json();
+        const siteJ=await siteRes.json();
+        const posts=(postsJ.posts||[]).map(p=>({
+          id:p.ID,
+          title:stripHtml(p.title||''),
+          url:(p.URL||'').replace(/^http:/,'https:'),
+          excerpt:stripHtml(p.excerpt||'').slice(0,200),
+          date:p.date||'',
+          image:(p.featured_image||'').replace(/^http:/,'https:'),
+          author:p.author&&p.author.name?p.author.name:'',
+        }));
+        setNewsroomPosts(posts);
+        setNewsroomMeta({
+          name:siteJ.name||'Maine DOE Newsroom',
+          description:siteJ.description||'',
+          subscribers:siteJ.subscribers_count||0,
+          total:postsJ.found||posts.length,
+        });
+      }catch(e){setNewsroomPosts([]);}
+      setNewsroomLoading(false);
+    })();
+  },[]);
+
   const campaigns=(data&&data.campaigns)||[];
   const s=(data&&data.summary)||{};
 
@@ -138,6 +180,7 @@ function App(){
   const tabs=[
     {id:'overview',label:'Overview',icon:ic.check,accent:'#8b5cf6'},
     {id:'commons',label:'The Commons',icon:ic.book,accent:'#0d7ba0'},
+    {id:'newsroom',label:'Newsroom',icon:ic.news,accent:'#8a2e13'},
     {id:'builder',label:'Newsletter Builder',icon:ic.layers,accent:'#42c3f7'},
     {id:'data',label:'Mailchimp',icon:ic.mail,accent:'#f472b6'},
   ];
@@ -384,6 +427,103 @@ function App(){
               <h4 style={{fontSize:16,fontWeight:800,color:B.navy,margin:'0 0 8px',lineHeight:1.3,letterSpacing:'.005em'}}>{p.title}</h4>
               <p style={{fontSize:13,color:B.txtSec,lineHeight:1.55,fontWeight:500,margin:'0 0 12px',flex:1}}>{p.excerpt}</p>
               <div style={{fontSize:12,fontWeight:700,color:color,display:'inline-flex',alignItems:'center',gap:5}}>Read on Commons <Sv d={ic.ext} size={12} color={color}/></div>
+            </div>
+          </a>;
+        })}
+      </div>}
+    </div>}
+
+    {/* ── NEWSROOM TAB ── */}
+    {tab==='newsroom'&&<div style={{animation:'fadeIn 0.3s ease'}}>
+
+      {/* Intro card */}
+      <div style={{background:B.wh,borderRadius:16,border:`2px solid ${B.border}55`,padding:'26px 28px',marginBottom:20,boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
+        <div style={{display:'flex',alignItems:'flex-start',gap:16,marginBottom:14,flexWrap:'wrap'}}>
+          <div style={{width:52,height:52,borderRadius:14,background:'linear-gradient(135deg,#8a2e13,#b23a15)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(138,46,19,0.28)'}}>
+            <Sv d={ic.news} size={26} color="#fff"/>
+          </div>
+          <div style={{flex:1,minWidth:280}}>
+            <h2 style={{fontSize:22,fontWeight:800,color:B.navy,margin:'0 0 8px',letterSpacing:'.01em'}}>Maine DOE Newsroom</h2>
+            <p style={{fontSize:14.5,color:B.txtSec,lineHeight:1.65,fontWeight:500,margin:0}}>
+              The department's digital newspaper — professional-learning notices, school and program highlights, grant opportunities, and time-sensitive announcements. Everything published here is bundled into the weekly <strong style={{color:B.navy}}>Maine DOE Update</strong> that goes out every Friday.
+            </p>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:10,flexWrap:'wrap',paddingTop:14,borderTop:`1px solid ${B.border}30`}}>
+          <a href={NEWSROOM_URL} target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 22px',borderRadius:12,background:'linear-gradient(135deg,#8a2e13,#b23a15)',color:'#fff',textDecoration:'none',fontSize:14,fontWeight:700,boxShadow:'0 4px 14px rgba(138,46,19,0.28)'}}>
+            <Sv d={ic.ext} size={16} color="#fff"/> Visit the Newsroom
+          </a>
+          <a href={NEWSROOM_SUBMIT_URL} target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 22px',borderRadius:12,background:B.wh,color:B.navy,textDecoration:'none',fontSize:14,fontWeight:700,border:`2px solid ${B.border}80`}}>
+            <Sv d={["M12 5v14","M5 12h14"]} size={16} color={B.navy}/> Submit an article
+          </a>
+          <a href={NEWSROOM_WP_STATS_URL} target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 22px',borderRadius:12,background:'transparent',color:B.txtSec,textDecoration:'none',fontSize:14,fontWeight:600}}>
+            Full stats dashboard <Sv d={ic.ext} size={14} color={B.txtSec}/>
+          </a>
+        </div>
+      </div>
+
+      {/* Site stats — from the public API */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:14,marginBottom:20}}>
+        {[
+          {l:'Articles published',v:newsroomMeta?.total?newsroomMeta.total.toLocaleString():'—',c:'#8a2e13'},
+          {l:'Email subscribers',v:newsroomMeta?.subscribers?newsroomMeta.subscribers.toLocaleString():'—',c:'#b23a15'},
+          {l:'Included in',v:'Weekly DOE Update',c:'#0d7ba0'},
+          {l:'Feed',v:'Live · public API',c:'#16a34a'},
+        ].map((m,i)=>(
+          <div key={i} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}55`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+            <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:800,letterSpacing:.5,marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
+              <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
+            </div>
+            <div style={{fontSize:m.v.length>10?18:22,fontWeight:800,color:B.navy,lineHeight:1.15}}>{m.v}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Stats note */}
+      <div style={{padding:'14px 18px',borderRadius:10,background:'#8a2e1308',border:'1.5px solid #8a2e1325',marginBottom:20,fontSize:13,color:B.txtSec,lineHeight:1.6,fontWeight:500}}>
+        <strong style={{color:B.navy}}>A note on stats.</strong> Article and subscriber counts here come from the public WordPress.com API. Full analytics — page views, referrers, top posts, subscriber activity — live in the WordPress.com admin at <a href={NEWSROOM_WP_STATS_URL} target="_blank" rel="noopener noreferrer" style={{color:'#8a2e13',fontWeight:700}}>wordpress.com/stats</a> and require the site login.
+      </div>
+
+      {/* Recent posts feed */}
+      <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:14,paddingLeft:2}}>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <h3 style={{fontSize:15,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.05em'}}>Latest from the Newsroom</h3>
+          {!newsroomLoading&&newsroomPosts&&newsroomPosts.length>0&&<span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 9px',borderRadius:20,background:'#16a34a15',fontSize:10,fontWeight:800,color:'#16a34a',textTransform:'uppercase',letterSpacing:'.06em'}}>
+            <span style={{width:5,height:5,borderRadius:'50%',background:'#16a34a'}}/>Live
+          </span>}
+        </div>
+        <a href={NEWSROOM_URL} target="_blank" rel="noopener noreferrer" style={{fontSize:12,fontWeight:700,color:'#8a2e13',textDecoration:'none'}}>View all →</a>
+      </div>
+      {newsroomLoading?<div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'40px 20px',gap:12,background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`}}>
+        <Sv d={ic.spin} size={20} color="#8a2e13" style={{animation:'spin 1s linear infinite'}}/>
+        <span style={{color:B.txtSec,fontSize:13,fontWeight:600}}>Loading latest articles...</span>
+      </div>
+      :newsroomPosts&&newsroomPosts.length===0?<div style={{padding:'32px 20px',textAlign:'center',background:B.wh,borderRadius:14,border:`1.5px dashed ${B.border}80`}}>
+        <Sv d={ic.news} size={32} color={B.txtMute}/>
+        <p style={{marginTop:12,fontSize:13,color:B.txtMute,fontWeight:500}}>Could not load Newsroom articles. <a href={NEWSROOM_URL} target="_blank" rel="noopener noreferrer" style={{color:'#8a2e13',fontWeight:700}}>Open the Newsroom directly.</a></p>
+      </div>
+      :<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:16}}>
+        {(newsroomPosts||[]).map((p,i)=>{
+          const hasImage=!!p.image;
+          return <a key={p.id||i} href={p.url} target="_blank" rel="noopener noreferrer"
+            style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,overflow:'hidden',textDecoration:'none',color:'inherit',display:'flex',flexDirection:'column',transition:'transform .15s, box-shadow .15s, border-color .15s'}}
+            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 8px 20px rgba(0,0,0,0.08)';e.currentTarget.style.borderColor='#8a2e1380';}}
+            onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='none';e.currentTarget.style.borderColor=B.border+'55';}}>
+            <div style={{height:160,background:hasImage?`#0c1926 url("${p.image}") center/cover no-repeat`:`linear-gradient(135deg,#8a2e13,${B.navy})`,position:'relative',overflow:'hidden'}}>
+              {!hasImage&&<div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)',backgroundSize:'40px 40px'}}/>}
+              {hasImage&&<div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(12,25,38,0.55) 0%,rgba(12,25,38,0.15) 45%,transparent 100%)'}}/>}
+              <div style={{position:'absolute',bottom:12,left:14,right:14,display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
+                <span style={{fontSize:10,fontWeight:800,color:'#fff',textTransform:'uppercase',letterSpacing:'.08em',padding:'4px 10px',borderRadius:20,background:'rgba(12,25,38,0.72)',backdropFilter:'blur(6px)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'70%'}}>Newsroom</span>
+                {p.date&&<span style={{fontSize:10,fontWeight:700,color:'#e2e8f0',padding:'4px 8px',borderRadius:20,background:'rgba(12,25,38,0.55)',backdropFilter:'blur(6px)',whiteSpace:'nowrap'}}>{fmtDate(p.date)}</span>}
+              </div>
+            </div>
+            <div style={{padding:'18px 20px 20px',flex:1,display:'flex',flexDirection:'column'}}>
+              <h4 style={{fontSize:16,fontWeight:800,color:B.navy,margin:'0 0 8px',lineHeight:1.3,letterSpacing:'.005em'}}>{p.title}</h4>
+              <p style={{fontSize:13,color:B.txtSec,lineHeight:1.55,fontWeight:500,margin:'0 0 12px',flex:1}}>{p.excerpt}</p>
+              <div style={{fontSize:12,fontWeight:700,color:'#8a2e13',display:'inline-flex',alignItems:'center',gap:5}}>Read the article <Sv d={ic.ext} size={12} color="#8a2e13"/></div>
             </div>
           </a>;
         })}
