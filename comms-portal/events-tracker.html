@@ -734,7 +734,7 @@ function App(){
   }
   function confirm2(msg){return window.confirm(msg);}
 
-  return <div style={{maxWidth:1280,margin:'0 auto'}}>
+  return <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px'}}>
     {/* Hero — matches other portal trackers (dark navy panel with grid overlay) */}
     <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:'32px',marginBottom:28,position:'relative',overflow:'hidden'}}>
       <div style={{position:'absolute',inset:0,pointerEvents:'none',backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
@@ -763,7 +763,7 @@ function App(){
         </div>
       </div>
     </div>
-    <div style={{padding:'0 24px 24px'}}>
+    <div style={{padding:'0 0 24px'}}>
 
     {/* Submission tips */}
     {!editMode&&!showForm&&<Callout tone="info" title="Before you submit">

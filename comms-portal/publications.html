@@ -63,13 +63,30 @@ const NEWSLETTER_BUILDER_URL='https://www.maine.gov/doe/sites/maine.gov.doe/file
 const NEWSLETTER_TUTORIAL_URL='https://stateofmaine-my.sharepoint.com/:v:/g/personal/matthew_g_leavitt_maine_gov/IQBCNjXJdtVnQoluVjwZZKrpAapypefB97Nk71hrACsyjhc?e=ujyRxW';
 const NEWSLETTER_SAMPLE_URL='https://www.maine.gov/doe/newsletters/general/escape-ordinary-2026-05-22';
 const COMMONS_HOME_URL='https://www.maine.gov/doe/commons/';
-const COMMONS_ADD_URL='https://www.maine.gov/node/add/blog_post';
+const COMMONS_ADD_URL='https://www.maine.gov/doe/node/add/blog_post';
 const COMMONS_DIRECTIONS_URL='commons-directions.html';
 
-const FEATURED_POSTS=[
-  {title:'Teaching 9/11 — 25th anniversary',team:'Interdisciplinary Instruction',color:'#8a2e13',url:'https://www.maine.gov/doe/commons/interdisciplinary-instruction/teaching-911-25th-anniversary',excerpt:'Practical guidance and resources for teaching about the September 11 attacks with the anniversary approaching.'},
-  {title:'School Nurse Summer Institute 2026',team:'School Health',color:'#0d7ba0',url:'https://www.maine.gov/doe/commons/school-health/school-nurse-summer-institute-2026',excerpt:'A recap of the annual Summer Institute for Maine school nurses — sessions, resources, and takeaways from the field.'},
+// Fallback if the Commons feed can't be fetched (Apps Script down, CORS, etc.)
+const FALLBACK_POSTS=[
+  {title:'Teaching 9/11: The 25th Anniversary',team:'Interdisciplinary Instruction',url:'https://www.maine.gov/doe/commons/interdisciplinary-instruction/teaching-911-25th-anniversary',excerpt:'The Maine Department of Education would like to introduce resources that help educators address this important and challenging milestone.',image:'',date:''},
+  {title:'School Nurse Summer Institute 2026',team:'School Health',url:'https://www.maine.gov/doe/commons/school-health/school-nurse-summer-institute-2026',excerpt:'Thank You For Attending School Nurse Summer Institute!',image:'',date:''},
 ];
+
+// Deterministic team color palette (accessible band colors for card banners)
+const TEAM_COLORS=['#0d7ba0','#8a2e13','#274f73','#4a6a80','#6b3a5a','#a86018','#182b3c','#3f7f5e'];
+function teamColor(team){
+  var s=String(team||''); var h=0;
+  for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0;
+  return TEAM_COLORS[h%TEAM_COLORS.length];
+}
+function fmtDate(iso){
+  if(!iso) return '';
+  try{
+    var d=new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  }catch(e){return '';}
+}
 
 function rateColor(rate,type){
   if(type==='open') return rate>=40?'#16a34a':rate>=25?'#f59e0b':'#ef4444';
@@ -83,12 +100,26 @@ function App(){
   const [search,setSearch]=useState('');
   const [page,setPage]=useState(1);
   const [tab,setTab]=useState('commons');
+  const [commonsPosts,setCommonsPosts]=useState(null);
+  const [commonsLoading,setCommonsLoading]=useState(true);
   const PER_PAGE=25;
 
   useEffect(()=>{
     (async()=>{
       try{const r=await fetch(API+'?type=publications');const j=await r.json();setData(j);}catch(e){setData({error:e.message});}
       setLoading(false);
+    })();
+  },[]);
+
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const r=await fetch(API+'?type=commons');
+        const j=await r.json();
+        if(j&&Array.isArray(j.posts)&&j.posts.length) setCommonsPosts(j.posts);
+        else setCommonsPosts(FALLBACK_POSTS);
+      }catch(e){setCommonsPosts(FALLBACK_POSTS);}
+      setCommonsLoading(false);
     })();
   },[]);
 
@@ -113,7 +144,7 @@ function App(){
   return <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px 40px',animation:'fadeIn 0.3s ease'}}>
 
     {/* Hero */}
-    <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:32,marginBottom:0,position:'relative',overflow:'hidden',marginLeft:-28,marginRight:-28}}>
+    <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:32,marginBottom:0,position:'relative',overflow:'hidden'}}>
       <div style={{position:'absolute',inset:0,pointerEvents:'none',backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
       <div style={{position:'relative',zIndex:1}}>
         <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:8}}>
@@ -212,29 +243,43 @@ function App(){
         <strong style={{color:B.navy}}>Rule of thumb:</strong> if it's news, it goes to the Newsroom. If it's the how-to behind the work, it goes to the Commons.
       </div>
 
-      {/* Featured posts */}
+      {/* Featured posts — live feed from The Commons */}
       <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:14,paddingLeft:2}}>
-        <h3 style={{fontSize:15,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.05em'}}>Featured posts</h3>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <h3 style={{fontSize:15,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.05em'}}>Latest from The Commons</h3>
+          {!commonsLoading&&commonsPosts&&<span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 9px',borderRadius:20,background:'#16a34a15',fontSize:10,fontWeight:800,color:'#16a34a',textTransform:'uppercase',letterSpacing:'.06em'}}>
+            <span style={{width:5,height:5,borderRadius:'50%',background:'#16a34a'}}/>Live
+          </span>}
+        </div>
         <a href={COMMONS_HOME_URL} target="_blank" rel="noopener noreferrer" style={{fontSize:12,fontWeight:700,color:'#0d7ba0',textDecoration:'none'}}>View all →</a>
       </div>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:16}}>
-        {FEATURED_POSTS.map((p,i)=>(
-          <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+      {commonsLoading?<div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'40px 20px',gap:12,background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`}}>
+        <Sv d={ic.spin} size={20} color="#0d7ba0" style={{animation:'spin 1s linear infinite'}}/>
+        <span style={{color:B.txtSec,fontSize:13,fontWeight:600}}>Loading latest posts...</span>
+      </div>:<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:16}}>
+        {(commonsPosts||FALLBACK_POSTS).map((p,i)=>{
+          const color=teamColor(p.team);
+          const hasImage=!!p.image;
+          return <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
             style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,overflow:'hidden',textDecoration:'none',color:'inherit',display:'flex',flexDirection:'column',transition:'transform .15s, box-shadow .15s, border-color .15s'}}
-            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 8px 20px rgba(0,0,0,0.08)';e.currentTarget.style.borderColor=p.color+'80';}}
+            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 8px 20px rgba(0,0,0,0.08)';e.currentTarget.style.borderColor=color+'80';}}
             onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='none';e.currentTarget.style.borderColor=B.border+'55';}}>
-            <div style={{height:140,background:`linear-gradient(135deg,${p.color},${B.navy})`,position:'relative',overflow:'hidden'}}>
-              <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)',backgroundSize:'40px 40px'}}/>
-              <div style={{position:'absolute',bottom:12,left:14,fontSize:10,fontWeight:800,color:'#fff',textTransform:'uppercase',letterSpacing:'.08em',padding:'4px 10px',borderRadius:20,background:'rgba(0,0,0,0.35)',backdropFilter:'blur(4px)'}}>{p.team}</div>
+            <div style={{height:160,background:hasImage?`#0c1926 url("${p.image}") center/cover no-repeat`:`linear-gradient(135deg,${color},${B.navy})`,position:'relative',overflow:'hidden'}}>
+              {!hasImage&&<div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)',backgroundSize:'40px 40px'}}/>}
+              {hasImage&&<div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(12,25,38,0.55) 0%,rgba(12,25,38,0.15) 45%,transparent 100%)'}}/>}
+              <div style={{position:'absolute',bottom:12,left:14,right:14,display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
+                <span style={{fontSize:10,fontWeight:800,color:'#fff',textTransform:'uppercase',letterSpacing:'.08em',padding:'4px 10px',borderRadius:20,background:'rgba(12,25,38,0.72)',backdropFilter:'blur(6px)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'70%'}}>{p.team||'Commons'}</span>
+                {p.date&&<span style={{fontSize:10,fontWeight:700,color:'#e2e8f0',padding:'4px 8px',borderRadius:20,background:'rgba(12,25,38,0.55)',backdropFilter:'blur(6px)',whiteSpace:'nowrap'}}>{fmtDate(p.date)}</span>}
+              </div>
             </div>
             <div style={{padding:'18px 20px 20px',flex:1,display:'flex',flexDirection:'column'}}>
               <h4 style={{fontSize:16,fontWeight:800,color:B.navy,margin:'0 0 8px',lineHeight:1.3,letterSpacing:'.005em'}}>{p.title}</h4>
               <p style={{fontSize:13,color:B.txtSec,lineHeight:1.55,fontWeight:500,margin:'0 0 12px',flex:1}}>{p.excerpt}</p>
-              <div style={{fontSize:12,fontWeight:700,color:p.color,display:'inline-flex',alignItems:'center',gap:5}}>Read on Commons <Sv d={ic.ext} size={12} color={p.color}/></div>
+              <div style={{fontSize:12,fontWeight:700,color:color,display:'inline-flex',alignItems:'center',gap:5}}>Read on Commons <Sv d={ic.ext} size={12} color={color}/></div>
             </div>
-          </a>
-        ))}
-      </div>
+          </a>;
+        })}
+      </div>}
     </div>}
 
     {/* ── NEWSLETTER BUILDER TAB ── */}
@@ -299,7 +344,7 @@ function App(){
           </div>
           <div style={{flex:1,minWidth:260}}>
             <div style={{fontSize:14,fontWeight:800,color:'#fff',marginBottom:3}}>Thinking about using it for your team?</div>
-            <div style={{fontSize:13,color:'#94a3b8',lineHeight:1.5,fontWeight:500}}>Send Comms — Matt, Rachel, or Chloe — a note with the kind of update, who it's for, and roughly how often you'd send. If you've got an example issue, we can turn it straight into a template.</div>
+            <div style={{fontSize:13,color:'#94a3b8',lineHeight:1.5,fontWeight:500}}>Send Matt and Rachel a note with the kind of update, who it's for, and roughly how often you'd send. If you've got an example issue, we can turn it straight into a template.</div>
           </div>
           <a href="mailto:matthew.g.leavitt@maine.gov,rachel.paling@maine.gov" style={{display:'inline-flex',alignItems:'center',gap:6,padding:'10px 18px',borderRadius:10,background:B.teal,color:B.navy,textDecoration:'none',fontSize:13,fontWeight:700}}>
             Contact Comms

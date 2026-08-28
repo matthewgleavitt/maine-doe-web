@@ -576,6 +576,9 @@ function doGet(e) {
     } else if (type === 'publications') {
       result = getPublications();
 
+    } else if (type === 'commons') {
+      result = getCommonsPosts();
+
     } else if (type === 'drupal_pages') {
       result = getDrupalPages();
 
@@ -915,6 +918,97 @@ function doPost(e) {
 // ═══════════════════════════════════════════
 // PUBLICATIONS (Mailchimp)
 // ═══════════════════════════════════════════
+
+// Scrape the public Maine DOE Commons index page and return recent posts.
+// The Drupal site doesn't expose JSON:API for blog_post, so we parse the
+// rendered HTML — the .blog-card block structure is stable enough for this.
+function getCommonsPosts() {
+  var CACHE_KEY = 'commons_posts_v1';
+  var cache = CacheService.getScriptCache();
+  var cached = cache.get(CACHE_KEY);
+  if (cached) {
+    try { return JSON.parse(cached); } catch (e) { /* fall through */ }
+  }
+
+  var url = 'https://www.maine.gov/doe/commons';
+  var html;
+  try {
+    var resp = UrlFetchApp.fetch(url, {
+      muteHttpExceptions: true,
+      followRedirects: true,
+      headers: { 'User-Agent': 'Mozilla/5.0 MaineDOE-CommsPortal' }
+    });
+    if (resp.getResponseCode() !== 200) {
+      return { error: 'Commons returned ' + resp.getResponseCode(), posts: [] };
+    }
+    html = resp.getContentText();
+  } catch (err) {
+    return { error: 'Fetch failed: ' + err.message, posts: [] };
+  }
+
+  var posts = [];
+  var cardRe = /<div class="blog-card">([\s\S]*?)<\/div>\s*<\/span>\s*<\/div>\s*<\/div>/g;
+  var m;
+  while ((m = cardRe.exec(html)) !== null) {
+    var body = m[1];
+
+    var img = '';
+    var imgM = body.match(/<img[^>]+src="([^"]+)"/);
+    if (imgM) {
+      img = imgM[1];
+      if (img.indexOf('http') !== 0) img = 'https://www.maine.gov' + img;
+    }
+
+    var team = '';
+    var teamM = body.match(/<span class="blog-section-pill[^"]*">([^<]+)<\/span>/);
+    if (teamM) team = _decodeEntities(teamM[1].trim());
+
+    var date = '';
+    var dateM = body.match(/<time datetime="([^"]+)"/);
+    if (dateM) date = dateM[1];
+
+    var title = '';
+    var href = '';
+    var titleM = body.match(/<h2 class="blog-card__title">\s*<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/);
+    if (titleM) {
+      href = titleM[1];
+      if (href.indexOf('http') !== 0) href = 'https://www.maine.gov' + href;
+      title = _decodeEntities(titleM[2].replace(/<[^>]+>/g, '').trim());
+    }
+
+    var excerpt = '';
+    var exM = body.match(/<p class="blog-card__excerpt">([\s\S]*?)<\/p>/);
+    if (exM) excerpt = _decodeEntities(exM[1].replace(/<[^>]+>/g, '').trim());
+
+    if (title && href) {
+      posts.push({
+        title: title,
+        team: team,
+        date: date,
+        excerpt: excerpt,
+        image: img,
+        url: href,
+      });
+    }
+  }
+
+  var result = { posts: posts, count: posts.length, fetched: new Date().toISOString() };
+  try { cache.put(CACHE_KEY, JSON.stringify(result), 900); } catch (e) { /* cache size cap; ignore */ }
+  return result;
+}
+
+function _decodeEntities(s) {
+  return String(s || '')
+    .replace(/&amp;/g, '&')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&mdash;/g, '—')
+    .replace(/&ndash;/g, '–')
+    .replace(/&hellip;/g, '…');
+}
 
 function getPublications() {
   var props = PropertiesService.getScriptProperties();

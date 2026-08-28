@@ -428,42 +428,44 @@ function Portal(){
           {/* ── DASHBOARD ── */}
           {section==='dashboard'&&<div style={{height:'100%',overflowY:'auto'}}>
 
-            {/* Hero with background image */}
-            <div style={{position:'relative',overflow:'hidden',minHeight:280}}>
-              {/* Background image - replace URL with your uploaded image */}
-              <div style={{position:'absolute',inset:0,
-                backgroundImage:'url(https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/hero-bg.jpg)',
-                backgroundSize:'cover',backgroundPosition:'center 40%',filter:'blur(2px) brightness(0.35)',transform:'scale(1.05)'}}/>
-              {/* Gradient overlay */}
-              <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,rgba(12,25,38,0.85),rgba(22,45,68,0.7))'}}/>
-              {/* Grid pattern */}
-              <div style={{position:'absolute',inset:0,pointerEvents:'none',
-                backgroundImage:'linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)',
-                backgroundSize:'60px 60px',opacity:.5}}/>
+            {/* Hero — contained to match other portal pages */}
+            <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px'}}>
+              <div style={{position:'relative',overflow:'hidden',minHeight:220,borderRadius:'0 0 20px 20px'}}>
+                {/* Background image */}
+                <div style={{position:'absolute',inset:0,
+                  backgroundImage:'url(https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/hero-bg.jpg)',
+                  backgroundSize:'cover',backgroundPosition:'center 40%',filter:'blur(2px) brightness(0.35)',transform:'scale(1.05)'}}/>
+                {/* Gradient overlay */}
+                <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,rgba(12,25,38,0.9),rgba(22,45,68,0.75))'}}/>
+                {/* Grid pattern */}
+                <div style={{position:'absolute',inset:0,pointerEvents:'none',
+                  backgroundImage:'linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)',
+                  backgroundSize:'60px 60px',opacity:.5}}/>
 
-              <div style={{position:'relative',zIndex:1,maxWidth:1060,margin:'0 auto',padding:'48px 28px 44px'}}>
-                <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:20}}>
-                  <div style={{background:'#fff',borderRadius:16,
-                    display:'flex',alignItems:'center',justifyContent:'center',
-                    boxShadow:'0 8px 32px rgba(66,195,247,0.25)',padding:'10px 24px'}}>
-                    <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/maine-doe-logo.png" alt="Maine DOE" style={{height:48,objectFit:'contain'}}/>
-                  </div>
-                  <div>
-                    <div style={{fontSize:11,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',color:'#42c3f7',marginBottom:4,display:'flex',alignItems:'center',gap:8}}>
-                      <span style={{width:16,height:2,background:'#42c3f7',borderRadius:1}}/>Maine DOE
+                <div style={{position:'relative',zIndex:1,padding:'40px 32px 36px'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:16}}>
+                    <div style={{background:'#fff',borderRadius:14,
+                      display:'flex',alignItems:'center',justifyContent:'center',
+                      boxShadow:'0 8px 32px rgba(66,195,247,0.25)',padding:'8px 20px'}}>
+                      <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/maine-doe-logo.png" alt="Maine DOE" style={{height:40,objectFit:'contain'}}/>
                     </div>
-                    <h1 style={{fontSize:'clamp(28px,3.5vw,36px)',fontWeight:800,color:'#ffffff',lineHeight:1.1,letterSpacing:'-0.02em'}}>
-                      Communications <span style={{background:'linear-gradient(135deg,#42c3f7,#34d399)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Portal</span>
-                    </h1>
+                    <div>
+                      <div style={{fontSize:11,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',color:'#42c3f7',marginBottom:4,display:'flex',alignItems:'center',gap:8}}>
+                        <span style={{width:16,height:2,background:'#42c3f7',borderRadius:1}}/>Maine DOE
+                      </div>
+                      <h1 style={{fontFamily:"'League Spartan','DM Sans',sans-serif",fontSize:'clamp(24px,3vw,32px)',fontWeight:800,color:'#ffffff',lineHeight:1.1,letterSpacing:'.005em'}}>
+                        Communications <span style={{background:'linear-gradient(135deg,#42c3f7,#34d399)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Portal</span>
+                      </h1>
+                    </div>
                   </div>
+                  <p style={{fontSize:14,color:'#cbd5e1',lineHeight:1.65,maxWidth:520,fontWeight:500,marginBottom:0}}>
+                    Your one-stop hub for analytics, brand resources, templates, and communications workflows.
+                  </p>
                 </div>
-                <p style={{fontSize:15,color:'#cbd5e1',lineHeight:1.7,maxWidth:520,fontWeight:500,marginBottom:0}}>
-                  Your one-stop hub for analytics, brand resources, templates, and communications workflows.
-                </p>
               </div>
             </div>
 
-            <div style={{maxWidth:1060,margin:'0 auto',padding:'28px 28px 60px'}}>
+            <div style={{maxWidth:1200,margin:'0 auto',padding:'28px 28px 60px'}}>
 
               {/* Module cards */}
               <h3 style={{fontSize:14,fontWeight:700,color:'#182b3c',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
@@ -485,7 +487,7 @@ function Portal(){
 
           {/* ── WEBSITE MINI PORTAL ── */}
           {section==='website'&&!webSub&&<div style={{height:'100%',overflowY:'auto'}}>
-            <div style={{maxWidth:1060,margin:'0 auto',padding:'0 28px'}}>
+            <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px'}}>
               <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:32,marginBottom:28,position:'relative',overflow:'hidden'}}>
                 <div style={{position:'absolute',inset:0,pointerEvents:'none',
                   backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',
