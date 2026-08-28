@@ -579,6 +579,13 @@ function doGet(e) {
     } else if (type === 'commons') {
       result = getCommonsPosts();
 
+    } else if (type === 'my_events') {
+      // Submitter self-service: list events where Contact Email OR Submitter Email
+      // matches. No token required — this is an internal-portal convenience, and
+      // the calendar is already public. Returns each event's edit token so the
+      // client can call updateEvent / deleteEvent without prompting again.
+      result = getMyEvents((e.parameter && e.parameter.email) || '');
+
     } else if (type === 'drupal_pages') {
       result = getDrupalPages();
 
@@ -611,6 +618,9 @@ function doGet(e) {
       // Fresh — user-facing writes should show quickly
       case 'calendar': case 'events': case 'event': case 'commons':
         ttl = 300; break;
+      // Real-time — manage view needs to reflect the edit the user JUST made
+      case 'my_events':
+        ttl = 30; break;
       // Moderate — GA and template data
       case 'pages': case 'files': case 'file_pages': case 'youtube':
       case 'templates': case 'announcements':
@@ -2086,7 +2096,7 @@ function updateEvent(id, token, fields) {
 
   // Editable field whitelist. Never let a user rewrite Edit Token or Event ID.
   var editable = [
-    'Contact Name', 'Contact Email', 'Contact Phone',
+    'Contact Name', 'Contact Email', 'Contact Phone', 'Submitter Email',
     'Focus Area', 'Title', 'Type',
     'Intended Audience', 'Description', 'Description Teaser',
     'Location Type', 'Venue Name', 'Venue Address',
@@ -2142,7 +2152,65 @@ function _openEventsSheet() {
   var header = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   var idx = {};
   for (var c = 0; c < header.length; c++) idx[String(header[c]).trim()] = c;
+  // Auto-add columns that later features assumed but the sheet was created without.
+  var appended = false;
+  ['Submitter Email'].forEach(function(name) {
+    if (typeof idx[name] !== 'number') {
+      var newCol = header.length + 1;
+      sheet.getRange(1, newCol).setValue(name);
+      header.push(name);
+      idx[name] = newCol - 1;
+      appended = true;
+    }
+  });
+  if (appended) SpreadsheetApp.flush();
   return { sheet: sheet, idx: idx, header: header };
+}
+
+// ---- MY EVENTS (submitter self-service listing) --------------
+// Returns all events tied to this email (as Contact Email or Submitter Email),
+// with just enough per-row data to power the manage view — including each
+// event's editToken so the client can update or cancel without a re-prompt.
+function getMyEvents(email) {
+  var e = String(email || '').trim().toLowerCase();
+  if (!e || e.indexOf('@') < 1) return { error: 'Enter a valid email address', events: [] };
+
+  var ctx = _openEventsSheet();
+  if (ctx.error) return { error: ctx.error, events: [] };
+
+  var idx = ctx.idx;
+  function col(name, row) { return typeof idx[name] === 'number' ? row[idx[name]] : ''; }
+
+  var data = ctx.sheet.getDataRange().getValues();
+  var out = [];
+  for (var r = 1; r < data.length; r++) {
+    var row = data[r];
+    var contact = String(col('Contact Email', row) || '').trim().toLowerCase();
+    var submitter = String(col('Submitter Email', row) || '').trim().toLowerCase();
+    if (contact !== e && submitter !== e) continue;
+    out.push({
+      id: String(col('Event ID', row) || ''),
+      editToken: String(col('Edit Token', row) || ''),
+      title: String(col('Title', row) || ''),
+      focusArea: String(col('Focus Area', row) || ''),
+      type: String(col('Type', row) || ''),
+      status: String(col('Status', row) || ''),
+      startDate: _isoDate(col('Start Date', row)),
+      startTime: _isoTime(col('Start Time', row)),
+      endDate: _isoDate(col('End Date', row)),
+      endTime: _isoTime(col('End Time', row)),
+      allDay: (function(v){var s=String(v||'').toLowerCase();return s==='yes'||s==='true'||s==='1';})(col('All Day', row)),
+      location: String(col('Location Type', row) || '') || 'Virtual',
+      venueName: String(col('Venue Name', row) || ''),
+      contactName: String(col('Contact Name', row) || ''),
+      contactEmail: String(col('Contact Email', row) || ''),
+      submitterEmail: String(col('Submitter Email', row) || ''),
+      submitted: String(col('Date Submitted', row) || ''),
+    });
+  }
+  // Newest first — matches the natural "what did I just submit" instinct.
+  out.sort(function(a,b){ return (b.submitted || '').localeCompare(a.submitted || ''); });
+  return { events: out, count: out.length };
 }
 
 function _findRowById(sheet, idx, id) {
@@ -2241,7 +2309,7 @@ function submitNewEvent(fields) {
 
   // Copy every allowed field from the submission body.
   var allowed = [
-    'Contact Name', 'Contact Email', 'Contact Phone',
+    'Contact Name', 'Contact Email', 'Contact Phone', 'Submitter Email',
     'Focus Area', 'Title', 'Type',
     'Intended Audience', 'Description', 'Description Teaser',
     'Location Type', 'Venue Name', 'Venue Address',
@@ -2254,6 +2322,11 @@ function submitNewEvent(fields) {
   for (var i = 0; i < allowed.length; i++) {
     var name = allowed[i];
     if (fields.hasOwnProperty(name)) set(name, fields[name]);
+  }
+  // Default Submitter Email = Contact Email so the manage lookup finds it even
+  // for events submitted before this feature existed.
+  if (typeof ctx.idx['Submitter Email'] === 'number' && !row[ctx.idx['Submitter Email']]) {
+    row[ctx.idx['Submitter Email']] = String(fields['Contact Email'] || '').trim();
   }
 
   ctx.sheet.appendRow(row);

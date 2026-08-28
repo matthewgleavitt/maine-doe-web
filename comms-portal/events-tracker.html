@@ -134,10 +134,10 @@ function BtnGroup({value,onChange,options}){
     })}
   </div>;
 }
-function Btn({onClick,children,variant='primary',size='md',disabled,icon,style}){
+function Btn({onClick,children,variant='primary',size='md',disabled,icon,style,type='button'}){
   const base={fontFamily:'inherit',fontWeight:700,fontSize:size==='sm'?12:14,padding:size==='sm'?'8px 14px':'12px 20px',borderRadius:8,cursor:disabled?'not-allowed':'pointer',border:'none',display:'inline-flex',alignItems:'center',gap:8,letterSpacing:'.03em',opacity:disabled?0.5:1,transition:'all .15s'};
   const v={primary:{background:B.navy,color:B.wh},teal:{background:B.tealInk,color:B.wh},ghost:{background:'transparent',color:B.ink2,border:`1px solid ${B.border}60`},danger:{background:B.rust,color:B.wh},success:{background:B.green,color:B.wh}};
-  return <button type="button" onClick={onClick} disabled={disabled} style={{...base,...v[variant],...style}}>{icon&&<Sv d={icon} size={14}/>}{children}</button>;
+  return <button type={type} onClick={onClick} disabled={disabled} style={{...base,...v[variant],...style}}>{icon&&<Sv d={icon} size={14}/>}{children}</button>;
 }
 function Callout({tone='info',children,title}){
   const tones={info:{bg:B.tealTint,br:B.tealInk,c:B.navy},warn:{bg:'#fef3c7',br:'#d97706',c:'#78350f'},err:{bg:'#fee2e2',br:B.rust,c:'#7f1d1d'},ok:{bg:'#d1fae5',br:B.green,c:'#065f46'}};
@@ -558,6 +558,72 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
   </div>;
 }
 
+// ---- Submitter manage view ----
+function ManageMine({email,events,loading,showPast,setShowPast,onEdit,onCancel,onReload,onChangeEmail}){
+  const todayISO=useMemo(()=>{
+    var d=new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  },[]);
+  const {upcoming,past}=useMemo(()=>{
+    const up=[],pa=[];
+    events.forEach(e=>{
+      const anchor=(e.endDate||e.startDate||'').substring(0,10);
+      if(anchor && anchor < todayISO) pa.push(e); else up.push(e);
+    });
+    return {upcoming:up,past:pa};
+  },[events,todayISO]);
+  const list=showPast?[...upcoming,...past]:upcoming;
+
+  const cardSty={background:B.wh,borderRadius:12,border:`1px solid ${B.rule}`,padding:'16px 18px',display:'grid',gridTemplateColumns:'1fr auto',gap:14,alignItems:'start'};
+  const badgeSty=(status)=>{const s=ST[status]||ST.Draft;return {display:'inline-block',padding:'3px 10px',borderRadius:20,background:s.bg,color:s.color,border:`1px solid ${s.border}`,fontSize:10.5,fontWeight:800,textTransform:'uppercase',letterSpacing:'.05em'};};
+
+  return <div style={{marginTop:8}}>
+    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12,marginBottom:14,paddingLeft:2}}>
+      <div>
+        <h3 style={{fontFamily:'League Spartan',fontSize:15,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.05em'}}>My events</h3>
+        <div style={{fontSize:12,color:B.ink3,marginTop:4,fontWeight:500}}>Showing events for <strong style={{color:B.navy}}>{email}</strong> · <a href="#" onClick={e=>{e.preventDefault();onChangeEmail();}} style={{color:B.tealInk||'#0d7ba0',fontWeight:700,textDecoration:'none'}}>use a different email</a></div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:8}}>
+        <button onClick={onReload} style={{padding:'8px 14px',borderRadius:8,border:`1.5px solid ${B.rule}`,background:B.wh,color:B.ink,fontSize:12,fontWeight:700,cursor:'pointer'}}>Refresh</button>
+        <label style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:12,color:B.ink2,fontWeight:600,cursor:'pointer'}}>
+          <input type="checkbox" checked={showPast} onChange={e=>setShowPast(e.target.checked)}/> Show past events
+        </label>
+      </div>
+    </div>
+
+    {loading?<div style={{padding:'40px 20px',textAlign:'center',color:B.ink3,fontSize:13}}>Loading...</div>
+    :list.length===0?<div style={{padding:'40px 24px',textAlign:'center',background:B.wh,borderRadius:12,border:`1px dashed ${B.border}`}}>
+      <Sv d={ic.cal} size={36} c={B.ink3}/>
+      <p style={{marginTop:12,fontSize:14,color:B.ink3,fontWeight:500}}>No {showPast?'':'upcoming '}events found for this email.</p>
+      {!showPast&&past.length>0&&<button onClick={()=>setShowPast(true)} style={{marginTop:8,padding:'8px 14px',borderRadius:8,border:`1.5px solid ${B.rule}`,background:B.wh,color:B.ink,fontSize:12,fontWeight:700,cursor:'pointer'}}>Show {past.length} past event{past.length===1?'':'s'}</button>}
+    </div>
+    :<div style={{display:'flex',flexDirection:'column',gap:10}}>
+      {list.map(ev=>{
+        const isPast=(ev.endDate||ev.startDate||'').substring(0,10) < todayISO;
+        const isCancelled=ev.status==='Cancelled';
+        return <div key={ev.id+'_'+ev.startDate} style={{...cardSty,opacity:isCancelled?.6:1}}>
+          <div style={{minWidth:0}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4,flexWrap:'wrap'}}>
+              <span style={badgeSty(ev.status)}>{ev.status||'Draft'}</span>
+              {isPast&&<span style={{fontSize:10.5,fontWeight:700,color:B.ink3,textTransform:'uppercase',letterSpacing:'.05em'}}>Past</span>}
+            </div>
+            <div style={{fontSize:15,fontWeight:800,color:B.navy,marginBottom:3,textDecoration:isCancelled?'line-through':'none'}}>{ev.title||'(untitled)'}</div>
+            <div style={{fontSize:12.5,color:B.ink3,fontWeight:500}}>
+              {ev.startDate||'No date'}{ev.startTime?' · '+ev.startTime:''}{ev.allDay?' · All day':''}{ev.focusArea?' · '+ev.focusArea:''}{ev.type?' · '+ev.type:''}
+            </div>
+          </div>
+          <div style={{display:'flex',gap:6,flexShrink:0,alignSelf:'center'}}>
+            <button onClick={()=>onEdit(ev)} style={{padding:'8px 14px',borderRadius:8,border:'none',background:B.navy,color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:6}}>
+              <Sv d={ic.edit} size={13} c="#fff"/> Edit
+            </button>
+            {!isCancelled&&<button onClick={()=>onCancel(ev)} style={{padding:'8px 12px',borderRadius:8,border:`1.5px solid ${B.rust}55`,background:B.wh,color:B.rust,fontSize:12,fontWeight:700,cursor:'pointer'}}>Cancel</button>}
+          </div>
+        </div>;
+      })}
+    </div>}
+  </div>;
+}
+
 // ---- Admin tracker table ----
 function Tracker({rows,onEdit,onCancel,loading,adminMode}){
   const [q,setQ]=useState('');
@@ -632,6 +698,15 @@ function App(){
   const [busy,setBusy]=useState(false);
   const [message,setMessage]=useState(null);
   const [confirm,setConfirm]=useState(null);
+  // "Edit my events" — submitter self-service
+  const [showManageDialog,setShowManageDialog]=useState(false);
+  const [manageEmail,setManageEmail]=useState(()=>{
+    try{return sessionStorage.getItem('doe_events_manage_email')||'';}catch(e){return '';}
+  });
+  const [manageMode,setManageMode]=useState(false);
+  const [myEvents,setMyEvents]=useState([]);
+  const [manageLoading,setManageLoading]=useState(false);
+  const [showPast,setShowPast]=useState(false);
 
   const isAdmin=!!adminToken;
 
@@ -680,6 +755,7 @@ function App(){
       if(j.error){setMessage({tone:'err',text:j.error});}
       else if(editing){
         setMessage({tone:'ok',text:'Changes saved. Calendar updates within 5 minutes.'});
+        if(manageMode&&manageEmail){setShowForm(false);setEditing(null);loadMyEvents(manageEmail);}
       } else {
         setMessage({tone:'ok',text:'Event submitted and posted to the calendar. A confirmation with an edit link has been sent to '+(form.contactEmail||'the contact email')+'. (Save that email — for now it\'s the only way to edit later. A better edit flow is coming soon.)'});
         setForm(EMPTY);setShowForm(false);
@@ -693,7 +769,11 @@ function App(){
       const r=await fetch(API,{method:'POST',body:JSON.stringify({action:'event_delete',id:editing.id,token:editing.token||adminToken})});
       const j=await r.json();
       if(j.error) setMessage({tone:'err',text:j.error});
-      else{setMessage({tone:'ok',text:'Event cancelled. It will show as cancelled on the calendar and be hidden after a week.'});setShowForm(false);setEditing(null);setForm(EMPTY);}
+      else{
+        setMessage({tone:'ok',text:'Event cancelled. It will show as cancelled on the calendar and be hidden after a week.'});
+        setShowForm(false);setEditing(null);setForm(EMPTY);
+        if(manageMode&&manageEmail) loadMyEvents(manageEmail);
+      }
     }catch(e){setMessage({tone:'err',text:'Network error.'});}
     setBusy(false);setConfirm(null);
   }
@@ -724,6 +804,55 @@ function App(){
       setBusy(false);
     })();
   }
+  async function loadMyEvents(email){
+    const e=String(email||'').trim();
+    if(!e||e.indexOf('@')<1){setMessage({tone:'err',text:'Enter a valid email address.'});return;}
+    setManageLoading(true);setMessage(null);
+    try{
+      const r=await fetch(`${API}?type=my_events&email=${encodeURIComponent(e)}&_=${Date.now()}`);
+      const j=await r.json();
+      if(j.error){setMessage({tone:'err',text:j.error});setMyEvents([]);}
+      else{
+        setMyEvents(j.events||[]);
+        setManageMode(true);
+        try{sessionStorage.setItem('doe_events_manage_email',e);}catch(err){}
+        if(!(j.events||[]).length) setMessage({tone:'info',text:'No events found for '+e+'. If you submitted from a different address, try that one — or use the edit link in your confirmation email.'});
+      }
+    }catch(err){setMessage({tone:'err',text:'Could not load your events. Try again.'});}
+    setManageLoading(false);
+    setShowManageDialog(false);
+  }
+  function exitManage(){setManageMode(false);setMyEvents([]);setMessage(null);}
+  function editMyEvent(ev){
+    (async()=>{
+      setBusy(true);
+      try{
+        const res=await fetch(`${API}?type=event&id=${encodeURIComponent(ev.id)}&token=${encodeURIComponent(ev.editToken)}`);
+        const j=await res.json();
+        if(j.error) setMessage({tone:'err',text:j.error});
+        else if(j.event){
+          setForm(deserialize(j.event));
+          setEditing({id:ev.id,token:ev.editToken,fromAdmin:false});
+          setShowForm(true);
+        }
+      }catch(e){setMessage({tone:'err',text:'Could not load event.'});}
+      setBusy(false);
+    })();
+  }
+  function cancelMyEvent(ev){
+    setConfirm({title:`Cancel "${ev.title}"?`,body:'This marks the event as Cancelled on the DOE calendar. It shows with a strikethrough for a week, then disappears.',onOk:async()=>{
+      try{
+        const res=await fetch(API,{method:'POST',body:JSON.stringify({action:'event_delete',id:ev.id,token:ev.editToken})});
+        const j=await res.json();
+        if(j.error) setMessage({tone:'err',text:j.error});
+        else{
+          setMessage({tone:'ok',text:'Event cancelled.'});
+          setMyEvents(myEvents.map(x=>x.id===ev.id?{...x,status:'Cancelled'}:x));
+        }
+      }catch(e){setMessage({tone:'err',text:'Network error.'});}
+      setConfirm(null);
+    }});
+  }
   function enterAdmin(){
     const t=prompt('Enter admin token (get from the Apps Script EVENTS_ADMIN_TOKEN property):');
     if(t){localStorage.setItem('doe_events_admin_token',t);setAdminToken(t);}
@@ -752,6 +881,14 @@ function App(){
           {!editMode&&<button onClick={()=>{setForm(EMPTY);setEditing(null);setShowForm(true);}} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'linear-gradient(135deg,#42c3f7,#0d7ba0)',color:'#fff',border:'none',fontSize:14,fontWeight:700,boxShadow:'0 4px 16px rgba(66,195,247,0.3)',cursor:'pointer'}}>
             <Sv d={ic.plus} size={18} c="#fff"/> Submit new event
           </button>}
+          {!editMode&&!isAdmin&&(manageMode?
+            <button onClick={exitManage} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',fontSize:14,fontWeight:600,cursor:'pointer'}}>
+              <Sv d={ic.x} size={16} c="#94a3b8"/> Exit manage
+            </button>
+            :<button onClick={()=>setShowManageDialog(true)} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',fontSize:14,fontWeight:600,cursor:'pointer'}}>
+              <Sv d={ic.edit} size={16} c="#94a3b8"/> Edit my events
+            </button>
+          )}
           <a href={CAL_URL} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
             <Sv d={ic.cal} size={18} c="#94a3b8"/> View calendar
           </a>
@@ -773,7 +910,17 @@ function App(){
     {message&&<Callout tone={message.tone==='ok'?'ok':message.tone==='err'?'err':'info'}>{message.text}</Callout>}
 
     {isAdmin&&!showForm&&!editMode&&<Tracker rows={rows} loading={loadingRows} onEdit={editRow} onCancel={cancelRow} adminMode={true}/>}
-    {!isAdmin&&!showForm&&!editMode&&<div style={{marginTop:8}}>
+
+    {/* Submitter manage view — list of my events with edit/cancel */}
+    {!isAdmin&&manageMode&&!showForm&&!editMode&&<ManageMine
+      email={manageEmail} events={myEvents} loading={manageLoading}
+      showPast={showPast} setShowPast={setShowPast}
+      onEdit={editMyEvent} onCancel={cancelMyEvent}
+      onReload={()=>loadMyEvents(manageEmail)}
+      onChangeEmail={()=>setShowManageDialog(true)}/>}
+
+    {/* Default: public live calendar iframe */}
+    {!isAdmin&&!manageMode&&!showForm&&!editMode&&<div style={{marginTop:8}}>
       <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:12,paddingLeft:2,flexWrap:'wrap',gap:8}}>
         <h3 style={{fontFamily:'League Spartan',fontSize:15,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.05em'}}>Live calendar</h3>
         <a href={CAL_URL} target="_blank" rel="noopener noreferrer" style={{fontSize:12,fontWeight:700,color:B.tealInk||'#0d7ba0',textDecoration:'none'}}>Open in new tab ↗</a>
@@ -797,6 +944,24 @@ function App(){
         <Btn variant="ghost" onClick={()=>setConfirm(null)}>Keep event</Btn>
         <Btn variant="danger" icon={ic.trash} onClick={()=>confirm?.onOk?.()}>Yes, cancel</Btn>
       </div>
+    </Modal>
+
+    {/* Edit my events — email dialog */}
+    <Modal open={showManageDialog} onClose={()=>setShowManageDialog(false)} title="Edit my events">
+      <p style={{fontSize:13.5,color:B.ink2,lineHeight:1.6,marginBottom:14}}>
+        Enter the email you used when submitting (or the contact email on the event). We'll pull up every event tied to that address so you can edit or cancel it.
+      </p>
+      <form onSubmit={e=>{e.preventDefault();loadMyEvents(manageEmail);}}>
+        <input type="email" placeholder="your.name@maine.gov" autoFocus
+          value={manageEmail} onChange={e=>setManageEmail(e.target.value)}
+          style={{width:'100%',padding:'12px 14px',borderRadius:8,border:`1.5px solid ${B.rule}`,fontSize:14,fontFamily:'inherit',color:B.ink,marginBottom:14,outline:'none'}}/>
+        <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+          <Btn variant="ghost" onClick={()=>setShowManageDialog(false)}>Cancel</Btn>
+          <Btn type="submit" variant="primary" icon={ic.search} disabled={!manageEmail||manageLoading}>
+            {manageLoading?'Looking...':'Find my events'}
+          </Btn>
+        </div>
+      </form>
     </Modal>
     </div>
   </div>;
