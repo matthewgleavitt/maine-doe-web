@@ -468,8 +468,8 @@ function App(){
         </div>
       </div>
 
-      {/* Commons vs Newsroom */}
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
+      {/* Commons vs Newsroom vs Newsletter */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:16,marginBottom:20}}>
         <div style={{background:B.wh,borderRadius:14,border:`2px solid #0d7ba030`,padding:'20px 22px'}}>
           <div style={{display:'inline-flex',alignItems:'center',gap:8,padding:'4px 10px',borderRadius:20,background:'#0d7ba015',marginBottom:12}}>
             <span style={{width:6,height:6,borderRadius:'50%',background:'#0d7ba0'}}/>
@@ -477,11 +477,11 @@ function App(){
           </div>
           <div style={{fontSize:14,fontWeight:700,color:B.navy,marginBottom:10}}>Practical, reference material</div>
           <ul style={{listStyle:'none',padding:0,margin:0,fontSize:13.5,color:B.txtSec,lineHeight:1.9,fontWeight:500}}>
-            <li>• Team-based content for the audience</li>
+            <li>• Team-based content for a specific audience</li>
             <li>• Reviews and spotlights</li>
             <li>• Focus on resources</li>
             <li>• Resource roundups for a topic</li>
-            <li>• Interviews / Informational Digests</li>
+            <li>• Interviews and informational digests</li>
           </ul>
         </div>
         <div style={{background:B.wh,borderRadius:14,border:`2px solid #8a2e1330`,padding:'20px 22px'}}>
@@ -497,9 +497,23 @@ function App(){
             <li>• Good News</li>
           </ul>
         </div>
+        <div style={{background:B.wh,borderRadius:14,border:`2px solid #7c3aed30`,padding:'20px 22px'}}>
+          <div style={{display:'inline-flex',alignItems:'center',gap:8,padding:'4px 10px',borderRadius:20,background:'#7c3aed15',marginBottom:12}}>
+            <span style={{width:6,height:6,borderRadius:'50%',background:'#7c3aed'}}/>
+            <span style={{fontSize:10,fontWeight:800,color:'#7c3aed',textTransform:'uppercase',letterSpacing:'.08em'}}>Use a Newsletter for</span>
+          </div>
+          <div style={{fontSize:14,fontWeight:700,color:B.navy,marginBottom:10}}>Speaking to an audience</div>
+          <ul style={{listStyle:'none',padding:0,margin:0,fontSize:13.5,color:B.txtSec,lineHeight:1.9,fontWeight:500}}>
+            <li>• Updates and announcements aimed at a specific group</li>
+            <li>• Event promotion and reminders</li>
+            <li>• Things with a shelf life: deadlines, registration windows, one-off dates</li>
+            <li>• Timely, relevant information you want in someone's inbox</li>
+            <li>• Roundups that link to Commons posts or Newsroom articles</li>
+          </ul>
+        </div>
       </div>
       <div style={{padding:'14px 20px',borderRadius:12,background:'#0d7ba008',border:'1.5px solid #0d7ba025',marginBottom:24,fontSize:13.5,color:B.txtSec,lineHeight:1.6,fontWeight:500}}>
-        <strong style={{color:B.navy}}>Rule of thumb:</strong> if it's news, it goes to the Newsroom. If it's the how-to behind the work, it goes to the Commons.
+        <strong style={{color:B.navy}}>Rule of thumb:</strong> The Commons is the how-to behind the work, sitting on the site for people to find. The Newsroom is news that goes out on its own schedule. A newsletter is you actively speaking to an audience, often pulling in pieces from both.
       </div>
 
       {/* Featured posts — live feed from The Commons */}
