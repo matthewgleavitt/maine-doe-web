@@ -57,13 +57,13 @@ const C={navy:'#0c1926',navyMid:'#162d44',navyLight:'#1e3a56',
 
 // ── Sidebar sections ──
 const navItems=[
-  {id:'home',label:'Home',icon:icons.home,href:'welcome.html'},
+  {id:'home',label:'Homebase',icon:icons.home,href:'welcome.html'},
   {id:'dashboard',label:'Dashboard',icon:["M10 3H3v7h7V3z","M21 3h-7v7h7V3z","M21 14h-7v7h7v-7z","M10 14H3v7h7v-7z"]},
   {id:'workflows',label:'Workflow',icon:icons.clip,external:'https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039'},
   {id:'brand',label:'Branding & Comms',icon:icons.layers,href:'brandguide.html'},
   {id:'commsfiles',label:'Comms Files',icon:icons.folder,external:'https://stateofmaine.sharepoint.com/teams/DOETeam/Shared%20Documents/Communications'},
   {id:'engine',label:'EnGiNE',icon:icons.globe,href:'engine.html'},
-  {id:'events',label:'Events',icon:icons.cal,href:'events-tracker.html'},
+  {id:'events',label:'Calendar',icon:icons.cal,href:'events-tracker.html'},
   {id:'publications',label:'Publications',icon:icons.mail,href:'publications.html'},
   {id:'templates',label:'Templates',icon:icons.copy,href:'templates.html'},
   {id:'website',label:'Website',icon:icons.globe},
@@ -110,10 +110,10 @@ const dashCards=[
     color:'#65a30d',gradient:'linear-gradient(135deg,#84cc16,#65a30d)',status:'live',
     features:['SharePoint','Shared folders','Team assets'],stat:'—',statLabel:'open in SharePoint'},
   {id:'engine',label:'EnGiNE',icon:icons.globe,href:'engine.html',
-    desc:'Maine\'s professional learning platform — courses, contact hours, and the communications orientation.',
+    desc:'Maine\'s professional learning platform. Build Information Portals, Training, Courses in a Series, Office Hours, and more. Support: engine.maine.gov/support.',
     color:'#0891b2',gradient:'linear-gradient(135deg,#42c3f7,#0891b2)',status:'live',
-    features:['Course catalog','Contact hours','Comms orientation','Course requests']},
-  {id:'events',label:'Events',icon:icons.cal,href:'events-tracker.html',
+    features:['Information Portals','Training','Courses in a Series','Office Hours']},
+  {id:'events',label:'Calendar',icon:icons.cal,href:'events-tracker.html',
     desc:'Submit and track DOE calendar event requests for the Professional Development calendar.',
     color:'#f59e0b',gradient:'linear-gradient(135deg,#f59e0b,#d97706)',status:'live',
     features:['Submit events','Track status','Calendar check'],stat:'—',statLabel:'submissions'},
@@ -232,7 +232,9 @@ function Portal(){
   const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
 
   useEffect(()=>{
-    const ck=()=>{const m=window.innerWidth<860;setMob(m);if(m)setSbOpen(false);};
+    // Track viewport width for responsive layout, but NEVER auto-collapse the sidebar.
+    // Manual hamburger toggle is the only way to close it.
+    const ck=()=>setMob(window.innerWidth<860);
     ck();window.addEventListener('resize',ck);return()=>window.removeEventListener('resize',ck);
   },[]);
 
@@ -297,8 +299,7 @@ function Portal(){
     if(item?.external){window.open(item.external,'_blank');return;}
     setSection(id);
     setWebSub(null);
-    if(mob)setSbOpen(false);
-  },[mob]);
+  },[]);
 
   // Determine what's showing
   const activeNav=navItems.find(n=>n.id===section);

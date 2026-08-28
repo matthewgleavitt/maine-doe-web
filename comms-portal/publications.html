@@ -99,7 +99,7 @@ function App(){
   const [expanded,setExpanded]=useState(null);
   const [search,setSearch]=useState('');
   const [page,setPage]=useState(1);
-  const [tab,setTab]=useState('commons');
+  const [tab,setTab]=useState('overview');
   const [commonsPosts,setCommonsPosts]=useState(null);
   const [commonsLoading,setCommonsLoading]=useState(true);
   const PER_PAGE=25;
@@ -136,9 +136,10 @@ function App(){
   const paginated=useMemo(()=>filtered.slice((page-1)*PER_PAGE,page*PER_PAGE),[filtered,page]);
 
   const tabs=[
+    {id:'overview',label:'Overview',icon:ic.check,accent:'#8b5cf6'},
     {id:'commons',label:'The Commons',icon:ic.book,accent:'#0d7ba0'},
     {id:'builder',label:'Newsletter Builder',icon:ic.layers,accent:'#42c3f7'},
-    {id:'data',label:'Campaign Data',icon:ic.mail,accent:'#8b5cf6'},
+    {id:'data',label:'Mailchimp',icon:ic.mail,accent:'#f472b6'},
   ];
 
   return <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px 40px',animation:'fadeIn 0.3s ease'}}>
@@ -152,8 +153,8 @@ function App(){
             <Sv d={ic.mail} size={24} color="#fff"/>
           </div>
           <div>
-            <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0,letterSpacing:'.01em'}}>Publications</h1>
-            <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>The DOE's outbound content — Commons posts, newsletters, and campaign performance</p>
+            <h1 style={{fontFamily:"'League Spartan',sans-serif",fontSize:24,fontWeight:800,color:'#fff',margin:0,letterSpacing:'.05em',textTransform:'uppercase'}}>Publication</h1>
+            <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>The DOE's outbound content — Commons posts, newsletters, blogs, and campaign performance</p>
           </div>
         </div>
       </div>
@@ -176,6 +177,113 @@ function App(){
         </button>;
       })}
     </div>
+
+    {/* ── OVERVIEW TAB ── */}
+    {tab==='overview'&&<div style={{animation:'fadeIn 0.3s ease'}}>
+
+      {/* Intro card */}
+      <div style={{background:B.wh,borderRadius:16,border:`2px solid ${B.border}55`,padding:'26px 28px',marginBottom:20,boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
+        <div style={{display:'flex',alignItems:'flex-start',gap:16,marginBottom:14,flexWrap:'wrap'}}>
+          <div style={{width:52,height:52,borderRadius:14,background:'linear-gradient(135deg,#8b5cf6,#6d28d9)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(139,92,246,0.3)'}}>
+            <Sv d={ic.check} size={26} color="#fff"/>
+          </div>
+          <div style={{flex:1,minWidth:280}}>
+            <h2 style={{fontSize:22,fontWeight:800,color:B.navy,margin:'0 0 8px',letterSpacing:'.01em'}}>Content and approval</h2>
+            <p style={{fontSize:14.5,color:B.txtSec,lineHeight:1.65,fontWeight:500,margin:0}}>
+              Guidance for content intended for publicly-facing platforms — social media, website, Newsroom, the Commons, and email blasts. Different publication types have different review paths; the summary below shows where each lives and how it gets out the door.
+            </p>
+          </div>
+        </div>
+        <div style={{padding:'14px 20px',borderRadius:10,background:'#fef3c714',border:'1.5px solid #f59e0b30',borderLeft:'4px solid #f59e0b',fontSize:13.5,color:B.txtSec,fontWeight:500,lineHeight:1.6}}>
+          <strong style={{color:B.navy}}>Two-week rule.</strong> Submit priority notices, Maine DOE Newsroom articles, and media advisories/releases to the <strong>Communications Workflow at least two weeks</strong> before you want the piece posted or sent.
+        </div>
+      </div>
+
+      {/* Content ownership */}
+      <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,padding:'22px 26px',marginBottom:16}}>
+        <h3 style={{fontSize:13,fontWeight:800,color:B.navy,margin:'0 0 12px',textTransform:'uppercase',letterSpacing:'.06em'}}>Content ownership</h3>
+        <p style={{fontSize:13.5,color:B.txtSec,lineHeight:1.7,fontWeight:500,marginBottom:10}}>
+          Content posted or contained in priority notices, Newsroom articles, administrative letters, media advisories/releases, social posts, YouTube uploads, or Commons blog posts should be <strong style={{color:B.navy}}>Maine DOE-owned content only</strong> — written, organized, coordinated, planned, and sponsored by the Maine DOE.
+        </p>
+        <p style={{fontSize:13.5,color:B.txtSec,lineHeight:1.7,fontWeight:500,margin:0}}>
+          Other acceptable content: from organizations with a specific partnership, or for initiatives the Maine DOE sponsors or has special involvement in. Content not owned by the Maine DOE is permitted only if fully vetted or if it includes clear disclaimer language.
+        </p>
+      </div>
+
+      {/* Comms materials at a glance */}
+      <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,padding:'22px 26px',marginBottom:16}}>
+        <h3 style={{fontSize:13,fontWeight:800,color:B.navy,margin:'0 0 14px',textTransform:'uppercase',letterSpacing:'.06em'}}>Communications materials at a glance</h3>
+        {[
+          {t:'Priority notice',d:'Targeted message to a specific audience via Mailchimp. Not typically intended for the general public.'},
+          {t:'Administrative letter',d:'New/changed laws or regulations. Multi-step review/approval through the Communications Workflow.'},
+          {t:'Newsroom article',d:'Professional learning, school highlights, grant opportunities. Our digital newspaper — posted on the Newsroom, included in the weekly Maine DOE Update.'},
+          {t:'Blog (The Commons)',d:'Practical, timely content for Maine schools — topic articles, how-tos, program spotlights, resource roundups. Reviewed by your supervisor, then published by Comms. See the Commons tab.'},
+          {t:'Newsletter',d:'Team bulletins, updates, and announcements built with the Newsletter Builder — a middle ground between quick email and a Mailchimp campaign. See the Newsletter Builder tab.'},
+          {t:'Media advisory',d:'Sent only to press to invite them to cover a specific event. Connect with the Director of Communications.'},
+          {t:'Media release',d:'Announcements and news for the press and a larger audience. Connect with the Director of Communications.'},
+          {t:'Letter of support',d:'Occasional, case-by-case. Review with your office director and associate/deputy commissioner before writing or signing.'},
+          {t:'Maine DOE Update',d:'Weekly Friday newsletter with all Newsroom articles from that week.'},
+          {t:'Social media',d:'Facebook, Instagram, LinkedIn. Requires goal, audience, dates, caption, imagery, and (for ads) budget + funding code.'},
+        ].map((x,i,arr)=>(
+          <div key={i} style={{padding:'12px 0',borderBottom:i<arr.length-1?`1px solid ${B.border}40`:'none'}}>
+            <div style={{fontSize:14,fontWeight:800,color:B.navy,marginBottom:3}}>{x.t}</div>
+            <div style={{fontSize:12.5,color:B.txtSec,fontWeight:500,lineHeight:1.6}}>{x.d}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Social media approval checklist */}
+      <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,padding:'22px 26px',marginBottom:16}}>
+        <h3 style={{fontSize:13,fontWeight:800,color:B.navy,margin:'0 0 8px',textTransform:'uppercase',letterSpacing:'.06em'}}>Social media approval checklist</h3>
+        <p style={{fontSize:13,color:B.txtSec,marginBottom:12,fontWeight:500,lineHeight:1.55}}>Before submitting to the team leader/office director and then to Rachel Paling:</p>
+        <ul style={{listStyle:'none',padding:0,margin:0}}>
+          {['Goal of post and intended audience.','Date or span of dates for promotion.','Post caption (for all posts, if multiple).','Images or graphics appropriate to the content.','Budget and funding code (for advertisements).'].map((it,i)=>(
+            <li key={i} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'6px 0',fontSize:13.5,color:B.txtSec,fontWeight:500,lineHeight:1.55}}>
+              <Sv d={ic.check} size={16} color="#16a34a" style={{marginTop:2,flexShrink:0}}/>
+              <span>{it}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Official letters */}
+      <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,padding:'22px 26px',marginBottom:16}}>
+        <h3 style={{fontSize:13,fontWeight:800,color:B.navy,margin:'0 0 10px',textTransform:'uppercase',letterSpacing:'.06em'}}>Official letters</h3>
+        <p style={{fontSize:13.5,color:B.txtSec,lineHeight:1.7,fontWeight:500,margin:0}}>
+          An official letter from the Maine DOE must be written on Maine DOE letterhead, approved by the team leader/office director, and sent to the Director of Communications for approval before being sent by U.S. post. Letters must be signed by a member of leadership and should include a member of the Commissioner's Office administrative support team.
+        </p>
+      </div>
+
+      {/* File naming convention */}
+      <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,padding:'22px 26px',marginBottom:16}}>
+        <h3 style={{fontSize:13,fontWeight:800,color:B.navy,margin:'0 0 10px',textTransform:'uppercase',letterSpacing:'.06em'}}>File naming convention for website uploads</h3>
+        <p style={{fontSize:13,color:B.txtSec,lineHeight:1.65,fontWeight:500,marginBottom:12}}>
+          When uploading files that will be linked from maine.gov/doe, name your file so it's easy to find, share, and understand out of context:
+        </p>
+        <code style={{display:'block',background:'#f1f5f9',padding:'12px 14px',borderRadius:8,color:B.navy,fontSize:13,fontWeight:700,marginBottom:14,border:`1px solid ${B.border}60`,fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace'}}>Team/Area - Title of File - Full Date.pdf</code>
+        <ul style={{listStyle:'none',padding:0,margin:'0 0 14px'}}>
+          {['Spaces between hyphens.','No abbreviations or acronyms (unless universal).','Date with periods between, full year written out, no leading zeros — 6.1.2024 (not 06.01.24 or 6.1.24).','Prioritize using PDFs.'].map((it,i)=>(
+            <li key={i} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'5px 0',fontSize:13,color:B.txtSec,fontWeight:500,lineHeight:1.55}}>
+              <Sv d={ic.check} size={15} color="#16a34a" style={{marginTop:2,flexShrink:0}}/>
+              <span>{it}</span>
+            </li>
+          ))}
+        </ul>
+        <div style={{padding:'12px 14px',background:'#f8fafc',borderRadius:8,border:`1px solid ${B.border}45`}}>
+          <div style={{fontSize:11,fontWeight:800,color:B.txtMute,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:8}}>Examples</div>
+          {[
+            'Multilingual Learning - Multilingual Learners with Disabilities Policy Guide - 3.11.2025.pdf',
+            'Assessment - Print Disability Flowchart - 3.11.2025.pdf',
+            'Outdoor Education - Maine Outdoor Learning Grant Application - 3.11.2025.pdf',
+            'MLTI - Sphero Tutorial - 3.11.2025.pdf',
+            'School Safety - Restorative Practices Brochure - 3.11.2025.pdf',
+            'Interdisciplinary Instruction - Solutionaries Project Webinar Slides - 3.11.2025.pdf',
+          ].map((e,i)=>(
+            <div key={i} style={{fontSize:12,color:B.txtSec,padding:'3px 0',fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace',fontWeight:500}}>{e}</div>
+          ))}
+        </div>
+      </div>
+    </div>}
 
     {/* ── COMMONS TAB ── */}
     {tab==='commons'&&<div style={{animation:'fadeIn 0.3s ease'}}>
@@ -353,8 +461,27 @@ function App(){
       </div>
     </div>}
 
-    {/* ── CAMPAIGN DATA TAB ── */}
+    {/* ── MAILCHIMP TAB ── */}
     {tab==='data'&&<div style={{animation:'fadeIn 0.3s ease'}}>
+
+      {/* Intro card */}
+      <div style={{background:B.wh,borderRadius:16,border:`2px solid ${B.border}55`,padding:'26px 28px',marginBottom:20,boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
+        <div style={{display:'flex',alignItems:'flex-start',gap:16,marginBottom:14,flexWrap:'wrap'}}>
+          <div style={{width:52,height:52,borderRadius:14,background:'linear-gradient(135deg,#f472b6,#ec4899)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(244,114,182,0.3)'}}>
+            <Sv d={ic.mail} size={26} color="#fff"/>
+          </div>
+          <div style={{flex:1,minWidth:280}}>
+            <h2 style={{fontSize:22,fontWeight:800,color:B.navy,margin:'0 0 8px',letterSpacing:'.01em'}}>Mailchimp</h2>
+            <p style={{fontSize:14.5,color:B.txtSec,lineHeight:1.65,fontWeight:500,margin:0}}>
+              The Maine DOE uses Mailchimp for the department's established newsletters — the weekly Maine DOE Update, priority notices to targeted audiences, and long-running program bulletins with subscriber lists. Send performance for every campaign is below: opens, clicks, and engagement over time.
+            </p>
+          </div>
+        </div>
+        <div style={{padding:'12px 18px',borderRadius:10,background:'#0d7ba008',border:'1.5px solid #0d7ba020',fontSize:13,color:B.txtSec,fontWeight:500,lineHeight:1.55}}>
+          <strong style={{color:B.navy}}>Thinking of starting a new newsletter?</strong> Talk to Comms first — some newsletters are already established here. For one-off or team bulletins, the <span style={{color:'#0d7ba0',fontWeight:700}}>Newsletter Builder</span> is usually the right home instead.
+        </div>
+      </div>
+
       {loading?<div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'60px 20px',gap:12}}>
         <Sv d={ic.spin} size={22} color={B.teal} style={{animation:'spin 1s linear infinite'}}/><span style={{color:B.txtSec,fontSize:14,fontWeight:600}}>Loading Mailchimp data...</span>
       </div>

@@ -603,10 +603,25 @@ function doGet(e) {
 
   var jsonStr = JSON.stringify(result);
 
-  // Cache for 5 minutes (300s) for Sheet data, 10 minutes (600s) for GA4
+  // Cache TTLs are tuned per data type. CacheService caps at 100KB/key so
+  // huge payloads may silently fail — the try/catch swallows that.
   if (type !== 'web_stats' && type !== 'moderation' && !result.error) {
-    var ttl = (type === 'pages' || type === 'files') ? 600 : 300;
-    try { cache.put(cacheKey, jsonStr, ttl); } catch(ce) {}
+    var ttl;
+    switch (type) {
+      // Fresh — user-facing writes should show quickly
+      case 'calendar': case 'events': case 'event': case 'commons':
+        ttl = 300; break;
+      // Moderate — GA and template data
+      case 'pages': case 'files': case 'file_pages': case 'youtube':
+      case 'templates': case 'announcements':
+        ttl = 600; break;
+      // Stable — Drupal indexes and Mailchimp campaigns rarely change hour-to-hour
+      case 'drupal_pages': case 'drupal_files': case 'publications':
+        ttl = 1800; break;
+      default:
+        ttl = 300;
+    }
+    try { cache.put(cacheKey, jsonStr, ttl); } catch(ce) { Logger.log('cache.put failed (' + type + ', ' + jsonStr.length + ' bytes): ' + ce.message); }
   }
 
   var output = ContentService.createTextOutput(jsonStr);
@@ -1106,8 +1121,16 @@ function getPublications() {
 //   cacheDrupalFiles → Every 30 minutes (offset by 15 min if possible, or same is fine since it's resumable)
 
 function cacheDrupalPages() {
-  var NODE_TYPES = ['multi_column_page','article','web_guide','instructional_page','home_page'];
-  var TYPE_LABELS = {'multi_column_page':'Basic Template page','article':'Article','web_guide':'Web Guide','instructional_page':'Instructional page','home_page':'Home page'};
+  // NOTE: Anonymous JSON:API only returns what an anon user is allowed to see.
+  // A prior version of this list included 'article' and 'instructional_page',
+  // which don't exist on this Drupal (JSON:API root confirms these types).
+  // If page counts here look low, that's the Drupal permission layer — the
+  // JSON:API root exposes these node types: blog_post, home_page,
+  // multi_column_page, newsletter_issue, web_guide, webform. To pull the
+  // full set (including restricted content), the Script needs an authorized
+  // request (OAuth or Basic Auth against a Drupal user with node-view perms).
+  var NODE_TYPES = ['multi_column_page','web_guide','home_page','newsletter_issue'];
+  var TYPE_LABELS = {'multi_column_page':'Basic Template page','web_guide':'Web Guide','home_page':'Home page','newsletter_issue':'Newsletter issue'};
   var BASE = 'https://www.maine.gov/doe/jsonapi';
   var allPages = [];
 
@@ -1713,9 +1736,9 @@ function _rowToEvent(row, idx, status) {
     focusArea: get('Focus Area'),
     type: get('Type'),
     startDate: _isoDate(getRaw('Start Date')),
-    startTime: get('Start Time'),
+    startTime: _isoTime(getRaw('Start Time')),
     endDate: _isoDate(getRaw('End Date')) || _isoDate(getRaw('Start Date')),
-    endTime: get('End Time'),
+    endTime: _isoTime(getRaw('End Time')),
     allDay: getBool('All Day'),
     locationType: get('Location Type'),
     venueName: get('Venue Name'),
@@ -1831,6 +1854,34 @@ function _expandOccurrences(e) {
 
 
 // --- Small helpers -----------------------------------------------------
+
+// Sheets time-only cells come back as Date objects at the 1899 epoch
+// (Dec 30 1899 is Google Sheets' zero-date). String(dateObj) leaks that
+// junk into the payload — extract just the h:mm AM/PM.
+function _isoTime(v) {
+  if (v === '' || v === null || v === undefined) return '';
+  if (v instanceof Date) {
+    var h = v.getHours();
+    var m = v.getMinutes();
+    var ap = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return h12 + ':' + (m < 10 ? '0' + m : m) + ' ' + ap;
+  }
+  var s = String(v).trim();
+  // Already formatted like "11:00 AM" — pass through.
+  if (/^\d{1,2}:\d{2}\s*(AM|PM)$/i.test(s)) return s.toUpperCase().replace(/\s+/, ' ');
+  // 24-hour "13:45" — convert to 12-hour.
+  var m24 = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if (m24) {
+    var hh = parseInt(m24[1], 10);
+    var mm = m24[2];
+    if (isNaN(hh)) return '';
+    var apn = hh >= 12 ? 'PM' : 'AM';
+    var h12n = hh % 12; if (h12n === 0) h12n = 12;
+    return h12n + ':' + mm + ' ' + apn;
+  }
+  return s;
+}
 
 function _isoDate(v) {
   if (!v) return '';

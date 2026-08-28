@@ -48,7 +48,6 @@ const tabs=[
   {id:'logos',label:'Logos',icon:["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"]},
   {id:'images',label:'Images',icon:["M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z","M8.5 10a1.5 1.5 0 100-3 1.5 1.5 0 000 3z","M21 15l-5-5L5 21"]},
   {id:'correspondence',label:'Correspondence',icon:["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"]},
-  {id:'content',label:'Content & Approval',icon:["M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2","M9 5a2 2 0 002 2h2a2 2 0 002-2","M9 12l2 2 4-4"]},
   {id:'resources',label:'Resources',icon:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"]},
 ];
 
@@ -208,7 +207,7 @@ function BrandGuide(){
               ]}/>
             </Card>
           </div>
-          <Tip type="warn">Submit to the <strong>Communications Workflow at least two weeks</strong> before you want content posted or sent. See the <strong>Content & Approval</strong> tab for detail.</Tip>
+          <Tip type="warn">Submit to the <strong>Communications Workflow at least two weeks</strong> before you want content posted or sent. Full workflow, approvals, and materials guide now live in <strong>Publication → Overview</strong>.</Tip>
         </div>}
 
         {/* ── COLORS ── */}
@@ -529,78 +528,7 @@ function BrandGuide(){
           </Panel>
         </div>}
 
-        {/* ── CONTENT & APPROVAL ── */}
-        {tab==='content'&&<div>
-          <SectionHead title="Content & approval" sub="Guidance for content intended for publicly-facing platforms — social media, website, Newsroom, email blasts."/>
-
-          <Tip type="warn">Submit priority notices, Maine DOE Newsroom articles, and media advisories/releases to the <strong>Communications Workflow at least two weeks</strong> before you want your communication posted or sent.</Tip>
-
-          <Card style={{marginBottom:16}}>
-            <SubHead>Content ownership</SubHead>
-            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,marginBottom:10,fontWeight:500}}>Content posted or contained in priority notices, Newsroom articles, administrative letters, media advisories/releases, social posts, or YouTube uploads should be <strong>Maine DOE-owned content only</strong> — written, organized, coordinated, planned, and sponsored by the Maine DOE.</p>
-            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500}}>Other acceptable content: from organizations with a specific partnership, or for initiatives the Maine DOE sponsors or has special involvement in. Content not owned by the Maine DOE is permitted only if fully vetted or if it includes clear disclaimer language.</p>
-          </Card>
-
-          <Card style={{marginBottom:16}}>
-            <SubHead>Communications materials at a glance</SubHead>
-            {[{t:'Priority notice',d:'Targeted message to a specific audience via Mailchimp. Not typically intended for the general public.'},
-              {t:'Administrative letter',d:'New/changed laws or regulations. Multi-step review/approval through the Communications Workflow.'},
-              {t:'Newsroom article',d:'Professional learning, school highlights, grant opportunities. Our digital newspaper — posted on the Newsroom, included in the weekly Maine DOE Update.'},
-              {t:'Media advisory',d:'Sent only to press to invite them to cover a specific event. Connect with the Director of Communications.'},
-              {t:'Media release',d:'Announcements and news for the press and a larger audience. Connect with the Director of Communications.'},
-              {t:'Letters of support',d:'Occasional, case-by-case. Review with your office director and associate/deputy commissioner before writing or signing.'},
-              {t:'Maine DOE Update',d:'Weekly Friday newsletter with all Newsroom articles from that week.'},
-              {t:'Social media',d:'Facebook, Instagram, LinkedIn. Requires goal, audience, dates, caption, imagery, and (for ads) budget + funding code.'},
-              {t:'Newsletters',d:'Some offices/teams run their own regular newsletters. Contact the Comms Team before starting one.'}].map((x,i)=>(
-              <div key={i} style={{padding:'10px 0',borderBottom:i<8?`1px solid ${B.border}40`:'none'}}>
-                <div style={{fontSize:14,fontWeight:700,color:B.navy}}>{x.t}</div>
-                <div style={{fontSize:12,color:B.txtMute,marginTop:3,fontWeight:500,lineHeight:1.55}}>{x.d}</div>
-              </div>
-            ))}
-          </Card>
-
-          <Card style={{marginBottom:16}}>
-            <SubHead>Social media approval checklist</SubHead>
-            <p style={{fontSize:13,color:B.txtSec,marginBottom:12,fontWeight:500}}>Before submitting to the team leader/office director and then to Rachel Paling:</p>
-            <CheckRow positive={true} items={[
-              'Goal of post and intended audience.',
-              'Date or span of dates for promotion.',
-              'Post caption (for all posts, if multiple).',
-              'Images or graphics appropriate to the content.',
-              'Budget and funding code (for advertisements).',
-            ]}/>
-          </Card>
-
-          <Card style={{marginBottom:16}}>
-            <SubHead>Official letters</SubHead>
-            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500}}>An official letter from the Maine DOE must be written on Maine DOE letterhead, approved by the team leader/office director, and sent to the Director of Communications for approval before being sent by U.S. post. Letters must be signed by a member of leadership and should include a member of the Commissioner's Office administrative support team.</p>
-          </Card>
-
-          <Card>
-            <SubHead>File naming convention for website uploads</SubHead>
-            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500,marginBottom:12}}>When uploading files that will be linked from maine.gov/doe, name your file so it's easy to find, share, and understand out of context:</p>
-            <code style={{display:'block',background:'#f1f5f9',padding:'12px 14px',borderRadius:8,color:B.navy,fontSize:13,fontWeight:600,marginBottom:14,border:`1px solid ${B.border}60`}}>Team/Area - Title of File - Full Date.pdf</code>
-            <CheckRow positive={true} items={[
-              'Spaces between hyphens.',
-              'No abbreviations or acronyms (unless universal).',
-              'Date with periods between, full year written out, no leading zeros — 6.1.2024 (not 06.01.24 or 6.1.24).',
-              'Prioritize using PDFs.',
-            ]}/>
-            <div style={{marginTop:14,padding:'12px 14px',background:'#f8fafc',borderRadius:8,border:`1px solid ${B.border}45`}}>
-              <div style={{fontSize:11,fontWeight:700,color:B.txtMute,letterSpacing:'.05em',textTransform:'uppercase',marginBottom:8}}>Examples</div>
-              {[
-                'Multilingual Learning - Multilingual Learners with Disabilities Policy Guide - 3.11.2025.pdf',
-                'Assessment - Print Disability Flowchart - 3.11.2025.pdf',
-                'Outdoor Education - Maine Outdoor Learning Grant Application - 3.11.2025.pdf',
-                'MLTI - Sphero Tutorial - 3.11.2025.pdf',
-                'School Safety - Restorative Practices Brochure - 3.11.2025.pdf',
-                'Interdisciplinary Instruction - Solutionaries Project Webinar Slides - 3.11.2025.pdf',
-              ].map((e,i)=>(
-                <div key={i} style={{fontSize:12,color:B.txtSec,padding:'3px 0',fontFamily:'monospace',fontWeight:500}}>{e}</div>
-              ))}
-            </div>
-          </Card>
-        </div>}
+        {/* Content & Approval moved to Publication → Overview. */}
 
         {/* ── RESOURCES ── */}
         {tab==='resources'&&<div>
