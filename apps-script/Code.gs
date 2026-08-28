@@ -518,8 +518,10 @@ function doGet(e) {
   var result;
 
   // Check cache first (skip for web_stats and moderation which should always be fresh)
+  // ?refresh=1 bypasses cache — useful right after a redeploy or auth change.
+  var bypassCache = !!(e && e.parameter && e.parameter.refresh);
   var cache = CacheService.getScriptCache();
-  if (type !== 'web_stats' && type !== 'moderation') {
+  if (type !== 'web_stats' && type !== 'moderation' && !bypassCache) {
     var cached = cache.get(cacheKey);
     if (cached) {
       var output = ContentService.createTextOutput(cached);
@@ -1172,31 +1174,68 @@ function getNewsroomStats() {
   var summary = _wpcomFetch(siteSeg + '/stats/summary');
   var top30 = _wpcomFetch(siteSeg + '/stats/top-posts?period=month&num=1&max=10');
   var top7 = _wpcomFetch(siteSeg + '/stats/top-posts?period=week&num=1&max=10');
-  // Larger set so the search/browse table can find specific articles.
-  var topYear = _wpcomFetch(siteSeg + '/stats/top-posts?period=year&num=1&max=100');
+  // Merged top-posts across the last 12 months. Views from this feed enrich
+  // the full article list below — anything not in a month's top-100 shows
+  // dashes on the frontend (still findable, just no view data).
+  var top12m = _wpcomFetch(siteSeg + '/stats/top-posts?period=month&num=12&max=100');
   var referrers = _wpcomFetch(siteSeg + '/stats/referrers?period=month&num=1&max=8');
   var visits = _wpcomFetch(siteSeg + '/stats/visits?unit=day&quantity=30');
+  // Full list of articles published in the last 365 days. Powers "search all
+  // articles" so authors can find their own posts even if underperforming.
+  var articles365 = _fetchNewsroomArticles365(site);
+
+  function _shouldExcludeEntry(p) {
+    var t = String(p.title || '').trim();
+    if (!t) return true;
+    if (/^\(untitled\)$/i.test(t)) return true;
+    if (/^#\d+\s*\(untitled\)$/i.test(t)) return true;
+    // Drop the home page — it's the site index, not an article.
+    if (/^home$/i.test(t)) return true;
+    if (/^home page$/i.test(t)) return true;
+    // Detect index/root URLs too, in case the title is something else.
+    var href = String(p.href || '');
+    if (/^https?:\/\/[^\/]+\/?$/.test(href)) return true;
+    return false;
+  }
 
   function normalizeTopPosts(res) {
     if (!res || res.error) return [];
-    // WP.com wraps top-posts in { days: { 'YYYY-MM-DD': { postviews: [...] } } }
+    // Single-period path: read the one bucket in `days`.
     var days = res.days || {};
     var keys = Object.keys(days);
     if (!keys.length) return [];
     var pv = (days[keys[0]] || {}).postviews || [];
     return pv
-      // Drop the "#12345 (untitled)" entries — those are attachments, drafts,
-      // or pages the API can't title. They're noise for our audience.
-      .filter(function(p) {
-        var t = String(p.title || '').trim();
-        if (!t) return false;
-        if (/^\(untitled\)$/i.test(t)) return false;
-        if (/^#\d+\s*\(untitled\)$/i.test(t)) return false;
-        return true;
-      })
+      .filter(function(p) { return !_shouldExcludeEntry(p); })
       .map(function(p) {
         return { id: p.id, title: p.title, url: (p.href || '').replace(/^http:/, 'https:'), views: p.views, date: p.date || '' };
       });
+  }
+
+  function mergeTopPostsAcrossPeriods(res) {
+    if (!res || res.error) return [];
+    var days = res.days || {};
+    var byId = {};
+    Object.keys(days).forEach(function(dateKey) {
+      var pv = (days[dateKey] || {}).postviews || [];
+      pv.forEach(function(p) {
+        if (_shouldExcludeEntry(p)) return;
+        var key = String(p.id);
+        if (!byId[key]) {
+          byId[key] = {
+            id: p.id,
+            title: p.title,
+            url: (p.href || '').replace(/^http:/, 'https:'),
+            views: 0,
+            date: p.date || '',
+          };
+        }
+        byId[key].views += Number(p.views) || 0;
+      });
+    });
+    var arr = [];
+    for (var k in byId) arr.push(byId[k]);
+    return arr.sort(function(a, b) { return b.views - a.views; });
   }
   function normalizeReferrers(res) {
     if (!res || res.error) return [];
@@ -1232,6 +1271,18 @@ function getNewsroomStats() {
   var todayRow = visitsRows.length ? visitsRows[visitsRows.length - 1] : {};
   var last7 = visitsRows.slice(-7);
 
+  // Build a lookup of merged views across all 12 months, then attach to
+  // the full 365-day article list. Anything not in the merge stays viewless.
+  var viewsById = {};
+  mergeTopPostsAcrossPeriods(top12m).forEach(function(p) {
+    viewsById[String(p.id)] = p.views;
+  });
+  var articlesWithViews = (articles365 || []).map(function(a) {
+    var id = String(a.id);
+    var v = viewsById.hasOwnProperty(id) ? viewsById[id] : null;
+    return { id: a.id, title: a.title, url: a.url, date: a.date, views: v };
+  });
+
   return {
     summary: {
       viewsToday: Number(todayRow.views) || 0,
@@ -1239,12 +1290,12 @@ function getNewsroomStats() {
       views7d: sumField(last7, 'views'),
       views30d: sumField(visitsRows, 'views'),
       visitors30d: sumField(visitsRows, 'visitors'),
-      // Total articles published all-time (this one is stable across all summary calls).
       posts: (summary && !summary.error && summary.posts) || 0,
+      articles365Count: articlesWithViews.length,
     },
     top30: normalizeTopPosts(top30),
     top7: normalizeTopPosts(top7),
-    topYear: normalizeTopPosts(topYear),
+    articles: articlesWithViews,
     referrers: normalizeReferrers(referrers),
     visits: visitsRows,
     fetchedAt: new Date().toISOString(),
@@ -1253,11 +1304,47 @@ function getNewsroomStats() {
       summary && summary.error ? { source: 'summary', error: summary.error } : null,
       top30 && top30.error ? { source: 'top30', error: top30.error } : null,
       top7 && top7.error ? { source: 'top7', error: top7.error } : null,
-      topYear && topYear.error ? { source: 'topYear', error: topYear.error } : null,
+      top12m && top12m.error ? { source: 'top12m', error: top12m.error } : null,
       referrers && referrers.error ? { source: 'referrers', error: referrers.error } : null,
       visits && visits.error ? { source: 'visits', error: visits.error } : null,
     ].filter(Boolean),
   };
+}
+
+// Full list of Newsroom articles published in the last 365 days.
+// WordPress.com's /posts endpoint caps `number` at 100 — we paginate.
+function _fetchNewsroomArticles365(site) {
+  var token = _wpcomProp('WPCOM_ACCESS_TOKEN');
+  if (!token) return [];
+  var cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 365);
+  var after = Utilities.formatDate(cutoff, 'UTC', "yyyy-MM-dd'T'HH:mm:ss");
+  var out = [];
+  for (var page = 1; page <= 8; page++) {
+    var url = 'https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(site) +
+      '/posts?after=' + encodeURIComponent(after) +
+      '&number=100&page=' + page +
+      '&fields=ID,title,URL,date';
+    var resp = UrlFetchApp.fetch(url, {
+      headers: { Authorization: 'Bearer ' + token },
+      muteHttpExceptions: true,
+    });
+    var body;
+    try { body = JSON.parse(resp.getContentText()); } catch (ex) { break; }
+    if (!body || !Array.isArray(body.posts) || body.posts.length === 0) break;
+    body.posts.forEach(function(p) {
+      var title = _decodeEntities(String(p.title || '').replace(/<[^>]+>/g, '').trim());
+      if (!title) return;
+      out.push({
+        id: p.ID,
+        title: title,
+        url: String(p.URL || '').replace(/^http:/, 'https:'),
+        date: p.date || '',
+      });
+    });
+    if (body.posts.length < 100) break;
+  }
+  return out;
 }
 
 function getPublications() {

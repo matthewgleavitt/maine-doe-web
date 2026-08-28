@@ -97,21 +97,33 @@ function fmtDate(iso){
 
 function NewsroomArticleSearch({posts}){
   const [q,setQ]=useState('');
-  const [sort,setSort]=useState('views'); // views | date | title
+  const [sort,setSort]=useState('date'); // date | views | title
+  const total=(posts||[]).length;
+  const withViews=(posts||[]).filter(p=>p.views!=null&&p.views>0).length;
+
   const filtered=useMemo(()=>{
     const ql=q.trim().toLowerCase();
     let list=(posts||[]).filter(p=>!ql||String(p.title||'').toLowerCase().includes(ql));
-    if(sort==='views') list=list.slice().sort((a,b)=>(b.views||0)-(a.views||0));
+    if(sort==='views') list=list.slice().sort((a,b)=>{
+      const av=a.views==null?-1:a.views; const bv=b.views==null?-1:b.views;
+      return bv-av;
+    });
     if(sort==='date')  list=list.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
     if(sort==='title') list=list.slice().sort((a,b)=>String(a.title||'').localeCompare(String(b.title||'')));
     return list;
   },[posts,q,sort]);
-  const showing=filtered.slice(0,50);
+  const CAP=200;
+  const showing=filtered.slice(0,CAP);
+
+  function fmtDate(iso){
+    if(!iso) return '';
+    try{const d=new Date(iso); if(isNaN(d.getTime())) return ''; return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return '';}
+  }
 
   return <div style={{background:'#ffffff',borderRadius:14,border:`2px solid #a8bdd055`,padding:'20px 22px',marginBottom:20,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,flexWrap:'wrap',marginBottom:12}}>
       <h3 style={{fontSize:13,fontWeight:800,color:'#182b3c',margin:0,textTransform:'uppercase',letterSpacing:'.06em'}}>Search article hits</h3>
-      <div style={{fontSize:11.5,color:'#475569',fontWeight:600}}>Top 100 articles by views this year</div>
+      <div style={{fontSize:11.5,color:'#475569',fontWeight:600}}>All {total.toLocaleString()} articles published in the last 365 days</div>
     </div>
     <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}}>
       <div style={{display:'flex',alignItems:'center',gap:8,padding:'9px 14px',background:'#ffffff',borderRadius:10,border:`1.5px solid #a8bdd055`,flex:'1 1 260px'}}>
@@ -122,36 +134,43 @@ function NewsroomArticleSearch({posts}){
         {q&&<span onClick={()=>setQ('')} style={{cursor:'pointer',color:'#475569',fontWeight:800,fontSize:16,lineHeight:1}}>×</span>}
       </div>
       <div style={{display:'flex',gap:4,padding:4,borderRadius:10,background:'#f1f5f9',fontSize:12,fontWeight:700}}>
-        {['views','date','title'].map(s=>(
+        {['date','views','title'].map(s=>(
           <button key={s} onClick={()=>setSort(s)}
             style={{padding:'6px 12px',borderRadius:7,border:'none',background:sort===s?'#ffffff':'transparent',color:sort===s?'#182b3c':'#475569',cursor:'pointer',fontFamily:'inherit',fontWeight:700,fontSize:12,textTransform:'capitalize',boxShadow:sort===s?'0 1px 3px rgba(24,43,60,0.08)':'none'}}>
-            {s==='views'?'Most viewed':s==='date'?'Newest':'A → Z'}
+            {s==='date'?'Newest':s==='views'?'Most viewed':'A → Z'}
           </button>
         ))}
       </div>
     </div>
-    <div style={{maxHeight:420,overflowY:'auto',border:`1px solid #a8bdd040`,borderRadius:10}}>
+    <div style={{maxHeight:520,overflowY:'auto',border:`1px solid #a8bdd040`,borderRadius:10}}>
       <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
         <thead style={{position:'sticky',top:0,background:'#e2e8f0',zIndex:1}}>
           <tr>
             <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:'#182b3c',fontSize:11,textTransform:'uppercase',letterSpacing:'.05em'}}>Article</th>
-            <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:'#182b3c',fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap'}}>Views (YTD)</th>
+            <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:'#182b3c',fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:110}}>Published</th>
+            <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:'#182b3c',fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:110}}>Views (12mo)</th>
           </tr>
         </thead>
         <tbody>
-          {showing.length===0?<tr><td colSpan={2} style={{padding:'30px 20px',textAlign:'center',color:'#475569',fontWeight:500}}>{q?`No articles match "${q}"`:'No article data available'}</td></tr>
+          {showing.length===0?<tr><td colSpan={3} style={{padding:'30px 20px',textAlign:'center',color:'#475569',fontWeight:500}}>{q?`No articles match "${q}"`:'No article data available'}</td></tr>
           :showing.map((p,i)=>(
             <tr key={p.id||i} style={{borderTop:`1px solid #a8bdd033`}}>
               <td style={{padding:'10px 14px'}}>
                 <a href={p.url} target="_blank" rel="noopener noreferrer" style={{color:'#182b3c',textDecoration:'none',fontWeight:600}}>{p.title}</a>
               </td>
-              <td style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:'#8a2e13',fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap'}}>{(p.views||0).toLocaleString()}</td>
+              <td style={{padding:'10px 14px',color:'#475569',fontSize:12,fontWeight:600,whiteSpace:'nowrap'}}>{fmtDate(p.date)}</td>
+              <td style={{padding:'10px 14px',textAlign:'right',fontWeight:800,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',color:p.views==null?'#94a3b8':'#8a2e13'}}>
+                {p.views==null?<span title="Below the monthly top-100 cutoff — traffic exists but WordPress.com only exposes counts for the top 100 per month">—</span>:(p.views||0).toLocaleString()}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-    {filtered.length>50&&<div style={{marginTop:10,fontSize:11.5,color:'#475569',fontWeight:600,textAlign:'right'}}>Showing top 50 of {filtered.length.toLocaleString()} matches</div>}
+    <div style={{marginTop:10,fontSize:11.5,color:'#475569',fontWeight:600,display:'flex',flexWrap:'wrap',justifyContent:'space-between',gap:8}}>
+      <span>Views shown for {withViews.toLocaleString()} of {total.toLocaleString()} articles. <span title="WordPress.com only exposes view counts for the monthly top 100 posts. Articles below that cutoff show a dash — traffic is real, just not surfaced by the API." style={{textDecoration:'underline dotted',cursor:'help'}}>Why the dashes?</span></span>
+      {filtered.length>CAP&&<span>Showing first {CAP} of {filtered.length.toLocaleString()} matches — narrow the search to see more</span>}
+    </div>
   </div>;
 }
 
@@ -558,7 +577,7 @@ function App(){
             {l:'Views today',v:(newsroomStats.summary?.viewsToday||0).toLocaleString(),c:'#8a2e13'},
             {l:'Views · last 7 days',v:(newsroomStats.summary?.views7d||0).toLocaleString(),c:'#b23a15'},
             {l:'Views · last 30 days',v:(newsroomStats.summary?.views30d||0).toLocaleString(),c:'#0d7ba0'},
-            {l:'Articles published',v:(newsroomStats.summary?.posts||newsroomMeta?.total||0).toLocaleString(),c:'#16a34a'},
+            {l:'Articles · last 365 days',v:(newsroomStats.summary?.articles365Count||0).toLocaleString(),c:'#16a34a'},
           ].map((m,i)=>(
             <div key={i} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}55`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
               <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:800,letterSpacing:.5,marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
@@ -569,8 +588,8 @@ function App(){
           ))}
         </div>
 
-        {/* Search & browse articles by view count */}
-        <NewsroomArticleSearch posts={newsroomStats.topYear||[]}/>
+        {/* Search & browse ALL articles from the last 365 days */}
+        <NewsroomArticleSearch posts={newsroomStats.articles||[]}/>
 
         {/* Top posts + referrers side by side */}
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:14,marginBottom:20}}>
