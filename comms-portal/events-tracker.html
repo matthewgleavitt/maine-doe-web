@@ -773,11 +773,17 @@ function App(){
     {message&&<Callout tone={message.tone==='ok'?'ok':message.tone==='err'?'err':'info'}>{message.text}</Callout>}
 
     {isAdmin&&!showForm&&!editMode&&<Tracker rows={rows} loading={loadingRows} onEdit={editRow} onCancel={cancelRow} adminMode={true}/>}
-    {!isAdmin&&!showForm&&!editMode&&<Card style={{marginTop:24,textAlign:'center',padding:'40px 24px'}}>
-      <Sv d={ic.cal} size={48} c={B.ink3}/>
-      <h3 style={{fontFamily:'League Spartan',fontWeight:800,fontSize:20,color:B.navy,marginTop:14,marginBottom:8}}>Ready to submit an event?</h3>
-      <p style={{color:B.ink3,fontSize:14,marginBottom:20}}>Click "Submit new event" above to get started.</p>
-    </Card>}
+    {!isAdmin&&!showForm&&!editMode&&<div style={{marginTop:8}}>
+      <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:12,paddingLeft:2,flexWrap:'wrap',gap:8}}>
+        <h3 style={{fontFamily:'League Spartan',fontSize:15,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.05em'}}>Live calendar</h3>
+        <a href={CAL_URL} target="_blank" rel="noopener noreferrer" style={{fontSize:12,fontWeight:700,color:B.tealInk||'#0d7ba0',textDecoration:'none'}}>Open in new tab ↗</a>
+      </div>
+      <div style={{background:B.wh,borderRadius:14,border:`1px solid ${B.rule}`,overflow:'hidden'}}>
+        <iframe src="https://gateway.maine.gov/doe/communications/calendar/index.html"
+          style={{width:'100%',minHeight:1100,border:'none',display:'block'}}
+          title="Events & Professional Development Calendar"/>
+      </div>
+    </div>}
 
     {/* Form modal */}
     <Modal open={showForm} onClose={()=>{if(!busy)setShowForm(false);}} title={editing?'Edit event':'Submit an event'} wide={true}>

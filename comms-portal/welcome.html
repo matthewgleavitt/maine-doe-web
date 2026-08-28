@@ -67,7 +67,6 @@ const tabs=[
   {id:'announcements',label:'Notifications',icon:ic.bell},
   {id:'news',label:'Maine DOE News',icon:ic.news},
   {id:'social',label:'Social',icon:ic.users},
-  {id:'calendar',label:'Calendar',icon:ic.cal},
   {id:'contact',label:'Contact',icon:ic.mail},
 ];
 
@@ -102,7 +101,7 @@ function App(){
 
   // Load Elfsight when news, calendar, or social tab is active
   useEffect(()=>{
-    if(tab==='news'||tab==='calendar'||tab==='social'){
+    if(tab==='news'||tab==='social'){
       if(!document.querySelector('script[src*="elfsight"]')){
         const s=document.createElement('script');s.src='https://static.elfsight.com/platform/platform.js';s.async=true;document.body.appendChild(s);
       } else {
@@ -366,14 +365,7 @@ function App(){
         </div>
       </div>}
 
-      {/* ── CALENDAR ── */}
-      {tab==='calendar'&&<div>
-        <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',minHeight:900}}>
-          <iframe src="https://gateway.maine.gov/doe/communications/calendar/index.html"
-            style={{width:'100%',minHeight:900,border:'none',display:'block'}}
-            title="Events & Professional Development Calendar"/>
-        </div>
-      </div>}
+      {/* Calendar moved to the Calendar section in the sidebar. */}
 
       {/* ── CONTACT ── */}
       {tab==='contact'&&<div>
