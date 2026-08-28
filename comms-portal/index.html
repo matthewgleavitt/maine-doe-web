@@ -322,12 +322,18 @@ function Portal(){
         borderRight:`1px solid ${C.border}`,
         ...(mob?{position:'fixed',left:sbOpen?0:-240,top:0,bottom:0,width:230}:{}),
       }}>
-        <div style={{padding:sbOpen?'20px 18px 16px':'20px 12px 16px',borderBottom:`1px solid ${C.border}`,display:'flex',alignItems:'center',gap:12,minHeight:64}}>
-          <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/maine-doe-logo.png" alt="Maine DOE" 
-            style={{height:32,objectFit:'contain',flexShrink:0}}/>
-          {sbOpen&&<div style={{animation:'slideRight 0.2s ease'}}>
-            <div style={{fontSize:13,fontWeight:700,color:C.wh,letterSpacing:.2}}>Communications</div>
-            <div style={{fontSize:10,color:C.txtMute,fontWeight:500}}>Maine DOE Portal</div>
+        <div style={{padding:sbOpen?'20px 18px 12px':'20px 12px 12px',borderBottom:`1px solid ${C.border}`,display:'flex',flexDirection:'column',gap:10,minHeight:64}}>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/maine-doe-logo.png" alt="Maine DOE"
+              style={{height:32,objectFit:'contain',flexShrink:0}}/>
+            {sbOpen&&<div style={{animation:'slideRight 0.2s ease'}}>
+              <div style={{fontSize:13,fontWeight:700,color:C.wh,letterSpacing:.2}}>Communications</div>
+              <div style={{fontSize:10,color:C.txtMute,fontWeight:500}}>Maine DOE Portal</div>
+            </div>}
+          </div>
+          {sbOpen&&<div style={{display:'inline-flex',alignItems:'center',gap:6,padding:'4px 9px',borderRadius:6,background:'rgba(232,72,85,0.14)',border:'1px solid rgba(232,72,85,0.35)',fontSize:9.5,fontWeight:800,color:'#f87a86',letterSpacing:'.08em',textTransform:'uppercase',alignSelf:'flex-start'}}>
+            <span style={{width:5,height:5,borderRadius:'50%',background:'#f87a86',boxShadow:'0 0 6px rgba(248,122,134,0.6)'}}/>
+            Internal use only
           </div>}
         </div>
 
@@ -367,7 +373,7 @@ function Portal(){
         </nav>
 
         {sbOpen&&<div style={{padding:'14px 18px',borderTop:`1px solid ${C.border}`,fontSize:10,color:C.txtMute,lineHeight:1.6}}>
-          Maine Department of Education<br/><span style={{opacity:.5}}>Website & Technology</span>
+          Maine Department of Education
         </div>}
       </aside>
 
@@ -472,7 +478,7 @@ function Portal(){
                 ))}
               </div>
               <div style={{textAlign:'center',padding:'40px 0 0',fontSize:11,color:'#64748b',fontWeight:500}}>
-                Maine Department of Education · Website & Technology
+                Maine Department of Education
               </div>
             </div>
           </div>}

@@ -368,8 +368,10 @@ function App(){
 
       {/* ── CALENDAR ── */}
       {tab==='calendar'&&<div>
-        <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',padding:20,minHeight:500}}>
-          <div className="elfsight-app-6c6f22e1-033b-47cd-8ea3-0906acf8c9e4"></div>
+        <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',minHeight:900}}>
+          <iframe src="https://gateway.maine.gov/doe/communications/calendar/index.html"
+            style={{width:'100%',minHeight:900,border:'none',display:'block'}}
+            title="Events & Professional Development Calendar"/>
         </div>
       </div>}
 
