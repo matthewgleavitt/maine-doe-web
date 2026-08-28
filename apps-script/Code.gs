@@ -1169,9 +1169,11 @@ function getNewsroomStats() {
   var site = _wpcomProp('WPCOM_SITE_DOMAIN') || WPCOM_SITE_DEFAULT;
   var siteSeg = '/sites/' + encodeURIComponent(site);
 
-  var summary = _wpcomFetch(siteSeg + '/stats/summary?period=day&num=30');
+  var summary = _wpcomFetch(siteSeg + '/stats/summary');
   var top30 = _wpcomFetch(siteSeg + '/stats/top-posts?period=month&num=1&max=10');
   var top7 = _wpcomFetch(siteSeg + '/stats/top-posts?period=week&num=1&max=10');
+  // Larger set so the search/browse table can find specific articles.
+  var topYear = _wpcomFetch(siteSeg + '/stats/top-posts?period=year&num=1&max=100');
   var referrers = _wpcomFetch(siteSeg + '/stats/referrers?period=month&num=1&max=8');
   var visits = _wpcomFetch(siteSeg + '/stats/visits?unit=day&quantity=30');
 
@@ -1182,9 +1184,19 @@ function getNewsroomStats() {
     var keys = Object.keys(days);
     if (!keys.length) return [];
     var pv = (days[keys[0]] || {}).postviews || [];
-    return pv.map(function(p) {
-      return { id: p.id, title: p.title, url: (p.href || '').replace(/^http:/, 'https:'), views: p.views };
-    });
+    return pv
+      // Drop the "#12345 (untitled)" entries — those are attachments, drafts,
+      // or pages the API can't title. They're noise for our audience.
+      .filter(function(p) {
+        var t = String(p.title || '').trim();
+        if (!t) return false;
+        if (/^\(untitled\)$/i.test(t)) return false;
+        if (/^#\d+\s*\(untitled\)$/i.test(t)) return false;
+        return true;
+      })
+      .map(function(p) {
+        return { id: p.id, title: p.title, url: (p.href || '').replace(/^http:/, 'https:'), views: p.views, date: p.date || '' };
+      });
   }
   function normalizeReferrers(res) {
     if (!res || res.error) return [];
@@ -1210,25 +1222,38 @@ function getNewsroomStats() {
     });
   }
 
+  // Prefer the per-day visits array for period totals. summary.views has
+  // ambiguous semantics (it changes shape with period params), so we roll
+  // our own from a source that always means "views on this day".
+  var visitsRows = normalizeVisits(visits);
+  function sumField(rows, field) {
+    return rows.reduce(function(a, r) { return a + (Number(r[field]) || 0); }, 0);
+  }
+  var todayRow = visitsRows.length ? visitsRows[visitsRows.length - 1] : {};
+  var last7 = visitsRows.slice(-7);
+
   return {
-    summary: (summary && !summary.error) ? {
-      viewsToday: summary.views || 0,
-      viewsBestDay: summary.views_best_day_total || 0,
-      viewsBestDayDate: summary.views_best_day || '',
-      visitorsToday: summary.visitors || 0,
-      followers: summary.followers_blog || summary.followers || 0,
-      posts: summary.posts || 0,
-    } : null,
+    summary: {
+      viewsToday: Number(todayRow.views) || 0,
+      visitorsToday: Number(todayRow.visitors) || 0,
+      views7d: sumField(last7, 'views'),
+      views30d: sumField(visitsRows, 'views'),
+      visitors30d: sumField(visitsRows, 'visitors'),
+      // Total articles published all-time (this one is stable across all summary calls).
+      posts: (summary && !summary.error && summary.posts) || 0,
+    },
     top30: normalizeTopPosts(top30),
     top7: normalizeTopPosts(top7),
+    topYear: normalizeTopPosts(topYear),
     referrers: normalizeReferrers(referrers),
-    visits: normalizeVisits(visits),
+    visits: visitsRows,
     fetchedAt: new Date().toISOString(),
     site: site,
     errors: [
       summary && summary.error ? { source: 'summary', error: summary.error } : null,
       top30 && top30.error ? { source: 'top30', error: top30.error } : null,
       top7 && top7.error ? { source: 'top7', error: top7.error } : null,
+      topYear && topYear.error ? { source: 'topYear', error: topYear.error } : null,
       referrers && referrers.error ? { source: 'referrers', error: referrers.error } : null,
       visits && visits.error ? { source: 'visits', error: visits.error } : null,
     ].filter(Boolean),

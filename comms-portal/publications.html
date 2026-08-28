@@ -69,7 +69,6 @@ const COMMONS_DIRECTIONS_URL='commons-directions.html';
 // WordPress.com public API — no auth required for public site posts.
 const NEWSROOM_URL='https://mainedoenews.net/';
 const NEWSROOM_SITE='mainedoenews.net';
-const NEWSROOM_WP_STATS_URL='https://wordpress.com/stats/day/mainedoenews.net';
 const NEWSROOM_SUBMIT_URL='https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039';
 
 function stripHtml(s){return String(s||'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&#8217;/g,"'").replace(/&#8216;/g,"'").replace(/&#8220;/g,'"').replace(/&#8221;/g,'"').replace(/&#8230;/g,'…').replace(/\s+/g,' ').trim();}
@@ -94,6 +93,66 @@ function fmtDate(iso){
     if(isNaN(d.getTime())) return '';
     return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   }catch(e){return '';}
+}
+
+function NewsroomArticleSearch({posts}){
+  const [q,setQ]=useState('');
+  const [sort,setSort]=useState('views'); // views | date | title
+  const filtered=useMemo(()=>{
+    const ql=q.trim().toLowerCase();
+    let list=(posts||[]).filter(p=>!ql||String(p.title||'').toLowerCase().includes(ql));
+    if(sort==='views') list=list.slice().sort((a,b)=>(b.views||0)-(a.views||0));
+    if(sort==='date')  list=list.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    if(sort==='title') list=list.slice().sort((a,b)=>String(a.title||'').localeCompare(String(b.title||'')));
+    return list;
+  },[posts,q,sort]);
+  const showing=filtered.slice(0,50);
+
+  return <div style={{background:'#ffffff',borderRadius:14,border:`2px solid #a8bdd055`,padding:'20px 22px',marginBottom:20,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,flexWrap:'wrap',marginBottom:12}}>
+      <h3 style={{fontSize:13,fontWeight:800,color:'#182b3c',margin:0,textTransform:'uppercase',letterSpacing:'.06em'}}>Search article hits</h3>
+      <div style={{fontSize:11.5,color:'#475569',fontWeight:600}}>Top 100 articles by views this year</div>
+    </div>
+    <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'9px 14px',background:'#ffffff',borderRadius:10,border:`1.5px solid #a8bdd055`,flex:'1 1 260px'}}>
+        <Sv d={["M11 3a8 8 0 108 8","M21 21l-4.35-4.35"]} size={15} color="#475569"/>
+        <input type="text" value={q} onChange={e=>setQ(e.target.value)}
+          placeholder="Search titles (e.g. 'Assessment', 'Grant', 'Adult Education')..."
+          style={{border:'none',outline:'none',flex:1,fontSize:13.5,color:'#182b3c',fontWeight:500,background:'transparent',fontFamily:'inherit'}}/>
+        {q&&<span onClick={()=>setQ('')} style={{cursor:'pointer',color:'#475569',fontWeight:800,fontSize:16,lineHeight:1}}>×</span>}
+      </div>
+      <div style={{display:'flex',gap:4,padding:4,borderRadius:10,background:'#f1f5f9',fontSize:12,fontWeight:700}}>
+        {['views','date','title'].map(s=>(
+          <button key={s} onClick={()=>setSort(s)}
+            style={{padding:'6px 12px',borderRadius:7,border:'none',background:sort===s?'#ffffff':'transparent',color:sort===s?'#182b3c':'#475569',cursor:'pointer',fontFamily:'inherit',fontWeight:700,fontSize:12,textTransform:'capitalize',boxShadow:sort===s?'0 1px 3px rgba(24,43,60,0.08)':'none'}}>
+            {s==='views'?'Most viewed':s==='date'?'Newest':'A → Z'}
+          </button>
+        ))}
+      </div>
+    </div>
+    <div style={{maxHeight:420,overflowY:'auto',border:`1px solid #a8bdd040`,borderRadius:10}}>
+      <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+        <thead style={{position:'sticky',top:0,background:'#e2e8f0',zIndex:1}}>
+          <tr>
+            <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:'#182b3c',fontSize:11,textTransform:'uppercase',letterSpacing:'.05em'}}>Article</th>
+            <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:'#182b3c',fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap'}}>Views (YTD)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {showing.length===0?<tr><td colSpan={2} style={{padding:'30px 20px',textAlign:'center',color:'#475569',fontWeight:500}}>{q?`No articles match "${q}"`:'No article data available'}</td></tr>
+          :showing.map((p,i)=>(
+            <tr key={p.id||i} style={{borderTop:`1px solid #a8bdd033`}}>
+              <td style={{padding:'10px 14px'}}>
+                <a href={p.url} target="_blank" rel="noopener noreferrer" style={{color:'#182b3c',textDecoration:'none',fontWeight:600}}>{p.title}</a>
+              </td>
+              <td style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:'#8a2e13',fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap'}}>{(p.views||0).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    {filtered.length>50&&<div style={{marginTop:10,fontSize:11.5,color:'#475569',fontWeight:600,textAlign:'right'}}>Showing top 50 of {filtered.length.toLocaleString()} matches</div>}
+  </div>;
 }
 
 function rateColor(rate,type){
@@ -473,10 +532,6 @@ function App(){
             style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 22px',borderRadius:12,background:B.wh,color:B.navy,textDecoration:'none',fontSize:14,fontWeight:700,border:`2px solid ${B.border}80`}}>
             <Sv d={["M12 5v14","M5 12h14"]} size={16} color={B.navy}/> Submit an article
           </a>
-          <a href={NEWSROOM_WP_STATS_URL} target="_blank" rel="noopener noreferrer"
-            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 22px',borderRadius:12,background:'transparent',color:B.txtSec,textDecoration:'none',fontSize:14,fontWeight:600}}>
-            Full stats dashboard <Sv d={ic.ext} size={14} color={B.txtSec}/>
-          </a>
         </div>
       </div>
 
@@ -492,32 +547,30 @@ function App(){
           </div>
           <div style={{flex:1,minWidth:280}}>
             <div style={{fontSize:14,fontWeight:800,color:B.navy,marginBottom:6}}>WordPress.com stats aren't connected yet</div>
-            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.65,fontWeight:500,margin:'0 0 10px'}}>{newsroomStatsError}</p>
-            <a href={NEWSROOM_WP_STATS_URL} target="_blank" rel="noopener noreferrer"
-              style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:8,background:B.navy,color:'#fff',textDecoration:'none',fontSize:12.5,fontWeight:700}}>
-              Open WP.com stats <Sv d={ic.ext} size={12} color="#fff"/>
-            </a>
+            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.65,fontWeight:500,margin:0}}>{newsroomStatsError}</p>
           </div>
         </div>
       </div>
       :newsroomStats&&<>
-        {/* KPI tiles — real numbers from the Stats API */}
+        {/* KPI tiles — the four numbers that actually matter */}
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:14,marginBottom:16}}>
           {[
             {l:'Views today',v:(newsroomStats.summary?.viewsToday||0).toLocaleString(),c:'#8a2e13'},
-            {l:'Best day (all-time)',v:(newsroomStats.summary?.viewsBestDay||0).toLocaleString(),sub:newsroomStats.summary?.viewsBestDayDate||'',c:'#b23a15'},
-            {l:'Email subscribers',v:(newsroomStats.summary?.followers||newsroomMeta?.subscribers||0).toLocaleString(),c:'#f59e0b'},
-            {l:'Articles published',v:(newsroomStats.summary?.posts||newsroomMeta?.total||0).toLocaleString(),c:'#0d7ba0'},
+            {l:'Views · last 7 days',v:(newsroomStats.summary?.views7d||0).toLocaleString(),c:'#b23a15'},
+            {l:'Views · last 30 days',v:(newsroomStats.summary?.views30d||0).toLocaleString(),c:'#0d7ba0'},
+            {l:'Articles published',v:(newsroomStats.summary?.posts||newsroomMeta?.total||0).toLocaleString(),c:'#16a34a'},
           ].map((m,i)=>(
             <div key={i} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}55`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
               <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:800,letterSpacing:.5,marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
                 <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
               </div>
               <div style={{fontSize:22,fontWeight:800,color:B.navy,lineHeight:1.15}}>{m.v}</div>
-              {m.sub&&<div style={{fontSize:11,color:B.txtMute,marginTop:3,fontWeight:600}}>{m.sub}</div>}
             </div>
           ))}
         </div>
+
+        {/* Search & browse articles by view count */}
+        <NewsroomArticleSearch posts={newsroomStats.topYear||[]}/>
 
         {/* Top posts + referrers side by side */}
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:14,marginBottom:20}}>
@@ -530,7 +583,7 @@ function App(){
               <a key={p.id||i} href={p.url} target="_blank" rel="noopener noreferrer"
                 style={{display:'flex',justifyContent:'space-between',gap:12,padding:'9px 0',borderTop:i===0?'none':`1px solid ${B.border}30`,textDecoration:'none',color:'inherit'}}>
                 <div style={{minWidth:0,flex:1}}>
-                  <div style={{fontSize:13,fontWeight:700,color:B.navy,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p.title||'(untitled)'}</div>
+                  <div style={{fontSize:13,fontWeight:700,color:B.navy,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p.title}</div>
                 </div>
                 <div style={{fontSize:13,fontWeight:800,color:'#8a2e13',fontVariantNumeric:'tabular-nums',flexShrink:0}}>{(p.views||0).toLocaleString()}</div>
               </a>
