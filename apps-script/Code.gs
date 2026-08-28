@@ -506,6 +506,12 @@ function getModerationQueue() {
 // ═══════════════════════════════════════════
 
 function doGet(e) {
+  // Action-based routes come first (OAuth callbacks, etc.) since they
+  // may need to return HTML instead of JSON.
+  var action = (e && e.parameter && e.parameter.action) || '';
+  if (action === 'wpcom_oauth_start') return wpcomOauthStart();
+  if (action === 'wpcom_oauth_callback') return wpcomOauthCallback(e);
+
   var type = (e && e.parameter && e.parameter.type) || 'pages';
   var days = (e && e.parameter && e.parameter.days) || '30';
   var cacheKey = 'portal_' + type + '_' + days;
@@ -579,6 +585,10 @@ function doGet(e) {
     } else if (type === 'commons') {
       result = getCommonsPosts();
 
+    } else if (type === 'newsroom_stats') {
+      // WordPress.com Stats API — requires an OAuth token in Script Properties.
+      result = getNewsroomStats();
+
     } else if (type === 'my_events') {
       // Submitter self-service: list events where Contact Email OR Submitter Email
       // matches. No token required — this is an internal-portal convenience, and
@@ -625,8 +635,8 @@ function doGet(e) {
       case 'pages': case 'files': case 'file_pages': case 'youtube':
       case 'templates': case 'announcements':
         ttl = 600; break;
-      // Stable — Drupal indexes and Mailchimp campaigns rarely change hour-to-hour
-      case 'drupal_pages': case 'drupal_files': case 'publications':
+      // Stable — Drupal indexes, Mailchimp campaigns, WP.com stats rarely change hour-to-hour
+      case 'drupal_pages': case 'drupal_files': case 'publications': case 'newsroom_stats':
         ttl = 1800; break;
       default:
         ttl = 300;
@@ -1033,6 +1043,196 @@ function _decodeEntities(s) {
     .replace(/&mdash;/g, '—')
     .replace(/&ndash;/g, '–')
     .replace(/&hellip;/g, '…');
+}
+
+
+// ═══════════════════════════════════════════
+// WORDPRESS.COM STATS (Maine DOE Newsroom)
+// ═══════════════════════════════════════════
+//
+// One-time setup:
+//   1. Register an app at https://developer.wordpress.com/apps/ with redirect
+//      URL = the exec URL of THIS web app + '?action=wpcom_oauth_callback'
+//   2. Set Script Properties:
+//      - WPCOM_CLIENT_ID
+//      - WPCOM_CLIENT_SECRET
+//      - WPCOM_SITE_DOMAIN = 'mainedoenews.net' (or whichever site)
+//   3. Visit <exec-url>?action=wpcom_oauth_start once, approve on WordPress.com.
+//      On callback we store WPCOM_ACCESS_TOKEN in Script Properties.
+//   4. From then on, ?type=newsroom_stats returns real analytics.
+
+var WPCOM_SITE_DEFAULT = 'mainedoenews.net';
+
+function _wpcomProp(key) {
+  return PropertiesService.getScriptProperties().getProperty(key) || '';
+}
+function _wpcomExecUrl() {
+  return ScriptApp.getService().getUrl();
+}
+function _wpcomRedirectUri() {
+  return _wpcomExecUrl() + '?action=wpcom_oauth_callback';
+}
+
+// Step 1 of OAuth — send the user to WordPress.com's authorize page.
+function wpcomOauthStart() {
+  var clientId = _wpcomProp('WPCOM_CLIENT_ID');
+  if (!clientId) {
+    return HtmlService.createHtmlOutput(
+      '<h2>Missing WPCOM_CLIENT_ID</h2>' +
+      '<p>Set <code>WPCOM_CLIENT_ID</code> and <code>WPCOM_CLIENT_SECRET</code> in Apps Script Script Properties, then try again.</p>'
+    );
+  }
+  var url = 'https://public-api.wordpress.com/oauth2/authorize' +
+    '?client_id=' + encodeURIComponent(clientId) +
+    '&redirect_uri=' + encodeURIComponent(_wpcomRedirectUri()) +
+    '&response_type=code' +
+    '&scope=global';
+  // Apps Script sandboxes iframes for HtmlService, so we bounce via meta refresh.
+  return HtmlService.createHtmlOutput(
+    '<meta http-equiv="refresh" content="0;url=' + url.replace(/"/g, '&quot;') + '">' +
+    '<p>Redirecting to WordPress.com to authorize the app…</p>' +
+    '<p>If nothing happens, <a href="' + url + '">click here</a>.</p>'
+  );
+}
+
+// Step 2 of OAuth — WordPress.com redirects here with ?code=XXX. We exchange
+// that for an access token and store it.
+function wpcomOauthCallback(e) {
+  var code = (e && e.parameter && e.parameter.code) || '';
+  var err = (e && e.parameter && e.parameter.error) || '';
+  if (err) {
+    return HtmlService.createHtmlOutput('<h2>Authorization failed</h2><p>' + err + '</p>');
+  }
+  if (!code) {
+    return HtmlService.createHtmlOutput('<h2>No auth code returned</h2><p>Try starting over at <code>?action=wpcom_oauth_start</code>.</p>');
+  }
+  var clientId = _wpcomProp('WPCOM_CLIENT_ID');
+  var clientSecret = _wpcomProp('WPCOM_CLIENT_SECRET');
+  if (!clientId || !clientSecret) {
+    return HtmlService.createHtmlOutput('<h2>Missing client credentials</h2><p>Set WPCOM_CLIENT_ID and WPCOM_CLIENT_SECRET in Script Properties.</p>');
+  }
+  var resp = UrlFetchApp.fetch('https://public-api.wordpress.com/oauth2/token', {
+    method: 'post',
+    payload: {
+      client_id: clientId,
+      client_secret: clientSecret,
+      code: code,
+      redirect_uri: _wpcomRedirectUri(),
+      grant_type: 'authorization_code',
+    },
+    muteHttpExceptions: true,
+  });
+  var body = resp.getContentText();
+  var j;
+  try { j = JSON.parse(body); } catch (ex) { j = {}; }
+  if (!j.access_token) {
+    return HtmlService.createHtmlOutput('<h2>Token exchange failed</h2><pre>' + body.replace(/</g, '&lt;') + '</pre>');
+  }
+  var props = PropertiesService.getScriptProperties();
+  props.setProperty('WPCOM_ACCESS_TOKEN', j.access_token);
+  if (j.blog_url && !props.getProperty('WPCOM_SITE_DOMAIN')) {
+    props.setProperty('WPCOM_SITE_DOMAIN', String(j.blog_url).replace(/^https?:\/\//, '').replace(/\/$/, ''));
+  }
+  // Bust the cached stats so the next fetch is fresh.
+  try { CacheService.getScriptCache().remove('portal_newsroom_stats_30'); } catch (ce) {}
+  return HtmlService.createHtmlOutput(
+    '<h2>WordPress.com connected</h2>' +
+    '<p>Access token stored. You can close this tab and reload the Newsroom tab in the portal.</p>'
+  );
+}
+
+function _wpcomFetch(path) {
+  var token = _wpcomProp('WPCOM_ACCESS_TOKEN');
+  if (!token) return { error: 'not_authenticated' };
+  var url = 'https://public-api.wordpress.com/rest/v1.1' + path;
+  var resp = UrlFetchApp.fetch(url, {
+    headers: { Authorization: 'Bearer ' + token },
+    muteHttpExceptions: true,
+  });
+  var body = resp.getContentText();
+  var code = resp.getResponseCode();
+  try {
+    var j = JSON.parse(body);
+    if (code >= 400) return { error: j.error || ('http_' + code), message: j.message || body.substring(0, 200) };
+    return j;
+  } catch (ex) {
+    return { error: 'bad_json', message: body.substring(0, 200) };
+  }
+}
+
+// Public entry point for the frontend.
+function getNewsroomStats() {
+  var token = _wpcomProp('WPCOM_ACCESS_TOKEN');
+  if (!token) {
+    return { error: 'WordPress.com not authorized yet. Visit ' + _wpcomExecUrl() + '?action=wpcom_oauth_start' };
+  }
+  var site = _wpcomProp('WPCOM_SITE_DOMAIN') || WPCOM_SITE_DEFAULT;
+  var siteSeg = '/sites/' + encodeURIComponent(site);
+
+  var summary = _wpcomFetch(siteSeg + '/stats/summary?period=day&num=30');
+  var top30 = _wpcomFetch(siteSeg + '/stats/top-posts?period=month&num=1&max=10');
+  var top7 = _wpcomFetch(siteSeg + '/stats/top-posts?period=week&num=1&max=10');
+  var referrers = _wpcomFetch(siteSeg + '/stats/referrers?period=month&num=1&max=8');
+  var visits = _wpcomFetch(siteSeg + '/stats/visits?unit=day&quantity=30');
+
+  function normalizeTopPosts(res) {
+    if (!res || res.error) return [];
+    // WP.com wraps top-posts in { days: { 'YYYY-MM-DD': { postviews: [...] } } }
+    var days = res.days || {};
+    var keys = Object.keys(days);
+    if (!keys.length) return [];
+    var pv = (days[keys[0]] || {}).postviews || [];
+    return pv.map(function(p) {
+      return { id: p.id, title: p.title, url: (p.href || '').replace(/^http:/, 'https:'), views: p.views };
+    });
+  }
+  function normalizeReferrers(res) {
+    if (!res || res.error) return [];
+    var days = res.days || {};
+    var keys = Object.keys(days);
+    if (!keys.length) return [];
+    var groups = (days[keys[0]] || {}).groups || [];
+    return groups.slice(0, 8).map(function(g) {
+      return { name: g.name || g.group || '', total: g.total || 0, url: g.url || '' };
+    });
+  }
+  function normalizeVisits(res) {
+    if (!res || res.error || !Array.isArray(res.data)) return [];
+    // WP returns [[date, views, visitors, ...]] — flatten to {date, views, visitors}.
+    var fieldIdx = { period: 0, views: 1, visitors: 2 };
+    (res.fields || []).forEach(function(f, i) { fieldIdx[f] = i; });
+    return res.data.map(function(row) {
+      return {
+        date: row[fieldIdx.period],
+        views: Number(row[fieldIdx.views] || 0),
+        visitors: Number(row[fieldIdx.visitors] || 0),
+      };
+    });
+  }
+
+  return {
+    summary: (summary && !summary.error) ? {
+      viewsToday: summary.views || 0,
+      viewsBestDay: summary.views_best_day_total || 0,
+      viewsBestDayDate: summary.views_best_day || '',
+      visitorsToday: summary.visitors || 0,
+      followers: summary.followers_blog || summary.followers || 0,
+      posts: summary.posts || 0,
+    } : null,
+    top30: normalizeTopPosts(top30),
+    top7: normalizeTopPosts(top7),
+    referrers: normalizeReferrers(referrers),
+    visits: normalizeVisits(visits),
+    fetchedAt: new Date().toISOString(),
+    site: site,
+    errors: [
+      summary && summary.error ? { source: 'summary', error: summary.error } : null,
+      top30 && top30.error ? { source: 'top30', error: top30.error } : null,
+      top7 && top7.error ? { source: 'top7', error: top7.error } : null,
+      referrers && referrers.error ? { source: 'referrers', error: referrers.error } : null,
+      visits && visits.error ? { source: 'visits', error: visits.error } : null,
+    ].filter(Boolean),
+  };
 }
 
 function getPublications() {
@@ -2226,7 +2426,18 @@ function _findRowById(sheet, idx, id) {
 
 function _rowToRecord(row, idx) {
   var rec = {};
-  for (var name in idx) rec[name] = row[idx[name]];
+  // Sheets returns time-only cells as Date objects at the 1899 epoch and
+  // date cells as Date objects. Apps Script's JSON encoder would ship those
+  // as raw ISO strings the client's parsers don't recognize, so normalize
+  // known-typed columns before serializing.
+  var timeCols = { 'Start Time': 1, 'End Time': 1 };
+  var dateCols = { 'Start Date': 1, 'End Date': 1, 'Recurrence End': 1, 'Registration Deadline': 1 };
+  for (var name in idx) {
+    var v = row[idx[name]];
+    if (timeCols[name]) rec[name] = _isoTime(v);
+    else if (dateCols[name]) rec[name] = _isoDate(v);
+    else rec[name] = v;
+  }
   return rec;
 }
 

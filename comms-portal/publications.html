@@ -113,6 +113,9 @@ function App(){
   const [newsroomPosts,setNewsroomPosts]=useState(null);
   const [newsroomMeta,setNewsroomMeta]=useState(null);
   const [newsroomLoading,setNewsroomLoading]=useState(true);
+  const [newsroomStats,setNewsroomStats]=useState(null);
+  const [newsroomStatsError,setNewsroomStatsError]=useState(null);
+  const [newsroomStatsLoading,setNewsroomStatsLoading]=useState(true);
   const PER_PAGE=25;
 
   useEffect(()=>{
@@ -162,6 +165,18 @@ function App(){
         });
       }catch(e){setNewsroomPosts([]);}
       setNewsroomLoading(false);
+    })();
+  },[]);
+
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const r=await fetch(API+'?type=newsroom_stats');
+        const j=await r.json();
+        if(j.error) setNewsroomStatsError(j.error);
+        else setNewsroomStats(j);
+      }catch(e){setNewsroomStatsError('Could not load stats');}
+      setNewsroomStatsLoading(false);
     })();
   },[]);
 
@@ -465,27 +480,82 @@ function App(){
         </div>
       </div>
 
-      {/* Site stats — from the public API */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:14,marginBottom:20}}>
-        {[
-          {l:'Articles published',v:newsroomMeta?.total?newsroomMeta.total.toLocaleString():'—',c:'#8a2e13'},
-          {l:'Email subscribers',v:newsroomMeta?.subscribers?newsroomMeta.subscribers.toLocaleString():'—',c:'#b23a15'},
-          {l:'Included in',v:'Weekly DOE Update',c:'#0d7ba0'},
-          {l:'Feed',v:'Live · public API',c:'#16a34a'},
-        ].map((m,i)=>(
-          <div key={i} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}55`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-            <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:800,letterSpacing:.5,marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
-              <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
-            </div>
-            <div style={{fontSize:m.v.length>10?18:22,fontWeight:800,color:B.navy,lineHeight:1.15}}>{m.v}</div>
+      {/* Stats — real data via WordPress.com Stats API, once OAuth is connected */}
+      {newsroomStatsLoading?<div style={{background:B.wh,borderRadius:14,padding:'40px 20px',textAlign:'center',border:`2px solid ${B.border}55`,marginBottom:20,display:'flex',alignItems:'center',justifyContent:'center',gap:12}}>
+        <Sv d={ic.spin} size={20} color="#8a2e13" style={{animation:'spin 1s linear infinite'}}/>
+        <span style={{color:B.txtSec,fontSize:13,fontWeight:600}}>Loading Newsroom analytics...</span>
+      </div>
+      :newsroomStatsError?<div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,padding:'22px 26px',marginBottom:20,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+        <div style={{display:'flex',alignItems:'flex-start',gap:14,flexWrap:'wrap'}}>
+          <div style={{width:44,height:44,borderRadius:12,background:'#f59e0b18',border:'1.5px solid #f59e0b40',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            <Sv d={["M12 9v4","M12 17h.01","M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"]} size={22} color="#a16207"/>
           </div>
-        ))}
+          <div style={{flex:1,minWidth:280}}>
+            <div style={{fontSize:14,fontWeight:800,color:B.navy,marginBottom:6}}>WordPress.com stats aren't connected yet</div>
+            <p style={{fontSize:13,color:B.txtSec,lineHeight:1.65,fontWeight:500,margin:'0 0 10px'}}>{newsroomStatsError}</p>
+            <a href={NEWSROOM_WP_STATS_URL} target="_blank" rel="noopener noreferrer"
+              style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:8,background:B.navy,color:'#fff',textDecoration:'none',fontSize:12.5,fontWeight:700}}>
+              Open WP.com stats <Sv d={ic.ext} size={12} color="#fff"/>
+            </a>
+          </div>
+        </div>
       </div>
+      :newsroomStats&&<>
+        {/* KPI tiles — real numbers from the Stats API */}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:14,marginBottom:16}}>
+          {[
+            {l:'Views today',v:(newsroomStats.summary?.viewsToday||0).toLocaleString(),c:'#8a2e13'},
+            {l:'Best day (all-time)',v:(newsroomStats.summary?.viewsBestDay||0).toLocaleString(),sub:newsroomStats.summary?.viewsBestDayDate||'',c:'#b23a15'},
+            {l:'Email subscribers',v:(newsroomStats.summary?.followers||newsroomMeta?.subscribers||0).toLocaleString(),c:'#f59e0b'},
+            {l:'Articles published',v:(newsroomStats.summary?.posts||newsroomMeta?.total||0).toLocaleString(),c:'#0d7ba0'},
+          ].map((m,i)=>(
+            <div key={i} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}55`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+              <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:800,letterSpacing:.5,marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
+                <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
+              </div>
+              <div style={{fontSize:22,fontWeight:800,color:B.navy,lineHeight:1.15}}>{m.v}</div>
+              {m.sub&&<div style={{fontSize:11,color:B.txtMute,marginTop:3,fontWeight:600}}>{m.sub}</div>}
+            </div>
+          ))}
+        </div>
 
-      {/* Stats note */}
-      <div style={{padding:'14px 18px',borderRadius:10,background:'#8a2e1308',border:'1.5px solid #8a2e1325',marginBottom:20,fontSize:13,color:B.txtSec,lineHeight:1.6,fontWeight:500}}>
-        <strong style={{color:B.navy}}>A note on stats.</strong> Article and subscriber counts here come from the public WordPress.com API. Full analytics — page views, referrers, top posts, subscriber activity — live in the WordPress.com admin at <a href={NEWSROOM_WP_STATS_URL} target="_blank" rel="noopener noreferrer" style={{color:'#8a2e13',fontWeight:700}}>wordpress.com/stats</a> and require the site login.
-      </div>
+        {/* Top posts + referrers side by side */}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:14,marginBottom:20}}>
+          <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,padding:'18px 20px'}}>
+            <h3 style={{fontSize:12,fontWeight:800,color:B.navy,margin:'0 0 12px',textTransform:'uppercase',letterSpacing:'.06em',display:'flex',alignItems:'center',gap:8,justifyContent:'space-between'}}>
+              <span>Top articles · last 30 days</span>
+              <span style={{fontSize:10,color:B.txtMute,fontWeight:700,letterSpacing:'.04em'}}>Views</span>
+            </h3>
+            {(newsroomStats.top30||[]).slice(0,7).map((p,i)=>(
+              <a key={p.id||i} href={p.url} target="_blank" rel="noopener noreferrer"
+                style={{display:'flex',justifyContent:'space-between',gap:12,padding:'9px 0',borderTop:i===0?'none':`1px solid ${B.border}30`,textDecoration:'none',color:'inherit'}}>
+                <div style={{minWidth:0,flex:1}}>
+                  <div style={{fontSize:13,fontWeight:700,color:B.navy,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p.title||'(untitled)'}</div>
+                </div>
+                <div style={{fontSize:13,fontWeight:800,color:'#8a2e13',fontVariantNumeric:'tabular-nums',flexShrink:0}}>{(p.views||0).toLocaleString()}</div>
+              </a>
+            ))}
+            {(newsroomStats.top30||[]).length===0&&<div style={{fontSize:12,color:B.txtMute,fontWeight:500,padding:'8px 0'}}>No data yet for this period.</div>}
+          </div>
+
+          <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}55`,padding:'18px 20px'}}>
+            <h3 style={{fontSize:12,fontWeight:800,color:B.navy,margin:'0 0 12px',textTransform:'uppercase',letterSpacing:'.06em',display:'flex',alignItems:'center',gap:8,justifyContent:'space-between'}}>
+              <span>Top referrers · last 30 days</span>
+              <span style={{fontSize:10,color:B.txtMute,fontWeight:700,letterSpacing:'.04em'}}>Visits</span>
+            </h3>
+            {(newsroomStats.referrers||[]).slice(0,7).map((r,i)=>{
+              const inner=<>
+                <div style={{minWidth:0,flex:1,fontSize:13,fontWeight:700,color:B.navy,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{r.name||'(direct)'}</div>
+                <div style={{fontSize:13,fontWeight:800,color:'#0d7ba0',fontVariantNumeric:'tabular-nums',flexShrink:0}}>{(r.total||0).toLocaleString()}</div>
+              </>;
+              return r.url ?
+                <a key={i} href={r.url} target="_blank" rel="noopener noreferrer" style={{display:'flex',justifyContent:'space-between',gap:12,padding:'9px 0',borderTop:i===0?'none':`1px solid ${B.border}30`,textDecoration:'none',color:'inherit'}}>{inner}</a>
+                : <div key={i} style={{display:'flex',justifyContent:'space-between',gap:12,padding:'9px 0',borderTop:i===0?'none':`1px solid ${B.border}30`}}>{inner}</div>;
+            })}
+            {(newsroomStats.referrers||[]).length===0&&<div style={{fontSize:12,color:B.txtMute,fontWeight:500,padding:'8px 0'}}>No referrer data yet.</div>}
+          </div>
+        </div>
+      </>}
 
       {/* Recent posts feed */}
       <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:14,paddingLeft:2}}>
