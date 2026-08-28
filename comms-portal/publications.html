@@ -71,7 +71,23 @@ const NEWSROOM_URL='https://mainedoenews.net/';
 const NEWSROOM_SITE='mainedoenews.net';
 const NEWSROOM_SUBMIT_URL='https://somdoegeneralproduction.crm9.dynamics.com/main.aspx?appid=baad3b2b-d201-4316-9e19-af1ea100f6b5&pagetype=entitylist&etn=comm_newsroomrequest&viewid=a9c34696-d0a9-44c3-aa2c-7383fbad60c9&viewType=1039';
 
-function stripHtml(s){return String(s||'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&#8217;/g,"'").replace(/&#8216;/g,"'").replace(/&#8220;/g,'"').replace(/&#8221;/g,'"').replace(/&#8230;/g,'…').replace(/\s+/g,' ').trim();}
+function decodeEntities(s){
+  return String(s||'')
+    .replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&apos;/g,"'")
+    .replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+    .replace(/&mdash;/g,'—').replace(/&ndash;/g,'–').replace(/&hellip;/g,'…')
+    .replace(/&ldquo;/g,'“').replace(/&rdquo;/g,'”').replace(/&lsquo;/g,'‘').replace(/&rsquo;/g,'’')
+    .replace(/&#(\d+);?/g,(_,c)=>{try{return String.fromCodePoint(parseInt(c,10));}catch(e){return '';}})
+    .replace(/&#x([0-9a-f]+);?/gi,(_,c)=>{try{return String.fromCodePoint(parseInt(c,16));}catch(e){return '';}});
+}
+function stripHtml(s){return decodeEntities(String(s||'').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim();}
+function truncateAtWord(s,max){
+  s=String(s||'');
+  if(s.length<=max) return s;
+  const cut=s.slice(0,max);
+  const lastSpace=cut.lastIndexOf(' ');
+  return (lastSpace>0?cut.slice(0,lastSpace):cut).replace(/[,.;:!?"'\)\]]+$/,'')+'…';
+}
 
 // Fallback if the Commons feed can't be fetched (Apps Script down, CORS, etc.)
 const FALLBACK_POSTS=[
@@ -229,7 +245,7 @@ function App(){
           id:p.ID,
           title:stripHtml(p.title||''),
           url:(p.URL||'').replace(/^http:/,'https:'),
-          excerpt:stripHtml(p.excerpt||'').slice(0,200),
+          excerpt:truncateAtWord(stripHtml(p.excerpt||''),180),
           date:p.date||'',
           image:(p.featured_image||'').replace(/^http:/,'https:'),
           author:p.author&&p.author.name?p.author.name:'',

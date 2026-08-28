@@ -638,8 +638,12 @@ function doGet(e) {
       case 'templates': case 'announcements':
         ttl = 600; break;
       // Stable — Drupal indexes, Mailchimp campaigns, WP.com stats rarely change hour-to-hour
-      case 'drupal_pages': case 'drupal_files': case 'publications': case 'newsroom_stats':
+      case 'drupal_pages': case 'drupal_files': case 'publications':
         ttl = 1800; break;
+      // Newsroom stats: 60 min. Longer than others because the fetch touches
+      // 8 wp.com endpoints and warming keeps first-load fast.
+      case 'newsroom_stats':
+        ttl = 3600; break;
       default:
         ttl = 300;
     }
@@ -1038,13 +1042,25 @@ function _decodeEntities(s) {
   return String(s || '')
     .replace(/&amp;/g, '&')
     .replace(/&nbsp;/g, ' ')
-    .replace(/&#39;/g, "'")
     .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&mdash;/g, '—')
     .replace(/&ndash;/g, '–')
-    .replace(/&hellip;/g, '…');
+    .replace(/&hellip;/g, '…')
+    .replace(/&ldquo;/g, '“')
+    .replace(/&rdquo;/g, '”')
+    .replace(/&lsquo;/g, '‘')
+    .replace(/&rsquo;/g, '’')
+    // Generic numeric entities: &#8211; and friends. Handles both ; and
+    // missing-semicolon variants that WP.com occasionally emits.
+    .replace(/&#(\d+);?/g, function(_, code) {
+      try { return String.fromCodePoint(parseInt(code, 10)); } catch (e) { return ''; }
+    })
+    .replace(/&#x([0-9a-fA-F]+);?/g, function(_, code) {
+      try { return String.fromCodePoint(parseInt(code, 16)); } catch (e) { return ''; }
+    });
 }
 
 
@@ -1182,25 +1198,35 @@ function getNewsroomStats() {
   var visits = _wpcomFetch(siteSeg + '/stats/visits?unit=day&quantity=30');
   // Full list of articles published in the last 365 days. Powers "search all
   // articles" so authors can find their own posts even if underperforming.
-  var articles365 = _fetchNewsroomArticles365(site);
+  var articlesRes = _fetchNewsroomArticles365(site);
+  var articles365 = articlesRes.articles || [];
 
   function _shouldExcludeEntry(p) {
     var t = String(p.title || '').trim();
     if (!t) return true;
     if (/^\(untitled\)$/i.test(t)) return true;
     if (/^#\d+\s*\(untitled\)$/i.test(t)) return true;
-    // Drop the home page — it's the site index, not an article.
     if (/^home$/i.test(t)) return true;
     if (/^home page$/i.test(t)) return true;
-    // Detect index/root URLs too, in case the title is something else.
+    // WP.com titles archives like "Category Archives: X" / "Tag Archives: X".
+    if (/^(category|tag|author|monthly|daily|yearly|date)\s+archives?\b/i.test(t)) return true;
+    if (/\s+archives$/i.test(t)) return true;
     var href = String(p.href || '');
+    // Root of the site — the home page even if the title is something else.
     if (/^https?:\/\/[^\/]+\/?$/.test(href)) return true;
+    // Category / tag / author / date-archive / pagination URLs.
+    if (/\/(category|tag|author)\//i.test(href)) return true;
+    if (/\/page\/\d+\/?/i.test(href)) return true;
+    if (/\/\d{4}\/?(\?|$)/.test(href)) return true;
+    if (/\/\d{4}\/\d{2}\/?(\?|$)/.test(href)) return true;
+    // Real post URLs on mainedoenews.net follow /YYYY/MM/DD/slug — everything
+    // else on the domain is a page, an archive, or a taxonomy landing.
+    if (/mainedoenews\.net/i.test(href) && !/\/\d{4}\/\d{2}\/\d{2}\//.test(href)) return true;
     return false;
   }
 
   function normalizeTopPosts(res) {
     if (!res || res.error) return [];
-    // Single-period path: read the one bucket in `days`.
     var days = res.days || {};
     var keys = Object.keys(days);
     if (!keys.length) return [];
@@ -1208,7 +1234,13 @@ function getNewsroomStats() {
     return pv
       .filter(function(p) { return !_shouldExcludeEntry(p); })
       .map(function(p) {
-        return { id: p.id, title: p.title, url: (p.href || '').replace(/^http:/, 'https:'), views: p.views, date: p.date || '' };
+        return {
+          id: p.id,
+          title: _decodeEntities(String(p.title || '')),
+          url: (p.href || '').replace(/^http:/, 'https:'),
+          views: p.views,
+          date: p.date || '',
+        };
       });
   }
 
@@ -1224,7 +1256,7 @@ function getNewsroomStats() {
         if (!byId[key]) {
           byId[key] = {
             id: p.id,
-            title: p.title,
+            title: _decodeEntities(String(p.title || '')),
             url: (p.href || '').replace(/^http:/, 'https:'),
             views: 0,
             date: p.date || '',
@@ -1307,32 +1339,69 @@ function getNewsroomStats() {
       top12m && top12m.error ? { source: 'top12m', error: top12m.error } : null,
       referrers && referrers.error ? { source: 'referrers', error: referrers.error } : null,
       visits && visits.error ? { source: 'visits', error: visits.error } : null,
+      articlesRes && articlesRes.error ? { source: 'articles', error: articlesRes.error } : null,
     ].filter(Boolean),
+    articlesDiag: articlesRes ? articlesRes.diag : null,
   };
 }
 
 // Full list of Newsroom articles published in the last 365 days.
-// WordPress.com's /posts endpoint caps `number` at 100 — we paginate.
+// Uses UrlFetchApp.fetchAll to page in parallel — cuts cold-start latency
+// from ~5s (8 sequential calls) to ~1s (all pages concurrent).
 function _fetchNewsroomArticles365(site) {
+  var diag = [];
   var token = _wpcomProp('WPCOM_ACCESS_TOKEN');
-  if (!token) return [];
+  if (!token) return { articles: [], error: 'no_token', diag: diag };
   var cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - 365);
   var after = Utilities.formatDate(cutoff, 'UTC', "yyyy-MM-dd'T'HH:mm:ss");
-  var out = [];
-  for (var page = 1; page <= 8; page++) {
-    var url = 'https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(site) +
-      '/posts?after=' + encodeURIComponent(after) +
-      '&number=100&page=' + page +
-      '&fields=ID,title,URL,date';
-    var resp = UrlFetchApp.fetch(url, {
+
+  // Issue all pages in parallel. 800 posts is well above the ~400 we expect,
+  // giving headroom for a busy year without a follow-up call.
+  var requests = [];
+  for (var offset = 0; offset < 800; offset += 100) {
+    requests.push({
+      url: 'https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(site) +
+        '/posts?after=' + encodeURIComponent(after) +
+        '&number=100&offset=' + offset +
+        '&order_by=date&order=DESC' +
+        '&fields=ID,title,URL,date,status',
       headers: { Authorization: 'Bearer ' + token },
       muteHttpExceptions: true,
     });
+  }
+
+  var responses;
+  try {
+    responses = UrlFetchApp.fetchAll(requests);
+  } catch (err) {
+    return { articles: [], error: 'fetchAll_threw: ' + err.message, diag: diag };
+  }
+
+  var out = [];
+  var seenIds = {};
+  var lastError = null;
+  for (var i = 0; i < responses.length; i++) {
+    var resp = responses[i];
+    var offset = i * 100;
+    var code = resp.getResponseCode();
+    var text = resp.getContentText();
     var body;
-    try { body = JSON.parse(resp.getContentText()); } catch (ex) { break; }
-    if (!body || !Array.isArray(body.posts) || body.posts.length === 0) break;
+    try { body = JSON.parse(text); } catch (ex) {
+      lastError = 'bad_json (http ' + code + '): ' + text.substring(0, 200);
+      diag.push({ offset: offset, error: lastError });
+      continue;
+    }
+    if (code >= 400 || (body && body.error)) {
+      lastError = (body && (body.error + (body.message ? ': ' + body.message : ''))) || ('http_' + code);
+      diag.push({ offset: offset, http: code, error: lastError });
+      continue;
+    }
+    diag.push({ offset: offset, http: code, returned: (body.posts || []).length });
+    if (!Array.isArray(body.posts)) continue;
     body.posts.forEach(function(p) {
+      if (seenIds[p.ID]) return;
+      seenIds[p.ID] = true;
       var title = _decodeEntities(String(p.title || '').replace(/<[^>]+>/g, '').trim());
       if (!title) return;
       out.push({
@@ -1342,9 +1411,10 @@ function _fetchNewsroomArticles365(site) {
         date: p.date || '',
       });
     });
-    if (body.posts.length < 100) break;
   }
-  return out;
+  // Sort newest-first — pagination order isn't guaranteed with fetchAll.
+  out.sort(function(a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
+  return { articles: out, error: lastError, diag: diag };
 }
 
 function getPublications() {
@@ -1703,6 +1773,14 @@ function warmCache() {
     cache.put('portal_publications_30', pubData, 300);
     warmed.push('publications');
   } catch(e) { Logger.log('Warm publications failed: ' + e.message); }
+
+  // Newsroom stats — 60 min cache. Warming keeps the first-load fast
+  // (the cold path hits 8 wp.com endpoints in parallel, ~1s but noticeable).
+  try {
+    var newsroomData = JSON.stringify(getNewsroomStats());
+    cache.put('portal_newsroom_stats_30', newsroomData, 3600);
+    warmed.push('newsroom_stats');
+  } catch(e) { Logger.log('Warm newsroom_stats failed: ' + e.message); }
 
   // NOTE: Drupal pages/files are NOT warmed here — they're cached in Sheets
   // by cacheDrupalData (runs every 30 min) and served directly from Sheets.
