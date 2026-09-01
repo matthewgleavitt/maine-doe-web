@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="gate.js"></script>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=League+Spartan:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -11,6 +12,7 @@
 body{font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Calibri,sans-serif;background:#eee6df;color:#182b3c}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}
 @keyframes progressPulse{0%,100%{opacity:1}50%{opacity:.6}}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#51708240;border-radius:3px}
 .portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
@@ -527,14 +529,21 @@ function FileManager(){
         </div>}
       </div>
 
-      {/* Bulk action bar */}
-      {selected.size>0&&<div style={{display:'flex',alignItems:'center',gap:12,padding:'12px 18px',background:B.navy,borderRadius:10,marginBottom:12,animation:'fadeIn .2s ease'}}>
-        <span style={{color:B.wh,fontSize:13,fontWeight:600,flex:1}}>{selected.size} file{selected.size!==1?'s':''} selected</span>
-        <button onClick={isAdmin?bulkDeleteDirect:requestBulkDeletion} style={{padding:'8px 16px',borderRadius:8,border:'none',background:B.red,color:B.wh,fontSize:13,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',gap:6}}>
-          <Ic.trash size={14} color={B.wh}/> {isAdmin?'Delete selected':'Request deletion'}
+      {/* Floating selection action bar — pinned to the bottom of the viewport
+          while a selection exists, so it stays reachable while scrolling. */}
+      {selected.size>0&&<div style={{position:'fixed',left:'50%',bottom:24,transform:'translateX(-50%)',zIndex:1000,display:'flex',alignItems:'center',gap:14,padding:'14px 20px',background:B.navy,borderRadius:999,boxShadow:'0 12px 32px rgba(12,25,38,0.35),0 4px 12px rgba(12,25,38,0.25)',border:`2px solid ${B.wh}20`,animation:'slideUp .25s ease',maxWidth:'calc(100vw - 32px)'}}>
+        <span style={{display:'inline-flex',alignItems:'center',gap:8,color:B.wh,fontSize:14,fontWeight:700,whiteSpace:'nowrap'}}>
+          <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:'50%',background:B.wh+'18',fontSize:13,fontWeight:800}}>{selected.size}</span>
+          file{selected.size!==1?'s':''} selected
+        </span>
+        <div style={{width:1,height:26,background:B.wh+'25'}}/>
+        <button onClick={isAdmin?bulkDeleteDirect:requestBulkDeletion}
+          style={{padding:'10px 20px',borderRadius:999,border:'none',background:B.red,color:B.wh,fontSize:13.5,fontWeight:800,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8,boxShadow:'0 4px 12px rgba(220,38,38,0.4)',whiteSpace:'nowrap'}}>
+          <Ic.trash size={15} color={B.wh}/> {isAdmin?'Delete selected':'Request all delete'}
         </button>
-        <button onClick={()=>setSelected(new Set())} style={{padding:'8px 16px',borderRadius:8,border:`2px solid ${B.wh}30`,background:'transparent',color:B.wh,fontSize:13,fontWeight:600,cursor:'pointer'}}>
-          Clear selection
+        <button onClick={()=>setSelected(new Set())}
+          style={{padding:'10px 16px',borderRadius:999,border:`1.5px solid ${B.wh}35`,background:'transparent',color:B.wh,fontSize:13,fontWeight:600,cursor:'pointer',whiteSpace:'nowrap'}}>
+          Clear
         </button>
       </div>}
 
