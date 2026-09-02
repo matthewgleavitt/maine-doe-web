@@ -72,7 +72,182 @@ function Field({value,onChange,placeholder,type,onFocus,onBlur}){
   return <input type={type||'text'} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={f} onBlur={b}/>;
 }
 
+function YouTubeAnalytics({stats,loading,error,onReload}){
+  const [q,setQ]=useState('');
+  const [sort,setSort]=useState('views');
+
+  function fmtDur(iso){
+    // ISO 8601 duration "PT12M34S" → "12:34"
+    if(!iso) return '';
+    const m=String(iso).match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+    if(!m) return '';
+    const h=+m[1]||0, mm=+m[2]||0, ss=+m[3]||0;
+    if(h) return h+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+    return mm+':'+String(ss).padStart(2,'0');
+  }
+  function fmtDate(iso){
+    if(!iso) return '';
+    try{const d=new Date(iso); if(isNaN(d.getTime())) return ''; return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return '';}
+  }
+  function fmtMinutes(mins){
+    if(!mins) return '0m';
+    if(mins>=60) return Math.round(mins/60)+' hrs';
+    return Math.round(mins)+' min';
+  }
+
+  const videos=(stats?.videos||[]).slice();
+  const filtered=useMemo(()=>{
+    const ql=q.trim().toLowerCase();
+    let list=videos.filter(v=>!ql||String(v.title||'').toLowerCase().includes(ql));
+    if(sort==='views') list=list.slice().sort((a,b)=>(b.views||0)-(a.views||0));
+    if(sort==='date')  list=list.slice().sort((a,b)=>String(b.publishedAt||'').localeCompare(String(a.publishedAt||'')));
+    if(sort==='likes') list=list.slice().sort((a,b)=>(b.likes||0)-(a.likes||0));
+    return list;
+  },[videos,q,sort]);
+
+  if(loading) return <div style={{background:'#ffffff',borderRadius:14,padding:'60px 20px',textAlign:'center',border:`2px solid ${B.border}30`,display:'flex',alignItems:'center',justifyContent:'center',gap:12}}>
+    <Sv d={ic.spin} size={20} color="#ef4444" style={{animation:'spin 1s linear infinite'}}/>
+    <span style={{color:B.txtSec,fontSize:13,fontWeight:600}}>Loading YouTube analytics...</span>
+  </div>;
+
+  if(error) return <div style={{background:'#ffffff',borderRadius:14,padding:'26px 28px',border:`2px solid ${B.border}30`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+    <div style={{display:'flex',alignItems:'flex-start',gap:14,flexWrap:'wrap'}}>
+      <div style={{width:44,height:44,borderRadius:12,background:'#f59e0b18',border:'1.5px solid #f59e0b40',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+        <Sv d={["M12 9v4","M12 17h.01","M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"]} size={22} color="#a16207"/>
+      </div>
+      <div style={{flex:1,minWidth:280}}>
+        <div style={{fontSize:14,fontWeight:800,color:B.navy,marginBottom:6}}>YouTube analytics aren't connected yet</div>
+        <p style={{fontSize:13,color:B.txtSec,lineHeight:1.65,fontWeight:500,margin:'0 0 8px'}}>{error}</p>
+        <p style={{fontSize:12,color:B.txtMute,margin:'0 0 12px',lineHeight:1.6}}>
+          Setup: enable <strong>YouTube Data API v3</strong> and <strong>YouTube Analytics API</strong> as Services in this Apps Script project, set <code style={{background:'#f1f5f9',padding:'1px 6px',borderRadius:4,fontSize:11,fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace'}}>YT_CHANNEL_ID</code> in Script Properties (channel ID starts with UC…), and confirm the running Google account has Owner or Manager role on the channel.
+        </p>
+        <button onClick={onReload} style={{padding:'8px 14px',borderRadius:8,border:'none',background:B.navy,color:'#fff',fontSize:12.5,fontWeight:700,cursor:'pointer'}}>Try again</button>
+      </div>
+    </div>
+  </div>;
+
+  if(!stats) return null;
+  const ch=stats.channel||{};
+  const a=stats.analytics;
+  const partialErr=(stats.errors||[]).find(er=>er.source==='analytics');
+
+  return <div style={{animation:'fadeIn 0.3s ease'}}>
+    {/* Channel card */}
+    <div style={{background:B.wh,borderRadius:16,border:`2px solid ${B.border}30`,padding:'22px 26px',marginBottom:20,boxShadow:'0 2px 12px rgba(0,0,0,0.04)',display:'flex',alignItems:'center',gap:18,flexWrap:'wrap'}}>
+      {ch.thumbnail&&<img src={ch.thumbnail} alt={ch.title} style={{width:64,height:64,borderRadius:'50%',objectFit:'cover',flexShrink:0}}/>}
+      <div style={{flex:1,minWidth:220}}>
+        <div style={{fontSize:11,fontWeight:700,color:'#ef4444',textTransform:'uppercase',letterSpacing:'.09em',marginBottom:4}}>Channel</div>
+        <div style={{fontSize:19,fontWeight:800,color:B.navy,marginBottom:2,letterSpacing:'.005em'}}>{ch.title}</div>
+        {ch.customUrl&&<a href={'https://www.youtube.com/'+ch.customUrl} target="_blank" rel="noopener noreferrer" style={{fontSize:12,fontWeight:600,color:'#ef4444',textDecoration:'none'}}>{ch.customUrl} ↗</a>}
+      </div>
+      <button onClick={onReload} style={{padding:'8px 16px',borderRadius:9,border:`1.5px solid ${B.border}50`,background:B.wh,color:B.navy,fontSize:12.5,fontWeight:700,cursor:'pointer'}}>Refresh</button>
+    </div>
+
+    {/* All-time tiles */}
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:14,marginBottom:16}}>
+      {[
+        {l:'Subscribers',v:(ch.subscribers||0).toLocaleString(),c:'#ef4444'},
+        {l:'All-time views',v:(ch.totalViews||0).toLocaleString(),c:'#dc2626'},
+        {l:'Videos published',v:(ch.videoCount||0).toLocaleString(),c:'#0d7ba0'},
+      ].map((m,i)=>(
+        <div key={i} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}30`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+          <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:800,letterSpacing:.5,marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
+            <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
+          </div>
+          <div style={{fontSize:22,fontWeight:800,color:B.navy,lineHeight:1.15}}>{m.v}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* Last 30 days — only if Analytics API returned data */}
+    {a?<div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:'18px 22px',marginBottom:20}}>
+      <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:14,flexWrap:'wrap',gap:8}}>
+        <h3 style={{fontSize:13,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.06em'}}>Last 30 days</h3>
+        <span style={{fontSize:11,color:B.txtMute,fontWeight:600}}>{a.period.start} → {a.period.end}</span>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12}}>
+        {[
+          {l:'Views',v:(a.views||0).toLocaleString(),c:'#ef4444'},
+          {l:'Watch time',v:fmtMinutes(a.watchTimeMinutes),c:'#dc2626'},
+          {l:'Avg view (sec)',v:Math.round(a.avgViewSeconds||0).toLocaleString(),c:'#0d7ba0'},
+          {l:'Net subscribers',v:(a.netSubscribers>=0?'+':'')+(a.netSubscribers||0).toLocaleString(),c:a.netSubscribers>=0?'#16a34a':'#8a2e13'},
+          {l:'Likes',v:(a.likes||0).toLocaleString(),c:'#f472b6'},
+          {l:'Comments',v:(a.comments||0).toLocaleString(),c:'#274f73'},
+          {l:'Shares',v:(a.shares||0).toLocaleString(),c:'#0d7ba0'},
+        ].map((m,i)=>(
+          <div key={i} style={{padding:'12px 14px',borderRadius:10,background:'#f8fafc',border:`1px solid ${B.border}30`}}>
+            <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:800,letterSpacing:.5,marginBottom:4,display:'flex',alignItems:'center',gap:5}}>
+              <span style={{width:6,height:6,borderRadius:'50%',background:m.c}}/>{m.l}
+            </div>
+            <div style={{fontSize:18,fontWeight:800,color:B.navy,lineHeight:1.15,fontVariantNumeric:'tabular-nums'}}>{m.v}</div>
+          </div>
+        ))}
+      </div>
+    </div>:partialErr?<div style={{padding:'14px 18px',background:'#fef3c714',border:'1.5px solid #f59e0b40',borderRadius:10,marginBottom:20,fontSize:12.5,color:B.txtSec,fontWeight:500,lineHeight:1.55}}>
+      <strong style={{color:B.navy}}>30-day trends aren't showing yet.</strong> {partialErr.hint||partialErr.error}
+    </div>:null}
+
+    {/* Video search + table */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:'18px 22px',marginBottom:20}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,flexWrap:'wrap',marginBottom:12}}>
+        <h3 style={{fontSize:13,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.06em'}}>Recent uploads</h3>
+        <span style={{fontSize:11.5,color:B.txtMute,fontWeight:600}}>{videos.length} videos loaded</span>
+      </div>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,padding:'9px 14px',background:B.wh,borderRadius:10,border:`1.5px solid ${B.border}40`,flex:'1 1 240px'}}>
+          <Sv d={["M11 3a8 8 0 108 8","M21 21l-4.35-4.35"]} size={15} color={B.txtMute}/>
+          <input type="text" value={q} onChange={e=>setQ(e.target.value)} placeholder="Search by title..."
+            style={{border:'none',outline:'none',flex:1,fontSize:13.5,color:B.navy,fontWeight:500,background:'transparent',fontFamily:'inherit'}}/>
+          {q&&<span onClick={()=>setQ('')} style={{cursor:'pointer',color:B.txtMute,fontWeight:800,fontSize:16,lineHeight:1}}>×</span>}
+        </div>
+        <div style={{display:'flex',gap:4,padding:4,borderRadius:10,background:'#f1f5f9',fontSize:12,fontWeight:700}}>
+          {['views','date','likes'].map(s=>(
+            <button key={s} onClick={()=>setSort(s)}
+              style={{padding:'6px 12px',borderRadius:7,border:'none',background:sort===s?B.wh:'transparent',color:sort===s?B.navy:B.txtMute,cursor:'pointer',fontFamily:'inherit',fontWeight:700,fontSize:12,textTransform:'capitalize',boxShadow:sort===s?'0 1px 3px rgba(24,43,60,0.08)':'none'}}>
+              {s==='views'?'Most viewed':s==='date'?'Newest':'Most liked'}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={{maxHeight:520,overflowY:'auto',border:`1px solid ${B.border}30`,borderRadius:10}}>
+        <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+          <thead style={{position:'sticky',top:0,background:'#e2e8f0',zIndex:1}}>
+            <tr>
+              <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em'}}>Video</th>
+              <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:110}}>Published</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:90}}>Views</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:70}}>Likes</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:90}}>Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length===0?<tr><td colSpan={5} style={{padding:'30px 20px',textAlign:'center',color:B.txtMute,fontWeight:500}}>{q?`No videos match "${q}"`:'No videos loaded'}</td></tr>
+            :filtered.slice(0,100).map((v,i)=>(
+              <tr key={v.id||i} style={{borderTop:`1px solid ${B.border}25`}}>
+                <td style={{padding:'10px 14px'}}>
+                  <a href={v.url} target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:10,color:B.navy,textDecoration:'none',fontWeight:600}}>
+                    {v.thumbnail&&<img src={v.thumbnail} alt="" style={{width:60,height:34,objectFit:'cover',borderRadius:4,flexShrink:0}}/>}
+                    <span style={{overflow:'hidden',textOverflow:'ellipsis'}}>{v.title}</span>
+                  </a>
+                </td>
+                <td style={{padding:'10px 14px',color:B.txtSec,fontSize:12,fontWeight:600,whiteSpace:'nowrap'}}>{fmtDate(v.publishedAt)}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',fontWeight:800,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',color:'#ef4444'}}>{(v.views||0).toLocaleString()}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',fontWeight:700,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',color:B.txtSec}}>{(v.likes||0).toLocaleString()}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',fontWeight:700,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',color:B.txtSec}}>{(v.comments||0).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>;
+}
+
 function App(){
+  const [tab,setTab]=useState('submissions');
+  const [ytStats,setYtStats]=useState(null);
+  const [ytStatsError,setYtStatsError]=useState(null);
+  const [ytStatsLoading,setYtStatsLoading]=useState(false);
   const [data,setData]=useState([]);
   const [loading,setLoading]=useState(true);
   const [err,setErr]=useState(null);
@@ -136,6 +311,17 @@ function App(){
     setSubmitting(false);
   }
 
+  async function loadYtStats(force){
+    setYtStatsLoading(true); setYtStatsError(null);
+    try{
+      const r=await fetch(API+'?type=youtube_stats'+(force?'&refresh=1':''));
+      const j=await r.json();
+      if(j.error) setYtStatsError(j.error);
+      else setYtStats(j);
+    }catch(e){setYtStatsError('Could not reach the analytics endpoint.');}
+    setYtStatsLoading(false);
+  }
+
   async function handleComplete(){
     if(!completeModal?.url)return;
     setCompleting(true);
@@ -185,6 +371,26 @@ function App(){
       </div>
     </div>
 
+    {/* ── TABS ── */}
+    <div style={{display:'flex',gap:6,padding:'4px',background:'#0e1c2a',borderRadius:12,marginBottom:20,width:'fit-content'}}>
+      {[
+        {id:'submissions',label:'Submissions',icon:ic.upload},
+        {id:'analytics',label:'Analytics',icon:["M3 3v18h18","M18 17V9","M13 17V5","M8 17v-3"]},
+      ].map(t=>{
+        const active=tab===t.id;
+        return <button key={t.id} onClick={()=>{setTab(t.id); if(t.id==='analytics'&&!ytStats&&!ytStatsLoading) loadYtStats();}}
+          style={{display:'inline-flex',alignItems:'center',gap:8,padding:'8px 18px',borderRadius:9,border:'none',cursor:'pointer',
+            background:active?'linear-gradient(135deg,#ef4444,#dc2626)':'transparent',
+            color:active?'#fff':'#94a3b8',
+            fontSize:13,fontWeight:active?800:600,letterSpacing:'.01em',fontFamily:'inherit',
+            boxShadow:active?'0 4px 12px rgba(239,68,68,0.35)':'none',transition:'all .15s'}}>
+          <Sv d={t.icon} size={14} color={active?'#fff':'#94a3b8'}/>
+          {t.label}
+        </button>;
+      })}
+    </div>
+
+    {tab==='submissions'&&<>
     {/* ── SUBMISSION TIPS ── */}
     <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,borderLeft:`4px solid ${B.teal}`,padding:'14px 18px',marginBottom:20,display:'flex',alignItems:'flex-start',gap:14}}>
       <div style={{width:32,height:32,borderRadius:8,background:`${B.teal}12`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
@@ -428,6 +634,10 @@ function App(){
         </div>
       </div>
     </div>}
+
+    </>}
+
+    {tab==='analytics'&&<YouTubeAnalytics stats={ytStats} loading={ytStatsLoading} error={ytStatsError} onReload={()=>loadYtStats(true)}/>}
 
     <div style={{textAlign:'center',padding:'0 0 40px',fontSize:12,color:B.txtMute,fontWeight:500}}>Maine Department of Education · Communications Portal</div>
   </div>;

@@ -612,6 +612,10 @@ function doGet(e) {
       // WordPress.com Stats API — requires an OAuth token in Script Properties.
       result = getNewsroomStats();
 
+    } else if (type === 'youtube_stats') {
+      // YouTube Data API v3 + YouTube Analytics API via Apps Script Advanced Services.
+      result = getYouTubeStats();
+
     } else if (type === 'my_events') {
       // Submitter self-service: list events where Contact Email OR Submitter Email
       // matches. No token required — this is an internal-portal convenience, and
@@ -666,7 +670,7 @@ function doGet(e) {
         ttl = 1800; break;
       // Newsroom stats: 60 min. Longer than others because the fetch touches
       // 8 wp.com endpoints and warming keeps first-load fast.
-      case 'newsroom_stats':
+      case 'newsroom_stats': case 'youtube_stats':
         ttl = 3600; break;
       default:
         ttl = 300;
@@ -1441,6 +1445,142 @@ function _fetchNewsroomArticles365(site) {
   return { articles: out, error: lastError, diag: diag };
 }
 
+// ═══════════════════════════════════════════
+// YOUTUBE ANALYTICS
+// ═══════════════════════════════════════════
+//
+// Uses Apps Script's built-in advanced services:
+//   YouTube (Data API v3) — channel + video metadata
+//   YouTubeAnalytics — per-day metrics, subscriber gains, watch time
+//
+// One-time setup:
+//   1. In Apps Script: Services (+ icon) → add "YouTube Data API v3" and
+//      "YouTube Analytics API". Version v3 and v2 respectively.
+//   2. In the linked Cloud project, enable both APIs. Apps Script's
+//      "Change project" prompt links you straight there.
+//   3. Set Script Property YT_CHANNEL_ID to the channel's ID
+//      (starts with "UC..."). Handle isn't enough — needs the ID.
+//   4. The Google account running the Web App must have Owner or Manager
+//      role on the channel for the Analytics API to return anything.
+//      Data API works for anyone but Analytics API is per-owner.
+
+function getYouTubeStats() {
+  var channelId = PropertiesService.getScriptProperties().getProperty('YT_CHANNEL_ID');
+  if (!channelId) {
+    return { error: 'YouTube channel not configured. Set YT_CHANNEL_ID in Apps Script Script Properties (must be the channel ID starting with "UC...", not the handle).' };
+  }
+
+  var result = {
+    channel: null,
+    videos: [],
+    analytics: null,
+    errors: [],
+    fetchedAt: new Date().toISOString(),
+  };
+
+  // 1. Channel-level stats via Data API.
+  try {
+    var chResp = YouTube.Channels.list('snippet,statistics,contentDetails', { id: channelId });
+    if (!chResp.items || !chResp.items.length) {
+      return { error: 'Channel not found: ' + channelId + '. Double-check YT_CHANNEL_ID.' };
+    }
+    var ch = chResp.items[0];
+    result.channel = {
+      title: ch.snippet.title,
+      customUrl: ch.snippet.customUrl || '',
+      description: ch.snippet.description || '',
+      thumbnail: ch.snippet.thumbnails && ch.snippet.thumbnails.high ? ch.snippet.thumbnails.high.url : '',
+      subscribers: Number(ch.statistics.subscriberCount || 0),
+      totalViews: Number(ch.statistics.viewCount || 0),
+      videoCount: Number(ch.statistics.videoCount || 0),
+      uploadsPlaylistId: ch.contentDetails && ch.contentDetails.relatedPlaylists ? ch.contentDetails.relatedPlaylists.uploads : null,
+    };
+  } catch (chErr) {
+    return { error: 'Data API call failed: ' + chErr.message + ' — check that YouTube Data API v3 is enabled as a service in this Apps Script project.' };
+  }
+
+  // 2. Recent uploads via the uploads playlist, then video-level stats.
+  try {
+    if (result.channel.uploadsPlaylistId) {
+      var playlistResp = YouTube.PlaylistItems.list('contentDetails,snippet', {
+        playlistId: result.channel.uploadsPlaylistId,
+        maxResults: 50,
+      });
+      var videoIds = (playlistResp.items || []).map(function(item) {
+        return item.contentDetails.videoId;
+      });
+      if (videoIds.length) {
+        // Videos.list takes up to 50 IDs comma-joined.
+        var videosResp = YouTube.Videos.list('snippet,statistics,contentDetails', {
+          id: videoIds.join(','),
+        });
+        result.videos = (videosResp.items || []).map(function(v) {
+          var thumb = '';
+          if (v.snippet.thumbnails) {
+            thumb = (v.snippet.thumbnails.medium || v.snippet.thumbnails.high || v.snippet.thumbnails.default || {}).url || '';
+          }
+          return {
+            id: v.id,
+            title: v.snippet.title,
+            publishedAt: v.snippet.publishedAt,
+            thumbnail: thumb,
+            duration: v.contentDetails ? v.contentDetails.duration : '',
+            views: Number(v.statistics.viewCount || 0),
+            likes: Number(v.statistics.likeCount || 0),
+            comments: Number(v.statistics.commentCount || 0),
+            url: 'https://www.youtube.com/watch?v=' + v.id,
+          };
+        });
+      }
+    }
+  } catch (vidErr) {
+    result.errors.push({ source: 'videos', error: vidErr.message });
+  }
+
+  // 3. Rolled-up analytics — views, subscriber changes, watch time for the
+  // last 30 days. YouTubeAnalytics is a separate advanced service; if it
+  // isn't enabled or the running account can't see this channel's stats,
+  // this call throws and we surface it as a non-fatal error.
+  try {
+    var endDate = Utilities.formatDate(new Date(), 'UTC', 'yyyy-MM-dd');
+    var startD = new Date();
+    startD.setDate(startD.getDate() - 30);
+    var startDate = Utilities.formatDate(startD, 'UTC', 'yyyy-MM-dd');
+
+    var totals = YouTubeAnalytics.Reports.query({
+      ids: 'channel==' + channelId,
+      startDate: startDate,
+      endDate: endDate,
+      metrics: 'views,estimatedMinutesWatched,averageViewDuration,subscribersGained,subscribersLost,likes,comments,shares',
+    });
+
+    if (totals.rows && totals.rows.length) {
+      var row = totals.rows[0];
+      result.analytics = {
+        period: { start: startDate, end: endDate, days: 30 },
+        views: Number(row[0] || 0),
+        watchTimeMinutes: Number(row[1] || 0),
+        avgViewSeconds: Number(row[2] || 0),
+        subscribersGained: Number(row[3] || 0),
+        subscribersLost: Number(row[4] || 0),
+        netSubscribers: Number(row[3] || 0) - Number(row[4] || 0),
+        likes: Number(row[5] || 0),
+        comments: Number(row[6] || 0),
+        shares: Number(row[7] || 0),
+      };
+    }
+  } catch (anErr) {
+    result.errors.push({
+      source: 'analytics',
+      error: anErr.message,
+      hint: 'Enable "YouTube Analytics API" as a service in Apps Script and confirm this account has Owner/Manager role on the channel.'
+    });
+  }
+
+  return result;
+}
+
+
 function getPublications() {
   var props = PropertiesService.getScriptProperties();
   var apiKey = props.getProperty('MAILCHIMP_API_KEY');
@@ -1805,6 +1945,13 @@ function warmCache() {
     cache.put('portal_newsroom_stats_30', newsroomData, 3600);
     warmed.push('newsroom_stats');
   } catch(e) { Logger.log('Warm newsroom_stats failed: ' + e.message); }
+
+  // YouTube analytics — 60 min cache.
+  try {
+    var ytData = JSON.stringify(getYouTubeStats());
+    cache.put('portal_youtube_stats_30', ytData, 3600);
+    warmed.push('youtube_stats');
+  } catch(e) { Logger.log('Warm youtube_stats failed: ' + e.message); }
 
   // NOTE: Drupal pages/files are NOT warmed here — they're cached in Sheets
   // by cacheDrupalData (runs every 30 min) and served directly from Sheets.
