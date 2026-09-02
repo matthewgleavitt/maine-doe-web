@@ -528,7 +528,12 @@ function doGet(e) {
   var bypassCache = !!(e && e.parameter && e.parameter.refresh);
   var cache = CacheService.getScriptCache();
   if (type !== 'web_stats' && type !== 'moderation' && !bypassCache) {
-    var cached = cache.get(cacheKey);
+    // Payloads bigger than 100KB use chunked storage. All the GA/stats
+    // endpoints can spill over depending on the site's volume, so we chunk
+    // them consistently.
+    var isChunked = (type === 'youtube_stats' || type === 'newsroom_stats' ||
+                     type === 'pages' || type === 'files');
+    var cached = isChunked ? chunkedCacheGet(cache, cacheKey) : cache.get(cacheKey);
     if (cached) {
       var output = ContentService.createTextOutput(cached);
       output.setMimeType(ContentService.MimeType.JSON);
@@ -675,14 +680,22 @@ function doGet(e) {
       default:
         ttl = 300;
     }
-    try {
-      cache.put(cacheKey, jsonStr, ttl);
-    } catch(ce) {
-      // CacheService per-key limit is 100KB. Anything over throws. Explicitly
-      // drop any stale prior entry so we never serve pre-truncation data,
-      // even if the fresh response can't be cached itself.
+    if (type === 'youtube_stats' || type === 'newsroom_stats' ||
+        type === 'pages' || type === 'files') {
+      // Large payload — chunk it. Clear any stale non-chunked entry first.
       try { cache.remove(cacheKey); } catch(re) {}
-      Logger.log('cache.put failed (' + type + ', ' + jsonStr.length + ' bytes): ' + ce.message + ' — stale entry evicted');
+      var ok = chunkedCachePut(cache, cacheKey, jsonStr, ttl);
+      if (!ok) {
+        chunkedCacheRemove(cache, cacheKey);
+        Logger.log('chunkedCachePut failed (' + type + ', ' + jsonStr.length + ' bytes)');
+      }
+    } else {
+      try {
+        cache.put(cacheKey, jsonStr, ttl);
+      } catch(ce) {
+        try { cache.remove(cacheKey); } catch(re) {}
+        Logger.log('cache.put failed (' + type + ', ' + jsonStr.length + ' bytes): ' + ce.message + ' — stale entry evicted');
+      }
     }
   }
 
@@ -1472,6 +1485,53 @@ function _fetchNewsroomArticles365(site) {
 //      role on the channel for the Analytics API to return anything.
 //      Data API works for anyone but Analytics API is per-owner.
 
+// Chunked cache helpers — CacheService caps at 100KB per key. For payloads
+// like the YouTube video list (~600KB) we split into ~90KB chunks and store
+// each under its own key. Read reassembles them; if any chunk is missing
+// (partial expiry, quota) we return null so the caller does a fresh fetch.
+var CHUNK_SIZE_BYTES = 90 * 1024;
+var CHUNK_MAX = 20; // hard cap = 1.8 MB total
+
+function chunkedCachePut(cache, baseKey, jsonStr, ttl) {
+  var chunks = [];
+  for (var i = 0; i < jsonStr.length; i += CHUNK_SIZE_BYTES) {
+    chunks.push(jsonStr.substring(i, i + CHUNK_SIZE_BYTES));
+  }
+  if (chunks.length > CHUNK_MAX) return false;
+  var putMap = { '_meta': JSON.stringify({ n: chunks.length, len: jsonStr.length }) };
+  chunks.forEach(function(c, i) { putMap['_p' + i] = c; });
+  try {
+    Object.keys(putMap).forEach(function(suffix) {
+      cache.put(baseKey + suffix, putMap[suffix], ttl);
+    });
+    return true;
+  } catch (e) { return false; }
+}
+
+function chunkedCacheGet(cache, baseKey) {
+  var metaStr = cache.get(baseKey + '_meta');
+  if (!metaStr) return null;
+  var meta;
+  try { meta = JSON.parse(metaStr); } catch (e) { return null; }
+  var chunkKeys = [];
+  for (var i = 0; i < meta.n; i++) chunkKeys.push(baseKey + '_p' + i);
+  var chunkMap = cache.getAll(chunkKeys);
+  var out = '';
+  for (var j = 0; j < meta.n; j++) {
+    var c = chunkMap[baseKey + '_p' + j];
+    if (c === undefined || c === null) return null;
+    out += c;
+  }
+  if (out.length !== meta.len) return null;
+  return out;
+}
+
+function chunkedCacheRemove(cache, baseKey) {
+  cache.remove(baseKey + '_meta');
+  for (var i = 0; i < CHUNK_MAX; i++) cache.remove(baseKey + '_p' + i);
+}
+
+
 function getYouTubeStats() {
   var channelId = PropertiesService.getScriptProperties().getProperty('YT_CHANNEL_ID');
   if (!channelId) {
@@ -1975,19 +2035,25 @@ function warmCache() {
     warmed.push('publications');
   } catch(e) { Logger.log('Warm publications failed: ' + e.message); }
 
-  // Newsroom stats — 60 min cache. Warming keeps the first-load fast
-  // (the cold path hits 8 wp.com endpoints in parallel, ~1s but noticeable).
+  // Newsroom stats — 60 min cache. Payload can spill over 100KB (article
+  // list + featured images), so store chunked.
   try {
     var newsroomData = JSON.stringify(getNewsroomStats());
-    cache.put('portal_newsroom_stats_30', newsroomData, 3600);
-    warmed.push('newsroom_stats');
+    var newsKey = 'portal_newsroom_stats_30';
+    try { cache.remove(newsKey); } catch(re) {}
+    var okNews = chunkedCachePut(cache, newsKey, newsroomData, 3600);
+    warmed.push('newsroom_stats(' + Math.ceil(newsroomData.length/1024) + 'KB' + (okNews?'':' - too big to chunk') + ')');
   } catch(e) { Logger.log('Warm newsroom_stats failed: ' + e.message); }
 
-  // YouTube analytics — 60 min cache.
+  // YouTube analytics — 60 min cache. Payload is big (~600KB with all videos),
+  // stored via chunkedCachePut across multiple 90KB keys.
   try {
     var ytData = JSON.stringify(getYouTubeStats());
-    cache.put('portal_youtube_stats_30', ytData, 3600);
-    warmed.push('youtube_stats');
+    var ytKey = 'portal_youtube_stats_30';
+    try { cache.remove(ytKey); } catch(re) {} // clear any legacy single-key entry
+    var okYt = chunkedCachePut(cache, ytKey, ytData, 3600);
+    if (okYt) warmed.push('youtube_stats(' + Math.ceil(ytData.length/1024) + 'KB)');
+    else Logger.log('Warm youtube_stats: payload too big to chunk (' + ytData.length + ' bytes)');
   } catch(e) { Logger.log('Warm youtube_stats failed: ' + e.message); }
 
   // NOTE: Drupal pages/files are NOT warmed here — they're cached in Sheets
@@ -2004,8 +2070,11 @@ function warmCache() {
       orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 10000 };
     var allPages = formatPageData(queryGA4(pr));
     var pageResult = { rows: allPages.slice(0, 500), totalCount: allPages.length, days: '30', type: 'pages' };
-    cache.put('portal_pages_30', JSON.stringify(pageResult), 21600);
-    warmed.push('pages-30d');
+    var pageJson = JSON.stringify(pageResult);
+    var pagesKey = 'portal_pages_30';
+    try { cache.remove(pagesKey); } catch(re) {}
+    var okPages = chunkedCachePut(cache, pagesKey, pageJson, 21600);
+    warmed.push('pages-30d(' + Math.ceil(pageJson.length/1024) + 'KB' + (okPages?'':' - too big to chunk') + ')');
 
     // Also update page views stat
     var totalViews = allPages.reduce(function(s,p){ return s + (p.views||0); }, 0);
@@ -2024,8 +2093,11 @@ function warmCache() {
       orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 10000 };
     var allFiles = formatFileData(queryGA4(fr));
     var fileResult = { rows: allFiles.slice(0, 500), totalCount: allFiles.length, days: '30', type: 'files' };
-    cache.put('portal_files_30', JSON.stringify(fileResult), 21600);
-    warmed.push('files-30d');
+    var fileJson = JSON.stringify(fileResult);
+    var filesKey = 'portal_files_30';
+    try { cache.remove(filesKey); } catch(re) {}
+    var okFiles = chunkedCachePut(cache, filesKey, fileJson, 21600);
+    warmed.push('files-30d(' + Math.ceil(fileJson.length/1024) + 'KB' + (okFiles?'':' - too big to chunk') + ')');
     PropertiesService.getScriptProperties().setProperty('STAT_TOTAL_FILES', String(allFiles.length));
   } catch(e) { Logger.log('Warm files failed: ' + e.message); }
 
