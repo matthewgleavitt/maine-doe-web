@@ -227,7 +227,7 @@ function Portal(){
   const [hovCard,setHovCard]=useState(null);
   const [queueStatus,setQueueStatus]=useState({});
   const [modQueue,setModQueue]=useState([]);
-  const [webStats,setWebStats]=useState({pageViews:'—',totalPages:'—',totalFiles:'—'});
+  const [webStats,setWebStats]=useState({pageViews:null,totalPages:null,totalFiles:null});
   // Session-scoped cache-buster for iframes — fresh on every portal load, cached within a session.
   const [sessionV]=useState(()=>Date.now().toString(36));
 
@@ -242,50 +242,64 @@ function Portal(){
 
   // Fetch queue status for sidebar indicators
   useEffect(()=>{
+    // Retry-once + 25s timeout wrapper — Apps Script cold-start can take 5-15s
+    // and occasionally hangs. Sequential awaits made web_stats appear frozen
+    // behind youtube+moderation; running all three in parallel fixes that.
+    const fetchJson=async(url,label)=>{
+      const attempt=async()=>{
+        const c=new AbortController();
+        const t=setTimeout(()=>c.abort(),25000);
+        try{ const r=await fetch(url,{signal:c.signal}); return await r.json(); }
+        finally{ clearTimeout(t); }
+      };
+      try{ return await attempt(); }
+      catch(e){
+        await new Promise(r=>setTimeout(r,1200));
+        try{ return await attempt(); }
+        catch(e2){ console.warn('[portal] '+label+' fetch failed:',e2.message); return null; }
+      }
+    };
+
+    // YouTube pending count (sidebar dot)
     (async()=>{
-      try{
-        const r=await fetch(SCRIPT_URL+'?type=youtube');
-        const j=await r.json();
-        if(j.rows){
-          const pending=j.rows.filter(s=>s.status!=='Complete').length;
-          setQueueStatus(prev=>({...prev,youtube:{pending,total:j.rows.length}}));
-        }
-      }catch(e){}
-      // Events auto-publish. No queue, no dot in the sidebar — it's not a
-      // pending-review indicator, so it just looks like noise next to "Calendar".
-      // Fetch moderation queue (via Apps Script proxy — Drupal endpoint isn't CORS-friendly cross-origin)
-      try{
-        const r=await fetch(SCRIPT_URL+'?type=moderation&_='+Date.now());
-        const j=await r.json();
-        const items=j.rows||(Array.isArray(j)?j:[]);
-        if(items.length>=0){
-          const parsed=items.map(item=>{
-            const titleMatch=(item.title||'').match(/>([^<]+)</);
-            const hrefMatch=(item.title||'').match(/href="([^"]+)"/);
-            const nameMatch=(item.name||'').match(/content="([^"]+)"/)||(item.name||'').match(/>([^<…]+)/);
-            const dateMatch=(item.changed||'').match(/title="([^"]+)"/);
-            return{
-              title:titleMatch?titleMatch[1].replace(/&amp;/g,'&'):item.title||'',
-              href:hrefMatch?'https://www.maine.gov'+hrefMatch[1].replace(/\/revisions\/\d+\/view/,'/edit'):'',
-              author:nameMatch?nameMatch[1]:'',
-              date:dateMatch?dateMatch[1]:'',
-              state:item.moderation_state||'',
-            };
-          });
-          setModQueue(parsed);
-          setQueueStatus(prev=>({...prev,website:{pending:parsed.length,total:parsed.length}}));
-        }
-      }catch(e){}
-      // Fetch web stats (cached counts)
-      try{
-        const r=await fetch(SCRIPT_URL+'?type=web_stats');
-        const j=await r.json();
-        setWebStats({
-          pageViews:j.pageViews||'—',
-          totalPages:j.totalPages||'—',
-          totalFiles:j.totalFiles||'—',
-        });
-      }catch(e){}
+      const j=await fetchJson(SCRIPT_URL+'?type=youtube','youtube');
+      if(j&&j.rows){
+        const pending=j.rows.filter(s=>s.status!=='Complete').length;
+        setQueueStatus(prev=>({...prev,youtube:{pending,total:j.rows.length}}));
+      }
+    })();
+
+    // Moderation queue (Drupal proxied via Apps Script)
+    (async()=>{
+      const j=await fetchJson(SCRIPT_URL+'?type=moderation&_='+Date.now(),'moderation');
+      if(!j) return;
+      const items=j.rows||(Array.isArray(j)?j:[]);
+      const parsed=items.map(item=>{
+        const titleMatch=(item.title||'').match(/>([^<]+)</);
+        const hrefMatch=(item.title||'').match(/href="([^"]+)"/);
+        const nameMatch=(item.name||'').match(/content="([^"]+)"/)||(item.name||'').match(/>([^<…]+)/);
+        const dateMatch=(item.changed||'').match(/title="([^"]+)"/);
+        return{
+          title:titleMatch?titleMatch[1].replace(/&amp;/g,'&'):item.title||'',
+          href:hrefMatch?'https://www.maine.gov'+hrefMatch[1].replace(/\/revisions\/\d+\/view/,'/edit'):'',
+          author:nameMatch?nameMatch[1]:'',
+          date:dateMatch?dateMatch[1]:'',
+          state:item.moderation_state||'',
+        };
+      });
+      setModQueue(parsed);
+      setQueueStatus(prev=>({...prev,website:{pending:parsed.length,total:parsed.length}}));
+    })();
+
+    // Web stats (page views, total pages, total files) — independent of the above
+    (async()=>{
+      const j=await fetchJson(SCRIPT_URL+'?type=web_stats','web_stats');
+      if(!j) return;
+      setWebStats({
+        pageViews:j.pageViews||'—',
+        totalPages:j.totalPages||'—',
+        totalFiles:j.totalFiles||'—',
+      });
     })();
   },[]);
 
@@ -610,7 +624,7 @@ function Portal(){
                     <div style={{padding:'12px 14px 14px',display:'flex',flexDirection:'column',gap:8,flex:1}}>
                       <div style={{display:'flex',alignItems:'baseline',gap:6}}>
                         <span style={{fontSize:22,fontWeight:800,color:'#182b3c',fontVariantNumeric:'tabular-nums',letterSpacing:'-0.02em',lineHeight:1}}>
-                          {dynStat===null||dynStat===undefined?<span style={{color:'#cbd5e1',fontWeight:600}}>—</span>:typeof dynStat==='number'?dynStat.toLocaleString():dynStat}
+                          {dynStat===null||dynStat===undefined?<span style={{color:'#cbd5e1',fontWeight:600,fontSize:16,letterSpacing:'0.15em'}}>···</span>:typeof dynStat==='number'?dynStat.toLocaleString():dynStat}
                         </span>
                         <span style={{fontSize:10.5,fontWeight:600,color:'#64748b',lineHeight:1.2}}>{m.statLabel}</span>
                       </div>
