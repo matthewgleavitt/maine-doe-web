@@ -482,7 +482,10 @@ function getTemplates() {
 
 function getModerationQueue() {
   try {
-    var resp = UrlFetchApp.fetch('https://www.maine.gov/doe/api/moderation?_=' + Date.now(), {
+    // No cache-buster on the Drupal URL — CacheService gives us the freshness
+    // window we want (90s), and busting Drupal's own upstream cache added
+    // hundreds of ms per request for no benefit.
+    var resp = UrlFetchApp.fetch('https://www.maine.gov/doe/api/moderation', {
       muteHttpExceptions: true,
       headers: { 'Accept': 'application/json' }
     });
@@ -521,6 +524,17 @@ function doGet(e) {
     var _emailKey = String((e && e.parameter && e.parameter.email) || '').trim().toLowerCase();
     cacheKey = 'portal_' + type + '_' + _emailKey + '_' + days;
   }
+  // Admin-only endpoint: verify the token BEFORE reading cache. Previously
+  // the token check happened inside the switch (below), so an unauthenticated
+  // caller after a successful admin request would receive the cached admin
+  // data from the shared key. Bounce here instead.
+  if (type === 'events') {
+    var _tk = (e.parameter && e.parameter.token) || '';
+    if (!_tk || _tk !== getEventsAdminToken()) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'Access denied' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
   var result;
 
   // Check cache first (skip for endpoints that must always be fresh or that
@@ -530,9 +544,14 @@ function doGet(e) {
   // key was 'portal_event_30' — so Paula's edit of Event A would be served
   // back when Emily edited Event B, leaking one user's event into another's
   // edit form. The endpoint is small and per-user, so no caching is correct.
+  //
+  // 'moderation' USED to bypass cache too, but that meant every portal load
+  // fired a live Drupal round-trip (1-3s) for every user. A 90s TTL is well
+  // within the "fresh enough for an approval queue" window, and the Refresh
+  // button on Pending Approvals still passes ?refresh=1 to force a bypass.
   var bypassCache = !!(e && e.parameter && e.parameter.refresh);
   var cache = CacheService.getScriptCache();
-  if (type !== 'web_stats' && type !== 'moderation' && type !== 'event' && !bypassCache) {
+  if (type !== 'web_stats' && type !== 'event' && !bypassCache) {
     // Payloads bigger than 100KB use chunked storage. All the GA/stats
     // endpoints can spill over depending on the site's volume, so we chunk
     // them consistently.
@@ -660,9 +679,13 @@ function doGet(e) {
   // Cache TTLs are tuned per data type. CacheService caps at 100KB/key so
   // huge payloads may silently fail — the try/catch swallows that.
   // 'event' is intentionally NOT cached — key would collide across events (see read guard above).
-  if (type !== 'web_stats' && type !== 'moderation' && type !== 'event' && !result.error) {
+  if (type !== 'web_stats' && type !== 'event' && !result.error) {
     var ttl;
     switch (type) {
+      // Approval queue — 90s is fresh enough for a moderation view; the
+      // Refresh button still passes ?refresh=1 to force a bypass.
+      case 'moderation':
+        ttl = 90; break;
       // Fresh — user-facing writes should show quickly
       case 'calendar': case 'events': case 'commons':
         ttl = 300; break;
@@ -673,9 +696,10 @@ function doGet(e) {
       // ceiling (6 hours). A nightly + noon warmCache trigger keeps it fresh.
       case 'pages': case 'files': case 'file_pages':
         ttl = 21600; break;
-      // Moderate — template + inbox data
+      // Moderate — template + inbox data. TTLs must be >= the warmCache
+      // interval (10 min) so warming actually holds — 900s gives a safe margin.
       case 'youtube': case 'templates': case 'announcements':
-        ttl = 600; break;
+        ttl = 900; break;
       // Stable — Drupal indexes, Mailchimp campaigns, WP.com stats rarely change hour-to-hour
       case 'drupal_pages': case 'drupal_files': case 'publications':
         ttl = 1800; break;
@@ -2006,40 +2030,54 @@ function warmCache() {
   var cache = CacheService.getScriptCache();
   var warmed = [];
 
-  // Announcements (5 min cache)
+  // TTL rule: warmed entries must outlive the warmCache trigger interval
+  // (10 min) so an entry never expires between two warmings and leaves users
+  // waiting on cold Apps Script. 900s = 15 min gives a 50% safety margin.
+
+  // Announcements
   try {
     var annData = JSON.stringify(getAnnouncements());
-    cache.put('portal_announcements_30', annData, 300);
+    cache.put('portal_announcements_30', annData, 900);
     warmed.push('announcements');
   } catch(e) { Logger.log('Warm announcements failed: ' + e.message); }
 
-  // YouTube submissions (5 min cache)
+  // YouTube submissions
   try {
     var ytData = JSON.stringify(getYouTubeSubmissions());
-    cache.put('portal_youtube_30', ytData, 300);
+    cache.put('portal_youtube_30', ytData, 900);
     warmed.push('youtube');
   } catch(e) { Logger.log('Warm youtube failed: ' + e.message); }
 
-  // Event submissions (5 min cache)
+  // Event submissions
   try {
     var evData = JSON.stringify(getEventSubmissions());
-    cache.put('portal_events_30', evData, 300);
+    cache.put('portal_events_30', evData, 900);
     warmed.push('events');
   } catch(e) { Logger.log('Warm events failed: ' + e.message); }
 
-  // Templates (5 min cache)
+  // Templates
   try {
     var tmplData = JSON.stringify(getTemplates());
-    cache.put('portal_templates_30', tmplData, 300);
+    cache.put('portal_templates_30', tmplData, 900);
     warmed.push('templates');
   } catch(e) { Logger.log('Warm templates failed: ' + e.message); }
 
-  // Publications/Mailchimp (5 min cache)
+  // Publications/Mailchimp — longer TTL (30 min) since Mailchimp is 3-8s cold
+  // and campaigns rarely change hour-to-hour.
   try {
     var pubData = JSON.stringify(getPublications());
-    cache.put('portal_publications_30', pubData, 300);
+    cache.put('portal_publications_30', pubData, 1800);
     warmed.push('publications');
   } catch(e) { Logger.log('Warm publications failed: ' + e.message); }
+
+  // Moderation queue — biggest win. Was previously uncached AND unwarmed, so
+  // every portal load fired a live Drupal round-trip (1-3s). 90s TTL matches
+  // the doGet write TTL — always fresh, never cold.
+  try {
+    var modData = JSON.stringify(getModerationQueue());
+    cache.put('portal_moderation_30', modData, 90);
+    warmed.push('moderation');
+  } catch(e) { Logger.log('Warm moderation failed: ' + e.message); }
 
   // Newsroom stats — 60 min cache. Payload can spill over 100KB (article
   // list + featured images), so store chunked.
@@ -2075,7 +2113,17 @@ function warmCache() {
       dimensionFilter: { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'BEGINS_WITH', value: '/doe/' } } },
       orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 10000 };
     var allPages = formatPageData(queryGA4(pr));
-    var pageResult = { rows: allPages.slice(0, 500), totalCount: allPages.length, days: '30', type: 'pages' };
+    // Shape must match doGet's `pages` response — dashboard tiles read
+    // totalViews/totalUsers, and the warmed entry was previously missing
+    // both, so cards silently rendered blanks whenever the warmer beat the
+    // user to the cache.
+    var pageResult = {
+      rows: allPages.slice(0, 500),
+      totalCount: allPages.length,
+      totalViews: allPages.reduce(function(s,p){ return s + (p.views||0); }, 0),
+      totalUsers: allPages.reduce(function(s,p){ return s + (p.users||0); }, 0),
+      days: '30', type: 'pages'
+    };
     var pageJson = JSON.stringify(pageResult);
     var pagesKey = 'portal_pages_30';
     try { cache.remove(pagesKey); } catch(re) {}
@@ -2098,7 +2146,13 @@ function warmCache() {
       dimensionFilter: { filter: { fieldName: 'eventName', stringFilter: { matchType: 'EXACT', value: 'file_download' } } },
       orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 10000 };
     var allFiles = formatFileData(queryGA4(fr));
-    var fileResult = { rows: allFiles.slice(0, 500), totalCount: allFiles.length, days: '30', type: 'files' };
+    // Same shape parity as the pages warm block — totalDownloads is the tile.
+    var fileResult = {
+      rows: allFiles.slice(0, 500),
+      totalCount: allFiles.length,
+      totalDownloads: allFiles.reduce(function(s,f){ return s + (f.clicks||0); }, 0),
+      days: '30', type: 'files'
+    };
     var fileJson = JSON.stringify(fileResult);
     var filesKey = 'portal_files_30';
     try { cache.remove(filesKey); } catch(re) {}
@@ -2737,7 +2791,10 @@ function getEventsAdminToken() {
  *  of edits (or trigger from a Sheet onEdit).                    */
 function purgeCalendarCache() {
   var cache = CacheService.getScriptCache();
-  cache.removeAll(['v1_calendar', 'v1_events', 'v1_type=calendar']);
+  // Actual keys the router writes (v1_* were leftovers from a previous naming
+  // scheme — this function was a no-op for months, which is why users saw
+  // events staying stale ~5 min after edits).
+  cache.removeAll(['portal_calendar_30', 'portal_events_30', 'portal_moderation_30']);
   Logger.log('Calendar cache purged.');
 }
 

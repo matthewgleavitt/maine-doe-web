@@ -87,15 +87,39 @@ function normalizeMessage(msg){
 
 function App(){
   const [tab,setTab]=useState('about');
-  const [announcements,setAnnouncements]=useState([]);
-  const [loading,setLoading]=useState(true);
+  // Rehydrate from sessionStorage so the Notifications tab renders instantly
+  // on reload with the last-known list, then updates when the fresh fetch lands.
+  const [announcements,setAnnouncements]=useState(()=>{
+    try{ const s=sessionStorage.getItem('doe_welcome_announcements'); if(s){ return JSON.parse(s); } }catch(e){}
+    return [];
+  });
+  const [loading,setLoading]=useState(()=>{
+    try{ return !sessionStorage.getItem('doe_welcome_announcements'); }catch(e){ return true; }
+  });
   const [expandedAnn,setExpandedAnn]=useState(null);
   const newsRef=useRef(null);
   const goodNewsRef=useRef(null);
 
   useEffect(()=>{
+    // Retry-once + 25s AbortController — same shape as index.html so a cold
+    // Apps Script call doesn't leave Notifications empty when it eventually errors.
+    const attempt=async()=>{
+      const c=new AbortController();
+      const t=setTimeout(()=>c.abort(),25000);
+      try{ const r=await fetch(API+'?type=announcements',{signal:c.signal}); return await r.json(); }
+      finally{ clearTimeout(t); }
+    };
     (async()=>{
-      try{const r=await fetch(API+'?type=announcements');const j=await r.json();if(j.rows)setAnnouncements(j.rows);}catch(e){}
+      let j=null;
+      try{ j=await attempt(); }
+      catch(e){
+        await new Promise(r=>setTimeout(r,1200));
+        try{ j=await attempt(); }catch(e2){ console.warn('[welcome] announcements fetch failed:',e2.message); }
+      }
+      if(j&&j.rows){
+        setAnnouncements(j.rows);
+        try{ sessionStorage.setItem('doe_welcome_announcements',JSON.stringify(j.rows)); }catch(e){}
+      }
       setLoading(false);
     })();
   },[]);

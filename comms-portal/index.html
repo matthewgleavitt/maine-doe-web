@@ -234,7 +234,13 @@ function Portal(){
     return {};
   });
   const [modQueue,setModQueue]=useState([]);
-  const [webStats,setWebStats]=useState({pageViews:null,totalPages:null,totalFiles:null});
+  const [webStats,setWebStats]=useState(()=>{
+    // Same rehydrate pattern as queueStatus — show last-known numbers instantly
+    // on reload, then overwrite when the fresh fetch lands. Skips the "···"
+    // loading state entirely for returning users.
+    try{ const s=sessionStorage.getItem('doe_portal_web_stats'); if(s) return JSON.parse(s); }catch(e){}
+    return {pageViews:null,totalPages:null,totalFiles:null};
+  });
   // Session-scoped cache-buster for iframes — fresh on every portal load, cached within a session.
   const [sessionV]=useState(()=>Date.now().toString(36));
 
@@ -310,11 +316,13 @@ function Portal(){
     (async()=>{
       const j=await fetchJson(SCRIPT_URL+'?type=web_stats','web_stats');
       if(!j) return;
-      setWebStats({
+      const next={
         pageViews:j.pageViews||'—',
         totalPages:j.totalPages||'—',
         totalFiles:j.totalFiles||'—',
-      });
+      };
+      setWebStats(next);
+      try{sessionStorage.setItem('doe_portal_web_stats',JSON.stringify(next));}catch(e){}
     })();
   },[]);
 
