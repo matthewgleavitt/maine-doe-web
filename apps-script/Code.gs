@@ -1473,10 +1473,26 @@ function getYouTubeStats() {
   var result = {
     channel: null,
     videos: [],
+    videosReturned: 0,
+    playlistPagesFetched: 0,
     analytics: null,
     errors: [],
     fetchedAt: new Date().toISOString(),
   };
+
+  // Diagnostic — which channel(s) does this OAuth token consider "mine"?
+  // If this returns Matthew's personal channel (or nothing) instead of the
+  // Maine DOE channel, the Analytics API Forbidden makes sense — the token
+  // isn't recognized as belonging to the DOE channel's manager set from the
+  // API's perspective.
+  try {
+    var myCh = YouTube.Channels.list('id,snippet', { mine: true });
+    result.myChannels = (myCh.items || []).map(function(c) {
+      return { id: c.id, title: c.snippet ? c.snippet.title : '' };
+    });
+  } catch (myErr) {
+    result.errors.push({ source: 'mine', error: myErr.message });
+  }
 
   // 1. Channel-level stats via Data API.
   try {
@@ -1527,6 +1543,7 @@ function getYouTubeStats() {
         if (!playlistResp.nextPageToken) break;
         pageToken = playlistResp.nextPageToken;
       }
+      result.playlistPagesFetched = pagesFetched;
 
       // Videos.list takes up to 50 IDs per call — batch through them.
       for (var i = 0; i < allVideoIds.length; i += 50) {
@@ -1554,8 +1571,10 @@ function getYouTubeStats() {
         });
       }
     }
+    result.videosReturned = result.videos.length;
   } catch (vidErr) {
     result.errors.push({ source: 'videos', error: vidErr.message });
+    result.videosReturned = result.videos.length;
   }
 
   // 3. Rolled-up analytics — views, subscriber changes, watch time for the
@@ -1568,12 +1587,25 @@ function getYouTubeStats() {
     startD.setDate(startD.getDate() - 30);
     var startDate = Utilities.formatDate(startD, 'UTC', 'yyyy-MM-dd');
 
-    var totals = YouTubeAnalytics.Reports.query({
-      ids: 'channel==' + channelId,
-      startDate: startDate,
-      endDate: endDate,
-      metrics: 'views,estimatedMinutesWatched,averageViewDuration,subscribersGained,subscribersLost,likes,comments,shares',
-    });
+    var totals;
+    try {
+      totals = YouTubeAnalytics.Reports.query({
+        ids: 'channel==' + channelId,
+        startDate: startDate,
+        endDate: endDate,
+        metrics: 'views,estimatedMinutesWatched,averageViewDuration,subscribersGained,subscribersLost,likes,comments,shares',
+      });
+    } catch (specificErr) {
+      // Fallback — if the specific channel ID query is refused, try "mine".
+      // This works when the OAuth session is scoped to that channel context.
+      result.errors.push({ source: 'analytics_specific', error: specificErr.message });
+      totals = YouTubeAnalytics.Reports.query({
+        ids: 'channel==MINE',
+        startDate: startDate,
+        endDate: endDate,
+        metrics: 'views,estimatedMinutesWatched,averageViewDuration,subscribersGained,subscribersLost,likes,comments,shares',
+      });
+    }
 
     if (totals.rows && totals.rows.length) {
       var row = totals.rows[0];
