@@ -675,7 +675,15 @@ function doGet(e) {
       default:
         ttl = 300;
     }
-    try { cache.put(cacheKey, jsonStr, ttl); } catch(ce) { Logger.log('cache.put failed (' + type + ', ' + jsonStr.length + ' bytes): ' + ce.message); }
+    try {
+      cache.put(cacheKey, jsonStr, ttl);
+    } catch(ce) {
+      // CacheService per-key limit is 100KB. Anything over throws. Explicitly
+      // drop any stale prior entry so we never serve pre-truncation data,
+      // even if the fresh response can't be cached itself.
+      try { cache.remove(cacheKey); } catch(re) {}
+      Logger.log('cache.put failed (' + type + ', ' + jsonStr.length + ' bytes): ' + ce.message + ' — stale entry evicted');
+    }
   }
 
   var output = ContentService.createTextOutput(jsonStr);
@@ -1480,20 +1488,6 @@ function getYouTubeStats() {
     fetchedAt: new Date().toISOString(),
   };
 
-  // Diagnostic — which channel(s) does this OAuth token consider "mine"?
-  // If this returns Matthew's personal channel (or nothing) instead of the
-  // Maine DOE channel, the Analytics API Forbidden makes sense — the token
-  // isn't recognized as belonging to the DOE channel's manager set from the
-  // API's perspective.
-  try {
-    var myCh = YouTube.Channels.list('id,snippet', { mine: true });
-    result.myChannels = (myCh.items || []).map(function(c) {
-      return { id: c.id, title: c.snippet ? c.snippet.title : '' };
-    });
-  } catch (myErr) {
-    result.errors.push({ source: 'mine', error: myErr.message });
-  }
-
   // 1. Channel-level stats via Data API.
   try {
     var chResp = YouTube.Channels.list('snippet,statistics,contentDetails', { id: channelId });
@@ -1587,25 +1581,15 @@ function getYouTubeStats() {
     startD.setDate(startD.getDate() - 30);
     var startDate = Utilities.formatDate(startD, 'UTC', 'yyyy-MM-dd');
 
-    var totals;
-    try {
-      totals = YouTubeAnalytics.Reports.query({
-        ids: 'channel==' + channelId,
-        startDate: startDate,
-        endDate: endDate,
-        metrics: 'views,estimatedMinutesWatched,averageViewDuration,subscribersGained,subscribersLost,likes,comments,shares',
-      });
-    } catch (specificErr) {
-      // Fallback — if the specific channel ID query is refused, try "mine".
-      // This works when the OAuth session is scoped to that channel context.
-      result.errors.push({ source: 'analytics_specific', error: specificErr.message });
-      totals = YouTubeAnalytics.Reports.query({
-        ids: 'channel==MINE',
-        startDate: startDate,
-        endDate: endDate,
-        metrics: 'views,estimatedMinutesWatched,averageViewDuration,subscribersGained,subscribersLost,likes,comments,shares',
-      });
-    }
+    // Only query for the specific channel. No "MINE" fallback — that returns
+    // whatever primary channel the deploy owner's Google identity has, which
+    // is misleading if it's not the actual DOE channel.
+    var totals = YouTubeAnalytics.Reports.query({
+      ids: 'channel==' + channelId,
+      startDate: startDate,
+      endDate: endDate,
+      metrics: 'views,estimatedMinutesWatched,averageViewDuration,subscribersGained,subscribersLost,likes,comments,shares',
+    });
 
     if (totals.rows && totals.rows.length) {
       var row = totals.rows[0];
