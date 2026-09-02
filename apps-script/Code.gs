@@ -523,11 +523,16 @@ function doGet(e) {
   }
   var result;
 
-  // Check cache first (skip for web_stats and moderation which should always be fresh)
-  // ?refresh=1 bypasses cache — useful right after a redeploy or auth change.
+  // Check cache first (skip for endpoints that must always be fresh or that
+  // key on parameters not baked into the cache key). ?refresh=1 also bypasses.
+  //
+  // 'event' is skipped because its response depends on id+token but the shared
+  // key was 'portal_event_30' — so Paula's edit of Event A would be served
+  // back when Emily edited Event B, leaking one user's event into another's
+  // edit form. The endpoint is small and per-user, so no caching is correct.
   var bypassCache = !!(e && e.parameter && e.parameter.refresh);
   var cache = CacheService.getScriptCache();
-  if (type !== 'web_stats' && type !== 'moderation' && !bypassCache) {
+  if (type !== 'web_stats' && type !== 'moderation' && type !== 'event' && !bypassCache) {
     // Payloads bigger than 100KB use chunked storage. All the GA/stats
     // endpoints can spill over depending on the site's volume, so we chunk
     // them consistently.
@@ -654,11 +659,12 @@ function doGet(e) {
 
   // Cache TTLs are tuned per data type. CacheService caps at 100KB/key so
   // huge payloads may silently fail — the try/catch swallows that.
-  if (type !== 'web_stats' && type !== 'moderation' && !result.error) {
+  // 'event' is intentionally NOT cached — key would collide across events (see read guard above).
+  if (type !== 'web_stats' && type !== 'moderation' && type !== 'event' && !result.error) {
     var ttl;
     switch (type) {
       // Fresh — user-facing writes should show quickly
-      case 'calendar': case 'events': case 'event': case 'commons':
+      case 'calendar': case 'events': case 'commons':
         ttl = 300; break;
       // Real-time — manage view needs to reflect the edit the user JUST made
       case 'my_events':
