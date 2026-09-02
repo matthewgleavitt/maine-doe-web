@@ -837,6 +837,15 @@ function App(){
   }
   function exitManage(){setManageMode(false);setMyEvents([]);setMessage(null);}
   function editMyEvent(ev){
+    // The my_events response now carries the full record, so we can open the
+    // edit form instantly (no second Apps Script round-trip). Fall back to
+    // fetching just in case an older backend deploy is still live.
+    if(ev && ev.title !== undefined && ev.description !== undefined){
+      setForm(deserialize(ev));
+      setEditing({id:ev.id,token:ev.editToken,fromAdmin:false});
+      setShowForm(true);
+      return;
+    }
     (async()=>{
       setBusy(true);
       try{

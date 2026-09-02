@@ -225,7 +225,14 @@ function Portal(){
   const [sbOpen,setSbOpen]=useState(true);
   const [mob,setMob]=useState(false);
   const [hovCard,setHovCard]=useState(null);
-  const [queueStatus,setQueueStatus]=useState({});
+  const [queueStatus,setQueueStatus]=useState(()=>{
+    // Hydrate from sessionStorage so the sidebar dots (YouTube pending count,
+    // website approvals count) show instantly on reload instead of waiting on
+    // the Apps Script cold-start fetch — the fetch below still runs and
+    // overwrites with fresh values as soon as it lands.
+    try{ const s=sessionStorage.getItem('doe_portal_queue_status'); if(s) return JSON.parse(s); }catch(e){}
+    return {};
+  });
   const [modQueue,setModQueue]=useState([]);
   const [webStats,setWebStats]=useState({pageViews:null,totalPages:null,totalFiles:null});
   // Session-scoped cache-buster for iframes — fresh on every portal load, cached within a session.
@@ -265,7 +272,11 @@ function Portal(){
       const j=await fetchJson(SCRIPT_URL+'?type=youtube','youtube');
       if(j&&j.rows){
         const pending=j.rows.filter(s=>s.status!=='Complete').length;
-        setQueueStatus(prev=>({...prev,youtube:{pending,total:j.rows.length}}));
+        setQueueStatus(prev=>{
+          const next={...prev,youtube:{pending,total:j.rows.length}};
+          try{sessionStorage.setItem('doe_portal_queue_status',JSON.stringify(next));}catch(e){}
+          return next;
+        });
       }
     })();
 
@@ -288,7 +299,11 @@ function Portal(){
         };
       });
       setModQueue(parsed);
-      setQueueStatus(prev=>({...prev,website:{pending:parsed.length,total:parsed.length}}));
+      setQueueStatus(prev=>{
+        const next={...prev,website:{pending:parsed.length,total:parsed.length}};
+        try{sessionStorage.setItem('doe_portal_queue_status',JSON.stringify(next));}catch(e){}
+        return next;
+      });
     })();
 
     // Web stats (page views, total pages, total files) — independent of the above

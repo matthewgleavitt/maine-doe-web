@@ -2868,25 +2868,28 @@ function getMyEvents(email) {
     var contact = String(col('Contact Email', row) || '').trim().toLowerCase();
     var submitter = String(col('Submitter Email', row) || '').trim().toLowerCase();
     if (contact !== e && submitter !== e) continue;
-    out.push({
-      id: String(col('Event ID', row) || ''),
-      editToken: String(col('Edit Token', row) || ''),
-      title: String(col('Title', row) || ''),
-      focusArea: String(col('Focus Area', row) || ''),
-      type: String(col('Type', row) || ''),
-      status: String(col('Status', row) || ''),
-      startDate: _isoDate(col('Start Date', row)),
-      startTime: _isoTime(col('Start Time', row)),
-      endDate: _isoDate(col('End Date', row)),
-      endTime: _isoTime(col('End Time', row)),
-      allDay: (function(v){var s=String(v||'').toLowerCase();return s==='yes'||s==='true'||s==='1';})(col('All Day', row)),
-      location: String(col('Location Type', row) || '') || 'Virtual',
-      venueName: String(col('Venue Name', row) || ''),
-      contactName: String(col('Contact Name', row) || ''),
-      contactEmail: String(col('Contact Email', row) || ''),
-      submitterEmail: String(col('Submitter Email', row) || ''),
-      submitted: String(col('Date Submitted', row) || ''),
-    });
+    // Include the full record (same shape as getSingleEvent) so the frontend
+    // Edit click doesn't have to make a second 12-15s Apps Script call — it
+    // just deserializes the record it already has.
+    var full = _rowToRecord(row, idx);
+    full.id = String(col('Event ID', row) || '');
+    full.editToken = String(col('Edit Token', row) || '');
+    full.title = String(col('Title', row) || '');
+    full.focusArea = String(col('Focus Area', row) || '');
+    full.type = String(col('Type', row) || '');
+    full.status = String(col('Status', row) || '');
+    full.startDate = _isoDate(col('Start Date', row));
+    full.startTime = _isoTime(col('Start Time', row));
+    full.endDate = _isoDate(col('End Date', row));
+    full.endTime = _isoTime(col('End Time', row));
+    full.allDay = (function(v){var s=String(v||'').toLowerCase();return s==='yes'||s==='true'||s==='1';})(col('All Day', row));
+    full.location = String(col('Location Type', row) || '') || 'Virtual';
+    full.venueName = String(col('Venue Name', row) || '');
+    full.contactName = String(col('Contact Name', row) || '');
+    full.contactEmail = String(col('Contact Email', row) || '');
+    full.submitterEmail = String(col('Submitter Email', row) || '');
+    full.submitted = String(col('Date Submitted', row) || '');
+    out.push(full);
   }
   // Newest first — matches the natural "what did I just submit" instinct.
   out.sort(function(a,b){ return (b.submitted || '').localeCompare(a.submitted || ''); });
