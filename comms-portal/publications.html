@@ -414,7 +414,7 @@ function App(){
         </p>
         <code style={{display:'block',background:'#f1f5f9',padding:'12px 14px',borderRadius:8,color:B.navy,fontSize:13,fontWeight:700,marginBottom:14,border:`1px solid ${B.border}60`,fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace'}}>Team/Area - Title of File - Full Date.pdf</code>
         <ul style={{listStyle:'none',padding:0,margin:'0 0 14px'}}>
-          {['Spaces between hyphens.','No abbreviations or acronyms (unless universal).','Date with periods between, full year written out, no leading zeros — 6.1.2024 (not 06.01.24 or 6.1.24).','Prioritize using PDFs.'].map((it,i)=>(
+          {['Spaces between hyphens.','No abbreviations or acronyms (unless universal).','Date with periods between, full year written out, no leading zeros. Use 6.1.2024, not 06.01.24 or 6.1.24.','Prioritize using PDFs.','For non-English versions, put the language in brackets at the end of the title, before the date: [Arabic], [Spanish], etc.'].map((it,i)=>(
             <li key={i} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'5px 0',fontSize:13,color:B.txtSec,fontWeight:500,lineHeight:1.55}}>
               <Sv d={ic.check} size={15} color="#16a34a" style={{marginTop:2,flexShrink:0}}/>
               <span>{it}</span>
@@ -424,7 +424,7 @@ function App(){
         <div style={{padding:'12px 14px',background:'#f8fafc',borderRadius:8,border:`1px solid ${B.border}45`}}>
           <div style={{fontSize:11,fontWeight:800,color:B.txtMute,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:8}}>Examples</div>
           {[
-            'Multilingual Learning - Multilingual Learners with Disabilities Policy Guide - 3.11.2025.pdf',
+            'Multilingual Learning - Multilingual Learners with Disabilities Policy Guide [Spanish] - 3.11.2025.pdf',
             'Assessment - Print Disability Flowchart - 3.11.2025.pdf',
             'Outdoor Education - Maine Outdoor Learning Grant Application - 3.11.2025.pdf',
             'MLTI - Sphero Tutorial - 3.11.2025.pdf',

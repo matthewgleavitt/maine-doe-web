@@ -388,8 +388,11 @@ function AnalyticsDashboard() {
               {l:"Page views",v:totalViews.toLocaleString(),icon:Ico.eye,c:B.teal},
               {l:"Unique users",v:totalUsers.toLocaleString(),icon:Ico.users,c:B.navyMid},
               {l:"File downloads",v:totalDownloads.toLocaleString(),icon:Ico.download,c:"#22c55e"},
-              {l:"Pages tracked",v:pages.length.toString(),icon:Ico.file,c:B.steel},
-              {l:"Files tracked",v:files.length.toString(),icon:Ico.folder,c:"#f59e0b"},
+              // Counts come from GA4 (real traffic), not the Drupal API. Cap bumped
+              // server-side to 10k rows so every page/file that got any traffic in
+              // the window is counted.
+              {l:"Pages with traffic",v:pages.length.toLocaleString(),icon:Ico.file,c:B.steel},
+              {l:"Files downloaded",v:files.length.toLocaleString(),icon:Ico.folder,c:"#f59e0b"},
             ].map((m,i) => {
               const MIcon = m.icon;
               return <div key={i} style={{background:B.wh,borderRadius:14,padding:"20px 22px",border:`2px solid ${B.border}`,boxShadow:"0 2px 8px rgba(24,43,60,0.04)",position:"relative",overflow:"hidden"}}>

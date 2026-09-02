@@ -524,6 +524,85 @@ function Portal(){
                   </div>
                 </div>
               </div>
+              {/* Drupal user workflow — file naming, upload, linking */}
+              <div style={{background:'#ffffff',borderRadius:14,border:'2px solid #274f7330',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
+                <div style={{padding:'16px 22px',background:'linear-gradient(135deg,#0c1926,#162d44)',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
+                  <div style={{display:'flex',alignItems:'center',gap:10}}>
+                    <h3 style={{fontFamily:"'League Spartan','DM Sans',sans-serif",fontSize:15,fontWeight:800,color:'#42c3f7',margin:0,letterSpacing:'.03em',textTransform:'uppercase'}}>How to add a file to maine.gov/doe</h3>
+                  </div>
+                  <div style={{fontSize:11.5,fontWeight:700,color:'#94a3b8'}}>For Drupal editors</div>
+                </div>
+                <div style={{padding:'20px 24px 24px'}}>
+                  {/* Step 1 — Naming */}
+                  <div style={{display:'flex',gap:14,marginBottom:20}}>
+                    <div style={{width:28,height:28,borderRadius:'50%',background:'#274f73',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:800,flexShrink:0}}>1</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:15,fontWeight:800,color:'#182b3c',marginBottom:6}}>Name your file using the naming convention</div>
+                      <code style={{display:'block',background:'#f1f5f9',padding:'10px 14px',borderRadius:8,color:'#182b3c',fontSize:13,fontWeight:700,marginBottom:10,border:'1px solid #a8bdd050',fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace'}}>Team/Area - Title of File - Full Date.pdf</code>
+                      <ul style={{listStyle:'none',padding:0,margin:'0 0 12px'}}>
+                        {[
+                          'Spaces between hyphens.',
+                          'No abbreviations or acronyms (unless universal).',
+                          'Date with periods between, full year written out, no leading zeros. Use 6.1.2024, not 06.01.24 or 6.1.24.',
+                          'Prioritize using PDFs.',
+                          'For non-English versions, put the language in brackets at the end of the title, before the date: [Arabic], [Spanish], etc.',
+                        ].map((it,i)=>(
+                          <li key={i} style={{display:'flex',alignItems:'flex-start',gap:8,padding:'4px 0',fontSize:13,color:'#334155',fontWeight:500,lineHeight:1.55}}>
+                            <I d={["M20 6L9 17l-5-5"]} size={14} color="#16a34a" style={{marginTop:3,flexShrink:0}}/>
+                            <span>{it}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <div style={{padding:'12px 14px',background:'#f8fafc',borderRadius:8,border:'1px solid #a8bdd045'}}>
+                        <div style={{fontSize:10.5,fontWeight:800,color:'#475569',letterSpacing:'.06em',textTransform:'uppercase',marginBottom:8}}>Examples</div>
+                        {[
+                          'Multilingual Learning - Multilingual Learners with Disabilities Policy Guide [Spanish] - 3.11.2025.pdf',
+                          'Assessment - Print Disability Flowchart - 3.11.2025.pdf',
+                          'Outdoor Education - Maine Outdoor Learning Grant Application - 3.11.2025.pdf',
+                          'MLTI - Sphero Tutorial - 3.11.2025.pdf',
+                          'School Safety - Restorative Practices Brochure - 3.11.2025.pdf',
+                          'Interdisciplinary Instruction - Solutionaries Project Webinar Slides - 3.11.2025.pdf',
+                        ].map((e,i)=>(
+                          <div key={i} style={{fontSize:12.5,color:'#334155',padding:'3px 0',fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace',fontWeight:500,lineHeight:1.5,wordBreak:'break-word'}}>{e}</div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 2 — Upload */}
+                  <div style={{display:'flex',gap:14,marginBottom:20}}>
+                    <div style={{width:28,height:28,borderRadius:'50%',background:'#274f73',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:800,flexShrink:0}}>2</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:15,fontWeight:800,color:'#182b3c',marginBottom:6}}>Upload your file to SharePoint</div>
+                      <p style={{fontSize:13.5,color:'#334155',lineHeight:1.6,fontWeight:500,marginBottom:10}}>
+                        Place your file in the appropriate folder in <strong style={{color:'#182b3c'}}>DOE Teams → Communications → Files → Website Uploads</strong>. If your team's folder isn't there, reach out to Comms and we'll add it.
+                      </p>
+                      <a href="https://stateofmaine.sharepoint.com/:f:/t/DOETeam/IgA5Z26x-XMtR67bDYrVBg0eAcbc8G9dYzlzZkjdM1ovgvM?e=H75zYF" target="_blank" rel="noopener noreferrer"
+                        style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:8,background:'#16a34a15',border:'1.5px solid #16a34a40',color:'#166534',textDecoration:'none',fontSize:12.5,fontWeight:700}}>
+                        <I d={icons.folder} size={14} color="#166534"/> Open Website Uploads folder
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Step 3 — Linking */}
+                  <div style={{display:'flex',gap:14}}>
+                    <div style={{width:28,height:28,borderRadius:'50%',background:'#274f73',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:800,flexShrink:0}}>3</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:15,fontWeight:800,color:'#182b3c',marginBottom:6}}>Mark the link text on your Drupal page</div>
+                      <p style={{fontSize:13.5,color:'#334155',lineHeight:1.6,fontWeight:500,marginBottom:10}}>
+                        On the Drupal edit page, wrap the text you want linked in double asterisks (<code style={{background:'#f1f5f9',padding:'1px 6px',borderRadius:4,fontSize:12,fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace',fontWeight:700}}>**</code>) before and after. Comms picks that up and links it to the uploaded file.
+                      </p>
+                      <div style={{padding:'12px 14px',background:'#f8fafc',borderRadius:8,border:'1px solid #a8bdd045'}}>
+                        <div style={{fontSize:10.5,fontWeight:800,color:'#475569',letterSpacing:'.06em',textTransform:'uppercase',marginBottom:8}}>Example</div>
+                        <div style={{fontSize:13.5,color:'#334155',fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace',fontWeight:500,lineHeight:1.5,wordBreak:'break-word'}}>
+                          You can learn more by checking out the <span style={{background:'#42c3f720',color:'#0d7ba0',padding:'1px 4px',borderRadius:3,fontWeight:700}}>**Multilingual Learners with Disability Policy Guide**</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Moderation Queue — always visible */}
               <div style={{background:'#ffffff',borderRadius:14,border:'2.5px solid #274f7345',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
                 <div style={{padding:'16px 20px',background:'#182b3c',display:'flex',alignItems:'center',justifyContent:'space-between'}}>

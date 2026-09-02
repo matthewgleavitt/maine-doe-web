@@ -538,8 +538,11 @@ function doGet(e) {
         dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }],
         metrics: [{ name: 'screenPageViews' }, { name: 'totalUsers' }, { name: 'averageSessionDuration' }],
         dimensionFilter: { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'BEGINS_WITH', value: '/doe/' } } },
-        orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 200 };
-      result = { rows: formatPageData(queryGA4(pr)), days: days, type: 'pages' };
+        orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 10000 };
+      var allPages = formatPageData(queryGA4(pr));
+      // Ship only the top slice — the tile uses totalCount, the list only
+      // needs the leaders. Full 10k rows would be ~2MB round-trip for nothing.
+      result = { rows: allPages.slice(0, 500), totalCount: allPages.length, days: days, type: 'pages' };
 
     } else if (type === 'files') {
       var fr = { dateRanges: [dateRange],
@@ -547,7 +550,8 @@ function doGet(e) {
         metrics: [{ name: 'eventCount' }],
         dimensionFilter: { filter: { fieldName: 'eventName', stringFilter: { matchType: 'EXACT', value: 'file_download' } } },
         orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 5000 };
-      result = { rows: formatFileData(queryGA4(fr)), days: days, type: 'files' };
+      var allFiles = formatFileData(queryGA4(fr));
+      result = { rows: allFiles.slice(0, 500), totalCount: allFiles.length, days: days, type: 'files' };
 
     } else if (type === 'file_pages') {
       result = getFilePages();
@@ -633,9 +637,12 @@ function doGet(e) {
       // Real-time — manage view needs to reflect the edit the user JUST made
       case 'my_events':
         ttl = 30; break;
-      // Moderate — GA and template data
-      case 'pages': case 'files': case 'file_pages': case 'youtube':
-      case 'templates': case 'announcements':
+      // GA data is expensive to build (10k-row queries). Cache to the CacheService
+      // ceiling (6 hours). A nightly + noon warmCache trigger keeps it fresh.
+      case 'pages': case 'files': case 'file_pages':
+        ttl = 21600; break;
+      // Moderate — template + inbox data
+      case 'youtube': case 'templates': case 'announcements':
         ttl = 600; break;
       // Stable — Drupal indexes, Mailchimp campaigns, WP.com stats rarely change hour-to-hour
       case 'drupal_pages': case 'drupal_files': case 'publications':
@@ -1786,35 +1793,39 @@ function warmCache() {
   // by cacheDrupalData (runs every 30 min) and served directly from Sheets.
   // The Sheet data is too large for CacheService's 100KB-per-key limit anyway.
 
-  // GA4 pages — 30 day default (10 min cache)
+  // GA4 pages — 30 day default. Cached to the CacheService ceiling (6h).
   try {
     var dateRange = getDateRange('30');
     var pr = { dateRanges: [dateRange],
       dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }],
       metrics: [{ name: 'screenPageViews' }, { name: 'totalUsers' }, { name: 'averageSessionDuration' }],
       dimensionFilter: { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'BEGINS_WITH', value: '/doe/' } } },
-      orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 200 };
-    var pageResult = { rows: formatPageData(queryGA4(pr)), days: '30', type: 'pages' };
-    cache.put('portal_pages_30', JSON.stringify(pageResult), 600);
+      orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 10000 };
+    var allPages = formatPageData(queryGA4(pr));
+    var pageResult = { rows: allPages.slice(0, 500), totalCount: allPages.length, days: '30', type: 'pages' };
+    cache.put('portal_pages_30', JSON.stringify(pageResult), 21600);
     warmed.push('pages-30d');
 
     // Also update page views stat
-    var totalViews = pageResult.rows.reduce(function(s,p){ return s + (p.views||0); }, 0);
+    var totalViews = allPages.reduce(function(s,p){ return s + (p.views||0); }, 0);
     var pvStr = totalViews > 1000 ? (Math.round(totalViews/1000) + 'K') : String(totalViews);
     PropertiesService.getScriptProperties().setProperty('STAT_PAGE_VIEWS', pvStr);
+    PropertiesService.getScriptProperties().setProperty('STAT_TOTAL_PAGES', String(allPages.length));
   } catch(e) { Logger.log('Warm pages failed: ' + e.message); }
 
-  // GA4 files — 30 day default (10 min cache)
+  // GA4 files — 30 day default, cached 6h.
   try {
     var dateRange = getDateRange('30');
     var fr = { dateRanges: [dateRange],
       dimensions: [{ name: 'linkUrl' }, { name: 'customEvent:file_name' }, { name: 'pagePath' }],
       metrics: [{ name: 'eventCount' }],
       dimensionFilter: { filter: { fieldName: 'eventName', stringFilter: { matchType: 'EXACT', value: 'file_download' } } },
-      orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 5000 };
-    var fileResult = { rows: formatFileData(queryGA4(fr)), days: '30', type: 'files' };
-    cache.put('portal_files_30', JSON.stringify(fileResult), 600);
+      orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 10000 };
+    var allFiles = formatFileData(queryGA4(fr));
+    var fileResult = { rows: allFiles.slice(0, 500), totalCount: allFiles.length, days: '30', type: 'files' };
+    cache.put('portal_files_30', JSON.stringify(fileResult), 21600);
     warmed.push('files-30d');
+    PropertiesService.getScriptProperties().setProperty('STAT_TOTAL_FILES', String(allFiles.length));
   } catch(e) { Logger.log('Warm files failed: ' + e.message); }
 
   Logger.log('Cache warmed: ' + warmed.join(', '));
