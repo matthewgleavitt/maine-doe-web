@@ -88,12 +88,13 @@ const webModules=[
     color:'#274f73',gradient:'linear-gradient(135deg,#274f73,#1e3a56)',status:'live',
     features:['Live inventory','Server scanning','Batch delete','Page owners'],
     stat:null,statLabel:'files tracked',statKey:'totalFiles'},
-  {id:'tools',label:'Tools',icon:icons.wrench,href:'tools.html',
-    desc:'WCAG remediator, alt text reviewer, dead link checker, orphan file finder, and more.',
-    color:'#274f73',gradient:'linear-gradient(135deg,#274f73,#1e3a56)',status:'live',adminOnly:true,
-    features:['WCAG Remediator','Alt Text Reviewer','Dead Links','Orphan Finder'],
-    stat:'6',statLabel:'tools'},
 ];
+// Tools lives in the hero as an admin button (moved out of the module grid).
+const webToolsModule={id:'tools',label:'Tools',icon:icons.wrench,href:'tools.html',
+  desc:'WCAG remediator, alt text reviewer, dead link checker, orphan file finder, and more.',
+  color:'#274f73',gradient:'linear-gradient(135deg,#274f73,#1e3a56)',status:'live',adminOnly:true,
+  features:['WCAG Remediator','Alt Text Reviewer','Dead Links','Orphan Finder'],
+  stat:'6',statLabel:'tools'};
 
 // ── Dashboard cards (top-level overview) ──
 // Dashboard cards — order matches the sidebar nav.
@@ -297,7 +298,7 @@ function Portal(){
 
   // Determine what's showing
   const activeNav=navItems.find(n=>n.id===section);
-  const activeWebMod=webSub?webModules.find(m=>m.id===webSub):null;
+  const activeWebMod=webSub?(webSub===webToolsModule.id?webToolsModule:webModules.find(m=>m.id===webSub)):null;
   const iframeUrl=section==='home'?'welcome.html':section==='brand'?'brandguide.html':section==='youtube'?'youtube-tracker.html':section==='events'?'events-tracker.html':section==='templates'?'templates.html':section==='publications'?'publications.html':section==='engine'?'engine.html':activeWebMod?.href||null;
   const showIframe=(section==='home')||(section==='brand')||(section==='youtube')||(section==='events')||(section==='templates')||(section==='publications')||(section==='engine')||activeWebMod?.href;
 
@@ -520,6 +521,14 @@ function Portal(){
                         fontSize:13,fontWeight:700,border:'1.5px solid rgba(255,255,255,0.15)'}}>
                       <I d={icons.layers} size={16} color="#c084fc"/> Assets & Resources
                     </a>
+                    <button onClick={()=>setWebSub(webToolsModule.id)}
+                      style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,
+                        background:'rgba(255,255,255,0.08)',color:'#e2e8f0',cursor:'pointer',
+                        fontSize:13,fontWeight:700,border:'1.5px solid rgba(255,255,255,0.15)',fontFamily:'inherit'}}
+                      onMouseEnter={e=>{e.currentTarget.style.background='rgba(66,195,247,0.15)';e.currentTarget.style.borderColor='rgba(66,195,247,0.4)';}}
+                      onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.08)';e.currentTarget.style.borderColor='rgba(255,255,255,0.15)';}}>
+                      <I d={icons.wrench} size={16} color="#fbbf24"/> Tools
+                    </button>
                   </div>
                 </div>
               </div>
@@ -578,6 +587,40 @@ function Portal(){
                   <div style={{fontSize:13,fontWeight:600,color:'#94a3b8'}}>No pending approvals</div>
                   <div style={{fontSize:12,fontWeight:500,color:'#c2cdd8',marginTop:4}}>Pages submitted for review will appear here.</div>
                 </div>}
+              </div>
+
+              {/* Compact 3-card row: Analytics + Page Explorer + File Manager. Tools moved to hero. */}
+              <div style={{display:'grid',gridTemplateColumns:'repeat(3, 1fr)',gap:14,marginBottom:20}}>
+                {webModules.map((m,i)=>{
+                  const dynStat=m.statKey?webStats[m.statKey]:m.stat;
+                  const isHov=hovCard===m.id;
+                  return <div key={m.id} onClick={()=>{if(m.href)setWebSub(m.id);}}
+                    onMouseEnter={()=>setHovCard(m.id)} onMouseLeave={()=>setHovCard(null)}
+                    style={{background:'#fff',borderRadius:12,border:`1.5px solid ${isHov?'#42c3f7':'#e2e8f0'}`,cursor:'pointer',
+                      overflow:'hidden',boxShadow:isHov?'0 6px 20px rgba(66,195,247,0.18)':'0 1px 4px rgba(0,0,0,0.04)',
+                      transition:'all .18s ease',transform:isHov?'translateY(-2px)':'none',display:'flex',flexDirection:'column'}}>
+                    <div style={{padding:'12px 14px',background:m.gradient,display:'flex',alignItems:'center',gap:10}}>
+                      <div style={{width:32,height:32,borderRadius:9,background:'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                        <I d={m.icon} size={17} color="#ffffff"/>
+                      </div>
+                      <div style={{minWidth:0,flex:1}}>
+                        <div style={{fontSize:13.5,fontWeight:800,color:'#ffffff',letterSpacing:'-0.005em',lineHeight:1.15}}>{m.label}</div>
+                      </div>
+                    </div>
+                    <div style={{padding:'12px 14px 14px',display:'flex',flexDirection:'column',gap:8,flex:1}}>
+                      <div style={{display:'flex',alignItems:'baseline',gap:6}}>
+                        <span style={{fontSize:22,fontWeight:800,color:'#182b3c',fontVariantNumeric:'tabular-nums',letterSpacing:'-0.02em',lineHeight:1}}>
+                          {dynStat===null||dynStat===undefined?<span style={{color:'#cbd5e1',fontWeight:600}}>—</span>:typeof dynStat==='number'?dynStat.toLocaleString():dynStat}
+                        </span>
+                        <span style={{fontSize:10.5,fontWeight:600,color:'#64748b',lineHeight:1.2}}>{m.statLabel}</span>
+                      </div>
+                      <p style={{fontSize:11.5,color:'#64748b',lineHeight:1.5,fontWeight:500,margin:0}}>{m.desc}</p>
+                      <div style={{marginTop:'auto',display:'flex',alignItems:'center',gap:5,fontSize:11.5,fontWeight:700,color:'#274f73'}}>
+                        Open <I d={["M5 12h14","M12 5l7 7-7 7"]} size={12} color="#274f73"/>
+                      </div>
+                    </div>
+                  </div>;
+                })}
               </div>
 
               {/* File workflow — how to add a file to maine.gov/doe */}
@@ -663,16 +706,7 @@ function Portal(){
                 </div>
               </div>
 
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:18,paddingBottom:24}}>
-                {webModules.map((m,i)=>{
-                  const dynStat=m.statKey?webStats[m.statKey]:m.stat;
-                  return <ModuleCard key={m.id} m={{...m,stat:dynStat||m.stat}} delay={i*0.07}
-                    headerStyle={true}
-                    hovered={hovCard===m.id}
-                    onHover={()=>setHovCard(m.id)} onLeave={()=>setHovCard(null)}
-                    onClick={()=>{if(m.href)setWebSub(m.id);}}/>;
-                })}
-              </div>
+              <div style={{paddingBottom:24}}/>
             </div>
           </div>}
 

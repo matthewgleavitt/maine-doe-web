@@ -449,6 +449,7 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
     if(!form.intendedAudience) e.intendedAudience='Required';
     const descText=(form.description||'').replace(/<[^>]+>/g,'').trim();
     if(!descText) e.description='Required';
+    else if(descText.length>5000) e.description=`Please keep descriptions under 5,000 characters (currently ${descText.length.toLocaleString()}).`;
     if(!form.startDate) e.startDate='Required';
     if(!form.startTime) e.startTime='Required';
     if(!form.endTime) e.endTime='Required';
@@ -482,6 +483,15 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
         </Field>
         <Field label="Description" required hint="This is your primary marketing tool. Explain what people will learn, who should attend, and why." error={err.description}>
           <QuillEditor value={form.description} onChange={v=>uf('description',v)}/>
+          {(()=>{
+            const n=(form.description||'').replace(/<[^>]+>/g,'').trim().length;
+            const pct=n/5000;
+            const c=pct>1?'#b91c1c':pct>0.9?'#b45309':B.ink2;
+            return <div style={{display:'flex',justifyContent:'flex-end',alignItems:'center',gap:6,marginTop:6,fontSize:11.5,fontWeight:600,color:c}}>
+              {pct>0.9&&<span>{pct>1?'Over limit':'Getting close to limit'} — </span>}
+              <span style={{fontVariantNumeric:'tabular-nums'}}>{n.toLocaleString()} / 5,000 characters</span>
+            </div>;
+          })()}
         </Field>
       </Section>
 
