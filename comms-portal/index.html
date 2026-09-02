@@ -250,15 +250,8 @@ function Portal(){
           setQueueStatus(prev=>({...prev,youtube:{pending,total:j.rows.length}}));
         }
       }catch(e){}
-      try{
-        // Events auto-publish now — no "pending approval" queue.
-        // Show upcoming event count instead of a pending badge.
-        const r=await fetch(SCRIPT_URL+'?type=calendar&_='+Date.now());
-        const j=await r.json();
-        if(j.events){
-          setQueueStatus(prev=>({...prev,events:{pending:0,total:j.events.length}}));
-        }
-      }catch(e){}
+      // Events auto-publish. No queue, no dot in the sidebar — it's not a
+      // pending-review indicator, so it just looks like noise next to "Calendar".
       // Fetch moderation queue (via Apps Script proxy — Drupal endpoint isn't CORS-friendly cross-origin)
       try{
         const r=await fetch(SCRIPT_URL+'?type=moderation&_='+Date.now());
@@ -521,18 +514,91 @@ function Portal(){
                         fontSize:13,fontWeight:700,boxShadow:'0 4px 16px rgba(22,163,74,0.3)',border:'1.5px solid rgba(255,255,255,0.1)'}}>
                       <I d={icons.folder} size={16} color="#a7f3d0"/> File Uploads Folder
                     </a>
+                    <a href="https://www.maine.gov/doe/assets" target="_blank" rel="noopener noreferrer"
+                      style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,
+                        background:'rgba(255,255,255,0.08)',color:'#e2e8f0',textDecoration:'none',
+                        fontSize:13,fontWeight:700,border:'1.5px solid rgba(255,255,255,0.15)'}}>
+                      <I d={icons.layers} size={16} color="#c084fc"/> Assets & Resources
+                    </a>
+                    <a href="templates.html" onClick={e=>{e.preventDefault();nav('templates');}}
+                      style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,
+                        background:'rgba(255,255,255,0.08)',color:'#e2e8f0',textDecoration:'none',
+                        fontSize:13,fontWeight:700,border:'1.5px solid rgba(255,255,255,0.15)'}}>
+                      <I d={icons.copy} size={16} color="#f472b6"/> Templates
+                    </a>
                   </div>
                 </div>
               </div>
-              {/* Drupal user workflow — file naming, upload, linking */}
-              <div style={{background:'#ffffff',borderRadius:14,border:'2px solid #274f7330',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
-                <div style={{padding:'16px 22px',background:'linear-gradient(135deg,#0c1926,#162d44)',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
+              {/* Moderation Queue — always visible, always first. */}
+              <div style={{background:'#ffffff',borderRadius:14,border:'2.5px solid #274f7345',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
+                <div style={{padding:'16px 20px',background:'#182b3c',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                   <div style={{display:'flex',alignItems:'center',gap:10}}>
-                    <h3 style={{fontFamily:"'League Spartan','DM Sans',sans-serif",fontSize:15,fontWeight:800,color:'#42c3f7',margin:0,letterSpacing:'.03em',textTransform:'uppercase'}}>How to add a file to maine.gov/doe</h3>
+                    {modQueue.length>0&&<div style={{width:8,height:8,borderRadius:'50%',background:'#f59e0b',animation:'pulse 2s infinite'}}/>}
+                    <h3 style={{fontSize:15,fontWeight:700,color:'#42c3f7',margin:0}}>Pending Approvals</h3>
+                    {modQueue.length>0&&<span style={{fontSize:12,fontWeight:700,color:'#f59e0b',background:'rgba(245,158,11,0.15)',padding:'2px 10px',borderRadius:12,border:'1px solid rgba(245,158,11,0.3)'}}>{modQueue.length}</span>}
                   </div>
-                  <div style={{fontSize:11.5,fontWeight:700,color:'#94a3b8'}}>For Drupal editors</div>
+                  <div style={{display:'flex',alignItems:'center',gap:12}}>
+                    <a href="https://stateofmaine.sharepoint.com/:f:/t/DOETeam/IgA5Z26x-XMtR67bDYrVBg0eAcbc8G9dYzlzZkjdM1ovgvM?e=H75zYF" target="_blank" rel="noopener noreferrer"
+                      style={{fontSize:12,fontWeight:600,color:'#34d399',textDecoration:'none',display:'flex',alignItems:'center',gap:4}}>
+                      Website Uploads <I d={icons.ext} size={12} color="#34d399"/>
+                    </a>
+                    <a href="https://www.maine.gov/doe/admin/content/moderated" target="_blank" rel="noopener noreferrer"
+                      style={{fontSize:12,fontWeight:600,color:'#42c3f7',textDecoration:'none',display:'flex',alignItems:'center',gap:4}}>
+                      Open in Drupal <I d={icons.ext} size={12} color="#42c3f7"/>
+                    </a>
+                  </div>
+                </div>
+                {modQueue.length>0?<table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+                  <thead><tr style={{background:'#f8fafc'}}>
+                    <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Page</th>
+                    <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Author</th>
+                    <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Submitted</th>
+                    <th style={{padding:'10px 16px',textAlign:'center',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Status</th>
+                  </tr></thead>
+                  <tbody>
+                    {modQueue.map((item,i)=>(
+                      <tr key={i} style={{borderBottom:`1px solid #f1f5f9`}}>
+                        <td style={{padding:'12px 16px',fontWeight:600,color:'#182b3c'}}>
+                          {item.href?<a href={item.href} target="_blank" rel="noopener noreferrer" style={{color:'#274f73',textDecoration:'none'}}
+                            onMouseEnter={e=>e.currentTarget.style.color='#42c3f7'}
+                            onMouseLeave={e=>e.currentTarget.style.color='#274f73'}>{item.title}</a>:item.title}
+                        </td>
+                        <td style={{padding:'12px 16px'}}>
+                          {item.author?<span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 10px',borderRadius:8,
+                            background:'#274f730a',border:'1px solid #274f7318',fontSize:12,fontWeight:600,color:'#274f73'}}>
+                            {item.author.split('@')[0].split('.').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')}
+                          </span>:<span style={{fontSize:12,color:'#94a3b8'}}>—</span>}
+                        </td>
+                        <td style={{padding:'12px 16px',color:'#475569',fontWeight:500,fontSize:12,whiteSpace:'nowrap'}}>{item.date}</td>
+                        <td style={{padding:'12px 16px',textAlign:'center'}}>
+                          <span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'4px 12px',borderRadius:20,fontSize:11,fontWeight:700,
+                            background:'#fef3c7',color:'#92400e',border:'1.5px solid #fcd34d'}}>
+                            {item.state}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                :<div style={{padding:'32px 20px',textAlign:'center'}}>
+                  <div style={{fontSize:13,fontWeight:600,color:'#94a3b8'}}>No pending approvals</div>
+                  <div style={{fontSize:12,fontWeight:500,color:'#c2cdd8',marginTop:4}}>Pages submitted for review will appear here.</div>
+                </div>}
+              </div>
+
+              {/* File workflow — how to add a file to maine.gov/doe */}
+              <div style={{background:'#ffffff',borderRadius:14,border:'2px solid #274f7330',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
+                <div style={{padding:'16px 22px',background:'linear-gradient(135deg,#0c1926,#162d44)'}}>
+                  <h3 style={{fontFamily:"'League Spartan','DM Sans',sans-serif",fontSize:15,fontWeight:800,color:'#42c3f7',margin:0,letterSpacing:'.03em',textTransform:'uppercase'}}>How to add a file to maine.gov/doe</h3>
                 </div>
                 <div style={{padding:'20px 24px 24px'}}>
+                  {/* Word-paste warning — prevents the #1 support ticket. */}
+                  <div style={{display:'flex',alignItems:'flex-start',gap:12,padding:'14px 16px',background:'#8a2e1310',border:'1.5px solid #8a2e1340',borderLeft:'4px solid #8a2e13',borderRadius:8,marginBottom:20}}>
+                    <div style={{width:22,height:22,borderRadius:'50%',background:'#8a2e13',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:800,flexShrink:0,marginTop:1}}>!</div>
+                    <div style={{fontSize:13,color:'#182b3c',lineHeight:1.55,fontWeight:500}}>
+                      <strong style={{color:'#8a2e13',fontWeight:800}}>Do not copy and paste from Word.</strong> Word carries invisible styling that breaks page formatting. Paste as plain text (Ctrl+Shift+V / Cmd+Shift+V), or type directly into the Drupal editor.
+                    </div>
+                  </div>
                   {/* Step 1 — Naming */}
                   <div style={{display:'flex',gap:14,marginBottom:20}}>
                     <div style={{width:28,height:28,borderRadius:'50%',background:'#274f73',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:800,flexShrink:0}}>1</div>
@@ -600,95 +666,6 @@ function Portal(){
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Moderation Queue — always visible */}
-              <div style={{background:'#ffffff',borderRadius:14,border:'2.5px solid #274f7345',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
-                <div style={{padding:'16px 20px',background:'#182b3c',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                  <div style={{display:'flex',alignItems:'center',gap:10}}>
-                    {modQueue.length>0&&<div style={{width:8,height:8,borderRadius:'50%',background:'#f59e0b',animation:'pulse 2s infinite'}}/>}
-                    <h3 style={{fontSize:15,fontWeight:700,color:'#42c3f7',margin:0}}>Pending Approvals</h3>
-                    {modQueue.length>0&&<span style={{fontSize:12,fontWeight:700,color:'#f59e0b',background:'rgba(245,158,11,0.15)',padding:'2px 10px',borderRadius:12,border:'1px solid rgba(245,158,11,0.3)'}}>{modQueue.length}</span>}
-                  </div>
-                  <div style={{display:'flex',alignItems:'center',gap:12}}>
-                    <a href="https://stateofmaine.sharepoint.com/:f:/t/DOETeam/IgA5Z26x-XMtR67bDYrVBg0eAcbc8G9dYzlzZkjdM1ovgvM?e=H75zYF" target="_blank" rel="noopener noreferrer"
-                      style={{fontSize:12,fontWeight:600,color:'#34d399',textDecoration:'none',display:'flex',alignItems:'center',gap:4}}>
-                      Website Uploads <I d={icons.ext} size={12} color="#34d399"/>
-                    </a>
-                    <a href="https://www.maine.gov/doe/admin/content/moderated" target="_blank" rel="noopener noreferrer"
-                      style={{fontSize:12,fontWeight:600,color:'#42c3f7',textDecoration:'none',display:'flex',alignItems:'center',gap:4}}>
-                      Open in Drupal <I d={icons.ext} size={12} color="#42c3f7"/>
-                    </a>
-                  </div>
-                </div>
-                {modQueue.length>0?<table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
-                  <thead><tr style={{background:'#f8fafc'}}>
-                    <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Page</th>
-                    <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Author</th>
-                    <th style={{padding:'10px 16px',textAlign:'left',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Submitted</th>
-                    <th style={{padding:'10px 16px',textAlign:'center',fontWeight:700,color:'#475569',fontSize:11,textTransform:'uppercase',letterSpacing:'.03em'}}>Status</th>
-                  </tr></thead>
-                  <tbody>
-                    {modQueue.map((item,i)=>(
-                      <tr key={i} style={{borderBottom:`1px solid #f1f5f9`}}>
-                        <td style={{padding:'12px 16px',fontWeight:600,color:'#182b3c'}}>
-                          {item.href?<a href={item.href} target="_blank" rel="noopener noreferrer" style={{color:'#274f73',textDecoration:'none'}}
-                            onMouseEnter={e=>e.currentTarget.style.color='#42c3f7'}
-                            onMouseLeave={e=>e.currentTarget.style.color='#274f73'}>{item.title}</a>:item.title}
-                        </td>
-                        <td style={{padding:'12px 16px'}}>
-                          {item.author?<span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 10px',borderRadius:8,
-                            background:'#274f730a',border:'1px solid #274f7318',fontSize:12,fontWeight:600,color:'#274f73'}}>
-                            {item.author.split('@')[0].split('.').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')}
-                          </span>:<span style={{fontSize:12,color:'#94a3b8'}}>—</span>}
-                        </td>
-                        <td style={{padding:'12px 16px',color:'#475569',fontWeight:500,fontSize:12,whiteSpace:'nowrap'}}>{item.date}</td>
-                        <td style={{padding:'12px 16px',textAlign:'center'}}>
-                          <span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'4px 12px',borderRadius:20,fontSize:11,fontWeight:700,
-                            background:'#fef3c7',color:'#92400e',border:'1.5px solid #fcd34d'}}>
-                            {item.state}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                :<div style={{padding:'32px 20px',textAlign:'center'}}>
-                  <div style={{fontSize:13,fontWeight:600,color:'#94a3b8'}}>No pending approvals</div>
-                  <div style={{fontSize:12,fontWeight:500,color:'#c2cdd8',marginTop:4}}>Pages submitted for review will appear here.</div>
-                </div>}
-              </div>
-
-              {/* Drupal editor tips */}
-              <div style={{background:'#ffffff',borderRadius:14,border:'2.5px solid #274f7325',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
-                <div style={{padding:'14px 20px',background:'#f8fafc',display:'flex',alignItems:'center',gap:10,borderBottom:'1px solid #e2e8f0'}}>
-                  <div style={{width:28,height:28,borderRadius:8,background:'#274f7315',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                    <I d={icons.book} size={15} color="#274f73"/>
-                  </div>
-                  <h3 style={{fontSize:14,fontWeight:700,color:'#182b3c',margin:0}}>For Drupal editors</h3>
-                </div>
-                <div style={{padding:'18px 22px'}}>
-                  <div style={{marginBottom:16,padding:'12px 14px',borderRadius:10,background:'#eef7fd',border:'1px solid #42c3f725',borderLeft:'4px solid #42c3f7'}}>
-                    <div style={{fontSize:12,fontWeight:700,color:'#2da8d8',letterSpacing:'.05em',textTransform:'uppercase',marginBottom:6}}>Linking convention</div>
-                    <div style={{fontSize:13,color:'#334155',lineHeight:1.6,fontWeight:500}}>
-                      In content you submit, wrap the exact text you want hyperlinked in <strong>double asterisks</strong>. Example: <code style={{background:'#f1f5f9',padding:'2px 8px',borderRadius:5,color:'#182b3c',fontWeight:600,fontSize:12}}>You can learn more by checking out the **Multilingual Learners with Disability Policy Guide**.</code>
-                    </div>
-                  </div>
-
-                  <div style={{marginBottom:16,padding:'12px 14px',borderRadius:10,background:'#fef3c714',border:'1px solid #f59e0b30',borderLeft:'4px solid #f59e0b'}}>
-                    <div style={{fontSize:12,fontWeight:700,color:'#92400e',letterSpacing:'.05em',textTransform:'uppercase',marginBottom:6}}>Do not copy from Word</div>
-                    <div style={{fontSize:13,color:'#334155',lineHeight:1.6,fontWeight:500}}>
-                      Copy-pasting from Word into a Drupal page injects invisible formatting that overrides site defaults and breaks styling. Compose directly in Drupal or paste through plain-text (Cmd/Ctrl-Shift-V) first.
-                    </div>
-                  </div>
-
-                  <a href="https://www.maine.gov/doe/assets" target="_blank" rel="noopener noreferrer"
-                    style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 18px',borderRadius:10,
-                      background:'linear-gradient(135deg,#274f73,#1e3a56)',color:'#fff',textDecoration:'none',
-                      fontSize:13,fontWeight:700,boxShadow:'0 4px 16px rgba(39,79,115,0.25)'}}>
-                    <I d={icons.ext} size={15} color="#42c3f7"/> Drupal Editor Assets & Resources
-                  </a>
                 </div>
               </div>
 
