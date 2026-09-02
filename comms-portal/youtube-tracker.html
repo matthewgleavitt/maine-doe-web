@@ -49,6 +49,7 @@ const ic={
   search:"M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",
   x:["M18 6L6 18","M6 6l12 12"],
   spin:["M12 2v4","M12 18v4","M4.93 4.93l2.83 2.83","M16.24 16.24l2.83 2.83","M2 12h4","M18 12h4"],
+  trash:["M3 6h18","M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2","M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6","M10 11v6","M14 11v6"],
 };
 
 const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',green:'#16a34a'};
@@ -232,7 +233,7 @@ function YouTubeAnalytics({stats,loading,error,onReload}){
         <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
           <thead style={{background:'#e2e8f0'}}>
             <tr>
-              <th title="Select videos to request deletion" style={{padding:'10px 8px 10px 14px',width:36,textAlign:'center'}}></th>
+              <th title="Click the trashcan to select videos to request deletion" style={{padding:'10px 8px 10px 14px',width:52,textAlign:'center',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em'}}>Delete</th>
               <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em'}}>Video</th>
               <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:110}}>Published</th>
               <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:90}}>Views</th>
@@ -244,9 +245,20 @@ function YouTubeAnalytics({stats,loading,error,onReload}){
             :pagedVideos.map((v,i)=>{
               const isSel=selected.has(v.id);
               return <tr key={v.id||i} style={{borderTop:`1px solid ${B.border}25`,background:isSel?'#fef2f2':'transparent'}}>
-                <td style={{padding:'10px 8px 10px 14px'}}>
-                  <input type="checkbox" checked={isSel} onChange={()=>toggleSelect(v.id)}
-                    style={{cursor:'pointer',width:15,height:15,accentColor:'#ef4444'}}/>
+                <td style={{padding:'10px 8px 10px 14px',textAlign:'center'}}>
+                  <button onClick={()=>toggleSelect(v.id)}
+                    title={isSel?'Remove from deletion request':'Add to deletion request'}
+                    aria-label={isSel?'Remove from deletion request':'Add to deletion request'}
+                    aria-pressed={isSel}
+                    style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:30,height:30,borderRadius:8,cursor:'pointer',fontFamily:'inherit',
+                      border:`1.5px solid ${isSel?'#ef4444':B.border+'50'}`,
+                      background:isSel?'#ef4444':'transparent',
+                      color:isSel?'#ffffff':'#94a3b8',
+                      transition:'all .15s ease'}}
+                    onMouseEnter={e=>{if(!isSel){e.currentTarget.style.borderColor='#ef4444';e.currentTarget.style.color='#ef4444';e.currentTarget.style.background='#fef2f2';}}}
+                    onMouseLeave={e=>{if(!isSel){e.currentTarget.style.borderColor=B.border+'50';e.currentTarget.style.color='#94a3b8';e.currentTarget.style.background='transparent';}}}>
+                    <Sv d={ic.trash} size={15} color="currentColor"/>
+                  </button>
                 </td>
                 <td style={{padding:'10px 14px'}}>
                   <a href={v.url} target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:10,color:B.navy,textDecoration:'none',fontWeight:600}}>
