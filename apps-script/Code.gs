@@ -1507,7 +1507,10 @@ function getYouTubeStats() {
       var allVideoIds = [];
       var pageToken = null;
       var pagesFetched = 0;
-      var MAX_PAGES = 30; // 30 * 50 = 1500 videos ceiling.
+      // Ceiling only exists to guard against runaway loops if the API returns
+      // a bad nextPageToken. 200 pages * 50 = 10,000 videos, way past the
+      // channel's real size but bounded so a bug can't fry the quota.
+      var MAX_PAGES = 200;
       while (pagesFetched < MAX_PAGES) {
         var listArgs = {
           playlistId: result.channel.uploadsPlaylistId,

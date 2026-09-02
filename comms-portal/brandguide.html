@@ -238,15 +238,18 @@ function BrandGuide(){
           <SectionHead title="Typography (fonts)" sub="Four primary font types for graphics, promotional materials, and digital spaces. All fonts may be used in the various forms available (bold, italics, etc.)."/>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:16,marginBottom:20}}>
             {[{pill:'Body text',name:'Calibri',family:'Calibri, sans-serif',desc:'Emails, letters, body text. Sans-serif for accessibility — recommended by the U.S. Secretary of State\'s Office of Diversity and Inclusion.',preview:'The quick brown fox jumps over the lazy dog.',
-                bundled:'Installed with Microsoft Office. Bundled with any Microsoft 365 seat, so every DOE staff member already has it.',
-                external:{name:'Carlito',url:'https://fonts.google.com/specimen/Carlito',note:'Metrically-compatible free substitute — same character widths as Calibri, so layouts won\'t shift.'}},
+                bundled:'Installed with Microsoft Office. Every DOE staff member with Microsoft 365 already has it.',
+                // TODO: paste the SharePoint or maine.gov URL for the Calibri font file here
+                download:'#'},
               {pill:'Headers & graphics',name:'Century Gothic',family:'"Century Gothic", sans-serif',desc:'Primary font for graphics and promotional materials.',preview:'THE QUICK BROWN FOX',
                 bundled:'Installed with Microsoft Office. Every DOE staff member with Microsoft 365 already has it.',
-                external:{name:'Josefin Sans',url:'https://fonts.google.com/specimen/Josefin+Sans',note:'Closest free geometric-sans substitute for external partners.'}},
+                // TODO: paste the SharePoint or maine.gov URL for the Century Gothic font file here
+                download:'#'},
               {pill:'Headers & graphics',name:'League Spartan',family:'"League Spartan", sans-serif',desc:'Used alongside Century Gothic. Free on Google Fonts.',preview:'THE QUICK BROWN FOX',download:'https://fonts.google.com/specimen/League+Spartan'},
               {pill:'PowerPoint headers',name:'Arial Black',family:'"Arial Black", "Helvetica Black", sans-serif',desc:'Used for PowerPoint presentation headers.',preview:'THE QUICK BROWN FOX',weight:900,
-                bundled:'Installed with Windows and macOS. Standard on virtually every operating system.',
-                external:{name:'Anton',url:'https://fonts.google.com/specimen/Anton',note:'Free bold-display substitute if the target system somehow doesn\'t have Arial Black.'}}].map((f,i)=>(
+                bundled:'Installed with Windows and macOS. Standard on virtually every modern operating system.',
+                // TODO: paste the SharePoint or maine.gov URL for the Arial Black font file here
+                download:'#'}].map((f,i)=>(
               <Card key={i}><Pill>{f.pill}</Pill>
                 <div style={{fontSize:28,fontWeight:f.weight||700,color:B.navy,margin:'12px 0 4px',fontFamily:f.family}}>{f.name}</div>
                 <div style={{fontSize:15,fontFamily:f.family,fontWeight:f.weight||400,color:B.txtSec,margin:'0 0 8px',lineHeight:1.5}}>{f.preview}</div>
@@ -256,15 +259,11 @@ function BrandGuide(){
                   <span style={{width:5,height:5,borderRadius:'50%',background:'#16a34a'}}/>Already installed
                 </div>}
                 {f.bundled&&<p style={{fontSize:11.5,color:B.txtMute,lineHeight:1.55,margin:'0 0 12px',fontWeight:500}}>{f.bundled}</p>}
-                {f.download&&<a href={f.download} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:4,fontSize:12,fontWeight:700,color:'#ffffff',textDecoration:'none',padding:'8px 14px',borderRadius:8,border:`2px solid ${B.tealDk}`,background:B.tealDk,boxShadow:'0 3px 10px rgba(45,168,216,0.3)'}}>
+                {f.download&&f.download!=='#'&&<a href={f.download} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:4,fontSize:12,fontWeight:700,color:'#ffffff',textDecoration:'none',padding:'8px 14px',borderRadius:8,border:`2px solid ${B.tealDk}`,background:B.tealDk,boxShadow:'0 3px 10px rgba(45,168,216,0.3)'}}>
                   <I d={["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"]} size={14} color="#ffffff"/> Download font
                 </a>}
-                {f.external&&<div style={{marginTop:6,padding:'10px 12px',borderRadius:8,background:'#f8fafc',border:`1px solid ${B.border}55`}}>
-                  <div style={{fontSize:10,fontWeight:800,color:B.txtMute,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:4}}>For external apps</div>
-                  <a href={f.external.url} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:12.5,fontWeight:700,color:B.tealDk,textDecoration:'none'}}>
-                    <I d={["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"]} size={13} color={B.tealDk}/> Download {f.external.name} (free)
-                  </a>
-                  <p style={{fontSize:11.5,color:B.txtMute,lineHeight:1.5,margin:'6px 0 0',fontWeight:500}}>{f.external.note}</p>
+                {f.download==='#'&&<div style={{marginTop:4,padding:'8px 12px',borderRadius:8,background:'#fef3c714',border:'1px solid #f59e0b30',fontSize:11.5,color:'#78350f',fontWeight:600,lineHeight:1.5}}>
+                  Upload the font file and paste the URL into the brand guide code to enable the download button.
                 </div>}
               </Card>
             ))}
