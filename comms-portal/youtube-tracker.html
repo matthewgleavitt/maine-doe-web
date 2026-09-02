@@ -628,7 +628,7 @@ function App(){
 
           <Input label="What type of media are you sharing" required>
             <select value={form.mediaType} onChange={e=>uf('mediaType',e.target.value)} style={{width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:form.mediaType?B.txt:B.txtMute,background:B.wh,cursor:'pointer',outline:'none'}}>
-              <option value="">Select type...</option>
+              <option value="">Select Type...</option>
               {['Webinar','Training','Information Session','Promotional Media','Office Hours','Good News'].map(o=><option key={o} value={o}>{o}</option>)}
             </select>
           </Input>
