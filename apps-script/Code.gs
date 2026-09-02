@@ -1499,37 +1499,55 @@ function getYouTubeStats() {
     return { error: 'Data API call failed: ' + chErr.message + ' — check that YouTube Data API v3 is enabled as a service in this Apps Script project.' };
   }
 
-  // 2. Recent uploads via the uploads playlist, then video-level stats.
+  // 2. Paginate through the entire uploads playlist, then fetch video stats
+  // in batches. Cap at 1500 videos to bound execution time — the endpoint
+  // caches for an hour so a first-time cold path of a few seconds is fine.
   try {
     if (result.channel.uploadsPlaylistId) {
-      var playlistResp = YouTube.PlaylistItems.list('contentDetails,snippet', {
-        playlistId: result.channel.uploadsPlaylistId,
-        maxResults: 50,
-      });
-      var videoIds = (playlistResp.items || []).map(function(item) {
-        return item.contentDetails.videoId;
-      });
-      if (videoIds.length) {
-        // Videos.list takes up to 50 IDs comma-joined.
-        var videosResp = YouTube.Videos.list('snippet,statistics,contentDetails', {
-          id: videoIds.join(','),
+      var allVideoIds = [];
+      var pageToken = null;
+      var pagesFetched = 0;
+      var MAX_PAGES = 30; // 30 * 50 = 1500 videos ceiling.
+      while (pagesFetched < MAX_PAGES) {
+        var listArgs = {
+          playlistId: result.channel.uploadsPlaylistId,
+          maxResults: 50,
+        };
+        if (pageToken) listArgs.pageToken = pageToken;
+        var playlistResp = YouTube.PlaylistItems.list('contentDetails', listArgs);
+        (playlistResp.items || []).forEach(function(item) {
+          if (item.contentDetails && item.contentDetails.videoId) {
+            allVideoIds.push(item.contentDetails.videoId);
+          }
         });
-        result.videos = (videosResp.items || []).map(function(v) {
+        pagesFetched++;
+        if (!playlistResp.nextPageToken) break;
+        pageToken = playlistResp.nextPageToken;
+      }
+
+      // Videos.list takes up to 50 IDs per call — batch through them.
+      for (var i = 0; i < allVideoIds.length; i += 50) {
+        var batch = allVideoIds.slice(i, i + 50);
+        var videosResp = YouTube.Videos.list('snippet,statistics,contentDetails,status', {
+          id: batch.join(','),
+        });
+        (videosResp.items || []).forEach(function(v) {
           var thumb = '';
           if (v.snippet.thumbnails) {
             thumb = (v.snippet.thumbnails.medium || v.snippet.thumbnails.high || v.snippet.thumbnails.default || {}).url || '';
           }
-          return {
+          result.videos.push({
             id: v.id,
             title: v.snippet.title,
             publishedAt: v.snippet.publishedAt,
             thumbnail: thumb,
             duration: v.contentDetails ? v.contentDetails.duration : '',
+            privacy: v.status ? v.status.privacyStatus : '',
             views: Number(v.statistics.viewCount || 0),
             likes: Number(v.statistics.likeCount || 0),
             comments: Number(v.statistics.commentCount || 0),
             url: 'https://www.youtube.com/watch?v=' + v.id,
-          };
+          });
         });
       }
     }

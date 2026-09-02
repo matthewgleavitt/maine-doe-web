@@ -12,6 +12,7 @@
 body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideUpBar{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
 .portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
 .portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
@@ -75,6 +76,21 @@ function Field({value,onChange,placeholder,type,onFocus,onBlur}){
 function YouTubeAnalytics({stats,loading,error,onReload}){
   const [q,setQ]=useState('');
   const [sort,setSort]=useState('views');
+  const [selected,setSelected]=useState(new Set());
+
+  function toggleSelect(id){
+    setSelected(prev=>{const s=new Set(prev); if(s.has(id)) s.delete(id); else s.add(id); return s;});
+  }
+  function clearSelection(){ setSelected(new Set()); }
+  function requestDeletion(){
+    const list=(stats?.videos||[]).filter(v=>selected.has(v.id));
+    if(!list.length) return;
+    const body='Hi Matt,\r\n\r\nPlease delete the following '+list.length+' YouTube video'+(list.length===1?'':'s')+':\r\n\r\n'+
+      list.map(v=>'• '+v.title+'\r\n  '+v.url+'\r\n  '+v.views.toLocaleString()+' views · Published '+(v.publishedAt||'').split('T')[0]).join('\r\n\r\n')+
+      '\r\n\r\nReason: [please fill in]\r\n\r\nThanks!';
+    const subject='YouTube video deletion request: '+list.length+' video'+(list.length===1?'':'s');
+    window.location.href='mailto:matthew.g.leavitt@maine.gov?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  }
 
   function fmtDur(iso){
     // ISO 8601 duration "PT12M34S" → "12:34"
@@ -213,6 +229,15 @@ function YouTubeAnalytics({stats,loading,error,onReload}){
         <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
           <thead style={{position:'sticky',top:0,background:'#e2e8f0',zIndex:1}}>
             <tr>
+              <th style={{padding:'10px 8px 10px 14px',width:36,textAlign:'center'}}>
+                <input type="checkbox"
+                  checked={filtered.length>0&&filtered.slice(0,200).every(v=>selected.has(v.id))}
+                  onChange={e=>{
+                    const visible=filtered.slice(0,200).map(v=>v.id);
+                    setSelected(prev=>{const s=new Set(prev); if(e.target.checked) visible.forEach(id=>s.add(id)); else visible.forEach(id=>s.delete(id)); return s;});
+                  }}
+                  style={{cursor:'pointer',width:15,height:15,accentColor:'#ef4444'}}/>
+              </th>
               <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em'}}>Video</th>
               <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:110}}>Published</th>
               <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:90}}>Views</th>
@@ -221,9 +246,14 @@ function YouTubeAnalytics({stats,loading,error,onReload}){
             </tr>
           </thead>
           <tbody>
-            {filtered.length===0?<tr><td colSpan={5} style={{padding:'30px 20px',textAlign:'center',color:B.txtMute,fontWeight:500}}>{q?`No videos match "${q}"`:'No videos loaded'}</td></tr>
-            :filtered.slice(0,100).map((v,i)=>(
-              <tr key={v.id||i} style={{borderTop:`1px solid ${B.border}25`}}>
+            {filtered.length===0?<tr><td colSpan={6} style={{padding:'30px 20px',textAlign:'center',color:B.txtMute,fontWeight:500}}>{q?`No videos match "${q}"`:'No videos loaded'}</td></tr>
+            :filtered.slice(0,200).map((v,i)=>{
+              const isSel=selected.has(v.id);
+              return <tr key={v.id||i} style={{borderTop:`1px solid ${B.border}25`,background:isSel?'#fef2f2':'transparent'}}>
+                <td style={{padding:'10px 8px 10px 14px',textAlign:'center'}}>
+                  <input type="checkbox" checked={isSel} onChange={()=>toggleSelect(v.id)}
+                    style={{cursor:'pointer',width:15,height:15,accentColor:'#ef4444'}}/>
+                </td>
                 <td style={{padding:'10px 14px'}}>
                   <a href={v.url} target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:10,color:B.navy,textDecoration:'none',fontWeight:600}}>
                     {v.thumbnail&&<img src={v.thumbnail} alt="" style={{width:60,height:34,objectFit:'cover',borderRadius:4,flexShrink:0}}/>}
@@ -234,12 +264,30 @@ function YouTubeAnalytics({stats,loading,error,onReload}){
                 <td style={{padding:'10px 14px',textAlign:'right',fontWeight:800,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',color:'#ef4444'}}>{(v.views||0).toLocaleString()}</td>
                 <td style={{padding:'10px 14px',textAlign:'right',fontWeight:700,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',color:B.txtSec}}>{(v.likes||0).toLocaleString()}</td>
                 <td style={{padding:'10px 14px',textAlign:'right',fontWeight:700,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',color:B.txtSec}}>{(v.comments||0).toLocaleString()}</td>
-              </tr>
-            ))}
+              </tr>;
+            })}
           </tbody>
         </table>
       </div>
+      {filtered.length>200&&<div style={{marginTop:10,fontSize:11.5,color:B.txtMute,fontWeight:600,textAlign:'right'}}>Showing first 200 of {filtered.length.toLocaleString()} — narrow the search to see more</div>}
     </div>
+
+    {/* Floating selection action bar — pinned to bottom of viewport */}
+    {selected.size>0&&<div style={{position:'fixed',left:'50%',bottom:24,transform:'translateX(-50%)',zIndex:1000,display:'flex',alignItems:'center',gap:14,padding:'14px 20px',background:B.navy,borderRadius:999,boxShadow:'0 12px 32px rgba(12,25,38,0.35),0 4px 12px rgba(12,25,38,0.25)',border:'2px solid rgba(255,255,255,0.12)',animation:'slideUpBar .25s ease',maxWidth:'calc(100vw - 32px)'}}>
+      <span style={{display:'inline-flex',alignItems:'center',gap:8,color:'#fff',fontSize:14,fontWeight:700,whiteSpace:'nowrap'}}>
+        <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:'50%',background:'rgba(255,255,255,0.14)',fontSize:13,fontWeight:800}}>{selected.size}</span>
+        video{selected.size!==1?'s':''} selected
+      </span>
+      <div style={{width:1,height:26,background:'rgba(255,255,255,0.18)'}}/>
+      <button onClick={requestDeletion}
+        style={{padding:'10px 20px',borderRadius:999,border:'none',background:'#dc2626',color:'#fff',fontSize:13.5,fontWeight:800,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8,boxShadow:'0 4px 12px rgba(220,38,38,0.4)',whiteSpace:'nowrap',fontFamily:'inherit'}}>
+        <Sv d={["M3 6h18","M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"]} size={15} color="#fff"/> Request deletion
+      </button>
+      <button onClick={clearSelection}
+        style={{padding:'10px 16px',borderRadius:999,border:'1.5px solid rgba(255,255,255,0.22)',background:'transparent',color:'#fff',fontSize:13,fontWeight:600,cursor:'pointer',whiteSpace:'nowrap',fontFamily:'inherit'}}>
+        Clear
+      </button>
+    </div>}
   </div>;
 }
 
