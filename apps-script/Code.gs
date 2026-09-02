@@ -515,6 +515,12 @@ function doGet(e) {
   var type = (e && e.parameter && e.parameter.type) || 'pages';
   var days = (e && e.parameter && e.parameter.days) || '30';
   var cacheKey = 'portal_' + type + '_' + days;
+  // Per-user endpoints must include the identity in the cache key or one
+  // user's cached response gets served to the next user with the same TTL.
+  if (type === 'my_events') {
+    var _emailKey = String((e && e.parameter && e.parameter.email) || '').trim().toLowerCase();
+    cacheKey = 'portal_' + type + '_' + _emailKey + '_' + days;
+  }
   var result;
 
   // Check cache first (skip for web_stats and moderation which should always be fresh)
@@ -555,7 +561,7 @@ function doGet(e) {
         dimensions: [{ name: 'linkUrl' }, { name: 'customEvent:file_name' }, { name: 'pagePath' }],
         metrics: [{ name: 'eventCount' }],
         dimensionFilter: { filter: { fieldName: 'eventName', stringFilter: { matchType: 'EXACT', value: 'file_download' } } },
-        orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 5000 };
+        orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 10000 };
       var allFiles = formatFileData(queryGA4(fr));
       result = {
         rows: allFiles.slice(0, 500),

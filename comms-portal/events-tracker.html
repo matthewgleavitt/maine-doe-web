@@ -810,7 +810,9 @@ function App(){
     if(!e||e.indexOf('@')<1){setMessage({tone:'err',text:'Enter a valid email address.'});return;}
     setManageLoading(true);setMessage(null);
     try{
-      const r=await fetch(`${API}?type=my_events&email=${encodeURIComponent(e)}&_=${Date.now()}`);
+      // Always bypass server cache — data is small, per-user, and stale reads
+      // after an edit are confusing. TTL still catches accidental hammering.
+      const r=await fetch(`${API}?type=my_events&email=${encodeURIComponent(e)}&refresh=1&_=${Date.now()}`);
       const j=await r.json();
       if(j.error){setMessage({tone:'err',text:j.error});setMyEvents([]);}
       else{
