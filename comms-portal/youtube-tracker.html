@@ -145,7 +145,6 @@ function YouTubeAnalytics({stats,loading,error,onReload}){
   if(!stats) return null;
   const ch=stats.channel||{};
   const a=stats.analytics;
-  const partialErr=(stats.errors||[]).find(er=>er.source==='analytics');
 
   return <div style={{animation:'fadeIn 0.3s ease'}}>
     {/* Channel card */}
@@ -201,9 +200,7 @@ function YouTubeAnalytics({stats,loading,error,onReload}){
           </div>
         ))}
       </div>
-    </div>:partialErr?<div style={{padding:'14px 18px',background:'#fef3c714',border:'1.5px solid #f59e0b40',borderRadius:10,marginBottom:20,fontSize:12.5,color:B.txtSec,fontWeight:500,lineHeight:1.55}}>
-      <strong style={{color:B.navy}}>30-day trends aren't showing yet.</strong> {partialErr.hint||partialErr.error}
-    </div>:null}
+    </div>}
 
     {/* Video search + table */}
     <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:'18px 22px',marginBottom:20}}>
