@@ -540,9 +540,15 @@ function doGet(e) {
         dimensionFilter: { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'BEGINS_WITH', value: '/doe/' } } },
         orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 10000 };
       var allPages = formatPageData(queryGA4(pr));
-      // Ship only the top slice — the tile uses totalCount, the list only
+      // Ship only the top slice — the tile uses totals, the list only
       // needs the leaders. Full 10k rows would be ~2MB round-trip for nothing.
-      result = { rows: allPages.slice(0, 500), totalCount: allPages.length, days: days, type: 'pages' };
+      result = {
+        rows: allPages.slice(0, 500),
+        totalCount: allPages.length,
+        totalViews: allPages.reduce(function(s,p){return s+(p.views||0);}, 0),
+        totalUsers: allPages.reduce(function(s,p){return s+(p.users||0);}, 0),
+        days: days, type: 'pages'
+      };
 
     } else if (type === 'files') {
       var fr = { dateRanges: [dateRange],
@@ -551,7 +557,12 @@ function doGet(e) {
         dimensionFilter: { filter: { fieldName: 'eventName', stringFilter: { matchType: 'EXACT', value: 'file_download' } } },
         orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 5000 };
       var allFiles = formatFileData(queryGA4(fr));
-      result = { rows: allFiles.slice(0, 500), totalCount: allFiles.length, days: days, type: 'files' };
+      result = {
+        rows: allFiles.slice(0, 500),
+        totalCount: allFiles.length,
+        totalDownloads: allFiles.reduce(function(s,f){return s+(f.clicks||0);}, 0),
+        days: days, type: 'files'
+      };
 
     } else if (type === 'file_pages') {
       result = getFilePages();

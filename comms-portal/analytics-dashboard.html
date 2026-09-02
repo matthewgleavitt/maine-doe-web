@@ -100,6 +100,9 @@ function AnalyticsDashboard() {
   const [loading, setLoading] = useState(false);
   const [pageData, setPageData] = useState(null);
   const [fileData, setFileData] = useState(null);
+  // Totals shipped by the API cover the full 10k-row query. Tiles read from
+  // these so the numbers don't quietly reflect only the top-500 slice.
+  const [totals, setTotals] = useState({ pagesCount: 0, filesCount: 0, views: 0, users: 0, downloads: 0 });
   const [ownerMap, setOwnerMap] = useState({});
   const [owners, setOwners] = useState([]);
   const [nodeAliasMap, setNodeAliasMap] = useState({});
@@ -294,6 +297,7 @@ function AnalyticsDashboard() {
     if (cache.current[d]) {
       setPageData(cache.current[d].pages);
       setFileData(cache.current[d].files);
+      setTotals(cache.current[d].totals || {pagesCount:0,filesCount:0,views:0,users:0,downloads:0});
       setConnected(true);
       return;
     }
@@ -307,8 +311,15 @@ function AnalyticsDashboard() {
       if (pD.error) throw new Error(pD.error);
       const pageRows = pD.rows||[];
       const fileRows = fD.rows||[];
-      cache.current[d] = { pages: pageRows, files: fileRows };
-      setPageData(pageRows); setFileData(fileRows);
+      const t = {
+        pagesCount: pD.totalCount || pageRows.length,
+        filesCount: fD.totalCount || fileRows.length,
+        views: pD.totalViews != null ? pD.totalViews : pageRows.reduce((s,p)=>s+(p.views||0),0),
+        users: pD.totalUsers != null ? pD.totalUsers : pageRows.reduce((s,p)=>s+(p.users||0),0),
+        downloads: fD.totalDownloads != null ? fD.totalDownloads : fileRows.reduce((s,f)=>s+(f.clicks||0),0),
+      };
+      cache.current[d] = { pages: pageRows, files: fileRows, totals: t };
+      setPageData(pageRows); setFileData(fileRows); setTotals(t);
       setConnected(true);
       // Save 30-day page views to portal stats cache
       if(d==='30'){
@@ -385,14 +396,13 @@ function AnalyticsDashboard() {
         {tab === "overview" && <div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))",gap:14,marginBottom:28}}>
             {[
-              {l:"Page views",v:totalViews.toLocaleString(),icon:Ico.eye,c:B.teal},
-              {l:"Unique users",v:totalUsers.toLocaleString(),icon:Ico.users,c:B.navyMid},
-              {l:"File downloads",v:totalDownloads.toLocaleString(),icon:Ico.download,c:"#22c55e"},
-              // Counts come from GA4 (real traffic), not the Drupal API. Cap bumped
-              // server-side to 10k rows so every page/file that got any traffic in
-              // the window is counted.
-              {l:"Pages with traffic",v:pages.length.toLocaleString(),icon:Ico.file,c:B.steel},
-              {l:"Files downloaded",v:files.length.toLocaleString(),icon:Ico.folder,c:"#f59e0b"},
+              // Tiles read from server-computed totals (full 10k-row query),
+              // not from the top-500 slice used for the tables below.
+              {l:"Page views",v:(totals.views||totalViews).toLocaleString(),icon:Ico.eye,c:B.teal},
+              {l:"Unique users",v:(totals.users||totalUsers).toLocaleString(),icon:Ico.users,c:B.navyMid},
+              {l:"File downloads",v:(totals.downloads||totalDownloads).toLocaleString(),icon:Ico.download,c:"#22c55e"},
+              {l:"Pages with traffic",v:(totals.pagesCount||pages.length).toLocaleString(),icon:Ico.file,c:B.steel},
+              {l:"Files downloaded",v:(totals.filesCount||files.length).toLocaleString(),icon:Ico.folder,c:"#f59e0b"},
             ].map((m,i) => {
               const MIcon = m.icon;
               return <div key={i} style={{background:B.wh,borderRadius:14,padding:"20px 22px",border:`2px solid ${B.border}`,boxShadow:"0 2px 8px rgba(24,43,60,0.04)",position:"relative",overflow:"hidden"}}>
