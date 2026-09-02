@@ -450,7 +450,7 @@ function App(){
           </div>
           <div>
             <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0}}>YouTube Tracker</h1>
-            <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Submit, track, and manage video uploads</p>
+            <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Submit new videos, browse the full library, request deletion</p>
           </div>
         </div>
         <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
@@ -471,7 +471,7 @@ function App(){
     <div style={{display:'flex',gap:6,padding:'4px',background:'#0e1c2a',borderRadius:12,marginBottom:20,width:'fit-content'}}>
       {[
         {id:'submissions',label:'Submissions',icon:ic.upload},
-        {id:'analytics',label:'Analytics',icon:["M3 3v18h18","M18 17V9","M13 17V5","M8 17v-3"]},
+        {id:'analytics',label:'Library & Stats',icon:["M3 3v18h18","M18 17V9","M13 17V5","M8 17v-3"]},
       ].map(t=>{
         const active=tab===t.id;
         return <button key={t.id} onClick={()=>{setTab(t.id); if(t.id==='analytics'&&!ytStats&&!ytStatsLoading) loadYtStats();}}
