@@ -437,7 +437,7 @@ function ModalPreview({form}){
 }
 
 // ---- Full submission/edit form ----
-function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
+function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy,draftSavedAt,onSaveDraft}){
   const uf=(k,v)=>setForm(p=>({...p,[k]:v}));
   const err=useMemo(()=>{
     const e={};
@@ -552,13 +552,23 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
             <Check value={form.approved} onChange={v=>uf('approved',v)} label="I have checked with the appropriate DOE supervisor(s) and have approval to publish this event."/>
           </Field>
         </div>}
-        <div style={{display:'flex',gap:10,marginTop:20,flexWrap:'wrap',justifyContent:'space-between'}}>
-          <div style={{display:'flex',gap:10}}>
+        <div style={{display:'flex',gap:10,marginTop:20,flexWrap:'wrap',justifyContent:'space-between',alignItems:'center'}}>
+          <div style={{display:'flex',gap:10,flexWrap:'wrap',alignItems:'center'}}>
             <Btn onClick={onSubmit} disabled={!canSubmit||busy} variant={editing?'success':'primary'} icon={editing?ic.save:ic.check}>
               {busy?'Working...':(editing?'Save changes':'Submit event')}
             </Btn>
+            {onSaveDraft&&<Btn onClick={onSaveDraft} variant="ghost" icon={ic.save}>Save draft</Btn>}
             {editing&&onDelete&&<Btn onClick={onDelete} variant="danger" icon={ic.trash}>Cancel this event</Btn>}
           </div>
+          {onSaveDraft&&<div style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:11.5,color:B.ink3,fontWeight:600}}>
+            {draftSavedAt?<>
+              <span style={{width:7,height:7,borderRadius:'50%',background:'#16a34a',display:'inline-block'}}/>
+              Draft saved {formatRelativeTime(draftSavedAt)}
+            </>:<>
+              <span style={{width:7,height:7,borderRadius:'50%',background:'#cbd5e1',display:'inline-block'}}/>
+              Drafts auto-save as you type
+            </>}
+          </div>}
         </div>
         {Object.keys(err).length>0&&<Callout tone="warn" title="Fix these before submitting">
           {Object.keys(err).map(k=><div key={k}>• {k}: {err[k]}</div>)}
@@ -570,7 +580,7 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy}){
 }
 
 // ---- Submitter manage view ----
-function ManageMine({email,events,loading,showPast,setShowPast,onEdit,onCancel,onReload,onChangeEmail}){
+function ManageMine({email,events,loading,showPast,setShowPast,onEdit,onCancel,onReload,onChangeEmail,drafts,onContinueDraft,onDiscardDraft}){
   const todayISO=useMemo(()=>{
     var d=new Date();
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -589,6 +599,34 @@ function ManageMine({email,events,loading,showPast,setShowPast,onEdit,onCancel,o
   const badgeSty=(status)=>{const s=ST[status]||ST.Draft;return {display:'inline-block',padding:'3px 10px',borderRadius:20,background:s.bg,color:s.color,border:`1px solid ${s.border}`,fontSize:10.5,fontWeight:800,textTransform:'uppercase',letterSpacing:'.05em'};};
 
   return <div style={{marginTop:8}}>
+    {/* Drafts (browser-only, in-progress submissions) shown above submitted events */}
+    {drafts&&drafts.length>0&&<div style={{marginBottom:22}}>
+      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:12,paddingLeft:2}}>
+        <h3 style={{fontFamily:'League Spartan',fontSize:15,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.05em'}}>Drafts</h3>
+        <span style={{fontSize:10.5,fontWeight:800,color:'#92400e',background:'#fef3c7',border:'1.5px solid #fcd34d',padding:'3px 10px',borderRadius:20,textTransform:'uppercase',letterSpacing:'.06em'}}>{drafts.length} unsubmitted</span>
+      </div>
+      <div style={{fontSize:12,color:B.ink3,marginBottom:12,paddingLeft:2,fontWeight:500}}>Drafts are saved to this browser only — they won't sync to your phone or another computer.</div>
+      <div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {drafts.map(d=>{
+          const t=(d.form&&d.form.title||'').trim()||'Untitled draft';
+          const summary=[d.form&&d.form.focusArea,d.form&&d.form.eventType,d.form&&d.form.startDate].filter(Boolean).join(' · ')||'No details yet';
+          return <div key={d.id} style={{background:'#fffbeb',borderRadius:12,border:'1.5px solid #fcd34d70',padding:'14px 16px',display:'grid',gridTemplateColumns:'1fr auto',gap:12,alignItems:'center'}}>
+            <div style={{minWidth:0}}>
+              <div style={{fontSize:14.5,fontWeight:800,color:B.navy,marginBottom:2}}>{t}</div>
+              <div style={{fontSize:12,color:B.ink3,fontWeight:500}}>{summary}</div>
+              <div style={{fontSize:11,color:'#92400e',fontWeight:600,marginTop:4}}>Last edit {formatRelativeTime(d.updatedAt)}</div>
+            </div>
+            <div style={{display:'flex',gap:6,flexShrink:0}}>
+              <button onClick={()=>onContinueDraft(d)} style={{padding:'8px 14px',borderRadius:8,border:'none',background:B.navy,color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:6,fontFamily:'inherit'}}>
+                <Sv d={ic.edit} size={13} c="#fff"/> Continue
+              </button>
+              <button onClick={()=>{ if(window.confirm('Delete this draft? This can\'t be undone.')) onDiscardDraft(d.id); }} style={{padding:'8px 12px',borderRadius:8,border:`1.5px solid ${B.rust}55`,background:B.wh,color:B.rust,fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>Delete</button>
+            </div>
+          </div>;
+        })}
+      </div>
+    </div>}
+
     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12,marginBottom:14,paddingLeft:2}}>
       <div>
         <h3 style={{fontFamily:'League Spartan',fontSize:15,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.05em'}}>My events</h3>
@@ -696,6 +734,56 @@ function Tracker({rows,onEdit,onCancel,loading,adminMode}){
   </Card>;
 }
 
+// ---- Local drafts (browser-only, per-device) ----
+// Drafts persist to localStorage so an accidental tab close, browser crash,
+// or "I got interrupted" moment doesn't lose an in-progress event submission.
+// A follow-on could sync drafts to the Sheet backend for cross-device — for
+// now, drafts are tied to the browser they were started in.
+const DRAFTS_KEY='doe_events_drafts_v1';
+function loadDrafts(){
+  try{ const raw=localStorage.getItem(DRAFTS_KEY); if(!raw) return []; const arr=JSON.parse(raw); return Array.isArray(arr)?arr:[]; }
+  catch(e){ return []; }
+}
+function saveDraftsList(list){
+  try{ localStorage.setItem(DRAFTS_KEY, JSON.stringify(list)); }catch(e){}
+}
+function upsertDraft(id, formData){
+  const list=loadDrafts();
+  const now=Date.now();
+  const existing=list.find(d=>d.id===id);
+  const title=(formData.title||'').trim();
+  const descText=(formData.description||'').replace(/<[^>]+>/g,'').trim();
+  // A draft is only "meaningful" if the user has typed something beyond
+  // whatever the default EMPTY state fills in — otherwise every fresh open
+  // that gets abandoned would leave an "Untitled draft" clogging their list.
+  const meaningful=title||descText||formData.contactName||formData.venueName||formData.registerUrl;
+  if(!meaningful) return;
+  const payload={ id, form:formData, updatedAt:now, contactEmail:(formData.contactEmail||'').trim().toLowerCase() };
+  if(existing) Object.assign(existing, payload);
+  else list.push(payload);
+  saveDraftsList(list);
+}
+function removeDraft(id){
+  saveDraftsList(loadDrafts().filter(d=>d.id!==id));
+}
+function draftsForEmail(email){
+  const e=(email||'').trim().toLowerCase();
+  const list=loadDrafts().sort((a,b)=>b.updatedAt-a.updatedAt);
+  if(!e) return list;
+  // Match by contact email if the draft has one; drafts without a contact
+  // email (very early state) show up in every user's list — but those are
+  // rare because the meaningful-check above usually gates them out.
+  return list.filter(d=>!d.contactEmail||d.contactEmail===e);
+}
+function formatRelativeTime(ts){
+  const s=Math.max(0, Math.round((Date.now()-ts)/1000));
+  if(s<60) return 'just now';
+  if(s<3600) return Math.floor(s/60)+' min ago';
+  if(s<86400) return Math.floor(s/3600)+' hr ago';
+  const d=new Date(ts);
+  return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' at '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+}
+
 // ---- Main App ----
 function App(){
   const params=useMemo(()=>{const p={};new URLSearchParams(location.search).forEach((v,k)=>p[k]=v);return p;},[]);
@@ -718,8 +806,56 @@ function App(){
   const [myEvents,setMyEvents]=useState([]);
   const [manageLoading,setManageLoading]=useState(false);
   const [showPast,setShowPast]=useState(false);
+  // Draft state — a new draft ID is assigned when the form opens fresh (not
+  // editing an existing event). Auto-save writes to that ID; on Submit success
+  // the draft is removed. On close, the draft stays put so the user can resume.
+  const [activeDraftId,setActiveDraftId]=useState(null);
+  const [draftSavedAt,setDraftSavedAt]=useState(null);
+  const [draftsVersion,setDraftsVersion]=useState(0); // bump to re-read localStorage in child renders
 
   const isAdmin=!!adminToken;
+  // Recomputed whenever the drafts list changes (upsert/remove bump draftsVersion)
+  const manageDrafts=useMemo(()=>draftsForEmail(manageEmail),[manageEmail,draftsVersion]);
+
+  // Auto-save the current draft to localStorage — debounced 1.2s after the
+  // last keystroke so we don't hammer localStorage on every character. Only
+  // runs when the form is open AND we're not editing a live event.
+  useEffect(()=>{
+    if(!showForm||editing||!activeDraftId) return;
+    const t=setTimeout(()=>{
+      upsertDraft(activeDraftId, form);
+      // Only surface "saved" if the draft actually made it into localStorage
+      // (upsertDraft skips empty forms).
+      const stored=loadDrafts().find(d=>d.id===activeDraftId);
+      if(stored){
+        setDraftSavedAt(stored.updatedAt);
+        setDraftsVersion(v=>v+1);
+      }
+    },1200);
+    return ()=>clearTimeout(t);
+  },[form,showForm,editing,activeDraftId]);
+
+  // Helper: open a fresh form and start a new draft
+  function startNewSubmission(){
+    setForm(EMPTY);
+    setEditing(null);
+    setActiveDraftId('draft_'+Date.now()+'_'+Math.random().toString(36).slice(2,7));
+    setDraftSavedAt(null);
+    setShowForm(true);
+  }
+  // Helper: load an existing draft into the form
+  function continueDraft(draft){
+    setForm(draft.form||EMPTY);
+    setEditing(null);
+    setActiveDraftId(draft.id);
+    setDraftSavedAt(draft.updatedAt);
+    setShowForm(true);
+    setManageMode(false); // pop out of manage view when they start editing
+  }
+  function discardDraft(id){
+    removeDraft(id);
+    setDraftsVersion(v=>v+1);
+  }
 
   // Load edit mode from URL
   useEffect(()=>{
@@ -769,6 +905,9 @@ function App(){
         if(manageMode&&manageEmail){setShowForm(false);setEditing(null);loadMyEvents(manageEmail);}
       } else {
         setMessage({tone:'ok',text:'Event submitted and posted to the calendar. A confirmation with an edit link has been sent to '+(form.contactEmail||'the contact email')+'. (Save that email — for now it\'s the only way to edit later. A better edit flow is coming soon.)'});
+        // Successful submission — clear the draft so it doesn't linger in
+        // the Drafts list showing content that's now live on the calendar.
+        if(activeDraftId){ discardDraft(activeDraftId); setActiveDraftId(null); setDraftSavedAt(null); }
         setForm(EMPTY);setShowForm(false);
       }
     }catch(e){setMessage({tone:'err',text:'Network error - please try again.'});}
@@ -900,7 +1039,7 @@ function App(){
           </div>
         </div>
         <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
-          {!editMode&&<button onClick={()=>{setForm(EMPTY);setEditing(null);setShowForm(true);}} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'linear-gradient(135deg,#42c3f7,#0d7ba0)',color:'#fff',border:'none',fontSize:14,fontWeight:700,boxShadow:'0 4px 16px rgba(66,195,247,0.3)',cursor:'pointer'}}>
+          {!editMode&&<button onClick={startNewSubmission} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'linear-gradient(135deg,#42c3f7,#0d7ba0)',color:'#fff',border:'none',fontSize:14,fontWeight:700,boxShadow:'0 4px 16px rgba(66,195,247,0.3)',cursor:'pointer'}}>
             <Sv d={ic.plus} size={18} c="#fff"/> Submit new event
           </button>}
           {!editMode&&!isAdmin&&(manageMode?
@@ -939,7 +1078,10 @@ function App(){
       showPast={showPast} setShowPast={setShowPast}
       onEdit={editMyEvent} onCancel={cancelMyEvent}
       onReload={()=>loadMyEvents(manageEmail)}
-      onChangeEmail={()=>setShowManageDialog(true)}/>}
+      onChangeEmail={()=>setShowManageDialog(true)}
+      drafts={manageDrafts}
+      onContinueDraft={continueDraft}
+      onDiscardDraft={discardDraft}/>}
 
     {/* Default: public live calendar iframe */}
     {!isAdmin&&!manageMode&&!showForm&&!editMode&&<div style={{marginTop:8}}>
@@ -955,8 +1097,28 @@ function App(){
     </div>}
 
     {/* Form modal */}
-    <Modal open={showForm} onClose={()=>{if(!busy)setShowForm(false);}} title={editing?'Edit event':'Submit an event'} wide={true}>
-      <EventForm form={form} setForm={setForm} onSubmit={submit} onDelete={editing?()=>setConfirm({title:'Cancel this event?',body:'This marks the event as Cancelled. It shows with a strikethrough for a week, then hides.',onOk:del}):null} editing={!!editing} busy={busy}/>
+    <Modal open={showForm} onClose={()=>{
+      if(busy) return;
+      // Flush any pending edits to the draft before closing so a fast X-click
+      // (before the debounced auto-save fires) doesn't lose the last few
+      // keystrokes.
+      if(!editing&&activeDraftId){
+        upsertDraft(activeDraftId, form);
+        const stored=loadDrafts().find(d=>d.id===activeDraftId);
+        if(stored) setMessage({tone:'info',text:'Draft saved. You can pick it back up any time from "Edit my events".'});
+      }
+      setShowForm(false);
+    }} title={editing?'Edit event':'Submit an event'} wide={true}>
+      <EventForm form={form} setForm={setForm} onSubmit={submit}
+        onDelete={editing?()=>setConfirm({title:'Cancel this event?',body:'This marks the event as Cancelled. It shows with a strikethrough for a week, then hides.',onOk:del}):null}
+        editing={!!editing} busy={busy}
+        draftSavedAt={draftSavedAt}
+        onSaveDraft={editing?null:()=>{
+          if(!activeDraftId) return;
+          upsertDraft(activeDraftId, form);
+          const stored=loadDrafts().find(d=>d.id===activeDraftId);
+          if(stored){ setDraftSavedAt(stored.updatedAt); setDraftsVersion(v=>v+1); }
+        }}/>
     </Modal>
 
     {/* Confirm modal */}
