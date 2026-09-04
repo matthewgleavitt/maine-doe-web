@@ -330,6 +330,20 @@ function App(){
   const emptyForm={requestor:'',email:'',team:'',title:'',description:'',mediaType:'',playlist:'',privacy:'Public',engine:'No',engineCourse:'',notes:'',proofread:false};
   const [form,setForm]=useState(emptyForm);
   const uf=(k,v)=>setForm(p=>({...p,[k]:v}));
+  // Confirm-on-close: only prompt if the user has actually typed something.
+  // Short form → no draft persistence, just a "are you sure" gate.
+  function tryCloseForm(){
+    const dirty=Object.keys(emptyForm).some(k=>{
+      const v=form[k];
+      if(typeof v==='boolean') return v!==emptyForm[k];
+      return String(v||'').trim()!==String(emptyForm[k]||'').trim();
+    });
+    if(!dirty){ setShowForm(false); return; }
+    if(window.confirm('Are you sure you want to close this form? Your progress will not be saved.')){
+      setForm(emptyForm);
+      setShowForm(false);
+    }
+  }
 
   // Retry once with a delay if the first fetch fails or returns malformed
   // JSON — Apps Script cold-starts can chunk a response weirdly on the first
@@ -601,7 +615,7 @@ function App(){
 
     {/* ── SUBMIT FORM MODAL ── */}
     {showForm&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(6px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
-      onClick={e=>{if(e.target===e.currentTarget)setShowForm(false);}}>
+      onClick={e=>{if(e.target===e.currentTarget)tryCloseForm();}}>
       <div style={{background:B.wh,borderRadius:20,width:'100%',maxWidth:640,maxHeight:'90vh',overflow:'auto',boxShadow:'0 24px 80px rgba(0,0,0,0.2)',animation:'fadeIn 0.2s ease'}}>
         <div style={{padding:'24px 28px 16px',borderBottom:`2px solid ${B.border}30`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
           <div style={{display:'flex',alignItems:'center',gap:12}}>
@@ -613,7 +627,7 @@ function App(){
               <p style={{fontSize:12,color:B.txtMute,margin:0}}>After submitting, upload your video file to the correct Drive folder</p>
             </div>
           </div>
-          <button onClick={()=>setShowForm(false)} style={{background:'none',border:'none',cursor:'pointer',padding:4}}><Sv d={ic.x} size={20} color={B.txtMute}/></button>
+          <button onClick={tryCloseForm} style={{background:'none',border:'none',cursor:'pointer',padding:4}}><Sv d={ic.x} size={20} color={B.txtMute}/></button>
         </div>
         <div style={{padding:'20px 28px 28px'}}>
           {/* Copyright warning */}
@@ -710,7 +724,7 @@ function App(){
           {submitMsg&&<div style={{padding:'10px 16px',borderRadius:10,marginBottom:14,fontSize:13,fontWeight:600,background:submitMsg.ok?'#d1fae5':'#fee2e2',color:submitMsg.ok?'#065f46':'#991b1b',border:`1.5px solid ${submitMsg.ok?'#6ee7b7':'#fca5a5'}`}}>{submitMsg.t}</div>}
 
           <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
-            <button onClick={()=>setShowForm(false)} style={{padding:'12px 24px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:14,fontWeight:600,cursor:'pointer'}}>Cancel</button>
+            <button onClick={tryCloseForm} style={{padding:'12px 24px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:14,fontWeight:600,cursor:'pointer'}}>Cancel</button>
             <button onClick={handleSubmit} disabled={submitting} style={{padding:'12px 28px',borderRadius:10,border:'none',background:submitting?'#94a3b8':'linear-gradient(135deg,#ef4444,#dc2626)',color:'#fff',fontSize:14,fontWeight:700,cursor:submitting?'default':'pointer',display:'flex',alignItems:'center',gap:8}}>
               {submitting?<><Sv d={ic.spin} size={16} color="#fff" style={{animation:'spin 1s linear infinite'}}/> Submitting...</>:<><Sv d={ic.upload} size={16} color="#fff"/> Submit Video</>}
             </button>
