@@ -64,9 +64,11 @@ function bulkImportEvents_20260908() {
     'Submitter Email': 'sarah.decato@maine.gov',
     'Location Type': 'Virtual',
     'All Day': false,
+    'Start Time': '15:30',
+    'End Time': '16:30',
     'Register URL': 'https://mainestate.zoom.us/meeting/register/4c_8Q0aETC-2H7xkNrh8xw',
     'Register Text': 'Register',
-    'Admin Notes': 'Session times not specified in submission — confirm with Sarah.'
+    'Admin Notes': 'Start time 15:30 confirmed from the Zoom registration page. End time assumed 1 hour (16:30) — confirm with Sarah before publishing.'
   };
 
   var events = [
@@ -127,7 +129,7 @@ function bulkImportEvents_20260908() {
       'Register Text': 'Register',
       'Contact Name': 'Naomi Lopez', 'Contact Email': 'naomi.lopez@maine.gov',
       'Submitter Email': 'naomi.lopez@maine.gov',
-      'Admin Notes': 'Time not specified — assumed 9:00-13:30 to match the other two Green Schools gatherings. Confirm with Naomi.'
+      'Admin Notes': 'Time not specified in submission. Matt confirmed 9:00-13:30 (same as the other two Green Schools gatherings).'
     },
     // ── 4. ECSE Special Educators & Related Service Providers ─────
     Object.assign({}, ECSE, {
@@ -463,7 +465,7 @@ function bulkImportEvents_20260908() {
       'Intended Audience': 'Administrators, mental health professionals, school psychologists, school resource officers, counselors, nurses, and other members of a school\'s multidisciplinary threat assessment team',
       'Description': 'Meet with Dr. Jim Babcock and the BTAM Team to discuss anything related to CSTAG training, policy or implementation; violence prevention; and/or threat assessment & management.',
       'Description Teaser': 'Weekly Friday drop-in with Dr. Jim Babcock and the BTAM Team.',
-      'Start Date': '2026-09-04', 'Start Time': '09:30', 'End Date': '2026-09-04', 'End Time': '',
+      'Start Date': '2026-09-04', 'Start Time': '09:30', 'End Date': '2026-09-04', 'End Time': '10:30',
       'All Day': false,
       'Location Type': 'Virtual',
       'Register URL': 'https://mainestate.zoom.us/j/83021207124?pwd=kx6hlFDhLJ2QMucshQhXRuRJLLZ7x2.1',
@@ -472,23 +474,23 @@ function bulkImportEvents_20260908() {
       'Submitter Email': 'Rebekah.Maranatha@maine.gov',
       'Program / Initiative': 'Behavioral Threat Assessment & Management',
       'Additional Dates': extras(
-        ['2026-09-11','09:30',''],
-        ['2026-09-18','09:30',''],
-        ['2026-09-25','09:30',''],
-        ['2026-10-02','09:30',''],
-        ['2026-10-09','09:30',''],
-        ['2026-10-16','09:30',''],
-        ['2026-10-23','09:30',''],
-        ['2026-10-30','09:30',''],
-        ['2026-11-06','09:30',''],
-        ['2026-11-13','09:30',''],
-        ['2026-11-20','09:30',''],
-        ['2026-11-27','09:30',''],
-        ['2026-12-04','09:30',''],
-        ['2026-12-11','09:30',''],
-        ['2026-12-18','09:30','']
+        ['2026-09-11','09:30','10:30'],
+        ['2026-09-18','09:30','10:30'],
+        ['2026-09-25','09:30','10:30'],
+        ['2026-10-02','09:30','10:30'],
+        ['2026-10-09','09:30','10:30'],
+        ['2026-10-16','09:30','10:30'],
+        ['2026-10-23','09:30','10:30'],
+        ['2026-10-30','09:30','10:30'],
+        ['2026-11-06','09:30','10:30'],
+        ['2026-11-13','09:30','10:30'],
+        ['2026-11-20','09:30','10:30'],
+        ['2026-11-27','09:30','10:30'],
+        ['2026-12-04','09:30','10:30'],
+        ['2026-12-11','09:30','10:30'],
+        ['2026-12-18','09:30','10:30']
       ),
-      'Admin Notes': 'Rebekah asked us to tag as BTAM. No registration required — link is the Zoom join. Only start time given (9:30 a.m.) — end time missing, confirm with Rebekah.'
+      'Admin Notes': 'Rebekah asked us to tag as BTAM. No registration required — link is the Zoom join. Duration confirmed as 1 hour (9:30-10:30 a.m.).'
     }
   ];
 
