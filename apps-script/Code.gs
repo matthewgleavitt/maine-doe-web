@@ -467,6 +467,7 @@ function getTemplates() {
       source: String(row[4] || ''),
       url: String(row[5] || ''),
       thumbnail: String(row[6] || ''),
+      whenToUse: String(row[7] || ''), // column H — added so cards can show guidance next to the template
     });
   }
 

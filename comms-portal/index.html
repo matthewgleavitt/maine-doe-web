@@ -689,19 +689,24 @@ function Portal(){
                 })}
               </div>
 
+              {/* Drupal editing tips — the Word-paste warning lives here, separate
+                  from the file workflow because it applies to page editing, not file uploads. */}
+              <div style={{background:'#ffffff',borderRadius:14,border:'2px solid #8a2e1330',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
+                <div style={{padding:'12px 20px',background:'#8a2e13',display:'flex',alignItems:'center',gap:10}}>
+                  <div style={{width:22,height:22,borderRadius:'50%',background:'#ffffff',color:'#8a2e13',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:800,flexShrink:0}}>!</div>
+                  <h3 style={{fontFamily:"'League Spartan','DM Sans',sans-serif",fontSize:14,fontWeight:800,color:'#ffffff',margin:0,letterSpacing:'.03em',textTransform:'uppercase'}}>Editing on Drupal — heads up</h3>
+                </div>
+                <div style={{padding:'14px 20px',fontSize:13.5,color:'#182b3c',lineHeight:1.55,fontWeight:500}}>
+                  <strong style={{color:'#8a2e13',fontWeight:800}}>Do not copy and paste from Word.</strong> Word carries invisible styling that breaks page formatting. Paste as plain text (<code style={{background:'#f1f5f9',padding:'1px 6px',borderRadius:4,fontSize:12,fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace'}}>Ctrl+Shift+V</code> / <code style={{background:'#f1f5f9',padding:'1px 6px',borderRadius:4,fontSize:12,fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace'}}>Cmd+Shift+V</code>), or type directly into the Drupal editor.
+                </div>
+              </div>
+
               {/* File workflow — how to add a file to maine.gov/doe */}
               <div style={{background:'#ffffff',borderRadius:14,border:'2px solid #274f7330',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:20}}>
                 <div style={{padding:'16px 22px',background:'linear-gradient(135deg,#0c1926,#162d44)'}}>
                   <h3 style={{fontFamily:"'League Spartan','DM Sans',sans-serif",fontSize:15,fontWeight:800,color:'#42c3f7',margin:0,letterSpacing:'.03em',textTransform:'uppercase'}}>How to add a file to maine.gov/doe</h3>
                 </div>
                 <div style={{padding:'20px 24px 24px'}}>
-                  {/* Word-paste warning — prevents the #1 support ticket. */}
-                  <div style={{display:'flex',alignItems:'flex-start',gap:12,padding:'14px 16px',background:'#8a2e1310',border:'1.5px solid #8a2e1340',borderLeft:'4px solid #8a2e13',borderRadius:8,marginBottom:20}}>
-                    <div style={{width:22,height:22,borderRadius:'50%',background:'#8a2e13',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:800,flexShrink:0,marginTop:1}}>!</div>
-                    <div style={{fontSize:13,color:'#182b3c',lineHeight:1.55,fontWeight:500}}>
-                      <strong style={{color:'#8a2e13',fontWeight:800}}>Do not copy and paste from Word.</strong> Word carries invisible styling that breaks page formatting. Paste as plain text (Ctrl+Shift+V / Cmd+Shift+V), or type directly into the Drupal editor.
-                    </div>
-                  </div>
                   {/* Step 1 — Naming */}
                   <div style={{display:'flex',gap:14,marginBottom:20}}>
                     <div style={{width:28,height:28,borderRadius:'50%',background:'#274f73',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:800,flexShrink:0}}>1</div>

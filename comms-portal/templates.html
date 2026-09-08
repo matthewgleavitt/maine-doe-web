@@ -161,37 +161,43 @@ function App(){
           {items.map((t,i)=>{
             const cc=CAT_COLORS[t.category]||{bg:'#f1f5f9',color:'#334155',border:'#e2e8f0'};
             const src=SOURCE_ICONS[t.source]||SOURCE_ICONS['Download'];
-            return <div key={i} style={{background:B.wh,borderRadius:16,overflow:'hidden',border:`2.5px solid ${cc.border}45`,
-              boxShadow:'0 2px 12px rgba(0,0,0,0.04)',transition:'all 0.2s',cursor:'pointer'}}
+            const iconD=t.category==='Design'?ic.image:t.category==='Presentations'?ic.monitor:ic.file;
+            return <div key={i} style={{background:B.wh,borderRadius:14,overflow:'hidden',border:`1.5px solid ${cc.border}55`,
+              boxShadow:'0 2px 10px rgba(0,0,0,0.04)',transition:'all 0.2s',cursor:'pointer',display:'flex',flexDirection:'column'}}
               onClick={()=>window.open(t.url,'_blank')}
-              onMouseEnter={e=>{e.currentTarget.style.borderColor=cc.border;e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow=`0 12px 40px ${cc.border}20`;}}
-              onMouseLeave={e=>{e.currentTarget.style.borderColor=cc.border+'45';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.04)';}}>
+              onMouseEnter={e=>{e.currentTarget.style.borderColor=cc.border;e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow=`0 12px 32px ${cc.border}22`;}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=cc.border+'55';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 2px 10px rgba(0,0,0,0.04)';}}>
 
-              {/* Thumbnail or placeholder */}
-              {t.thumbnail?
-                <div style={{height:140,background:`url(${t.thumbnail}) center/cover`,borderBottom:`2px solid ${cc.border}30`}}/>
-              :
-                <div style={{height:100,background:`linear-gradient(135deg,${cc.bg},${cc.border}30)`,display:'flex',alignItems:'center',justifyContent:'center',borderBottom:`2px solid ${cc.border}30`}}>
-                  <Sv d={t.category==='Design'?ic.image:t.category==='Presentations'?ic.monitor:ic.file} size={32} color={cc.border}/>
+              {/* Top strip: category color band + inline icon + title */}
+              <div style={{padding:'14px 16px 12px',borderBottom:`1px solid ${cc.border}30`,background:`linear-gradient(180deg, ${cc.bg}55, transparent)`}}>
+                <div style={{display:'flex',alignItems:'flex-start',gap:12}}>
+                  <div style={{width:36,height:36,borderRadius:10,background:cc.bg,border:`1.5px solid ${cc.border}55`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                    <Sv d={iconD} size={18} color={cc.color}/>
+                  </div>
+                  <div style={{minWidth:0,flex:1}}>
+                    <h4 style={{fontSize:15,fontWeight:800,color:B.navy,margin:'0 0 4px',lineHeight:1.25,letterSpacing:'-0.005em'}}>{t.name}</h4>
+                    <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                      <span style={{fontSize:10,fontWeight:800,padding:'2px 8px',borderRadius:16,background:cc.bg,color:cc.color,border:`1px solid ${cc.border}`,textTransform:'uppercase',letterSpacing:'.05em'}}>{t.category}</span>
+                      <span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:16,background:'#f8fafc',color:B.txtSec,border:`1px solid #e2e8f0`}}>{t.source}</span>
+                    </div>
+                  </div>
                 </div>
-              }
+              </div>
 
-              <div style={{padding:'16px 18px 18px'}}>
-                {/* Category + Source pills */}
-                <div style={{display:'flex',gap:6,marginBottom:10,flexWrap:'wrap'}}>
-                  <span style={{fontSize:10,fontWeight:700,padding:'3px 10px',borderRadius:16,background:cc.bg,color:cc.color,border:`1px solid ${cc.border}`}}>{t.category}</span>
-                  <span style={{fontSize:10,fontWeight:700,padding:'3px 10px',borderRadius:16,background:'#f1f5f9',color:B.txtSec,border:`1px solid #e2e8f0`}}>{t.source}</span>
-                </div>
+              {/* Body */}
+              <div style={{padding:'12px 16px 14px',display:'flex',flexDirection:'column',gap:10,flex:1}}>
+                {t.description&&<p style={{fontSize:12.5,color:B.txtSec,lineHeight:1.5,margin:0,fontWeight:500}}>{t.description}</p>}
 
-                {/* Title */}
-                <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'0 0 6px',lineHeight:1.3}}>{t.name}</h4>
+                {/* When to use — only renders if the Sheet has a value in column H */}
+                {t.whenToUse&&<div style={{background:'#f8fafc',border:`1px solid ${cc.border}30`,borderLeft:`3px solid ${cc.border}`,borderRadius:6,padding:'8px 12px'}}>
+                  <div style={{fontSize:9.5,fontWeight:800,color:cc.color,letterSpacing:'.09em',textTransform:'uppercase',marginBottom:3}}>When to use</div>
+                  <div style={{fontSize:12,color:B.navy,fontWeight:500,lineHeight:1.5}}>{t.whenToUse}</div>
+                </div>}
 
-                {/* Description */}
-                {t.description&&<p style={{fontSize:12,color:B.txtMute,lineHeight:1.5,margin:'0 0 14px',fontWeight:500}}>{t.description}</p>}
-
-                {/* Action button */}
-                <div style={{display:'flex',alignItems:'center',gap:6,fontSize:12,fontWeight:700,color:src.color}}>
-                  <Sv d={src.icon} size={14} color={src.color}/> {src.label}
+                {/* Open action — sits at the bottom */}
+                <div style={{marginTop:'auto',paddingTop:6,display:'flex',alignItems:'center',gap:6,fontSize:12,fontWeight:700,color:src.color}}>
+                  <Sv d={src.icon} size={13} color={src.color}/> {src.label}
+                  <span style={{marginLeft:'auto',fontSize:14,fontWeight:600}}>→</span>
                 </div>
               </div>
             </div>;
