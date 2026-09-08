@@ -2479,6 +2479,7 @@ function _rowToEvent(row, idx, status) {
     id: get('Event ID') || 'evt_' + Utilities.getUuid().substring(0, 8),
     title: get('Title'),
     focusArea: get('Focus Area'),
+    programInitiative: get('Program / Initiative'),
     type: get('Type'),
     startDate: _isoDate(getRaw('Start Date')),
     startTime: _isoTime(getRaw('Start Time')),
@@ -2835,7 +2836,7 @@ function updateEvent(id, token, fields) {
   // Editable field whitelist. Never let a user rewrite Edit Token or Event ID.
   var editable = [
     'Contact Name', 'Contact Email', 'Contact Phone', 'Submitter Email',
-    'Focus Area', 'Title', 'Type',
+    'Focus Area', 'Program / Initiative', 'Title', 'Type',
     'Intended Audience', 'Description', 'Description Teaser',
     'Location Type', 'Venue Name', 'Venue Address',
     'Register URL', 'Register Text', 'Materials URL', 'Recording URL',
@@ -3062,7 +3063,7 @@ function submitNewEvent(fields) {
   // Copy every allowed field from the submission body.
   var allowed = [
     'Contact Name', 'Contact Email', 'Contact Phone', 'Submitter Email',
-    'Focus Area', 'Title', 'Type',
+    'Focus Area', 'Program / Initiative', 'Title', 'Type',
     'Intended Audience', 'Description', 'Description Teaser',
     'Location Type', 'Venue Name', 'Venue Address',
     'Register URL', 'Register Text', 'Materials URL',

@@ -188,9 +188,12 @@ function QuillEditor({value,onChange}){
 }
 
 // ---- Utils ----
+// Program / Initiative options — extend as new sub-programs come online.
+// Optional field: when set, calendar widgets can filter to just this program.
+const PROGRAMS=['Behavioral Threat Assessment & Management','McKinney-Vento'];
 const EMPTY={
   contactName:'',contactEmail:'',
-  focusArea:'',eventType:'',title:'',intendedAudience:'',
+  focusArea:'',programInitiative:'',eventType:'',title:'',intendedAudience:'',
   description:'',
   startDate:'',endDate:'',startTime:'',endTime:'',allDay:false,
   locationType:'',venueName:'',venueAddress:'',
@@ -243,7 +246,7 @@ function buildRecurrencePattern(form){
 function serialize(form){
   return {
     'Contact Name':form.contactName,'Contact Email':form.contactEmail,
-    'Focus Area':form.focusArea,'Type':form.eventType,'Title':form.title,
+    'Focus Area':form.focusArea,'Program / Initiative':form.programInitiative||'','Type':form.eventType,'Title':form.title,
     'Intended Audience':form.intendedAudience,
     'Description':form.description,'Description Teaser':autoTeaser(form.description),
     'Start Date':form.startDate,'End Date':form.endDate||form.startDate,
@@ -261,7 +264,7 @@ function deserialize(rec){
   const pat=(rec['Recurrence Pattern']||'').toLowerCase().trim();
   const f={...EMPTY};
   f.contactName=rec['Contact Name']||'';f.contactEmail=rec['Contact Email']||'';
-  f.focusArea=rec['Focus Area']||'';f.eventType=rec['Type']||'';f.title=rec['Title']||'';
+  f.focusArea=rec['Focus Area']||'';f.programInitiative=rec['Program / Initiative']||'';f.eventType=rec['Type']||'';f.title=rec['Title']||'';
   f.intendedAudience=rec['Intended Audience']||'';
   f.description=rec['Description']||'';
   f.startDate=(rec['Start Date']||'').substring(0,10);f.endDate=(rec['End Date']||'').substring(0,10);
@@ -479,6 +482,9 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy,draft
           <Field label="Focus area" required error={err.focusArea}><Sel value={form.focusArea} onChange={v=>uf('focusArea',v)} options={FOCUS_AREAS} placeholder="Select focus area..."/></Field>
           <Field label="Event type" required error={err.eventType}><Sel value={form.eventType} onChange={v=>uf('eventType',v)} options={EVENT_TYPES} placeholder="Select type..."/></Field>
         </Row>
+        <Field label="Program / initiative" hint="Optional. Use only when a sub-team wants their own calendar widget. Most events leave this blank.">
+          <Sel value={form.programInitiative} onChange={v=>uf('programInitiative',v)} options={PROGRAMS} placeholder="— None —"/>
+        </Field>
         <Field label="Intended audience" required hint="Who's this for? e.g., K-12 educators, District administrators" error={err.intendedAudience}>
           <Text value={form.intendedAudience} onChange={v=>uf('intendedAudience',v)} placeholder="Educators, administrators..."/>
         </Field>
