@@ -239,15 +239,15 @@ function BrandGuide(){
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:16,marginBottom:20}}>
             {[{pill:'Body text',name:'Calibri',family:'Calibri, sans-serif',desc:'Emails, letters, body text. Sans-serif for accessibility — recommended by the U.S. Secretary of State\'s Office of Diversity and Inclusion.',preview:'The quick brown fox jumps over the lazy dog.',
                 bundled:'Installed with Microsoft Office. Every DOE staff member with Microsoft 365 already has it.',
-                download:'https://www.maine.gov/doe/sites/maine.gov.doe/files/calibri.zip'},
+                download:'https://gateway.maine.gov/doe/communications/files/calibri.zip'},
               {pill:'Headers & graphics',name:'Century Gothic',family:'"Century Gothic", sans-serif',desc:'Primary font for graphics and promotional materials.',preview:'THE QUICK BROWN FOX',
                 bundled:'Installed with Microsoft Office. Every DOE staff member with Microsoft 365 already has it.',
-                download:'https://www.maine.gov/doe/sites/maine.gov.doe/files/century-gothic.zip'},
+                download:'https://gateway.maine.gov/doe/communications/files/century-gothic.zip'},
               {pill:'Headers & graphics',name:'League Spartan',family:'"League Spartan", sans-serif',desc:'Used alongside Century Gothic. Free on Google Fonts.',preview:'THE QUICK BROWN FOX',
-                download:'https://www.maine.gov/doe/sites/maine.gov.doe/files/league-spartan.zip'},
+                download:'https://gateway.maine.gov/doe/communications/files/league-spartan.zip'},
               {pill:'PowerPoint headers',name:'Arial Black',family:'"Arial Black", "Helvetica Black", sans-serif',desc:'Used for PowerPoint presentation headers.',preview:'THE QUICK BROWN FOX',weight:900,
                 bundled:'Installed with Windows and macOS. Standard on virtually every modern operating system.',
-                download:'https://www.maine.gov/doe/sites/maine.gov.doe/files/arial-black.zip'}].map((f,i)=>(
+                download:'https://gateway.maine.gov/doe/communications/files/arial-black.zip'}].map((f,i)=>(
               <Card key={i}><Pill>{f.pill}</Pill>
                 <div style={{fontSize:28,fontWeight:f.weight||700,color:B.navy,margin:'12px 0 4px',fontFamily:f.family}}>{f.name}</div>
                 <div style={{fontSize:15,fontFamily:f.family,fontWeight:f.weight||400,color:B.txtSec,margin:'0 0 8px',lineHeight:1.5}}>{f.preview}</div>
