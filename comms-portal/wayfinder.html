@@ -1,0 +1,1293 @@
+<title>Portal Wayfinder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #182b3c;
+    --navy-lift: #22384d;
+    --midblue: #274f73;
+    --teal: #42c3f7;
+    --teal-ink: #0d7ba0;
+    --mint: #34d399;
+    --warm-white: #eee6df;
+    --rust: #8a2e13;
+    --page: #f4f2ee;
+    --card: #ffffff;
+    --ink: #182b3c;
+    --ink-2: #334155;
+    --ink-3: #64748b;
+    --rule: #d9d3ca;
+    --shadow-sm: 0 1px 3px rgba(24,43,60,0.06);
+    --shadow-md: 0 6px 24px rgba(24,43,60,0.08);
+    --shadow-lg: 0 20px 60px rgba(24,43,60,0.14);
+    --focus: 0 0 0 3px rgba(66,195,247,0.32);
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --display: 'League Spartan', 'Inter', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page: #0d1620;
+      --card: #142131;
+      --ink: #e9eef4;
+      --ink-2: #b8c4d1;
+      --ink-3: #8195a8;
+      --rule: #253649;
+      --warm-white: #22384d;
+      --shadow-md: 0 6px 24px rgba(0,0,0,0.35);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #0d1620;
+    --card: #142131;
+    --ink: #e9eef4;
+    --ink-2: #b8c4d1;
+    --ink-3: #8195a8;
+    --rule: #253649;
+    --warm-white: #22384d;
+    --shadow-md: 0 6px 24px rgba(0,0,0,0.35);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .shell {
+    max-width: 780px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+  }
+  .brand {
+    padding: 24px 4px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .brand .mark {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--navy), var(--midblue));
+    color: var(--teal);
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(24,43,60,0.25);
+  }
+  .brand .who {
+    flex: 1;
+    min-width: 0;
+  }
+  .brand h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .brand .sub {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .brand .pill {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--mint) 18%, transparent);
+    color: color-mix(in srgb, var(--mint) 60%, var(--ink));
+    border: 1px solid color-mix(in srgb, var(--mint) 35%, transparent);
+    white-space: nowrap;
+  }
+  .thread {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 22px 0 12px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+  .msg {
+    max-width: 92%;
+    padding: 12px 15px;
+    border-radius: 14px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    animation: appear 0.22s ease;
+    word-wrap: break-word;
+  }
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+  .msg.user {
+    align-self: flex-end;
+    background: var(--navy);
+    color: #f6f8fb;
+    border-radius: 14px 14px 4px 14px;
+    font-weight: 500;
+  }
+  :root[data-theme="dark"] .msg.user,
+  :root:not([data-theme="light"]) .msg.user {
+    background: var(--midblue);
+  }
+  .msg.bot {
+    align-self: flex-start;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    color: var(--ink);
+    border-radius: 4px 14px 14px 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 0;
+    overflow: hidden;
+    max-width: 96%;
+  }
+  .msg.bot .avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 15px 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .msg.bot .avatar-row .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 25%, transparent);
+  }
+  .msg.bot .body {
+    padding: 0 15px 12px;
+  }
+  .msg.bot .pointer {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--teal-ink);
+    background: color-mix(in srgb, var(--teal) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--teal) 30%, transparent);
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin: 0 0 12px;
+    text-transform: uppercase;
+  }
+  .msg.bot .quote {
+    border-left: 3px solid var(--teal);
+    padding: 4px 0 4px 14px;
+    margin: 0 0 10px;
+    color: var(--ink-2);
+    font-size: 14px;
+  }
+  .msg.bot .quote strong {
+    color: var(--ink);
+  }
+  .msg.bot .quote em {
+    color: var(--ink-3);
+    font-style: normal;
+    display: block;
+    font-size: 12.5px;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .msg.bot ul { margin: 6px 0 10px; padding-left: 22px; }
+  .msg.bot li { margin: 2px 0; }
+  .msg.bot a { color: var(--teal-ink); text-decoration: none; font-weight: 600; word-break: break-all; }
+  .msg.bot a:hover { text-decoration: underline; }
+  .msg.bot code {
+    background: color-mix(in srgb, var(--midblue) 14%, transparent);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: ui-monospace, Menlo, monospace;
+    color: var(--ink);
+  }
+  .msg.bot .also {
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule);
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+  .msg.bot .also .chip {
+    display: inline-block;
+    margin: 4px 6px 0 0;
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-2);
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all 0.15s;
+  }
+  .msg.bot .also .chip:hover {
+    background: color-mix(in srgb, var(--teal) 12%, transparent);
+    border-color: color-mix(in srgb, var(--teal) 40%, transparent);
+    color: var(--teal-ink);
+  }
+  .msg.bot.refusal {
+    background: color-mix(in srgb, var(--rust) 6%, var(--card));
+    border-color: color-mix(in srgb, var(--rust) 30%, transparent);
+  }
+  .msg.bot.refusal .avatar-row .dot { background: var(--rust); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rust) 22%, transparent); }
+  .typing {
+    align-self: flex-start;
+    display: flex;
+    gap: 4px;
+    padding: 12px 15px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 4px 14px 14px 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .typing span {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--ink-3);
+    animation: bob 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bob {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+  .starter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .starter h2 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 24px;
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .starter p {
+    color: var(--ink-3);
+    margin: 0;
+    max-width: 44ch;
+    font-size: 14px;
+  }
+  .starter .hints {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .starter .hint {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    color: var(--ink-2);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s;
+    font-family: var(--sans);
+  }
+  .starter .hint:hover {
+    border-color: color-mix(in srgb, var(--teal) 45%, transparent);
+    color: var(--teal-ink);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  .composer {
+    position: sticky;
+    bottom: 0;
+    padding: 12px 0 20px;
+    background: linear-gradient(to top, var(--page) 70%, transparent);
+  }
+  .composer .box {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    background: var(--card);
+    border: 1.5px solid var(--rule);
+    border-radius: 14px;
+    padding: 6px 6px 6px 16px;
+    box-shadow: var(--shadow-md);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .composer .box:focus-within {
+    border-color: var(--teal);
+    box-shadow: var(--shadow-md), var(--focus);
+  }
+  .composer textarea {
+    flex: 1;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 10px 0;
+    min-height: 24px;
+    max-height: 120px;
+    font-weight: 500;
+  }
+  .composer textarea::placeholder { color: var(--ink-3); }
+  .composer button.send {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    background: var(--navy);
+    color: var(--teal);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .composer button.send:hover { background: var(--midblue); }
+  .composer button.send:active { transform: scale(0.94); }
+  .composer button.send:disabled { opacity: 0.4; cursor: not-allowed; }
+  .composer button.send svg { width: 18px; height: 18px; }
+  .composer .foot {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--ink-3);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+</style>
+<div class="shell">
+  <header class="brand">
+    <div class="mark">DOE</div>
+    <div class="who">
+      <h1>Portal Wayfinder</h1>
+      <div class="sub">Ask where to find something in the Comms Portal</div>
+    </div>
+    <div class="pill">In-browser · No account · No cost</div>
+  </header>
+
+  <main class="thread" id="thread">
+    <div class="starter" id="starter">
+      <h2>Point me at what you need</h2>
+      <p>I know the whole portal — every tab, button, brand rule, contact, workflow, and file naming convention. Try one of these or type your own question.</p>
+      <div class="hints" id="hints"></div>
+    </div>
+  </main>
+
+  <form class="composer" id="composer" autocomplete="off">
+    <div class="box">
+      <textarea id="input" rows="1" placeholder="How do I submit a video? What are our brand colors? Who do I contact for…?"></textarea>
+      <button type="submit" class="send" id="send" aria-label="Send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+    <div class="foot">Only answers from the portal navigation guide · Nothing sent to any server</div>
+  </form>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// PORTAL SECTIONS — hand-curated from the navigation guide.
+// Each section: pointer (where in the portal), body (verbatim
+// quote), keywords (boost search weight), and related (chip
+// suggestions after the answer).
+// ═══════════════════════════════════════════════════════
+const SECTIONS = [
+  {
+    id: 'contact',
+    pointer: 'Home → Contact tab',
+    keywords: ['contact', 'email', 'reach', 'who', 'rachel', 'matt', 'communications', 'help', 'team', 'coordinator'],
+    body: `<strong>Communications Team — primary contacts:</strong>
+      <ul>
+        <li><strong>Rachel Paling</strong> — Communications Coordinator — <code>rachel.paling@maine.gov</code><br>
+          <em>Newsletters, Mailchimp campaigns, social media, event promotions, content workflows.</em></li>
+        <li><strong>Matt Leavitt</strong> — Website &amp; Technology Coordinator — <code>matthew.g.leavitt@maine.gov</code><br>
+          <em>Website updates, Drupal pages, YouTube uploads, analytics, accessibility, templates, this portal.</em></li>
+      </ul>
+      <div>Also on the Contact tab: Tyler Rollins (internal apps), Melissa O'Neal Low (constituent concerns), Tanuja Bhatnagar (Commissioner's Office), and the MaineIT Help Desk (207-624-7700).</div>`,
+    related: ['submit event', 'brand colors', 'newsletter']
+  },
+  {
+    id: 'colors',
+    pointer: 'Branding &amp; Comms → Colors tab',
+    keywords: ['color', 'colors', 'colour', 'colours', 'palette', 'hex', 'rgb', 'cmyk', 'brand', 'navy', 'teal', 'blue', 'rust', 'red'],
+    body: `<div>Three primary, three secondary. Click any swatch on the portal to copy its hex.</div>
+      <strong>Primary:</strong>
+      <ul>
+        <li>Dark Navy — <code>#182b3c</code></li>
+        <li>Mid Blue — <code>#274f73</code></li>
+        <li>Steel Blue — <code>#6d8ba6</code></li>
+      </ul>
+      <strong>Secondary:</strong>
+      <ul>
+        <li>Rust Red — <code>#8a2e13</code></li>
+        <li>Warm White — <code>#eee6df</code></li>
+        <li>Teal — <code>#42c3f7</code></li>
+      </ul>
+      <div class="quote"><em>Guidance</em>Teal (<code>#42c3f7</code>) is a secondary accent — use it for borders, dividers, and hover states, not as a dominant background.</div>`,
+    related: ['fonts', 'logos', 'voice']
+  },
+  {
+    id: 'typography',
+    pointer: 'Branding &amp; Comms → Typography tab',
+    keywords: ['font', 'fonts', 'typography', 'typeface', 'calibri', 'century gothic', 'league spartan', 'arial black', 'body text', 'headers'],
+    body: `<div>Four primary fonts. All may be used in bold, italics, etc.</div>
+      <ul>
+        <li><strong>Calibri</strong> — Body text. Emails, letters, body text. Sans-serif for accessibility.</li>
+        <li><strong>Century Gothic</strong> — Headers &amp; graphics. Primary font for graphics and promotional materials.</li>
+        <li><strong>League Spartan</strong> — Headers &amp; graphics. Used alongside Century Gothic. Free on Google Fonts: <a href="https://fonts.google.com/specimen/League+Spartan" target="_blank">fonts.google.com/specimen/League+Spartan</a></li>
+        <li><strong>Arial Black</strong> — PowerPoint presentation headers.</li>
+      </ul>
+      <strong>Web-specific:</strong>
+      <ul>
+        <li>Maine.gov (Drupal) — Pre-set. <strong>Do not copy-paste from Word.</strong></li>
+        <li>Newsroom (WordPress) — Lato body. Century Gothic / League Spartan for banner graphics.</li>
+        <li>Email blasts (Mailchimp) — Arial body. Century Gothic / League Spartan for banner graphics.</li>
+      </ul>`,
+    related: ['brand colors', 'email signature', 'logos']
+  },
+  {
+    id: 'voice',
+    pointer: 'Branding &amp; Comms → Voice tab',
+    keywords: ['voice', 'tone', 'style', 'write', 'writing', 'sound'],
+    body: `<strong>Always:</strong>
+      <ul>
+        <li>Clear, conversational, and human</li>
+        <li>Helpful and solution-oriented</li>
+        <li>Friendly yet professional</li>
+        <li>Kind, compassionate, and respectful</li>
+        <li>Optimistic yet grounded</li>
+        <li>Inclusive</li>
+        <li>Student-, educator-, and school-centered</li>
+      </ul>
+      <strong>Never:</strong>
+      <ul>
+        <li>Overly punitive, harsh, critical, or negative</li>
+        <li>Bureaucratic</li>
+        <li>Using lots of words when fewer will do</li>
+        <li>Jargony</li>
+        <li>Exclusive</li>
+      </ul>
+      <div class="quote"><em>Proofreading</em>Grammarly is an AI tool approved for use by the State of Maine that may be helpful for copyediting. The Maine DOE utilizes AP Style for most communications.</div>`,
+    related: ['language', 'content approval', 'inclusive']
+  },
+  {
+    id: 'language',
+    pointer: 'Branding &amp; Comms → Language tab',
+    keywords: ['language', 'grammar', 'ap style', 'oxford comma', 'capitalize', 'capitalization', 'acronym', 'abbreviation', 'hyphenate', 'mdoe'],
+    body: `<strong>Referring to the Maine DOE:</strong>
+      <ul>
+        <li>Initial: <em>"the Maine Department of Education (DOE)"</em></li>
+        <li>Subsequent: <em>"the Maine DOE"</em> or <em>"the department"</em> (lowercase)</li>
+        <li><strong>Never:</strong> <em>"MDOE"</em></li>
+      </ul>
+      <strong>Conventions:</strong>
+      <ul>
+        <li>Oxford comma</li>
+        <li>One space after a period (not two)</li>
+        <li>Spell out numbers less than 10 (e.g., "five"); numerals otherwise</li>
+        <li>Dates: January 1, 2026 · 1/1/2026 · <strong>NOT</strong> 01/01/2026 or January 1st</li>
+        <li>Times: 10:30 a.m., 1 p.m., noon, midnight</li>
+        <li>MSAD 28, RSU 40 (no #)</li>
+      </ul>
+      <div>Hyphenate: One-time, In-person, Cost-effective, Up-to-date, Long-term, State-of-the-art.<br>
+      Do not hyphenate: Ongoing, Statewide, High school, Nonprofit, Health care.</div>`,
+    related: ['voice', 'content approval', 'inclusive']
+  },
+  {
+    id: 'signature',
+    pointer: 'Branding &amp; Comms → Correspondence tab',
+    keywords: ['signature', 'email signature', 'sign off', 'signoff'],
+    body: `<div>12pt, Calibri, black — no images or backgrounds.</div>
+      <ul>
+        <li>Lead with the Maine DOE logo, then an office/team/project logo if applicable.</li>
+        <li>Avoid additional information, text, backgrounds, or images.</li>
+        <li>You may add one additional link after the Maine DOE Newsroom.</li>
+        <li>Include a space, then a pipe (Shift + \\), then another space, and hyperlink your text.</li>
+        <li>Match link color across all links. Do not use acronyms (e.g., "Workforce Development" not "WDIP").</li>
+      </ul>
+      <div class="quote">Example format:<br>
+        <strong>Matthew Leavitt</strong> (He/Him)<br>
+        Website &amp; Technology Coordinator<br>
+        Maine Department of Education<br>
+        23 State House Station · Augusta, Maine 04333-0023<br>
+        <strong>Email:</strong> matthew.g.leavitt@maine.gov<br>
+        <strong>Phone:</strong> 207-355-4615<br>
+        Maine DOE | Facebook | Instagram | Maine DOE Newsroom
+      </div>`,
+    related: ['ooo', 'voicemail', 'fonts']
+  },
+  {
+    id: 'ooo',
+    pointer: 'Branding &amp; Comms → Correspondence tab',
+    keywords: ['out of office', 'ooo', 'auto reply', 'auto-reply', 'vacation', 'sick', 'away', 'summer flex'],
+    body: `<div>Three auto-reply templates (verbatim). Set them through Outlook.</div>
+      <div class="quote"><em>Vacation / personal / sick / summer flex</em>Thank you for your email. I am out of the office from <strong>[DATE]</strong> to <strong>[DATE]</strong>. During that time, I will not have access to my inbox. If your message is urgent, please contact <strong>[ALTERNATIVE CONTACT]</strong>. Otherwise, I will respond as soon as I can.</div>
+      <div class="quote"><em>State of Maine offices closed</em>Thank you for your email. State of Maine offices are closed on <strong>[DATE]</strong> in observance of <strong>[REASON]</strong>. I will respond as soon as I can.</div>
+      <div class="quote"><em>Limited access (conference, retreat)</em>Thank you for your email. I am attending a <strong>[TYPE OF EVENT]</strong> on <strong>[DATE]</strong>. During that time, I will have limited access to my inbox. If your message is urgent, please contact <strong>[ALTERNATIVE CONTACT]</strong>. Otherwise, I will respond as soon as I can.</div>`,
+    related: ['signature', 'voicemail']
+  },
+  {
+    id: 'voicemail',
+    pointer: 'Branding &amp; Comms → Correspondence tab',
+    keywords: ['voicemail', 'voice mail', 'phone', 'greeting'],
+    body: `<div>Guidelines for your voicemail message:</div>
+      <ul>
+        <li>Include a greeting, your name, and your title.</li>
+        <li>Briefly apologize for missing the call.</li>
+        <li>Ask for the info you need to return a call (name, number, date/time, reason).</li>
+        <li>Provide other pertinent info for the caller to reach you.</li>
+        <li>Use a friendly but professional tone.</li>
+        <li>Keep your message short and succinct.</li>
+      </ul>`,
+    related: ['signature', 'ooo']
+  },
+  {
+    id: 'file-naming',
+    pointer: 'Branding &amp; Comms → Content &amp; Approval tab',
+    keywords: ['file', 'filename', 'naming', 'convention', 'pdf', 'upload name', 'file name'],
+    body: `<div>When uploading files linked from maine.gov/doe, name your file so it's easy to find, share, and understand out of context.</div>
+      <div class="quote"><strong>Format:</strong> <code>Team/Area - Title of File - Full Date.pdf</code></div>
+      <strong>Rules:</strong>
+      <ul>
+        <li>Spaces between hyphens.</li>
+        <li>No abbreviations or acronyms (unless universal).</li>
+        <li>Date with periods, full year, no leading zeros — <strong>6.1.2024</strong> (not 06.01.24 or 6.1.24).</li>
+        <li>Prioritize using PDFs.</li>
+      </ul>
+      <strong>Approved examples:</strong>
+      <ul>
+        <li><code>Multilingual Learning - Multilingual Learners with Disabilities Policy Guide - 3.11.2025.pdf</code></li>
+        <li><code>Assessment - Print Disability Flowchart - 3.11.2025.pdf</code></li>
+        <li><code>Outdoor Education - Maine Outdoor Learning Grant Application - 3.11.2025.pdf</code></li>
+        <li><code>MLTI - Sphero Tutorial - 3.11.2025.pdf</code></li>
+        <li><code>School Safety - Restorative Practices Brochure - 3.11.2025.pdf</code></li>
+      </ul>`,
+    related: ['upload file', 'delete file', 'drupal']
+  },
+  {
+    id: 'submit-event',
+    pointer: 'Events → Submit New Event',
+    keywords: ['event', 'events', 'calendar', 'submit event', 'add event', 'schedule', 'webinar', 'workshop'],
+    body: `<div>Click <strong>Submit New Event</strong> in the Events section. Review the "Before you submit" tips first.</div>
+      <ul>
+        <li><strong>Timing:</strong> submit at least 1 week in advance (2+ weeks recommended).</li>
+        <li>Proofread. Spell out acronyms.</li>
+        <li>Only DOE-hosted or co-hosted events.</li>
+        <li>Check the calendar for conflicts before scheduling.</li>
+        <li>Newsroom posts for DOE events won't publish unless the event is on the calendar.</li>
+      </ul>
+      <div><strong>Event types:</strong> Conference, Discussion Group, Information Session, Office Hours, Public Hearing, Student Opportunity, Training, Webinar, Workshop.<br>
+      <strong>Location:</strong> Virtual, In-Person, or Hybrid.</div>
+      <div><strong>View public calendar:</strong> <a href="https://www.maine.gov/doe/calendar" target="_blank">maine.gov/doe/calendar</a></div>`,
+    related: ['edit event', 'submit video', 'newsletter']
+  },
+  {
+    id: 'edit-event',
+    pointer: 'Events → Edit my events',
+    keywords: ['edit event', 'change event', 'cancel event', 'my events', 'update event', 'draft'],
+    body: `<div>Click <strong>Edit my events</strong> in the Events hero, enter the contact email used when submitting, and every event tied to that address appears with Edit / Cancel per row.</div>
+      <div>Any unsubmitted <strong>drafts</strong> for that email show at the top of the same view. Drafts are saved in your browser only — return to the same computer + browser to pick them back up.</div>`,
+    related: ['submit event', 'contact']
+  },
+  {
+    id: 'submit-video',
+    pointer: 'YouTube → Submit New Video',
+    keywords: ['video', 'youtube', 'upload video', 'submit video'],
+    body: `<div>Click <strong>Submit New Video</strong> in the YouTube section, fill the form, then drop the video file in the correct Drive folder. It auto-uploads to YouTube within 2 hours (business hours).</div>
+      <ul>
+        <li><strong>Main Channel Folder:</strong> <a href="https://drive.google.com/drive/folders/1i5Hp9HSxyya3sgVA4HSMmMosIYRCLlv1" target="_blank">Drive folder</a></li>
+        <li><strong>EnGiNE Folder:</strong> <a href="https://drive.google.com/drive/folders/1tVV6XLt33yNhfrgqqfxaW1bzH0Q9s6Dc" target="_blank">Drive folder</a></li>
+      </ul>
+      <div class="quote"><em>Copyright warning</em>Your video cannot contain copyrighted images or audio you do not have permission to use. This can result in a copyright strike and the department losing the YouTube channel permanently.</div>
+      <div><strong>Privacy:</strong> Public (most common), Unlisted (needs direct link, only for targeted circumstances), Private (rare).</div>`,
+    related: ['delete video', 'submit event', 'orientation']
+  },
+  {
+    id: 'newsletter',
+    pointer: 'Publications → Open Builder',
+    keywords: ['newsletter', 'mailchimp', 'campaign', 'publications', 'builder'],
+    body: `<div>Open the Newsletter Builder from the <strong>Publications</strong> section — click <strong>Open Builder</strong>.</div>
+      <div class="quote">Contact the Communications Team before you start a new newsletter so we can align on messaging, cadence, and audience. Some newsletters are already established and sent through Mailchimp — check first before creating a new one.</div>
+      <div>Past campaign stats (open rate, click rate) live in the same section — the campaign list is pulled live from Mailchimp.</div>`,
+    related: ['contact', 'content approval', 'workflow']
+  },
+  {
+    id: 'analytics',
+    pointer: 'Website → Analytics Dashboard',
+    keywords: ['analytics', 'stats', 'page views', 'traffic', 'ga4', 'downloads', 'metrics'],
+    body: `<div>Open the <strong>Analytics Dashboard</strong> from the Website sub-menu.</div>
+      <ul>
+        <li><strong>Overview tab:</strong> Page views, Unique users, File downloads, Pages tracked, Files tracked — for the selected date range (7d / 30d / 90d / 6mo / 1yr).</li>
+        <li><strong>All pages tab:</strong> search by title, URL, or owner; filter by owner.</li>
+        <li><strong>File downloads tab:</strong> search by file name or page.</li>
+      </ul>
+      <div>All numbers are fetched live from GA4.</div>`,
+    related: ['page owner', 'file manager']
+  },
+  {
+    id: 'page-owner',
+    pointer: 'Website → Page Explorer',
+    keywords: ['owner', 'page owner', 'who owns', 'stale', 'audit', 'unpublished'],
+    body: `<div>Open <strong>Page Explorer</strong> from the Website sub-menu. The owner appears as a column on the results table.</div>
+      <div>Stat cards: <strong>Total Pages, Stale (6+ months), No Owner, Unpublished</strong>. Filters: search by title/path/owner, owner dropdown, type dropdown. Per-row Edit (opens Drupal) and View (opens the live page).</div>`,
+    related: ['analytics', 'file manager']
+  },
+  {
+    id: 'upload-file',
+    pointer: 'Website hero → File Uploads Folder',
+    keywords: ['upload', 'upload file', 'add file', 'sharepoint upload'],
+    body: `<div>Click <strong>File Uploads Folder</strong> in the Website hero — it opens the SharePoint folder used for Comms-managed uploads.</div>
+      <div>Rename the file first using the naming convention (Team/Area - Title of File - Full Date.pdf). See the file naming section.</div>`,
+    related: ['file-naming', 'delete file']
+  },
+  {
+    id: 'delete-file',
+    pointer: 'Website → File Manager',
+    keywords: ['delete file', 'remove file', 'file cleanup', 'orphan'],
+    body: `<div>Open <strong>File Manager</strong> from the Website sub-menu, select the file(s), and click <strong>Request deletion</strong> (or <strong>Delete selected</strong> if you have admin rights). Deletion requests route to Matt Leavitt.</div>`,
+    related: ['upload file', 'file-naming']
+  },
+  {
+    id: 'drupal-linking',
+    pointer: 'Website hero → For Drupal editors callout',
+    keywords: ['drupal', 'link', 'linking', 'asterisks', 'hyperlink', 'markdown link'],
+    body: `<div><strong>Linking convention</strong> — in content you submit, wrap the exact text you want hyperlinked in <strong>double asterisks</strong>.</div>
+      <div class="quote">Example: <code>You can learn more by checking out the **Multilingual Learners with Disability Policy Guide**.</code></div>
+      <div class="quote"><em>Do not copy from Word</em>Copy-pasting from Word into a Drupal page injects invisible formatting that overrides site defaults and breaks styling. Compose directly in Drupal, or paste through plain-text (Cmd/Ctrl-Shift-V) first.</div>`,
+    related: ['upload file', 'file-naming', 'analytics']
+  },
+  {
+    id: 'workflow',
+    pointer: 'Sidebar → Workflow (opens Dynamics 365)',
+    keywords: ['workflow', 'newsroom', 'article', 'priority notice', 'media advisory', 'request'],
+    body: `<div>Sidebar → <strong>Workflow</strong> — opens the Communications Workflow in Dynamics 365 (new tab). Use it for newsroom articles, priority notices, media advisories, and Comms team work requests.</div>
+      <div class="quote">Submit priority notices, Newsroom articles, and media advisories/releases to the Communications Workflow <strong>at least two weeks</strong> before you want your communication posted or sent.</div>`,
+    related: ['newsletter', 'content approval']
+  },
+  {
+    id: 'content-approval',
+    pointer: 'Branding &amp; Comms → Content &amp; Approval tab',
+    keywords: ['approval', 'approve', 'content approval', 'social media approval', 'letter', 'letterhead'],
+    body: `<div class="quote">Content posted in priority notices, Newsroom articles, administrative letters, media advisories/releases, social posts, or YouTube uploads should be Maine DOE-owned content only — written, organized, coordinated, planned, and sponsored by the Maine DOE.</div>
+      <strong>Social media approval checklist</strong> (before submitting to team leader → then Rachel Paling):
+      <ul>
+        <li>Goal of post and intended audience</li>
+        <li>Date or span of dates for promotion</li>
+        <li>Post caption (for all posts, if multiple)</li>
+        <li>Images or graphics appropriate to the content</li>
+        <li>Budget and funding code (for advertisements)</li>
+      </ul>
+      <div class="quote"><em>Official letters</em>An official letter from the Maine DOE must be written on Maine DOE letterhead, approved by the team leader/office director, and sent to the Director of Communications for approval before being sent by U.S. post.</div>`,
+    related: ['workflow', 'contact', 'file-naming']
+  },
+  {
+    id: 'orientation',
+    pointer: 'EnGiNE → Start Course (Communications Orientation)',
+    keywords: ['orientation', 'training', 'onboard', 'onboarding', 'course', 'engine'],
+    body: `<div>Open <strong>EnGiNE</strong> in the sidebar → click <strong>Start Course</strong> in the Communications Orientation panel.</div>
+      <div class="quote">Welcome to the Maine DOE Communications Orientation! This module covers everything you need to know about external-facing communications — newsletters, media releases, branding, marketing, graphics, website management, and more.</div>
+      <div>Direct link: <a href="https://learn.moodle.rrev-engine.com/course/view.php?id=174" target="_blank">learn.moodle.rrev-engine.com/course/view.php?id=174</a></div>`,
+    related: ['contact', 'workflow']
+  },
+  {
+    id: 'engine',
+    pointer: 'Sidebar → EnGiNE',
+    keywords: ['engine', 'professional learning', 'contact hours', 'moodle', 'certification'],
+    body: `<div class="quote">EnGiNE (Engaging Innovation in Education) is Maine's statewide professional learning platform for educators and school staff. It provides free, on-demand courses across dozens of topic areas.</div>
+      <ul>
+        <li><strong>Visit EnGiNE:</strong> <a href="https://engine.maine.gov" target="_blank">engine.maine.gov</a></li>
+        <li><strong>Create Account:</strong> <a href="https://engine.maine.gov/user/register" target="_blank">engine.maine.gov/user/register</a></li>
+        <li><strong>Sign In:</strong> <a href="https://engine.maine.gov/user/login" target="_blank">engine.maine.gov/user/login</a></li>
+      </ul>
+      <div>Educators can earn contact hours toward recertification. To submit a course for publication on EnGiNE, use the "Request a Course" form on the EnGiNE page.</div>`,
+    related: ['orientation', 'contact']
+  },
+  {
+    id: 'templates',
+    pointer: 'Sidebar → Templates',
+    keywords: ['template', 'templates', 'presentation', 'letterhead', 'canva', 'design template'],
+    body: `<div>Open <strong>Templates</strong> in the sidebar. Search by name or filter by category (Design, Documents, Presentations).</div>
+      <div>Template cards open in Canva, SharePoint, or Google Drive, or offer a direct download — depending on where the source lives.</div>
+      <div class="quote">Use these approved templates for all Maine DOE communications. Contact Rachel Paling or Matt Leavitt if you need access or a new template.</div>`,
+    related: ['brand colors', 'fonts', 'logos']
+  },
+  {
+    id: 'logos',
+    pointer: 'Branding &amp; Comms → Logos tab',
+    keywords: ['logo', 'logos', 'sharepoint logos', 'primary logo', 'informal logo'],
+    body: `<ul>
+        <li><strong>Official (Primary):</strong> for all official documents, letters, contracts, forms, presentations, promotional materials, and digital spaces.</li>
+        <li><strong>Informal (Primary):</strong> when the official logo doesn't fit, or when scaled small (the "DOE" reads better as an icon). Example: Facebook profile picture.</li>
+        <li><strong>Office / team / initiative (Secondary):</strong> must be approved by the Comms Team and used alongside a primary logo.</li>
+      </ul>
+      <strong>Rules:</strong>
+      <ul>
+        <li>Do not stretch, distort, or blur.</li>
+        <li>Do not scale so small that words can't be read; do not oversize compared to other visuals.</li>
+        <li>Do not change original coloring unless for special circumstances (approved by Comms).</li>
+        <li>All logos should have a transparent-background version and a high-resolution version.</li>
+      </ul>
+      <div>Logos live in the DOE Team Logos &amp; Images SharePoint folder (direct download links coming soon — check the Resources tab).</div>`,
+    related: ['brand colors', 'templates', 'images']
+  },
+  {
+    id: 'images',
+    pointer: 'Branding &amp; Comms → Images tab',
+    keywords: ['image', 'photo', 'photography', 'stock photo', 'ai image', 'headshot'],
+    body: `<ul>
+        <li>All images should be real photographs — no AI-generated images, cartoons, or clipart. Exception: icons (contact Comms for custom).</li>
+        <li>Whenever possible, use real Maine students and schools — with media consent.</li>
+        <li>Graphics, flyers, and other materials should NOT be built using generative AI.</li>
+        <li>Use real photographs for professional headshots. AI-generated or doctored headshots strongly discouraged.</li>
+        <li>High resolution; not pixelated. Most images should be no larger than 1920×1280.</li>
+      </ul>
+      <strong>Copyright-safe photo sources:</strong>
+      <ul>
+        <li><a href="https://www.pexels.com/" target="_blank">Pexels</a></li>
+        <li><a href="https://pixabay.com/" target="_blank">Pixabay</a></li>
+        <li><a href="https://unsplash.com/" target="_blank">Unsplash</a></li>
+      </ul>`,
+    related: ['logos', 'brand colors']
+  },
+  {
+    id: 'newsroom',
+    pointer: 'Publications → Newsroom (or Sidebar → Workflow for submissions)',
+    keywords: ['newsroom', 'article', 'wordpress', 'blog', 'update', 'mainedoenews'],
+    body: `<div>The Maine DOE Newsroom is the department's WordPress newsroom for articles and updates: <a href="https://mainedoenews.net/" target="_blank">mainedoenews.net</a>.</div>
+      <div><strong>Newsroom analytics + past posts:</strong> Publications section (in the Newsroom tab).<br>
+      <strong>Submit a newsroom article:</strong> Sidebar → Workflow (opens Dynamics 365). Submit at least two weeks in advance.</div>`,
+    related: ['workflow', 'newsletter', 'content approval']
+  },
+  {
+    id: 'handbook',
+    pointer: 'Home hero → Staff Handbook button',
+    keywords: ['handbook', 'employee handbook', 'staff handbook'],
+    body: `<div>Home hero → <strong>Staff Handbook</strong> opens the full Maine DOE Employee Handbook in SharePoint.</div>`,
+    related: ['contact', 'orientation']
+  },
+  {
+    id: 'social',
+    pointer: 'Home → Social tab',
+    keywords: ['social', 'facebook', 'instagram', 'linkedin', 'social media'],
+    body: `<div>Follow the Maine DOE:</div>
+      <ul>
+        <li>Facebook — <a href="https://www.facebook.com/MaineDepartmentofEducation1/" target="_blank">@MaineDOE</a></li>
+        <li>Instagram — <a href="https://www.instagram.com/mainedepted/" target="_blank">@mainedepted</a></li>
+        <li>YouTube — <a href="https://www.youtube.com/@MaineDOE" target="_blank">@MaineDOE</a></li>
+        <li>LinkedIn — <a href="https://www.linkedin.com/company/education-maine-department-of/posts/?feedView=all" target="_blank">Maine DOE</a></li>
+      </ul>`,
+    related: ['content approval', 'newsroom']
+  },
+  {
+    id: 'vision',
+    pointer: 'Home → About tab',
+    keywords: ['vision', 'mission', 'strategic priorities', 'whole student', 'values', 'about'],
+    body: `<div>Full text lives on the Home page → About tab. Key items:</div>
+      <ul>
+        <li><strong>Vision</strong> — vibrant educator workforce; safe, supportive learning environments; pathway to success for every student.</li>
+        <li><strong>Mission</strong> — promote the best learning opportunities for all Maine students through a whole-student approach, innovation, respect for educators, guidance, professional learning, and equitable funding.</li>
+        <li><strong>Strategic priorities</strong> — TRUST, EDUCATOR WORKFORCE, EDUCATIONAL EXCELLENCE and EQUITY, STUDENT and SCHOOL SAFETY, HEALTH, and WELL-BEING, CULTURE OF INNOVATION, HEALTHY and COLLABORATIVE work environment.</li>
+      </ul>`,
+    related: ['contact']
+  },
+  {
+    id: 'tools',
+    pointer: 'Website → Tools',
+    keywords: ['tools', 'wcag', 'accessibility', 'alt text', 'dead link', 'orphan', 'remediator'],
+    body: `<div>Admin tools for maine.gov/doe — accessibility, content quality, and maintenance. Open <strong>Tools</strong> from the Website sub-menu.</div>
+      <ul>
+        <li><strong>WCAG Auto-Remediator</strong> — fixes common accessibility issues across Drupal pages.</li>
+        <li><strong>Alt Text Reviewer</strong> — flags missing, generic, or overly long alt text.</li>
+        <li><strong>Dead Link Triage</strong> — view broken links found by the scanner.</li>
+        <li><strong>Image Cleanup</strong> — oversized, unused, or duplicate images.</li>
+        <li><strong>File Orphan Finder</strong> — files not referenced by any page.</li>
+        <li><strong>Web Editor Resource Center</strong> — training and documentation for Drupal editors.</li>
+      </ul>`,
+    related: ['analytics', 'page owner', 'delete file']
+  },
+];
+
+const REFUSAL = `That isn't covered in the portal. Contact the Communications Team — <strong>Rachel Paling</strong> (<code>rachel.paling@maine.gov</code>) or <strong>Matt Leavitt</strong> (<code>matthew.g.leavitt@maine.gov</code>) — or check the Contact tab on the Home page.`;
+
+// Common phrasing → canonical hint
+const STARTER_QUESTIONS = [
+  "What's the difference between the Commons and the Newsletter Builder?",
+  'What are our brand colors?',
+  'How do I submit a video?',
+  'How do I name a file for upload?',
+  'Newsroom vs Newsletter Builder?',
+  'What font should I use?',
+  'How do I set an out-of-office reply?',
+  'Who do I contact for a newsletter?',
+];
+
+// ═══════════════════════════════════════════════════════
+// COMPARISON SECTIONS — "difference between X and Y" answers.
+// Each carries a_terms / b_terms so the search only surfaces
+// a comparison when BOTH names appear in the query.
+// ═══════════════════════════════════════════════════════
+const COMPARISONS = [
+  {
+    id: 'commons-vs-newsletter-builder',
+    pointer: 'Publications → Commons tab',
+    a_terms: ['commons', 'the commons'],
+    b_terms: ['newsletter', 'builder', 'newsletter builder', 'bulletin'],
+    keywords: ['commons', 'newsletter', 'builder', 'blog', 'bulletin', 'how-to'],
+    body: `<div><strong>The Commons</strong> is the department's blog — practical, timely content that sits on the site for people to find. <strong>The Newsletter Builder</strong> is a drag-and-drop tool for branded DOE bulletins aimed at a specific audience.</div>
+      <div class="quote">The Commons is the how-to behind the work, sitting on the site for people to find. A newsletter is you actively speaking to an audience, often pulling in pieces from both.</div>
+      <div><strong>Use the Commons for:</strong> how-tos, program spotlights, resource roundups, interviews, reference material teams share with schools.</div>
+      <div><strong>Use a Newsletter for:</strong> updates aimed at a specific group, event promotion, deadlines and registration windows, roundups that link back to Commons or Newsroom posts.</div>`,
+    related: ['newsroom-vs-newsletter-builder', 'commons-vs-newsroom', 'mailchimp-vs-newsletter-builder']
+  },
+  {
+    id: 'commons-vs-newsroom',
+    pointer: 'Publications → Commons tab',
+    a_terms: ['commons', 'the commons', 'blog'],
+    b_terms: ['newsroom', 'digital newspaper', 'friday update', 'maine doe update'],
+    keywords: ['commons', 'newsroom', 'blog', 'digital newspaper', 'friday update'],
+    body: `<div><strong>The Commons</strong> is the department's blog — practical, reference material. <strong>The Newsroom</strong> is the department's digital newspaper — news that goes out on its own schedule and auto-bundles into the weekly <strong>Maine DOE Update</strong> every Friday.</div>
+      <div class="quote">The Commons is the how-to behind the work, sitting on the site for people to find. The Newsroom is news that goes out on its own schedule.</div>
+      <div><strong>Use the Commons for:</strong> how-tos, program spotlights, resource roundups, reviews, interviews.</div>
+      <div><strong>Use the Newsroom for:</strong> press releases, time-sensitive announcements, official policy of record, Good News. Rides the Friday Update automatically; Commons posts do not.</div>`,
+    related: ['commons-vs-newsletter-builder', 'newsroom-vs-newsletter-builder']
+  },
+  {
+    id: 'newsroom-vs-newsletter-builder',
+    pointer: 'Publications → Commons tab',
+    a_terms: ['newsroom', 'wordpress', 'friday update', 'digital newspaper'],
+    b_terms: ['newsletter', 'builder', 'newsletter builder', 'bulletin'],
+    keywords: ['newsroom', 'newsletter', 'builder', 'wordpress', 'friday update'],
+    body: `<div><strong>The Newsroom</strong> is the department's digital newspaper — everything published there auto-bundles into the weekly Maine DOE Update on Friday. <strong>The Newsletter Builder</strong> is a drag-and-drop tool for one-off, audience-targeted bulletins.</div>
+      <div class="quote">The Newsroom is news that goes out on its own schedule. A newsletter is you actively speaking to an audience, often pulling in pieces from both.</div>
+      <div><strong>Use the Newsroom for:</strong> press releases, time-sensitive announcements, official policy of record, Good News.</div>
+      <div><strong>Use a Newsletter for:</strong> targeted updates, event promotion, deadlines, roundups that link to Newsroom or Commons posts.</div>`,
+    related: ['commons-vs-newsroom', 'commons-vs-newsletter-builder', 'mailchimp-vs-newsletter-builder']
+  },
+  {
+    id: 'mailchimp-vs-newsletter-builder',
+    pointer: 'Publications → Mailchimp tab',
+    a_terms: ['mailchimp', 'priority notice', 'campaign'],
+    b_terms: ['newsletter builder', 'builder', 'quickmail'],
+    keywords: ['mailchimp', 'newsletter', 'builder', 'priority notice', 'subscribers', 'campaign'],
+    body: `<div><strong>Mailchimp</strong> runs the department's established, recurring newsletters — those with a subscriber list. <strong>The Newsletter Builder</strong> is positioned as "the middle ground between a quick email and a Mailchimp campaign."</div>
+      <div><strong>Use Mailchimp for:</strong> the weekly Maine DOE Update, priority notices to targeted audiences, and long-running program bulletins that already have subscribers. Talk to Comms first — some newsletters are already established here.</div>
+      <div><strong>Use the Newsletter Builder for:</strong> one-off or team bulletins. No subscriber list, no HTML/CSS. Publish as a hosted maine.gov page, PDF, HTML file, or Quickmail teaser.</div>`,
+    related: ['newsroom-vs-newsletter-builder', 'commons-vs-newsletter-builder']
+  },
+  {
+    id: 'official-vs-informal-logo',
+    pointer: 'Branding & Comms → Logos tab',
+    a_terms: ['official logo', 'official', 'primary official'],
+    b_terms: ['informal logo', 'informal', 'square logo', 'icon logo', 'profile picture'],
+    keywords: ['official', 'informal', 'primary', 'logo', 'square', 'icon', 'facebook profile'],
+    body: `<div>Both are <strong>primary</strong> Maine DOE logos — pick based on where it'll live.</div>
+      <div><strong>Official logo:</strong> all official documents, letters, contracts, forms, presentations, promotional materials (print and digital), and digital spaces including websites, systems, social platforms, and hubs like NEO.</div>
+      <div><strong>Informal logo:</strong> when the official logo doesn't fit, when square orientation works better, or when scaled small (the "DOE" reads better as an icon). Example: Facebook profile picture.</div>`,
+    related: ['primary-vs-secondary-logo', 'logos']
+  },
+  {
+    id: 'primary-vs-secondary-logo',
+    pointer: 'Branding & Comms → Logos tab',
+    a_terms: ['primary logo', 'primary', 'official logo', 'informal logo'],
+    b_terms: ['secondary logo', 'secondary', 'office logo', 'team logo', 'initiative logo'],
+    keywords: ['primary', 'secondary', 'office', 'team', 'initiative', 'approval', 'logo'],
+    body: `<div><strong>Primary logo</strong> (official or informal) is required on all official documents, presentations, promotional materials, and digital spaces. <strong>Secondary logos</strong> are office/team/initiative marks that must always sit alongside a primary Maine DOE logo — and must be approved by the Communications Team first.</div>
+      <div><strong>Use Primary:</strong> always — it must be present on the piece.</div>
+      <div><strong>Use Secondary:</strong> presentations, swag, and promo materials for a specific office, team, project, or initiative — only alongside a primary Maine DOE logo, only after Comms approval.</div>`,
+    related: ['official-vs-informal-logo', 'logos']
+  },
+  {
+    id: 'real-vs-ai-images',
+    pointer: 'Branding & Comms → Images tab',
+    a_terms: ['real photo', 'photograph', 'real photograph', 'real image'],
+    b_terms: ['ai', 'ai generated', 'generative', 'genai', 'cartoon', 'clipart'],
+    keywords: ['real', 'photograph', 'ai-generated', 'cartoon', 'clipart', 'headshot', 'genai'],
+    body: `<div><strong>All images should be real photographs.</strong> No AI-generated images, cartoons, or clipart. AI-generated headshots are strongly discouraged too.</div>
+      <div><strong>The only exception:</strong> icons. Contact the Comms Team for custom icons.</div>
+      <div>Ideally photos are of real Maine students and schools, with media consent on file.</div>`,
+    related: ['images']
+  },
+  {
+    id: 'maine-doe-vs-mdoe',
+    pointer: 'Branding & Comms → Language tab',
+    a_terms: ['maine doe', 'department', 'maine department of education'],
+    b_terms: ['mdoe', 'm.d.o.e', 'the department capitalized'],
+    keywords: ['mdoe', 'maine doe', 'department', 'abbreviation', 'acronym'],
+    body: `<div><strong>Initial reference:</strong> "the Maine Department of Education (DOE)"</div>
+      <div><strong>Subsequent references:</strong> "the Maine DOE" or "the department" (lowercase). Either works — pick what reads better.</div>
+      <div><strong>Never:</strong> "MDOE." It's prohibited in Maine DOE communications.</div>
+      <div>"the department" is always lowercase — never "The Department."</div>`,
+    related: ['ap-vs-apa-style', 'language']
+  },
+  {
+    id: 'ap-vs-apa-style',
+    pointer: 'Branding & Comms → Voice + Language tabs',
+    a_terms: ['ap', 'ap style', 'associated press'],
+    b_terms: ['apa', 'apa style'],
+    keywords: ['ap style', 'apa style', 'citation', 'style guide', 'references'],
+    body: `<div><strong>AP Style</strong> is the default for most Maine DOE communications — grammar, punctuation, capitalization, dates, numbers. Search "AP Style [item]" or contact the Director of Communications for guidance.</div>
+      <div><strong>APA Style</strong> is used only when citing external references. Swap to APA for those citations.</div>`,
+    related: ['maine-doe-vs-mdoe', 'language']
+  },
+  {
+    id: 'calibri-vs-century-gothic',
+    pointer: 'Branding & Comms → Typography tab',
+    a_terms: ['calibri', 'body font', 'body text font'],
+    b_terms: ['century gothic', 'header font', 'graphics font', 'promotional font'],
+    keywords: ['calibri', 'century gothic', 'body', 'headers', 'graphics', 'font'],
+    body: `<div><strong>Calibri:</strong> emails, letters, body text. Sans-serif for accessibility.</div>
+      <div><strong>Century Gothic:</strong> primary font for graphics and promotional materials — headers and display use. Bundled with Microsoft Office.</div>
+      <div><strong>League Spartan</strong> pairs with Century Gothic and is free on Google Fonts. <strong>Arial Black</strong> is used specifically for PowerPoint presentation headers.</div>`,
+    related: ['typography']
+  },
+  {
+    id: 'youtube-public-vs-unlisted',
+    pointer: 'YouTube → Submit New Video → Privacy',
+    a_terms: ['public', 'public video'],
+    b_terms: ['unlisted', 'private'],
+    keywords: ['public', 'unlisted', 'private', 'privacy', 'youtube video'],
+    body: `<div><strong>Public</strong> — most common. Content that provides value to the field or public and is meant to be found in search. Default for almost every DOE video.</div>
+      <div><strong>Unlisted</strong> — doesn't show in search, need direct link. Use for specific circumstances like a targeted school administrative unit.</div>
+      <div><strong>Private</strong> — rare. Only accessible through explicit sharing to individual accounts.</div>`,
+    related: ['submit-video']
+  },
+  {
+    id: 'event-location-types',
+    pointer: 'Events → Submit new event → Where → Location type',
+    a_terms: ['virtual', 'online', 'virtual event'],
+    b_terms: ['in person', 'in-person', 'hybrid', 'physical', 'venue'],
+    keywords: ['virtual', 'in-person', 'hybrid', 'location', 'event', 'venue'],
+    body: `<div><strong>Virtual:</strong> online-only. No venue name or address fields appear — only the Register / Join URL is required.</div>
+      <div><strong>In-Person:</strong> held at a physical location. Requires a Venue address (with ZIP); you can add a Venue name (e.g., "Augusta Civic Center").</div>
+      <div><strong>Hybrid:</strong> runs in-person AND streams to remote attendees. Form treats Hybrid the same as In-Person for the venue address requirement, plus the Register / Join URL for remote attendees.</div>`,
+    related: ['submit-event']
+  },
+  {
+    id: 'website-tools',
+    pointer: 'Website (mini-portal) → module cards',
+    a_terms: ['analytics', 'ga4', 'page views', 'traffic', 'downloads'],
+    b_terms: ['page explorer', 'file manager', 'tools', 'owner', 'audit'],
+    keywords: ['analytics', 'page explorer', 'file manager', 'tools', 'website', 'ga4', 'owners'],
+    body: `<div><strong>Analytics Dashboard:</strong> live GA4 page views, file downloads, and traffic insights across maine.gov/doe. Use for "how many views did this page get?" and "what's trending?"</div>
+      <div><strong>Page Explorer:</strong> browse all pages with owners, last edit dates, and content audit status. Use for "who owns this page?" and "when was it last edited?"</div>
+      <div><strong>File Manager:</strong> browse every file in Drupal with page owners, download stats, and batch deletion requests.</div>
+      <div><strong>Tools</strong> (admin button in the Website hero) covers WCAG remediator, alt text reviewer, dead link checker, and orphan file finder — site-health tasks beyond simple browsing.</div>`,
+    related: ['analytics', 'page-owner', 'delete-file', 'tools']
+  },
+  {
+    id: 'homebase-notifications-vs-news',
+    pointer: 'Home → tab bar',
+    a_terms: ['notifications', 'announcements', 'internal', 'staff'],
+    b_terms: ['news', 'maine doe news', 'newsroom', 'good news'],
+    keywords: ['notifications', 'announcements', 'news', 'newsroom', 'good news', 'homebase'],
+    body: `<div><strong>Notifications tab:</strong> internal messages the Communications team wants staff to see — flagged URGENT or IMPORTANT when they matter, shown as an accordion with dates. This is where Rachel and Matt post staff-facing announcements.</div>
+      <div><strong>Maine DOE News tab:</strong> public-facing content from maine.gov/doe — two feeds side-by-side, the DOE Newsroom (official articles) and Good News. Live newsroom articles anyone can read on the website.</div>`,
+    related: ['commons-vs-newsroom', 'newsroom']
+  },
+];
+
+// Merge comparisons into the main SECTIONS list so related-chip lookups
+// work uniformly; each comparison entry keeps type: 'comparison' for scoring.
+COMPARISONS.forEach(c => { c.type = 'comparison'; SECTIONS.push(c); });
+
+// Phrases that signal a comparison-style question — "vs", "difference between",
+// "or", "which should I use", etc. When any of these fires, we require BOTH
+// a_terms AND b_terms to match before a comparison section can surface, and we
+// demote single-topic sections so the actual comparison rises to the top.
+const COMPARISON_MARKERS = [
+  ' vs ', ' vs. ', ' versus ', 'difference between', 'compare ', ' compared ',
+  'which should i use', 'which one should i use', 'when do i use', 'when to use',
+  ' or ', 'should this be a ', 'should i use', 'what is the difference'
+];
+
+function detectComparisonIntent(query) {
+  const q = ' ' + query.toLowerCase() + ' ';
+  return COMPARISON_MARKERS.some(m => q.includes(m));
+}
+
+function matchesAny(text, terms) {
+  const t = text.toLowerCase();
+  return terms.some(term => t.includes(term.toLowerCase()));
+}
+
+const STOPWORDS = new Set([
+  'a','an','the','is','are','was','were','be','been','being','of','to','in','on','at','for','with','and','or','but','if','then','so','as','by','from','into','about','across','after','before','over','under','out','up','down','can','could','should','would','will','shall','may','might','do','does','did','done','have','has','had','i','me','my','mine','we','us','our','ours','you','your','yours','he','him','his','she','her','hers','it','its','they','them','their','theirs','this','that','these','those','what','which','who','whom','whose','where','when','why','how','tell','show','find','help','need','want','get','also','way','ways','okay','ok','pls','please'
+]);
+
+// ═══════════════════════════════════════════════════════
+// Scoring: for each section, count matches vs query terms.
+// Heading/keyword matches weight higher than body matches.
+// ═══════════════════════════════════════════════════════
+function tokenize(str) {
+  return String(str).toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter(t => t && !STOPWORDS.has(t) && t.length > 1);
+}
+
+function score(query, section, isCompareQuery) {
+  const qTokens = tokenize(query);
+  if (!qTokens.length) return { total: 0, matched: [] };
+
+  const keywordText = section.keywords.join(' ').toLowerCase();
+  const pointerText = String(section.pointer).toLowerCase();
+  const bodyText = String(section.body).toLowerCase().replace(/<[^>]+>/g, ' ');
+
+  let total = 0;
+  const matched = new Set();
+
+  for (const q of qTokens) {
+    if (keywordText.split(/[\s,]+/).includes(q)) { total += 6; matched.add(q); continue; }
+    if (keywordText.includes(q)) { total += 4; matched.add(q); continue; }
+    if (pointerText.includes(q)) { total += 3; matched.add(q); continue; }
+    if (bodyText.includes(q)) { total += 1; matched.add(q); }
+  }
+  if (matched.size > 1) total += matched.size * 1.5;
+
+  // Comparison sections — two-name gate + huge boost when both sides hit.
+  // Without both sides matched, a comparison section can't surface (no
+  // "shows the newsletter answer for a comparison question" mistakes).
+  if (section.type === 'comparison') {
+    const aHit = matchesAny(query, section.a_terms || []);
+    const bHit = matchesAny(query, section.b_terms || []);
+    if (aHit && bHit) {
+      total += 100; // dominant when both names present
+      if (isCompareQuery) total += 50; // even more when phrasing signals a comparison
+    } else {
+      // Only one side (or neither) matched — comparison sections don't apply.
+      // A single-topic query wants the plain "what is X" section, not the pair.
+      total = 0;
+    }
+  } else if (isCompareQuery) {
+    // Single-topic section, but the user is asking a comparison question.
+    // Demote so the actual comparison section wins if one exists.
+    total = Math.max(0, total - 30);
+  }
+
+  return { total, matched: [...matched] };
+}
+
+function bestMatches(query) {
+  const isCompareQuery = detectComparisonIntent(query);
+  const results = SECTIONS.map(s => ({ section: s, ...score(query, s, isCompareQuery) }))
+    .filter(r => r.total > 0)
+    .sort((a, b) => b.total - a.total);
+  return { results, isCompareQuery };
+}
+
+// Confidence: enough score AND at least one meaningful match
+function shouldRefuse(results) {
+  if (!results.length) return true;
+  const top = results[0];
+  return top.total < 4 || top.matched.length === 0;
+}
+
+// ═══════════════════════════════════════════════════════
+// UI
+// ═══════════════════════════════════════════════════════
+const thread = document.getElementById('thread');
+const starter = document.getElementById('starter');
+const input = document.getElementById('input');
+const send = document.getElementById('send');
+const form = document.getElementById('composer');
+const hintsBox = document.getElementById('hints');
+
+// Populate starter hints
+STARTER_QUESTIONS.forEach(q => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'hint';
+  b.textContent = q;
+  b.addEventListener('click', () => { input.value = q; submit(); });
+  hintsBox.appendChild(b);
+});
+
+function addUserMsg(text) {
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.textContent = text;
+  thread.appendChild(div);
+  scrollBottom();
+}
+
+function typingIndicator(on) {
+  let el = document.getElementById('typing');
+  if (on) {
+    if (el) return;
+    el = document.createElement('div');
+    el.id = 'typing';
+    el.className = 'typing';
+    el.innerHTML = '<span></span><span></span><span></span>';
+    thread.appendChild(el);
+    scrollBottom();
+  } else if (el) {
+    el.remove();
+  }
+}
+
+function scrollBottom() {
+  requestAnimationFrame(() => thread.scrollTo({ top: thread.scrollHeight, behavior: 'smooth' }));
+}
+
+function addBotAnswer(section, altSections) {
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  const alsoHtml = altSections && altSections.length
+    ? `<div class="also">Related: ${altSections.map(s => `<button class="chip" data-id="${s.id}">${s.pointer.replace(/&amp;/g, '&').split(/→|›|›/).pop().trim()}</button>`).join('')}</div>`
+    : '';
+  div.innerHTML = `
+    <div class="avatar-row"><span class="dot"></span>Portal Wayfinder</div>
+    <div class="body">
+      <div class="pointer">📍 ${section.pointer}</div>
+      ${section.body}
+      ${alsoHtml}
+    </div>`;
+  thread.appendChild(div);
+  // Wire up related chips
+  div.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const target = SECTIONS.find(s => s.id === chip.dataset.id);
+      if (target) {
+        input.value = target.keywords[0] || target.pointer;
+        submit(true, target);
+      }
+    });
+  });
+  scrollBottom();
+}
+
+function addComparisonFallback() {
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  const compareChips = COMPARISONS.map(c => {
+    const label = `${c.a_terms[0]} vs ${c.b_terms[0]}`;
+    return `<button class="chip" data-id="${c.id}">${label}</button>`;
+  }).join('');
+  div.innerHTML = `
+    <div class="avatar-row"><span class="dot"></span>Portal Wayfinder</div>
+    <div class="body">
+      <div>Sounds like you're comparing two things — I can only pull up comparisons I've been taught. Pick one, or rephrase with both names in the question:</div>
+      <div class="also">${compareChips}</div>
+    </div>`;
+  thread.appendChild(div);
+  div.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const target = SECTIONS.find(s => s.id === chip.dataset.id);
+      if (target) {
+        input.value = `${target.a_terms[0]} vs ${target.b_terms[0]}`;
+        submit(true, target);
+      }
+    });
+  });
+  scrollBottom();
+}
+
+function addRefusal() {
+  const div = document.createElement('div');
+  div.className = 'msg bot refusal';
+  div.innerHTML = `
+    <div class="avatar-row"><span class="dot"></span>Portal Wayfinder</div>
+    <div class="body">
+      <div>${REFUSAL}</div>
+    </div>`;
+  thread.appendChild(div);
+  scrollBottom();
+}
+
+async function submit(fromChip, forcedSection) {
+  const query = input.value.trim();
+  if (!query) return;
+  input.value = '';
+  input.style.height = 'auto';
+  starter.style.display = 'none';
+  addUserMsg(query);
+  send.disabled = true;
+  typingIndicator(true);
+
+  // Small delay to feel like real interaction, not a static lookup
+  await new Promise(r => setTimeout(r, 420 + Math.random() * 300));
+  typingIndicator(false);
+
+  if (forcedSection) {
+    const alt = SECTIONS.filter(s => (forcedSection.related || []).includes(s.id));
+    addBotAnswer(forcedSection, alt);
+  } else {
+    const { results, isCompareQuery } = bestMatches(query);
+    if (shouldRefuse(results)) {
+      // Special fallback: comparison intent detected but no matching pair.
+      // Better UX than a hard refusal — tell the user what to add.
+      if (isCompareQuery) {
+        addComparisonFallback();
+      } else {
+        addRefusal();
+      }
+    } else {
+      const top = results[0].section;
+      const relatedIds = top.related || [];
+      const secondary = results
+        .slice(1, 4)
+        .filter(r => r.total >= 3)
+        .map(r => r.section);
+      const seen = new Set([top.id]);
+      const alt = [];
+      for (const s of secondary.concat(SECTIONS.filter(s => relatedIds.includes(s.id)))) {
+        if (!seen.has(s.id)) { alt.push(s); seen.add(s.id); }
+        if (alt.length >= 3) break;
+      }
+      addBotAnswer(top, alt);
+    }
+  }
+  send.disabled = false;
+  input.focus();
+}
+
+form.addEventListener('submit', e => { e.preventDefault(); submit(); });
+input.addEventListener('input', () => {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+});
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    submit();
+  }
+});
+</script>

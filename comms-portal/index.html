@@ -336,8 +336,8 @@ function Portal(){
   // Determine what's showing
   const activeNav=navItems.find(n=>n.id===section);
   const activeWebMod=webSub?(webSub===webToolsModule.id?webToolsModule:webModules.find(m=>m.id===webSub)):null;
-  const iframeUrl=section==='home'?'welcome.html':section==='brand'?'brandguide.html':section==='youtube'?'youtube-tracker.html':section==='events'?'events-tracker.html':section==='templates'?'templates.html':section==='publications'?'publications.html':section==='engine'?'engine.html':activeWebMod?.href||null;
-  const showIframe=(section==='home')||(section==='brand')||(section==='youtube')||(section==='events')||(section==='templates')||(section==='publications')||(section==='engine')||activeWebMod?.href;
+  const iframeUrl=section==='home'?'welcome.html':section==='brand'?'brandguide.html':section==='youtube'?'youtube-tracker.html':section==='events'?'events-tracker.html':section==='templates'?'templates.html':section==='publications'?'publications.html':section==='engine'?'engine.html':section==='wayfinder'?'wayfinder.html':activeWebMod?.href||null;
+  const showIframe=(section==='home')||(section==='brand')||(section==='youtube')||(section==='events')||(section==='templates')||(section==='publications')||(section==='engine')||(section==='wayfinder')||activeWebMod?.href;
 
   // Title for header
   const headerTitle=activeWebMod?activeWebMod.label:section==='website'?'Website':section==='dashboard'?'Communications Portal':activeNav?.label||'';
@@ -405,14 +405,38 @@ function Portal(){
           })}
         </nav>
 
-        {sbOpen&&<div style={{padding:'14px 18px',borderTop:`1px solid ${C.border}`,fontSize:10,color:C.txtMute,lineHeight:1.6}}>
+        {/* Wayfinder — the portal's built-in "ask the guide" bot. Sits in the
+            sidebar footer so it's obvious but doesn't clutter the primary nav. */}
+        <div style={{padding:sbOpen?'12px 14px 8px':'10px 4px',borderTop:`1px solid ${C.border}`}}>
+          <button onClick={()=>nav('wayfinder')} title="Ask the Wayfinder — how do I…?"
+            style={{width:'100%',display:'flex',alignItems:'center',gap:sbOpen?10:0,padding:sbOpen?'10px 12px':'10px 0',justifyContent:sbOpen?'flex-start':'center',
+              background:section==='wayfinder'?'linear-gradient(135deg,#0d7ba0,#274f73)':'linear-gradient(135deg,#274f73,#182b3c)',
+              color:'#ffffff',border:`1.5px solid ${section==='wayfinder'?'#42c3f7':'rgba(66,195,247,0.35)'}`,borderRadius:10,cursor:'pointer',fontFamily:'inherit',
+              boxShadow:section==='wayfinder'?'0 6px 18px rgba(66,195,247,0.35)':'0 4px 12px rgba(24,43,60,0.35)',
+              transition:'all .15s ease'}}
+            onMouseEnter={e=>{if(section!=='wayfinder'){e.currentTarget.style.background='linear-gradient(135deg,#0d7ba0,#274f73)';e.currentTarget.style.borderColor='#42c3f7';}}}
+            onMouseLeave={e=>{if(section!=='wayfinder'){e.currentTarget.style.background='linear-gradient(135deg,#274f73,#182b3c)';e.currentTarget.style.borderColor='rgba(66,195,247,0.35)';}}}>
+            <div style={{width:26,height:26,borderRadius:8,background:'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              {/* Compass / help icon */}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#42c3f7" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="16 8 14 14 8 16 10 10"/>
+              </svg>
+            </div>
+            {sbOpen&&<div style={{minWidth:0,flex:1,textAlign:'left'}}>
+              <div style={{fontSize:13,fontWeight:800,letterSpacing:'.01em',lineHeight:1.2}}>Wayfinder</div>
+              <div style={{fontSize:10.5,fontWeight:500,color:'#94a3b8',lineHeight:1.35}}>Ask "how do I…?"</div>
+            </div>}
+          </button>
+        </div>
+        {sbOpen&&<div style={{padding:'6px 18px 14px',fontSize:10,color:C.txtMute,lineHeight:1.6}}>
           Maine Department of Education
         </div>}
       </aside>
 
       {/* ── Main ── */}
       <main style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',
-        background:section==='website'?'#f3f6f9':section==='brand'?'#f3f0f8':section==='templates'?'#fdf2f6':section==='commsfiles'?'#fefce8':section==='youtube'?'#fef2f2':section==='events'?'#fffbeb':section==='publications'?'#f5f3ff':section==='engine'?'#f0f9ff':'#eee6df'}}>
+        background:section==='website'?'#f3f6f9':section==='brand'?'#f3f0f8':section==='templates'?'#fdf2f6':section==='commsfiles'?'#fefce8':section==='youtube'?'#fef2f2':section==='events'?'#fffbeb':section==='publications'?'#f5f3ff':section==='engine'?'#f0f9ff':section==='wayfinder'?'#f4f2ee':'#eee6df'}}>
         <header style={{height:56,padding:'0 24px',display:'flex',alignItems:'center',gap:14,
           background:'#ffffff',borderBottom:`2px solid ${section==='website'?'#e2e8f0':section==='brand'?'#ddd6ee':section==='templates'?'#f0d6e4':section==='commsfiles'?'#ede9c8':section==='youtube'?'#f0d4d4':section==='events'?'#ede5c4':section==='publications'?'#ddd6f0':section==='engine'?'#c8e6f4':'#d4ccc4'}`,flexShrink:0,boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
           <button onClick={()=>setSbOpen(!sbOpen)} style={{background:'none',border:'none',cursor:'pointer',padding:4,borderRadius:6,display:'flex'}}>
@@ -432,10 +456,15 @@ function Portal(){
             <span style={{color:'#cbd5e1',fontSize:11}}>›</span>
             <span style={{fontSize:16,fontWeight:700,color:'#182b3c'}}>Website</span>
           </div>}
-          {!['home','dashboard','website'].includes(section)&&<div style={{display:'flex',alignItems:'center',gap:8,flex:1}}>
+          {!['home','dashboard','website','wayfinder'].includes(section)&&<div style={{display:'flex',alignItems:'center',gap:8,flex:1}}>
             <span onClick={()=>setSection('home')} style={{fontSize:13,fontWeight:500,color:'#94a3b8',cursor:'pointer'}}>Portal</span>
             <span style={{color:'#cbd5e1',fontSize:11}}>›</span>
             <span style={{fontSize:16,fontWeight:700,color:'#182b3c'}}>{activeNav?.label}</span>
+          </div>}
+          {section==='wayfinder'&&<div style={{display:'flex',alignItems:'center',gap:8,flex:1}}>
+            <span onClick={()=>setSection('home')} style={{fontSize:13,fontWeight:500,color:'#94a3b8',cursor:'pointer'}}>Portal</span>
+            <span style={{color:'#cbd5e1',fontSize:11}}>›</span>
+            <span style={{fontSize:16,fontWeight:700,color:'#182b3c'}}>Wayfinder</span>
           </div>}
           {section==='home'&&<h1 style={{fontSize:16,fontWeight:700,color:'#182b3c',flex:1}}>Communications Portal</h1>}
           {section==='dashboard'&&<div style={{display:'flex',alignItems:'center',gap:8,flex:1}}>
@@ -755,6 +784,11 @@ function Portal(){
           {/* ── BRAND GUIDE (iframe) ── */}
           {section==='brand'&&(
             <iframe src={`brandguide.html?v=${sessionV}`} style={{width:'100%',height:'100%',border:'none'}} title="Branding & Comms"/>
+          )}
+
+          {/* ── WAYFINDER (iframe) — local search bot, zero backend, zero cost ── */}
+          {section==='wayfinder'&&(
+            <iframe src={`wayfinder.html?v=${sessionV}`} style={{width:'100%',height:'100%',border:'none'}} title="Portal Wayfinder"/>
           )}
 
           {/* ── YOUTUBE TRACKER (iframe) ── */}
