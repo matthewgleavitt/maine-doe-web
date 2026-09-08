@@ -815,19 +815,58 @@
 // ─── EVENT DATA ────────────────────────────────────────
 let EVENTS = [];
 const CALENDAR_ENDPOINT = "https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec?type=calendar";
-async function loadEvents() {
+const CAL_CACHE_KEY = 'doe_calendar_events_v1';
+
+// Rehydrate from sessionStorage on load so the page paints instantly with
+// last-known events while the fresh fetch runs. Same pattern used across
+// the portal to hide Apps Script cold-start latency.
+function hydrateFromCache() {
   try {
-    const container = document.getElementById('events-container');
-    if (container) container.innerHTML = '<div class="empty"><div class="big">Loading events...</div></div>';
-    const res = await fetch(CALENDAR_ENDPOINT, { cache: 'no-store' });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    EVENTS = data.events || [];
+    const raw = sessionStorage.getItem(CAL_CACHE_KEY);
+    if (!raw) return false;
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr) || !arr.length) return false;
+    EVENTS = arr;
     populateFocusSelect();
     populateTypeSelect();
-    /* renderWidgets skipped */
+    render();
+    return true;
+  } catch(e) { return false; }
+}
+
+// Retry-once + 25s AbortController timeout — Apps Script cold-start can take
+// 5-15s and occasionally hangs. First attempt fast; second gives it room.
+async function fetchCalendarJson() {
+  const attempt = async () => {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 25000);
+    try { const r = await fetch(CALENDAR_ENDPOINT, { cache: 'no-store', signal: ctrl.signal }); return await r.json(); }
+    finally { clearTimeout(t); }
+  };
+  try { return await attempt(); }
+  catch(e) {
+    await new Promise(r => setTimeout(r, 1200));
+    return await attempt();
+  }
+}
+
+async function loadEvents() {
+  const hadCache = hydrateFromCache();
+  try {
+    const container = document.getElementById('events-container');
+    if (container && !hadCache) container.innerHTML = '<div class="empty"><div class="big">Loading events...</div></div>';
+    const data = await fetchCalendarJson();
+    if (data.error) throw new Error(data.error);
+    EVENTS = data.events || [];
+    // Persist for next visit so the return trip is instant.
+    try { sessionStorage.setItem(CAL_CACHE_KEY, JSON.stringify(EVENTS)); } catch(e){}
+    populateFocusSelect();
+    populateTypeSelect();
     render();
   } catch (err) {
+    // If we hydrated from cache, keep that view — a failed refresh shouldn't
+    // wipe events off the screen. Only show the error state on a truly cold visit.
+    if (hadCache) { console.warn('[calendar] refresh failed, keeping cached view:', err.message); return; }
     document.getElementById('events-container').innerHTML =
       '<div class="empty"><div class="big">Could not load events</div><div class="sm">' +
       String(err.message || err) + '</div></div>';

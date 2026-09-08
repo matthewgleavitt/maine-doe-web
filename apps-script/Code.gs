@@ -687,8 +687,13 @@ function doGet(e) {
       // Refresh button still passes ?refresh=1 to force a bypass.
       case 'moderation':
         ttl = 90; break;
-      // Fresh — user-facing writes should show quickly
-      case 'calendar': case 'events': case 'commons':
+      // Fresh — user-facing writes should show quickly. Calendar was 300s
+      // but the warmer runs every 10 min → entries expired mid-cycle and the
+      // next visitor paid Apps Script cold-start + Sheet read + recurrence
+      // expansion. Bumped to 900s so cache always outlives the warmer.
+      case 'calendar':
+        ttl = 900; break;
+      case 'events': case 'commons':
         ttl = 300; break;
       // Real-time — manage view needs to reflect the edit the user JUST made
       case 'my_events':
@@ -2079,6 +2084,17 @@ function warmCache() {
     cache.put('portal_moderation_30', modData, 90);
     warmed.push('moderation');
   } catch(e) { Logger.log('Warm moderation failed: ' + e.message); }
+
+  // Calendar feed — expensive because getPublishedEvents iterates the
+  // EventSubmissions sheet AND expands every recurring series. Went from
+  // fast to slow after 25+ new rows landed (BTAM alone is 16 dates). Warm
+  // it every cycle so the public calendar page is never cold. TTL 900s
+  // keeps entries alive between warmings.
+  try {
+    var calData = JSON.stringify(getPublishedEvents());
+    cache.put('portal_calendar_30', calData, 900);
+    warmed.push('calendar');
+  } catch(e) { Logger.log('Warm calendar failed: ' + e.message); }
 
   // Newsroom stats — 60 min cache. Payload can spill over 100KB (article
   // list + featured images), so store chunked.
