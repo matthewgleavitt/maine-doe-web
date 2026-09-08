@@ -70,13 +70,21 @@ function App(){
   const [loading,setLoading]=useState(true);
   const [search,setSearch]=useState('');
   const [catFilter,setCatFilter]=useState('');
+  const [refreshing,setRefreshing]=useState(false);
 
-  useEffect(()=>{
-    (async()=>{
-      try{const r=await fetch(API+'?type=templates');const j=await r.json();setData(j.rows||[]);}catch(e){}
-      setLoading(false);
-    })();
-  },[]);
+  async function loadTemplates(forceFresh){
+    if(forceFresh) setRefreshing(true); else setLoading(true);
+    try{
+      const url=API+'?type=templates'+(forceFresh?'&refresh=1&_='+Date.now():'');
+      const r=await fetch(url);
+      const j=await r.json();
+      setData(j.rows||[]);
+    }catch(e){}
+    setLoading(false);
+    setRefreshing(false);
+  }
+
+  useEffect(()=>{ loadTemplates(false); },[]);
 
   const categories=useMemo(()=>[...new Set(data.map(t=>t.category).filter(Boolean))],[data]);
 
@@ -139,10 +147,17 @@ function App(){
         </button>;
       })}
 
-      <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8,padding:'8px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}30`,minWidth:220}}>
-        <Sv d={ic.search} size={16} color={B.txtMute}/>
-        <input type="text" placeholder="Search templates..." value={search} onChange={e=>setSearch(e.target.value)} style={{border:'none',outline:'none',flex:1,fontSize:13,color:B.txt,fontWeight:500,background:'transparent'}}/>
-        {search&&<span onClick={()=>setSearch('')} style={{cursor:'pointer'}}><Sv d={ic.x} size={14} color={B.txtMute}/></span>}
+      <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8}}>
+        <button onClick={()=>loadTemplates(true)} disabled={refreshing} title="Bypass the cache and refetch templates from the Sheet"
+          style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:12.5,fontWeight:700,cursor:refreshing?'default':'pointer',fontFamily:'inherit',opacity:refreshing?0.6:1}}>
+          <Sv d={refreshing?ic.spin:["M23 4v6h-6","M1 20v-6h6","M20.49 9A9 9 0 006 5.3L1 10","M3.51 15A9 9 0 0018 18.7L23 14"]} size={13} color={B.txtSec} style={refreshing?{animation:'spin 1s linear infinite'}:{}}/>
+          {refreshing?'Refreshing…':'Refresh'}
+        </button>
+        <div style={{display:'flex',alignItems:'center',gap:8,padding:'8px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}30`,minWidth:220}}>
+          <Sv d={ic.search} size={16} color={B.txtMute}/>
+          <input type="text" placeholder="Search templates..." value={search} onChange={e=>setSearch(e.target.value)} style={{border:'none',outline:'none',flex:1,fontSize:13,color:B.txt,fontWeight:500,background:'transparent'}}/>
+          {search&&<span onClick={()=>setSearch('')} style={{cursor:'pointer'}}><Sv d={ic.x} size={14} color={B.txtMute}/></span>}
+        </div>
       </div>
     </div>
 
