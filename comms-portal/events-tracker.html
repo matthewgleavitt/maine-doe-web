@@ -438,6 +438,7 @@ function ModalPreview({form}){
 
 // ---- Full submission/edit form ----
 function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy,draftSavedAt,onSaveDraft}){
+  const [saveFlash,setSaveFlash]=useState(null); // {tone:'ok'|'err', text} — flashes for ~3s after clicking Save draft
   const uf=(k,v)=>setForm(p=>({...p,[k]:v}));
   const err=useMemo(()=>{
     const e={};
@@ -557,19 +558,31 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy,draft
             <Btn onClick={onSubmit} disabled={!canSubmit||busy} variant={editing?'success':'primary'} icon={editing?ic.save:ic.check}>
               {busy?'Working...':(editing?'Save changes':'Submit event')}
             </Btn>
-            {onSaveDraft&&<Btn onClick={onSaveDraft} variant="ghost" icon={ic.save}>Save draft</Btn>}
+            {onSaveDraft&&<Btn onClick={()=>{
+              const result=onSaveDraft();
+              if(result==='saved') setSaveFlash({tone:'ok',text:'Draft saved'});
+              else if(result==='empty') setSaveFlash({tone:'err',text:'Add a title, description, or contact name first'});
+              else setSaveFlash({tone:'ok',text:'Draft saved'});
+              setTimeout(()=>setSaveFlash(null),3000);
+            }} variant="ghost" icon={ic.save}>Save draft</Btn>}
             {editing&&onDelete&&<Btn onClick={onDelete} variant="danger" icon={ic.trash}>Cancel this event</Btn>}
           </div>
-          {onSaveDraft&&<div style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:11.5,color:B.ink3,fontWeight:600}}>
-            {draftSavedAt?<>
-              <span style={{width:7,height:7,borderRadius:'50%',background:'#16a34a',display:'inline-block'}}/>
+          {onSaveDraft&&<div style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:11.5,fontWeight:600,color:saveFlash?(saveFlash.tone==='ok'?'#166534':'#b91c1c'):B.ink3}}>
+            {saveFlash?<>
+              <span style={{width:8,height:8,borderRadius:'50%',background:saveFlash.tone==='ok'?'#16a34a':'#dc2626',display:'inline-block'}}/>
+              {saveFlash.text}
+            </>:draftSavedAt?<>
+              <span style={{width:8,height:8,borderRadius:'50%',background:'#16a34a',display:'inline-block'}}/>
               Draft saved {formatRelativeTime(draftSavedAt)}
             </>:<>
-              <span style={{width:7,height:7,borderRadius:'50%',background:'#cbd5e1',display:'inline-block'}}/>
+              <span style={{width:8,height:8,borderRadius:'50%',background:'#cbd5e1',display:'inline-block'}}/>
               Drafts auto-save as you type
             </>}
           </div>}
         </div>
+        {onSaveDraft&&<div style={{marginTop:12,padding:'10px 14px',borderRadius:8,background:'#f8fafc',border:`1px solid ${B.rule}`,fontSize:12,color:B.ink2,fontWeight:500,lineHeight:1.55}}>
+          <strong style={{color:B.navy}}>Drafts are saved to your browser only.</strong> To find them again later, come back to this device, click <em>Edit my events</em>, and enter the <em>same contact email you used on this form</em>{form.contactEmail?<> — <code style={{background:'#e2e8f0',padding:'1px 6px',borderRadius:3,fontSize:11.5,fontFamily:'monospace'}}>{form.contactEmail}</code></>:<> (empty right now — <strong style={{color:'#b45309'}}>drafts without a contact email show up for everyone who checks their events</strong>, so fill it in when you can)</>}.
+        </div>}
         {Object.keys(err).length>0&&<Callout tone="warn" title="Fix these before submitting">
           {Object.keys(err).map(k=><div key={k}>• {k}: {err[k]}</div>)}
         </Callout>}
@@ -1114,10 +1127,16 @@ function App(){
         editing={!!editing} busy={busy}
         draftSavedAt={draftSavedAt}
         onSaveDraft={editing?null:()=>{
-          if(!activeDraftId) return;
+          if(!activeDraftId) return 'empty';
           upsertDraft(activeDraftId, form);
           const stored=loadDrafts().find(d=>d.id===activeDraftId);
-          if(stored){ setDraftSavedAt(stored.updatedAt); setDraftsVersion(v=>v+1); }
+          if(stored){
+            setDraftSavedAt(stored.updatedAt);
+            setDraftsVersion(v=>v+1);
+            return 'saved';
+          }
+          // upsertDraft skipped it — the form has no meaningful content yet
+          return 'empty';
         }}/>
     </Modal>
 
