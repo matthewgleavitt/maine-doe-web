@@ -403,13 +403,12 @@
       <h1>Portal Wayfinder</h1>
       <div class="sub">Ask where to find something in the Comms Portal</div>
     </div>
-    <div class="pill">In-browser · No account · No cost</div>
   </header>
 
   <main class="thread" id="thread">
     <div class="starter" id="starter">
-      <h2>Point me at what you need</h2>
-      <p>I know the whole portal — every tab, button, brand rule, contact, workflow, and file naming convention. Try one of these or type your own question.</p>
+      <h2>What are you looking for?</h2>
+      <p>Ask about sections, brand rules, contacts, workflows, file conventions, or the difference between two things. Pick a starter or type a question.</p>
       <div class="hints" id="hints"></div>
     </div>
   </main>
@@ -421,7 +420,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
       </button>
     </div>
-    <div class="foot">Only answers from the portal navigation guide · Nothing sent to any server</div>
+    <div class="foot">Portal navigation guide only</div>
   </form>
 </div>
 
@@ -1204,7 +1203,7 @@ function addComparisonFallback() {
   div.innerHTML = `
     <div class="avatar-row"><span class="dot"></span>Portal Wayfinder</div>
     <div class="body">
-      <div>Sounds like you're comparing two things — I can only pull up comparisons I've been taught. Pick one, or rephrase with both names in the question:</div>
+      <div>That reads like a comparison question. Pick a pair from the portal — or rephrase with both names in the question:</div>
       <div class="also">${compareChips}</div>
     </div>`;
   thread.appendChild(div);
