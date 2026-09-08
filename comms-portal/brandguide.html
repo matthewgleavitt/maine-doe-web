@@ -46,7 +46,7 @@ const tabs=[
   {id:'type',label:'Typography',icon:["M4 7V4h16v3","M9 20h6","M12 4v16"]},
   {id:'voice',label:'Voice',icon:["M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"]},
   {id:'language',label:'Language',icon:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"]},
-  {id:'logos',label:'Logos',icon:["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"]},
+  {id:'logos',label:'Logos & Backgrounds',icon:["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"]},
   {id:'images',label:'Images',icon:["M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z","M8.5 10a1.5 1.5 0 100-3 1.5 1.5 0 000 3z","M21 15l-5-5L5 21"]},
   {id:'correspondence',label:'Correspondence',icon:["M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z","M22 6l-10 7L2 6"]},
   {id:'resources',label:'Resources',icon:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"]},
@@ -447,21 +447,105 @@ function BrandGuide(){
 
         {/* ── LOGOS ── */}
         {tab==='logos'&&<div>
-          <SectionHead title="Logos" sub="Think of a logo like a flag. Logos identify and brand an organization, product, or campaign. The Maine DOE logo must always be used."/>
+          <SectionHead title="Logos & Backgrounds" sub="Think of a logo like a flag. Logos identify and brand an organization, product, or campaign. The Maine DOE logo must always be used."/>
 
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
-            <Card accent={B.teal}>
-              <Pill color={B.teal}>Primary</Pill>
-              <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'10px 0 6px'}}>Official logo</h4>
-              <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:0}}>Used for all official documents, letters, contracts, forms, presentations, promotional materials (print & digital), and digital spaces including websites, systems, social platforms, and hubs (e.g., NEO).</p>
-            </Card>
-            <Card accent={B.teal}>
-              <Pill color={B.teal}>Primary</Pill>
-              <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'10px 0 6px'}}>Informal logo</h4>
-              <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:0}}>Used in more informal ways: when the official logo doesn't fit, when square orientation works better, or when scaled small (the "DOE" shows up better as an icon). Example: Facebook profile picture.</p>
-            </Card>
+          {/* ── Official logo variants ── */}
+          <SubHead>Official logo</SubHead>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:22}}>
+            {[
+              {name:'Official logo — color',variant:'Rounded box',bg:'#ffffff',
+                src:'https://gateway.maine.gov/doe/communications/files/Maine%20DOE%20Official%20Logo%20%28Rounded%20Box%29.png',
+                desc:'Standard full-color logo with the rounded starburst tile. Use on light backgrounds — the primary variant for most documents, presentations, and digital use.',
+                dl:'Maine DOE Official Logo (Rounded Box).png'},
+              {name:'Official logo — transparent',variant:'For dark backgrounds',bg:'#182b3c',
+                src:'https://gateway.maine.gov/doe/communications/files/Maine%20DOE%20Official%20Logo%20Transparent.png',
+                desc:'White/light-outlined variant with a transparent background. Use when placing the logo on dark or photographic backgrounds so it stays legible.',
+                dl:'Maine DOE Official Logo Transparent.png'},
+            ].map((L,i)=>(
+              <div key={i} style={{background:B.wh,borderRadius:14,border:`1.5px solid ${B.border}55`,overflow:'hidden',boxShadow:'0 2px 10px rgba(0,0,0,0.04)',display:'flex',flexDirection:'column'}}>
+                {/* Preview */}
+                <div style={{height:160,background:L.bg,display:'flex',alignItems:'center',justifyContent:'center',padding:20,borderBottom:`1px solid ${B.border}30`,
+                  backgroundImage:L.bg==='#ffffff'?'linear-gradient(45deg, #f8fafc 25%, transparent 25%), linear-gradient(-45deg, #f8fafc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f8fafc 75%), linear-gradient(-45deg, transparent 75%, #f8fafc 75%)':'none',
+                  backgroundSize:L.bg==='#ffffff'?'12px 12px':'auto',
+                  backgroundPosition:L.bg==='#ffffff'?'0 0, 0 6px, 6px -6px, -6px 0':'auto'}}>
+                  <img src={L.src} alt={L.name} style={{maxWidth:'100%',maxHeight:'100%',objectFit:'contain'}}
+                    onError={e=>{e.currentTarget.style.display='none';e.currentTarget.parentElement.innerHTML+='<div style=\"color:'+(L.bg==='#182b3c'?'#94a3b8':B.txtMute)+';font-size:11.5px;font-weight:600;text-align:center;line-height:1.5\">Preview unavailable<br/>(check filename on the FTP)</div>';}}/>
+                </div>
+                {/* Meta + download */}
+                <div style={{padding:'14px 16px 16px',display:'flex',flexDirection:'column',gap:8,flex:1}}>
+                  <div><Pill color={B.teal}>{L.variant}</Pill></div>
+                  <h4 style={{fontSize:15,fontWeight:800,color:B.navy,margin:0,letterSpacing:'-0.005em'}}>{L.name}</h4>
+                  <p style={{fontSize:12.5,color:B.txtMute,lineHeight:1.55,margin:0,fontWeight:500,flex:1}}>{L.desc}</p>
+                  <a href={L.src} download={L.dl} target="_blank" rel="noopener noreferrer"
+                    style={{marginTop:4,display:'inline-flex',alignItems:'center',gap:6,fontSize:12,fontWeight:700,color:'#ffffff',textDecoration:'none',padding:'8px 14px',borderRadius:8,border:`2px solid ${B.tealDk}`,background:B.tealDk,boxShadow:'0 3px 10px rgba(45,168,216,0.3)',alignSelf:'flex-start'}}>
+                    <I d={["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"]} size={14} color="#ffffff"/> Download PNG
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
 
+          {/* ── Informal logo ── */}
+          <SubHead>Informal logo</SubHead>
+          <div style={{display:'grid',gridTemplateColumns:'1fr',gap:16,marginBottom:22}}>
+            {[
+              {name:'Informal logo',variant:'Primary',
+                src:'https://gateway.maine.gov/doe/communications/files/Maine%20DOE%20Informal%20Logo.png',
+                desc:'Square rounded-corner mark with the "Maine DOE" stack over the starburst. Use when the official logo doesn\'t fit, when square orientation works better, or when scaled small (the "DOE" reads better as an icon). Example: Facebook profile picture.',
+                dl:'Maine DOE Informal Logo.png'},
+            ].map((L,i)=>(
+              <div key={i} style={{background:B.wh,borderRadius:14,border:`1.5px solid ${B.border}55`,overflow:'hidden',boxShadow:'0 2px 10px rgba(0,0,0,0.04)',display:'grid',gridTemplateColumns:'180px 1fr',alignItems:'stretch'}}>
+                <div style={{background:'#ffffff',display:'flex',alignItems:'center',justifyContent:'center',padding:16,borderRight:`1px solid ${B.border}30`,
+                  backgroundImage:'linear-gradient(45deg, #f8fafc 25%, transparent 25%), linear-gradient(-45deg, #f8fafc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f8fafc 75%), linear-gradient(-45deg, transparent 75%, #f8fafc 75%)',
+                  backgroundSize:'12px 12px',backgroundPosition:'0 0, 0 6px, 6px -6px, -6px 0'}}>
+                  <img src={L.src} alt={L.name} style={{maxWidth:'100%',maxHeight:150,objectFit:'contain'}}/>
+                </div>
+                <div style={{padding:'14px 18px 16px',display:'flex',flexDirection:'column',gap:8}}>
+                  <div><Pill color={B.teal}>{L.variant}</Pill></div>
+                  <h4 style={{fontSize:15,fontWeight:800,color:B.navy,margin:0,letterSpacing:'-0.005em'}}>{L.name}</h4>
+                  <p style={{fontSize:12.5,color:B.txtMute,lineHeight:1.55,margin:0,fontWeight:500}}>{L.desc}</p>
+                  <a href={L.src} download={L.dl} target="_blank" rel="noopener noreferrer"
+                    style={{marginTop:4,display:'inline-flex',alignItems:'center',gap:6,fontSize:12,fontWeight:700,color:'#ffffff',textDecoration:'none',padding:'8px 14px',borderRadius:8,border:`2px solid ${B.tealDk}`,background:B.tealDk,boxShadow:'0 3px 10px rgba(45,168,216,0.3)',alignSelf:'flex-start'}}>
+                    <I d={["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"]} size={14} color="#ffffff"/> Download PNG
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Virtual backgrounds ── */}
+          <SubHead accent="#8b5cf6">Virtual backgrounds</SubHead>
+          <p style={{fontSize:13,color:B.txtMute,lineHeight:1.6,margin:'0 0 14px',fontWeight:500}}>
+            Use for Zoom, Teams, video calls, and photo step-and-repeats. 16:9 at high resolution — should scale cleanly to any display.
+          </p>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:22}}>
+            {[
+              {name:'Generic virtual background 1',
+                src:'https://gateway.maine.gov/doe/communications/files/Maine%20DOE%20Generic%20Virtual%20Background%201.png',
+                desc:'Step-and-repeat pattern with the horizontal Maine DOE logo and gray stars over a navy field. Use for event backdrops, photo booths, or busier meeting backgrounds.',
+                dl:'Maine DOE Generic Virtual Background 1.png'},
+              {name:'Generic virtual background 2',
+                src:'https://gateway.maine.gov/doe/communications/files/Maine%20DOE%20Generic%20Virtual%20Background%202.png',
+                desc:'Cleaner dark-navy background with the starburst motif in the corner and the framed logo in the top-left. Use for presentations, keynote slides, or restrained video-call backgrounds.',
+                dl:'Maine DOE Generic Virtual Background 2.png'},
+            ].map((B2,i)=>(
+              <div key={i} style={{background:B.wh,borderRadius:14,border:`1.5px solid ${B.border}55`,overflow:'hidden',boxShadow:'0 2px 10px rgba(0,0,0,0.04)',display:'flex',flexDirection:'column'}}>
+                <div style={{aspectRatio:'16/9',background:'#182b3c',position:'relative',overflow:'hidden'}}>
+                  <img src={B2.src} alt={B2.name} style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}/>
+                </div>
+                <div style={{padding:'14px 16px 16px',display:'flex',flexDirection:'column',gap:8,flex:1}}>
+                  <h4 style={{fontSize:14.5,fontWeight:800,color:B.navy,margin:0,letterSpacing:'-0.005em'}}>{B2.name}</h4>
+                  <p style={{fontSize:12,color:B.txtMute,lineHeight:1.55,margin:0,fontWeight:500,flex:1}}>{B2.desc}</p>
+                  <a href={B2.src} download={B2.dl} target="_blank" rel="noopener noreferrer"
+                    style={{marginTop:4,display:'inline-flex',alignItems:'center',gap:6,fontSize:12,fontWeight:700,color:'#ffffff',textDecoration:'none',padding:'8px 14px',borderRadius:8,border:'2px solid #7c3aed',background:'#7c3aed',boxShadow:'0 3px 10px rgba(124,58,237,0.3)',alignSelf:'flex-start'}}>
+                    <I d={["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M7 10l5 5 5-5","M12 15V3"]} size={14} color="#ffffff"/> Download PNG
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Secondary logos ── */}
           <Card style={{marginBottom:20}}>
             <Pill>Secondary</Pill>
             <h4 style={{fontSize:15,fontWeight:700,color:B.navy,margin:'10px 0 8px'}}>Office / team / initiative logos</h4>
@@ -473,6 +557,7 @@ function BrandGuide(){
             ]}/>
           </Card>
 
+          {/* ── Rules ── */}
           <Card style={{marginBottom:20}}>
             <SubHead>Rules for all logos</SubHead>
             {['Primary logo required on all official documents, presentations, promotional materials, and digital spaces.',
@@ -487,7 +572,7 @@ function BrandGuide(){
             ))}
           </Card>
 
-          <Tip>All logos live in the <strong>DOE Team Logos & Images SharePoint folder</strong>. Direct download links coming soon — check the Resources tab in the meantime.</Tip>
+          <Tip>Additional office/team logos and full-resolution source files live in the <strong>DOE Team Logos & Images SharePoint folder</strong>. Contact Comms if you need a variant that isn't here.</Tip>
         </div>}
 
         {/* ── IMAGES ── */}
