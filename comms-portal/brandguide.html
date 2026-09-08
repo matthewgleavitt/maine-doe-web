@@ -450,7 +450,18 @@ function BrandGuide(){
           <SectionHead title="Logos & Backgrounds" sub="Think of a logo like a flag. Logos identify and brand an organization, product, or campaign. The Maine DOE logo must always be used."/>
 
           {/* ── Official logo variants ── */}
-          <SubHead>Official logo</SubHead>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,flexWrap:'wrap',marginBottom:14}}>
+            <SubHead style={{marginBottom:0}}>Official logo</SubHead>
+            <a href="https://stateofmaine.sharepoint.com/teams/DOETeam/Shared%20Documents/Forms/AllItems.aspx?id=%2Fteams%2FDOETeam%2FShared%20Documents%2FCommunications%2FLogos%20%26%20Images%2FLogos%2FOfficial%20Logos%20%26%20Assets&viewid=2fb9f062%2D58aa%2D4994%2Db3c2%2Df98d3fdf6736&FolderCTID=0x012000ADBF2BC28B2B4744ABBDDC34212DE6AD"
+              target="_blank" rel="noopener noreferrer"
+              style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:8,border:`1.5px solid ${B.teal}55`,background:`${B.teal}12`,color:B.tealDk,textDecoration:'none',fontSize:12,fontWeight:700,whiteSpace:'nowrap',flexShrink:0}}
+              onMouseEnter={e=>{e.currentTarget.style.background=`${B.teal}25`;e.currentTarget.style.borderColor=`${B.teal}90`;}}
+              onMouseLeave={e=>{e.currentTarget.style.background=`${B.teal}12`;e.currentTarget.style.borderColor=`${B.teal}55`;}}>
+              <I d={["M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"]} size={13} color={B.tealDk}/>
+              Browse all logos in SharePoint
+              <I d={["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"]} size={11} color={B.tealDk}/>
+            </a>
+          </div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:22}}>
             {[
               {name:'Official logo — color',variant:'With box',bg:'#ffffff',
@@ -525,7 +536,7 @@ function BrandGuide(){
               onMouseEnter={e=>{e.currentTarget.style.background='#7c3aed20';e.currentTarget.style.borderColor='#7c3aed80';}}
               onMouseLeave={e=>{e.currentTarget.style.background='#7c3aed10';e.currentTarget.style.borderColor='#7c3aed40';}}>
               <I d={["M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"]} size={13} color="#5b21b6"/>
-              Browse all in SharePoint
+              Browse all team backgrounds in SharePoint
               <I d={["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"]} size={11} color="#5b21b6"/>
             </a>
           </div>
@@ -566,15 +577,6 @@ function BrandGuide(){
               'Must be used alongside a Maine DOE primary logo.',
               'May be used for presentations, swag, and other promotional materials.',
             ]}/>
-            <a href="https://stateofmaine.sharepoint.com/teams/DOETeam/Shared%20Documents/Forms/AllItems.aspx?id=%2Fteams%2FDOETeam%2FShared%20Documents%2FCommunications%2FLogos%20%26%20Images%2FLogos%2FOfficial%20Logos%20%26%20Assets&viewid=2fb9f062%2D58aa%2D4994%2Db3c2%2Df98d3fdf6736&FolderCTID=0x012000ADBF2BC28B2B4744ABBDDC34212DE6AD"
-              target="_blank" rel="noopener noreferrer"
-              style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:8,marginTop:14,border:`1.5px solid ${B.teal}55`,background:`${B.teal}12`,color:B.tealDk,textDecoration:'none',fontSize:12,fontWeight:700}}
-              onMouseEnter={e=>{e.currentTarget.style.background=`${B.teal}25`;e.currentTarget.style.borderColor=`${B.teal}90`;}}
-              onMouseLeave={e=>{e.currentTarget.style.background=`${B.teal}12`;e.currentTarget.style.borderColor=`${B.teal}55`;}}>
-              <I d={["M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"]} size={13} color={B.tealDk}/>
-              Browse office / team logos in SharePoint
-              <I d={["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"]} size={11} color={B.tealDk}/>
-            </a>
           </Card>
 
           {/* ── Rules ── */}
