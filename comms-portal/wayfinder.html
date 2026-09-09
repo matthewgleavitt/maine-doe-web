@@ -107,6 +107,34 @@
     font-weight: 500;
     margin-top: 2px;
   }
+  .brand h1 .beta-pill {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal-ink);
+    background: color-mix(in srgb, var(--teal) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+    vertical-align: 2px;
+  }
+  .feedback-note {
+    margin: 4px 4px 8px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--teal) 6%, var(--card));
+    border: 1px dashed color-mix(in srgb, var(--teal) 45%, transparent);
+    font-size: 12.5px;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+  .feedback-note strong { color: var(--teal-ink); }
+  .feedback-note a { color: var(--teal-ink); font-weight: 600; text-decoration: none; }
+  .feedback-note a:hover { text-decoration: underline; }
   .brand .pill {
     font-size: 10.5px;
     font-weight: 700;
@@ -400,7 +428,7 @@
   <header class="brand">
     <div class="mark">DOE</div>
     <div class="who">
-      <h1>Portal Wayfinder</h1>
+      <h1>Portal Wayfinder<span class="beta-pill">Beta</span></h1>
       <div class="sub">Ask where to find something in the Comms Portal</div>
     </div>
   </header>
@@ -412,6 +440,10 @@
       <div class="hints" id="hints"></div>
     </div>
   </main>
+
+  <div class="feedback-note">
+    <strong>Wayfinder still learning.</strong> If you're looking for something and the Wayfinder doesn't point you the right way, let the Comms Team know — <a href="mailto:rachel.paling@maine.gov">Rachel Paling</a> or <a href="mailto:matthew.g.leavitt@maine.gov">Matt Leavitt</a> — and we'll teach it.
+  </div>
 
   <form class="composer" id="composer" autocomplete="off">
     <div class="box">
@@ -831,6 +863,18 @@ const SECTIONS = [
     related: ['contact']
   },
   {
+    id: 'headshots',
+    pointer: 'Sidebar → Comms Files (SharePoint) — or contact the Comms Team',
+    keywords: ['headshot', 'headshots', 'staff photo', 'staff photos', 'staff picture', 'profile picture', 'professional photo', 'employee photo', 'team photo', 'portrait', 'my photo', 'my picture'],
+    body: `<div>Staff headshots and team photos live in the <strong>Comms Files</strong> SharePoint folder (sidebar → Comms Files). Ask your team lead or the Comms Team where to find your specific folder.</div>
+      <div class="quote"><em>Need a headshot taken?</em>Contact the Communications Team. AI-generated or doctored headshots are strongly discouraged per the brand guide.</div>
+      <ul>
+        <li><strong>Rachel Paling</strong> — <code>rachel.paling@maine.gov</code></li>
+        <li><strong>Matt Leavitt</strong> — <code>matthew.g.leavitt@maine.gov</code></li>
+      </ul>`,
+    related: ['contact', 'images', 'logos']
+  },
+  {
     id: 'tools',
     pointer: 'Website → Tools',
     keywords: ['tools', 'wcag', 'accessibility', 'alt text', 'dead link', 'orphan', 'remediator'],
@@ -1073,10 +1117,24 @@ function score(query, section, isCompareQuery) {
   let total = 0;
   const matched = new Set();
 
+  // Break keyword text into individual tokens so we can do bidirectional
+  // substring matching — "headshots" (query) should hit "headshot" (keyword).
+  const keywordTokens = keywordText.split(/[\s,]+/).filter(Boolean);
   for (const q of qTokens) {
-    if (keywordText.split(/[\s,]+/).includes(q)) { total += 6; matched.add(q); continue; }
+    // 1. Exact keyword token match — strongest signal
+    if (keywordTokens.includes(q)) { total += 6; matched.add(q); continue; }
+    // 2. Bidirectional substring match against any keyword token —
+    //    handles plurals ("headshots" ↔ "headshot"), gerunds ("naming" ↔
+    //    "name"), etc. Only credit when both sides are ≥4 chars so short
+    //    words don't false-match ("ai" matching "administrator").
+    if (q.length >= 4 && keywordTokens.some(k => k.length >= 4 && (k.includes(q) || q.includes(k)))) {
+      total += 4; matched.add(q); continue;
+    }
+    // 3. Full-phrase keyword substring (multi-word keywords like "staff handbook")
     if (keywordText.includes(q)) { total += 4; matched.add(q); continue; }
+    // 4. Pointer path match (e.g., "handbook" in "Home hero → Staff Handbook")
     if (pointerText.includes(q)) { total += 3; matched.add(q); continue; }
+    // 5. Body substring — weakest signal
     if (bodyText.includes(q)) { total += 1; matched.add(q); }
   }
   if (matched.size > 1) total += matched.size * 1.5;
@@ -1112,11 +1170,17 @@ function bestMatches(query) {
   return { results, isCompareQuery };
 }
 
-// Confidence: enough score AND at least one meaningful match
+// Confidence gate. Was < 4 (a single keyword substring match could win) but
+// that let queries like "where do I find staff headshots" route on just the
+// "staff" ↔ "staff handbook" substring hit. Now: require a real keyword-token
+// match (≥6 pts) OR at least two matched query tokens to surface a section.
 function shouldRefuse(results) {
   if (!results.length) return true;
   const top = results[0];
-  return top.total < 4 || top.matched.length === 0;
+  if (top.matched.length === 0) return true;
+  if (top.total >= 6) return false;         // one strong keyword-token hit
+  if (top.matched.length >= 2) return false; // two weak hits corroborate
+  return true;
 }
 
 // ═══════════════════════════════════════════════════════
