@@ -104,12 +104,21 @@
   html.embed-mode .card-grid::-webkit-scrollbar { height: 8px; }
   html.embed-mode .card-grid::-webkit-scrollbar-thumb { background: rgba(24,43,60,0.2); border-radius: 4px; }
   html.embed-mode .card-grid > .card {
-    min-width: 320px;
-    max-width: 320px;
-    flex: 0 0 320px;
+    min-width: 300px;
+    max-width: 300px;
+    flex: 0 0 300px;
     scroll-snap-align: start;
     margin-bottom: 0;
   }
+  /* Trim card internals so the whole card fits comfortably in a ~460px iframe */
+  html.embed-mode .card .card-inner { padding: 14px 16px 14px !important; }
+  html.embed-mode .card .card-title { font-size: 15px !important; line-height: 1.25 !important; margin: 6px 0 8px !important; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+  html.embed-mode .card .card-desc { font-size: 12px !important; line-height: 1.45 !important; -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin: 6px 0 !important; }
+  html.embed-mode .card .card-hr { margin: 6px 0 !important; }
+  html.embed-mode .card .card-chips { gap: 6px !important; }
+  html.embed-mode .card .card-banner { padding: 10px 14px !important; }
+  html.embed-mode .card .focus-strip { padding: 5px 14px !important; font-size: 10.5px !important; }
+  html.embed-mode .card .card-foot { margin-top: 8px !important; }
   /* Prev/next arrow buttons — injected by JS when in embed mode */
   html.embed-mode .carousel-arrow {
     position: absolute;
@@ -1154,9 +1163,12 @@ function renderCards() {
   const events = filtered();
   if (!events.length) return renderEmpty();
   const container = document.getElementById('events-container');
-  container.innerHTML = `<div class="card-grid" style="padding-top:40px">${events.map(cardHTML).join('')}</div>`;
-  // Embed mode: add prev/next arrows + wire them to scroll the card row.
-  if (document.documentElement.classList.contains('embed-mode')) mountCarouselArrows(container);
+  // Skip the extra 40px top padding when we're in embed mode — the carousel
+  // is height-constrained and every pixel counts.
+  const isEmbed = document.documentElement.classList.contains('embed-mode');
+  const gridStyle = isEmbed ? '' : 'padding-top:40px';
+  container.innerHTML = `<div class="card-grid" style="${gridStyle}">${events.map(cardHTML).join('')}</div>`;
+  if (isEmbed) mountCarouselArrows(container);
 }
 
 function mountCarouselArrows(container) {
