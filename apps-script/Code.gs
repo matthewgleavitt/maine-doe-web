@@ -2745,6 +2745,7 @@ function _flatten(base, occ) {
     occurrenceKey: base.id + '_' + occ.date + '_' + (occ.startTime || ''),
     title: base.title,
     focusArea: base.focusArea,
+    programInitiative: base.programInitiative,
     type: base.type,
     date: occ.date,
     startTime: occ.startTime,
