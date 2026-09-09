@@ -76,20 +76,25 @@
   .doe-bar .crumbs { opacity: 0.65; font-weight: 500; font-size: 12px; }
   .doe-bar .crumbs strong { color: #eee6df; opacity: 1; font-weight: 700; }
   .container { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
-  /* Embed mode — used when the calendar is loaded in an iframe on another
-     page (?embed=1). Drops the page heading + skip link + filter bar so the
-     iframe just shows the events themselves, laid out as a horizontal
-     carousel (prev/next arrows on either side, snap-scroll on drag/touch).
-     Team pages get a compact "just the cards" widget instead of the full
-     calendar chrome. */
+  /* Embed mode — used when the calendar is loaded in an iframe.
+     Two variants:
+       ?embed=1     → hide just the page heading + skip link. Filters and the
+                       full 3-col grid stay. Use this to drop the full
+                       calendar into a maine.gov page that already has its
+                       own title (e.g., the public /doe/calendar page).
+       ?carousel=1 → additionally converts the card grid into a compact
+                       horizontal carousel and hides the filter bar. Use
+                       this for narrow team-specific widgets. */
   html.embed-mode .hero-compact,
-  html.embed-mode .skip-link,
-  html.embed-mode .filter-bar,
-  html.embed-mode #program-filter-banner { display: none !important; }
-  html.embed-mode .container { padding: 0 !important; max-width: none; }
-  html.embed-mode #events-container { position: relative; padding: 8px 4px 16px; }
+  html.embed-mode .skip-link { display: none !important; }
+  html.embed-mode .container { padding-top: 0 !important; }
+  /* Carousel-only chrome hiding */
+  html.carousel-mode .filter-bar,
+  html.carousel-mode #program-filter-banner { display: none !important; }
+  html.carousel-mode .container { padding: 0 !important; max-width: none; }
+  html.carousel-mode #events-container { position: relative; padding: 8px 4px 16px; }
   /* Carousel layout — horizontal scrolling row of fixed-width cards */
-  html.embed-mode .card-grid {
+  html.carousel-mode .card-grid {
     display: flex !important;
     flex-wrap: nowrap !important;
     gap: 16px !important;
@@ -101,9 +106,9 @@
     padding: 4px 40px 8px !important;
     scrollbar-width: thin;
   }
-  html.embed-mode .card-grid::-webkit-scrollbar { height: 8px; }
-  html.embed-mode .card-grid::-webkit-scrollbar-thumb { background: rgba(24,43,60,0.2); border-radius: 4px; }
-  html.embed-mode .card-grid > .card {
+  html.carousel-mode .card-grid::-webkit-scrollbar { height: 8px; }
+  html.carousel-mode .card-grid::-webkit-scrollbar-thumb { background: rgba(24,43,60,0.2); border-radius: 4px; }
+  html.carousel-mode .card-grid > .card {
     min-width: 300px;
     max-width: 300px;
     flex: 0 0 300px;
@@ -111,16 +116,16 @@
     margin-bottom: 0;
   }
   /* Trim card internals so the whole card fits comfortably in a ~460px iframe */
-  html.embed-mode .card .card-inner { padding: 14px 16px 14px !important; }
-  html.embed-mode .card .card-title { font-size: 15px !important; line-height: 1.25 !important; margin: 6px 0 8px !important; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
-  html.embed-mode .card .card-desc { font-size: 12px !important; line-height: 1.45 !important; -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin: 6px 0 !important; }
-  html.embed-mode .card .card-hr { margin: 6px 0 !important; }
-  html.embed-mode .card .card-chips { gap: 6px !important; }
-  html.embed-mode .card .card-banner { padding: 10px 14px !important; }
-  html.embed-mode .card .focus-strip { padding: 5px 14px !important; font-size: 10.5px !important; }
-  html.embed-mode .card .card-foot { margin-top: 8px !important; }
+  html.carousel-mode .card .card-inner { padding: 14px 16px 14px !important; }
+  html.carousel-mode .card .card-title { font-size: 15px !important; line-height: 1.25 !important; margin: 6px 0 8px !important; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+  html.carousel-mode .card .card-desc { font-size: 12px !important; line-height: 1.45 !important; -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin: 6px 0 !important; }
+  html.carousel-mode .card .card-hr { margin: 6px 0 !important; }
+  html.carousel-mode .card .card-chips { gap: 6px !important; }
+  html.carousel-mode .card .card-banner { padding: 10px 14px !important; }
+  html.carousel-mode .card .focus-strip { padding: 5px 14px !important; font-size: 10.5px !important; }
+  html.carousel-mode .card .card-foot { margin-top: 8px !important; }
   /* Prev/next arrow buttons — injected by JS when in embed mode */
-  html.embed-mode .carousel-arrow {
+  html.carousel-mode .carousel-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -138,24 +143,24 @@
     padding: 0;
     transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
   }
-  html.embed-mode .carousel-arrow:hover {
+  html.carousel-mode .carousel-arrow:hover {
     background: var(--warm-white, #eee6df);
     transform: translateY(-50%) scale(1.06);
   }
-  html.embed-mode .carousel-arrow:disabled {
+  html.carousel-mode .carousel-arrow:disabled {
     opacity: 0.4;
     cursor: not-allowed;
     transform: translateY(-50%);
   }
-  html.embed-mode .carousel-arrow.prev { left: 6px; }
-  html.embed-mode .carousel-arrow.next { right: 6px; }
-  html.embed-mode .carousel-arrow svg { width: 18px; height: 18px; }
+  html.carousel-mode .carousel-arrow.prev { left: 6px; }
+  html.carousel-mode .carousel-arrow.next { right: 6px; }
+  html.carousel-mode .carousel-arrow svg { width: 18px; height: 18px; }
   /* When no events, keep the empty state readable */
-  html.embed-mode .empty { padding: 40px 20px; }
+  html.carousel-mode .empty { padding: 40px 20px; }
   @media (max-width: 480px) {
-    html.embed-mode .card-grid { padding: 4px 12px 8px !important; }
-    html.embed-mode .card-grid > .card { min-width: 280px; max-width: 280px; flex-basis: 280px; }
-    html.embed-mode .carousel-arrow { display: none; }
+    html.carousel-mode .card-grid { padding: 4px 12px 8px !important; }
+    html.carousel-mode .card-grid > .card { min-width: 280px; max-width: 280px; flex-basis: 280px; }
+    html.carousel-mode .carousel-arrow { display: none; }
   }
 
   /* ─── Hero ─────────────────────────────────────────── */
@@ -1025,8 +1030,9 @@ const state = { focus: 'all', type: 'all', view: 'cards', search: '', program: '
     var p = sp.get('program'); if (p) state.program = decodeURIComponent(p);
     var f = sp.get('focus');   if (f) state.focus   = decodeURIComponent(f);
     var t = sp.get('type');    if (t) state.type    = decodeURIComponent(t);
-    if (sp.get('embed') === '1') {
-      document.documentElement.classList.add('embed-mode');
+    if (sp.get('embed') === '1') document.documentElement.classList.add('embed-mode');
+    if (sp.get('carousel') === '1') {
+      document.documentElement.classList.add('embed-mode', 'carousel-mode');
       state.view = 'cards'; // agenda/month don't work as a carousel
     }
   } catch(e){}
@@ -1163,12 +1169,11 @@ function renderCards() {
   const events = filtered();
   if (!events.length) return renderEmpty();
   const container = document.getElementById('events-container');
-  // Skip the extra 40px top padding when we're in embed mode — the carousel
-  // is height-constrained and every pixel counts.
-  const isEmbed = document.documentElement.classList.contains('embed-mode');
-  const gridStyle = isEmbed ? '' : 'padding-top:40px';
+  // Carousel is height-constrained — drop the 40px pad. Plain embed keeps it.
+  const isCarousel = document.documentElement.classList.contains('carousel-mode');
+  const gridStyle = isCarousel ? '' : 'padding-top:40px';
   container.innerHTML = `<div class="card-grid" style="${gridStyle}">${events.map(cardHTML).join('')}</div>`;
-  if (isEmbed) mountCarouselArrows(container);
+  if (isCarousel) mountCarouselArrows(container);
 }
 
 function mountCarouselArrows(container) {

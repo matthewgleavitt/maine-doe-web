@@ -199,9 +199,16 @@
       </div>
 
       <div class="field">
+        <label>Layout</label>
+        <div class="checks">
+          <label><input type="radio" name="layout" value="full" id="layout-full" checked/> Full calendar (filters + grid)</label>
+          <label><input type="radio" name="layout" value="carousel" id="layout-carousel"/> Compact carousel</label>
+        </div>
+      </div>
+      <div class="field">
         <label>Options</label>
         <div class="checks">
-          <label><input type="checkbox" id="embed-check" checked/> Clean embed (hide page heading)</label>
+          <label><input type="checkbox" id="embed-check" checked/> Hide page heading</label>
         </div>
       </div>
 
@@ -311,6 +318,8 @@ function currentUrl() {
   if (els.program.value) params.set('program', els.program.value);
   if (els.type.value) params.set('type', els.type.value);
   if (els.embed.checked) params.set('embed', '1');
+  const isCarousel = document.getElementById('layout-carousel').checked;
+  if (isCarousel) params.set('carousel', '1');
   const qs = params.toString();
   return CAL_BASE + (qs ? '?' + qs : '');
 }
@@ -354,10 +363,18 @@ PRESETS.forEach((p, i) => {
   els.presets.appendChild(btn);
 });
 
-// Wire up change events
+// Wire up change events (radio buttons handled separately by name)
 [els.focus, els.program, els.type, els.embed, els.height].forEach(el => {
   el.addEventListener('change', render);
   el.addEventListener('input', render);
+});
+document.querySelectorAll('input[name="layout"]').forEach(r => {
+  r.addEventListener('change', () => {
+    // Match preview iframe height to the layout — carousel is short, full is tall
+    const isCarousel = document.getElementById('layout-carousel').checked;
+    els.height.value = isCarousel ? 480 : 900;
+    render();
+  });
 });
 
 // Copy button
