@@ -77,11 +77,77 @@
   .doe-bar .crumbs strong { color: #eee6df; opacity: 1; font-weight: 700; }
   .container { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
   /* Embed mode — used when the calendar is loaded in an iframe on another
-     page (?embed=1). Drops the page heading + skip link so the iframe
-     content sits flush against the parent page's own layout. */
+     page (?embed=1). Drops the page heading + skip link + filter bar so the
+     iframe just shows the events themselves, laid out as a horizontal
+     carousel (prev/next arrows on either side, snap-scroll on drag/touch).
+     Team pages get a compact "just the cards" widget instead of the full
+     calendar chrome. */
   html.embed-mode .hero-compact,
-  html.embed-mode .skip-link { display: none !important; }
-  html.embed-mode .container { padding-top: 0 !important; }
+  html.embed-mode .skip-link,
+  html.embed-mode .filter-bar,
+  html.embed-mode #program-filter-banner { display: none !important; }
+  html.embed-mode .container { padding: 0 !important; max-width: none; }
+  html.embed-mode #events-container { position: relative; padding: 8px 4px 16px; }
+  /* Carousel layout — horizontal scrolling row of fixed-width cards */
+  html.embed-mode .card-grid {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 16px !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px 40px 8px !important;
+    scrollbar-width: thin;
+  }
+  html.embed-mode .card-grid::-webkit-scrollbar { height: 8px; }
+  html.embed-mode .card-grid::-webkit-scrollbar-thumb { background: rgba(24,43,60,0.2); border-radius: 4px; }
+  html.embed-mode .card-grid > .card {
+    min-width: 320px;
+    max-width: 320px;
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+    margin-bottom: 0;
+  }
+  /* Prev/next arrow buttons — injected by JS when in embed mode */
+  html.embed-mode .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--card, #fff);
+    border: 1.5px solid var(--rule, #d9d3ca);
+    color: var(--ink, #182b3c);
+    box-shadow: 0 6px 16px rgba(24,43,60,0.12);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  html.embed-mode .carousel-arrow:hover {
+    background: var(--warm-white, #eee6df);
+    transform: translateY(-50%) scale(1.06);
+  }
+  html.embed-mode .carousel-arrow:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: translateY(-50%);
+  }
+  html.embed-mode .carousel-arrow.prev { left: 6px; }
+  html.embed-mode .carousel-arrow.next { right: 6px; }
+  html.embed-mode .carousel-arrow svg { width: 18px; height: 18px; }
+  /* When no events, keep the empty state readable */
+  html.embed-mode .empty { padding: 40px 20px; }
+  @media (max-width: 480px) {
+    html.embed-mode .card-grid { padding: 4px 12px 8px !important; }
+    html.embed-mode .card-grid > .card { min-width: 280px; max-width: 280px; flex-basis: 280px; }
+    html.embed-mode .carousel-arrow { display: none; }
+  }
 
   /* ─── Hero ─────────────────────────────────────────── */
   .hero { padding: clamp(48px, 8vw, 104px) 0 clamp(32px, 5vw, 56px); border-bottom: 1px solid var(--rule); }
@@ -950,7 +1016,10 @@ const state = { focus: 'all', type: 'all', view: 'cards', search: '', program: '
     var p = sp.get('program'); if (p) state.program = decodeURIComponent(p);
     var f = sp.get('focus');   if (f) state.focus   = decodeURIComponent(f);
     var t = sp.get('type');    if (t) state.type    = decodeURIComponent(t);
-    if (sp.get('embed') === '1') document.documentElement.classList.add('embed-mode');
+    if (sp.get('embed') === '1') {
+      document.documentElement.classList.add('embed-mode');
+      state.view = 'cards'; // agenda/month don't work as a carousel
+    }
   } catch(e){}
 })();
 
@@ -1084,7 +1153,47 @@ function agendaRowHTML(e) {
 function renderCards() {
   const events = filtered();
   if (!events.length) return renderEmpty();
-  document.getElementById('events-container').innerHTML = `<div class="card-grid" style="padding-top:40px">${events.map(cardHTML).join('')}</div>`;
+  const container = document.getElementById('events-container');
+  container.innerHTML = `<div class="card-grid" style="padding-top:40px">${events.map(cardHTML).join('')}</div>`;
+  // Embed mode: add prev/next arrows + wire them to scroll the card row.
+  if (document.documentElement.classList.contains('embed-mode')) mountCarouselArrows(container);
+}
+
+function mountCarouselArrows(container) {
+  const grid = container.querySelector('.card-grid');
+  if (!grid) return;
+  const arrowSVG = (dir) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="${dir === 'prev' ? 'M15 18l-6-6 6-6' : 'M9 6l6 6-6 6'}"/>
+  </svg>`;
+  const prev = document.createElement('button');
+  prev.className = 'carousel-arrow prev';
+  prev.type = 'button';
+  prev.setAttribute('aria-label', 'Previous events');
+  prev.innerHTML = arrowSVG('prev');
+  const next = document.createElement('button');
+  next.className = 'carousel-arrow next';
+  next.type = 'button';
+  next.setAttribute('aria-label', 'Next events');
+  next.innerHTML = arrowSVG('next');
+
+  const scrollBy = () => {
+    const first = grid.querySelector('.card');
+    if (!first) return 320;
+    return first.getBoundingClientRect().width + 16; // card width + gap
+  };
+  prev.addEventListener('click', () => grid.scrollBy({ left: -scrollBy() * 2, behavior: 'smooth' }));
+  next.addEventListener('click', () => grid.scrollBy({ left:  scrollBy() * 2, behavior: 'smooth' }));
+
+  const updateArrows = () => {
+    prev.disabled = grid.scrollLeft <= 4;
+    next.disabled = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 4;
+  };
+  grid.addEventListener('scroll', updateArrows, { passive: true });
+  requestAnimationFrame(updateArrows);
+  window.addEventListener('resize', updateArrows);
+
+  container.appendChild(prev);
+  container.appendChild(next);
 }
 
 function renderAgenda() {
