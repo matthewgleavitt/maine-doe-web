@@ -968,11 +968,14 @@ function filtered() {
     if (state.focus !== 'all' && e.focusArea !== state.focus) return false;
     if (state.type !== 'all' && e.type !== state.type) return false;
     if (state.program !== 'all') {
-      // Fuzzy match — accepts "btam", "BTAM", or the full name
-      var p = String(e.programInitiative || '').toLowerCase();
-      var q = String(state.program).toLowerCase();
-      if (!p) return false;
-      if (p !== q && p.indexOf(q) === -1) return false;
+      // Fuzzy match — accepts "btam", "BTAM", or the full name.
+      // Note: renamed inner query var to prevent shadowing the outer `q`
+      // (search query) which was a JS syntax error and broke the whole
+      // filter chain including keyword search.
+      var progTag = String(e.programInitiative || '').toLowerCase();
+      var progQuery = String(state.program).toLowerCase();
+      if (!progTag) return false;
+      if (progTag !== progQuery && progTag.indexOf(progQuery) === -1) return false;
     }
     if (q) {
       const hay = (e.title + ' ' + e.desc + ' ' + e.long + ' ' + e.focusArea + ' ' + e.type + ' ' + e.location + ' ' + e.audience).toLowerCase();
