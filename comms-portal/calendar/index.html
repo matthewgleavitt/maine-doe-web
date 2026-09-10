@@ -253,6 +253,12 @@
   .view-toggle { display: inline-flex; border: 1px solid var(--rule); border-radius: 100px; padding: 3px; background: var(--panel); }
   .view-toggle button { all: unset; padding: 7px 18px; border-radius: 100px; font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); cursor: pointer; }
   .view-toggle button.active { background: var(--ink); color: var(--ground); }
+  /* Month view needs a wide viewport (7 columns × ~150px min). Hide it
+     below 900px so users can't pick a view that clips Fri/Sat and truncates
+     event titles down to fragments. Agenda + Cards work at any width. */
+  @media (max-width: 899px) {
+    .view-toggle button[data-view="month"] { display: none; }
+  }
 
   /* ─── Category tokens ──────────────────────────────── */
   .cat-learning { --cat-color: var(--teal-ink); --cat-tint: var(--teal-tint); }
@@ -1290,13 +1296,35 @@ function renderEmptyMarkup() {
   return `<div class="empty"><div class="big">No events match your filters.</div><div class="sm">Try widening the focus area or clearing the type filter.</div></div>`;
 }
 
+// Threshold below which the 7-column month grid gets too cramped — cells
+// truncate event titles down to fragments and Fri/Sat can even clip out of
+// view in narrow iframe embeds.
+const MONTH_MIN_WIDTH = 900;
+
 function render() {
+  // If the viewport is too narrow for the month view, migrate state.view
+  // to agenda BEFORE rendering — that also keeps the button-toggle UI in
+  // sync (no dead "Month" button appearing active while agenda renders).
+  if (state.view === 'month' && window.innerWidth < MONTH_MIN_WIDTH) {
+    state.view = 'agenda';
+    document.querySelectorAll('#view-toggle button').forEach(x => {
+      x.classList.toggle('active', x.getAttribute('data-view') === 'agenda');
+    });
+  }
   updateStats();
   updateProgramBanner();
   if (state.view === 'cards') renderCards();
   else if (state.view === 'agenda') renderAgenda();
   else renderMonth();
 }
+
+// Re-render on resize so the fallback engages / disengages as widths change.
+// Debounced to avoid thrashing on drag-resize.
+let _resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(() => render(), 120);
+});
 
 // Banner shows when the URL asked for a specific program. The label prefers
 // the full form found on any event (so ?program=btam still displays as
