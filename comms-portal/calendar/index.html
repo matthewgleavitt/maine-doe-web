@@ -1,4 +1,5 @@
 <meta charset="UTF-8">
+<meta name="color-scheme" content="light">
 <title>DOE Events Calendar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,29 +36,13 @@
     --pad: clamp(20px, 4vw, 56px);
     --maxw: 1180px;
   }
-  :root:not([data-theme="light"]) {
-    @media (prefers-color-scheme: dark) {
-      --warm-white: #10161d; --warm-white-2: #1a2330; --warm-white-3: rgba(238,230,223,0.15);
-      --navy: #eee6df; --navy-2: #a8bccb; --navy-3: #8ba8c4; --steel: #7b95ad; --steel-soft: #4a5f76;
-      --teal: #55d0ff; --teal-ink: #55d0ff; --teal-tint: #0d3947;
-      --rust: #d97a5b; --rust-tint: #3a1a10;
-      --mint-ink: #6bc088; --mint-tint: #163a25;
-      --mid-tint: #2a3a48;
-      --ink: var(--navy); --ink-2: #c8d5e0; --ink-3: var(--steel);
-      --ground: var(--warm-white); --panel: #1a2330; --panel-2: #1a2330;
-      --rule: rgba(238,230,223,0.15); --rule-strong: rgba(238,230,223,0.28);
-    }
-  }
-  :root[data-theme="dark"] {
-    --warm-white: #1a1613; --warm-white-2: #221c17; --warm-white-3: #33291f;
-    --navy: #eee6df; --navy-2: #a8bccb; --steel: #7b95ad; --steel-soft: #4a5f76;
-    --teal: #55d0ff; --teal-ink: #55d0ff; --teal-tint: #0d3947;
-    --rust: #d97a5b; --rust-tint: #3a1a10;
-    --mint-ink: #6bc088; --mint-tint: #163a25;
-    --mid-tint: #2a3a48;
-    --ink: var(--navy); --ink-2: #c8bcae; --ink-3: var(--steel);
-    --ground: var(--warm-white); --panel: #211a15; --rule: var(--warm-white-3);
-  }
+  /* Dark-mode + custom-theme overrides intentionally disabled — the calendar
+     is embedded on public maine.gov pages and needs the same navy/beige
+     look regardless of the viewer's OS setting. Users on dark mode were
+     seeing beige-on-beige illegible cards (some hardcoded #1e2f42 text
+     colors weren't participating in the theme swap). Forcing light mode
+     via <meta name="color-scheme" content="light"> + skipping these
+     overrides gives everyone the intended design. */
 
   html, body { margin: 0; padding: 0; }
   body { background: transparent; color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
