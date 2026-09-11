@@ -1072,11 +1072,14 @@ function App(){
           <a href={CAL_URL} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
             <Sv d={ic.cal} size={18} c="#94a3b8"/> View calendar
           </a>
-          {isAdmin?<button onClick={exitAdmin} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',fontSize:14,fontWeight:600,cursor:'pointer'}}>
-            <Sv d={ic.lock} size={18} c="#94a3b8"/> Exit admin
-          </button>:<button onClick={enterAdmin} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',fontSize:14,fontWeight:600,cursor:'pointer'}}>
-            <Sv d={ic.lock} size={18} c="#94a3b8"/> Admin mode
-          </button>}
+          {/* Pipe separator — visually groups the PD certificate actions apart from event actions */}
+          <div aria-hidden="true" style={{width:1,alignSelf:'stretch',background:'rgba(255,255,255,0.15)',margin:'2px 2px'}}/>
+          <a href="https://www.maine.gov/doe/certificate/create.shtml" target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
+            <Sv d={ic.plus} size={16} c="#94a3b8"/> Create PD certificate
+          </a>
+          <a href="https://www.maine.gov/doe/certificate/view.shtml" target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
+            <Sv d={ic.ext} size={16} c="#94a3b8"/> View PD certificate
+          </a>
         </div>
       </div>
     </div>
