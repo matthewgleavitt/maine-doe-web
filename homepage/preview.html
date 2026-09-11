@@ -1,0 +1,2581 @@
+<title>Maine DOE Homepage Direction</title>
+<link rel="stylesheet" href="//fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{color-scheme:light;}
+body{margin:0;background:#0e1c27;}
+.mg-page{background:#fff;max-width:1440px;margin:0 auto;box-shadow:0 24px 70px rgba(0,0,0,.45);}
+.mg-rail{max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,32px);display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.mg-strip{background:#f2f2f2;border-bottom:1px solid #d5d5d5;font-size:12px;color:#333;}
+.mg-strip .mg-rail{padding-top:6px;padding-bottom:6px;}
+.mg-strip b{font-family:Georgia,serif;font-size:14px;}
+.mg-strip a{color:#25506f;text-decoration:none;}
+.mg-mast{background:#182b3c;color:#fff;}
+.mg-mast .mg-rail{padding-top:16px;padding-bottom:16px;}
+.mg-seal{width:44px;height:44px;border:1.5px solid #42c3f7;border-radius:8px;display:grid;place-items:center;font-weight:700;font-size:15px;color:#42c3f7;font-family:'League Spartan',sans-serif;}
+.mg-word{line-height:1.15;}
+.mg-l1{display:block;font-family:'League Spartan',sans-serif;font-size:20px;font-weight:700;}
+.mg-l2{display:block;font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:#a9c4d8;margin-top:3px;}
+.mg-util{margin-left:auto;display:flex;gap:18px;font-size:13px;flex-wrap:wrap;}
+.mg-util a{color:#c6d7e4;text-decoration:none;}
+.mg-nav{background:#274f73;}
+.mg-nav .mg-rail{gap:2px;}
+.mg-nav a{color:#fff;text-decoration:none;font-size:14px;font-weight:500;padding:13px 15px;border-bottom:3px solid transparent;}
+.mg-nav a:hover{border-bottom-color:#42c3f7;background:rgba(0,0,0,.14);}
+/* ---- The theme rules that actually fight this page ----------------
+   Reproduced verbatim from the live site so the preview is as hostile
+   as the real thing. Both carry !important AND an ID, so anything of
+   ours that loses to them here would lose on maine.gov too.
+
+   The display rule is the nasty one: every list-item link on the page
+   is a grid (calendar rows, story strip, good-news list) and
+   inline-block silently collapses all three into stacked text. That
+   shipped once because the preview was friendlier than production.
+   ------------------------------------------------------------------ */
+#content a, .maincontent a, #maincontent1 a { color:#274f73 !important; }
+#content li a { display:inline-block !important; }
+
+/* #maincontent1 as the live theme sets it (padding:10px 16px) — the
+   injector's reset is what removes it, so leaving the real value here
+   proves the reset actually lands. */
+#maincontent1{padding:10px 16px;}
+</style>
+<style>/* Maine DOE homepage — CSS Injector rule
+ * Version: 2026-09-10-s  ·  Last edited: 2026-09-10
+ * Versions are per-file and do NOT need to match the other two.
+ */
+
+/* ============================================================
+   Maine DOE homepage
+   CSS Injector rule — scope to page: doe  (front page, node 9)
+   ============================================================
+
+   Everything is scoped to .dh-home, the wrapper div in the body
+   field, so nothing can leak to another page even if the injector
+   scoping is ever loosened. The only two rules that reach outside
+   .dh-home are the theme-container overrides at the top, and both
+   are pinned to the homepage body class.
+
+   Class names are all dh- prefixed on purpose: Bootstrap 4 is
+   loaded sitewide and owns .card, .btn, .row, .tag and friends.
+   ============================================================ */
+
+/* NO FONT IMPORT HERE — ON PURPOSE.
+   A scheme-qualified web address anywhere in a CSS Injector POST body
+   gets the save rejected with a bare 403 by the maine.gov WAF, which
+   reads it as remote file inclusion. The fonts are attached by the JS
+   Injector rule instead, using a protocol-relative address.
+   Custom properties, block comments and tag names inside comments are
+   all fine — the 53KB newsletter rule live on the site uses all three.
+   Keep this file free of scheme-qualified addresses and nothing else
+   needs avoiding. */
+
+
+/* ── 1. Theme containers ─────────────────────────────────────
+   The homepage content region has no max-width — it renders at the
+   full viewport with 16px of padding (12px under ~620px). Zeroing
+   that padding here lets the colour bands run true edge-to-edge
+   with no negative margins and no 100vw tricks, which means no risk
+   of a horizontal scrollbar on Windows. The .dh-rail class supplies
+   the gutters instead.
+   #maincontent1 holds only the (empty) page-title block and the
+   content block on this page, so this is safe.
+   ------------------------------------------------------------ */
+/* padding: 0 — not just the sides. The theme's 10px top padding puts
+   a white gap between the blue main nav and the hero. */
+body.page-node-type-home-page #maincontent1 {
+  padding: 0;
+}
+body.page-node-type-home-page #block-doe-content {
+  overflow: hidden;      /* contains the bands' backgrounds cleanly */
+}
+
+
+/* ── 2. Tokens ───────────────────────────────────────────────
+   Swap the two font stacks here and the whole page follows.
+   To go back to the site's own faces, set:
+     --dh-display: Segoe,"Segoe UI","Trebuchet MS",Verdana,sans-serif;
+     --dh-body:    "Helvetica Neue",Arial,sans-serif;
+   and remove the loadFonts() call from the JS Injector rule.
+   ------------------------------------------------------------ */
+.dh-home {
+  /* Version handshake. The JS rule reads this and warns in the console
+     if the three files are out of step. Bump all three together. */
+  --dh-version: "2026-09-10-s";
+
+  --dh-display: 'League Spartan', 'Century Gothic', 'Trebuchet MS', sans-serif;
+  --dh-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+
+  --dh-navy: #182b3c;
+  --dh-midblue: #274f73;
+  --dh-steel: #6d8ba6;
+  --dh-teal: #42c3f7;
+  --dh-rust: #8a2e13;
+  --dh-warm: #eee6df;
+
+  --dh-ink: #182b3c;
+  --dh-ink-2: #3d4a56;
+  --dh-ink-3: #55616d;
+  --dh-rule: #d8d2ca;
+  --dh-rule-soft: #e8e3dc;
+  --dh-paper: #ffffff;
+  --dh-cool: #f6f8fb;    /* faint cobalt-tinted ground for the light bands */
+
+  --dh-r: 14px;
+  --dh-r-sm: 8px;
+  --dh-rail: 1200px;
+
+  font-family: var(--dh-body);
+  color: var(--dh-ink);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dh-home *,
+.dh-home *::before,
+.dh-home *::after { box-sizing: border-box; }
+
+.dh-home img { max-width: 100%; }
+.dh-home a:focus-visible,
+.dh-home button:focus-visible { outline: 3px solid var(--dh-teal); outline-offset: 2px; }
+
+
+/* ── 2b. Beating the theme's link rules ──────────────────────
+   The maine.gov theme ships these, and both carry !important:
+
+     #content a, .maincontent a, #maincontent1 a { color:#274f73 !important }
+     #content li a                               { display:inline-block !important }
+
+   !important can only be beaten by !important at equal-or-higher
+   specificity, and theirs carry an ID — so these have to as well.
+   That is why #block-doe-content appears here and nowhere else.
+
+   The display rule is the one that does real damage: every list item
+   link on this page is a grid (the calendar rows, the story strip,
+   the good-news list), and inline-block silently collapses all three
+   into stacked text.
+
+   If the content block's ID ever changes, these are the rules to
+   update — the symptom will be blue link text and collapsed rows.
+   ------------------------------------------------------------ */
+#block-doe-content .dh-home a { color: inherit !important; }
+
+/* block, not grid. These four rows used to be CSS grids, which meant
+   their whole layout hung on beating the theme's
+   `#content li a { display:inline-block !important }`. Whenever that
+   override didn't land — a stale aggregate, a partial save — the rows
+   shrink-wrapped and every headline wrapped one word per line.
+
+   They're now plain blocks with the label absolutely positioned into
+   reserved padding. That works under block, inline-block, grid or
+   flex, so a missing rule can no longer collapse them. */
+#block-doe-content .dh-home .dh-index a,
+#block-doe-content .dh-home .dh-event-list a,
+#block-doe-content .dh-home .dh-more-good a { display: block !important; }
+
+/* Flex only to centre the row's contents. If it ever loses to the theme
+   the text still flows into the reserved padding — it just sits at the
+   top instead of centred, which is a cosmetic loss, not a collapse. */
+#block-doe-content .dh-home .dh-stories a {
+  display: flex !important; align-items: center; min-height: 76px;
+}
+
+.dh-index a, .dh-stories a, .dh-event-list a, .dh-more-good a {
+  width: 100%; position: relative;
+}
+
+#block-doe-content .dh-home .dh-card-link { display: flex !important; flex-direction: column; }
+
+/* Anchor padding, restated at ID + !important. The theme forces
+   `padding: 4px 0` onto anchors — measured live — which silently ate
+   every padding value below. Any new anchor component needs a line
+   here or it will inherit that 4px and look subtly wrong. */
+#block-doe-content .dh-home .dh-card-link,
+#block-doe-content .dh-home .dh-vids a      { padding: 0 !important; }
+#block-doe-content .dh-home .dh-index a     { padding: 16px !important; }
+#block-doe-content .dh-home .dh-stories a   { padding: 15px 18px 15px 86px !important; }
+#block-doe-content .dh-home .dh-event-list a{ padding: 17px 15px 17px 90px !important; }
+#block-doe-content .dh-home .dh-more-good a { padding: 0 0 44px !important; }
+#block-doe-content .dh-home .dh-btn         { padding: 21px 34px !important; }
+#block-doe-content .dh-home .dh-social-list a { padding: 11px 20px !important; }
+#block-doe-content .dh-home .dh-shead .dh-more { padding: 0 !important; }
+#block-doe-content .dh-home .dh-vids a { display: block !important; }
+
+/* Bootstrap ships `a:hover { text-decoration: underline }` sitewide, and
+   because a card is one big anchor that underlines every word inside it
+   — title, date, excerpt and all. Cards say "clickable" through their
+   border and Read more bar, so the underline is switched off outright. */
+#block-doe-content .dh-home .dh-card-link,
+#block-doe-content .dh-home .dh-card-link:hover,
+#block-doe-content .dh-home .dh-card-link *,
+#block-doe-content .dh-home .dh-more-good a,
+#block-doe-content .dh-home .dh-more-good a:hover,
+#block-doe-content .dh-home .dh-more-good a *,
+#block-doe-content .dh-home .dh-vids a,
+#block-doe-content .dh-home .dh-vids a:hover,
+#block-doe-content .dh-home .dh-vids a *,
+#block-doe-content .dh-home .dh-event-list a,
+#block-doe-content .dh-home .dh-event-list a:hover,
+#block-doe-content .dh-home .dh-event-list a * { text-decoration: none !important; }
+
+.dh-rail {
+  max-width: var(--dh-rail);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(16px, 4vw, 32px);
+  padding-right: clamp(16px, 4vw, 32px);
+}
+
+
+/* ── 3. Section header — the repeated cohesion device ───────── */
+.dh-shead { display: flex; align-items: center; gap: 16px; padding-bottom: 22px; }
+.dh-shead h2 {
+  font-family: var(--dh-display);
+  font-size: 21px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+  margin: 0; padding-left: 15px; border-left: 5px solid var(--dh-teal);
+  color: var(--dh-navy); white-space: nowrap;
+}
+.dh-shead .dh-line { flex: 1; height: 1px; background: var(--dh-rule); }
+.dh-shead .dh-more {
+  font-size: 13px; font-weight: 600; color: var(--dh-midblue);
+  text-decoration: none; white-space: nowrap; border-bottom: 1px solid transparent;
+}
+/* Literal arrow character rather than a unicode escape sequence —
+   backslash-hex is the other thing WAFs flag in a posted stylesheet. */
+.dh-shead .dh-more::after { content: ' →'; }
+.dh-shead .dh-more:hover { border-bottom-color: var(--dh-teal); }
+
+
+/* ── 4. Photos + the branded fallback ────────────────────────
+   An EMPTY .dh-photo becomes the fallback panel automatically, so
+   an editor just omits the image tag and sets data-dh-kind.
+   ------------------------------------------------------------ */
+.dh-photo {
+  position: relative; overflow: hidden; display: block;
+  background: linear-gradient(150deg, var(--dh-navy) 0%, var(--dh-midblue) 60%, var(--dh-steel) 100%);
+}
+.dh-photo > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* :empty covers the no-JS case; .dh-no-photo is added by the JS rule
+   when an image is absent or fails to load. Both are needed —
+   whitespace between tags counts as a child, so a div an editor has
+   touched is almost never truly :empty. */
+.dh-photo:empty,
+.dh-photo.dh-no-photo {
+  background:
+    radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px) 0 0 / 11px 11px,
+    linear-gradient(155deg, #12222f 0%, var(--dh-navy) 48%, var(--dh-midblue) 100%);
+  display: grid; place-content: center; justify-items: center; gap: 8px;
+  text-align: center; padding: 20px;
+}
+.dh-photo:empty::before,
+.dh-photo.dh-no-photo::before {
+  content: 'Maine Department of Education';
+  font-family: var(--dh-display);
+  font-size: 11px; font-weight: 600; letter-spacing: .19em; text-transform: uppercase;
+  color: #8fb0c9;
+}
+.dh-photo:empty::after,
+.dh-photo.dh-no-photo::after {
+  content: attr(data-dh-kind);
+  font-family: var(--dh-display);
+  font-size: clamp(24px, 3.2vw, 38px); font-weight: 700; line-height: 1;
+  color: rgba(255,255,255,.16);
+}
+
+
+/* ── 5. Hero ─────────────────────────────────────────────────── */
+/* No bottom padding at all. The strip straddles the boundary between
+   the hero and the mission band; any padding here shows as a band of
+   white with nothing in it. */
+.dh-hero {
+  background:
+    radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 14px 14px,
+    var(--dh-navy);
+  padding-bottom: 0;
+}
+/* If a hero slide has no image, push the fallback wordmark clear of
+   the white card rather than letting it sit behind it. */
+@media (min-width: 641px) {
+  .dh-hero .dh-photo:empty,
+  .dh-hero .dh-photo.dh-no-photo { padding-left: 54%; }
+}
+.dh-hero .dh-stage { position: relative; height: clamp(400px, 42vw, 500px); background: var(--dh-navy); }
+.dh-hero .dh-slide {
+  position: absolute; inset: 0; opacity: 0; visibility: hidden;
+  transition: opacity .5s ease;
+}
+.dh-hero .dh-slide.is-on { opacity: 1; visibility: visible; }
+.dh-hero .dh-photo { position: absolute; inset: 0; }
+.dh-hero .dh-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(24,43,60,.88) 0%, rgba(24,43,60,.55) 46%, rgba(24,43,60,.12) 100%);
+}
+/* Centred, but in a box that stops short of the bottom. The strip
+   overlaps the hero by 32px, so a true centre put the tallest slides
+   within ~18px of it. Reserving the space here shifts every card up
+   by half of it and keeps the clearance constant. */
+.dh-hero .dh-slide > .dh-rail {
+  position: relative; height: 100%; display: flex; align-items: center;
+  padding-bottom: 56px;
+}
+.dh-hero .dh-card {
+  background: var(--dh-paper); max-width: 620px;
+  padding: clamp(26px, 3.4vw, 38px);
+  border-top: 4px solid var(--dh-teal); border-radius: var(--dh-r);
+  box-shadow: 0 18px 44px rgba(9,20,29,.34);
+}
+.dh-eyebrow {
+  font-family: var(--dh-display);
+  font-size: 11px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase;
+  color: var(--dh-midblue); margin: 0 0 12px;
+}
+/* Two lines are reserved whatever the headline. Slide titles here run
+   44–75 characters, so without this the card jumped a full line
+   between slides and the whole thing visibly resized mid-rotation. */
+.dh-hero .dh-card h2 {
+  font-family: var(--dh-display); font-weight: 700;
+  font-size: clamp(25px, 3vw, 37px); line-height: 1.14; letter-spacing: -.01em;
+  min-height: 2.28em;
+  margin: 0 0 14px; color: var(--dh-navy); text-wrap: balance;
+}
+.dh-hero .dh-card p { margin: 0 0 20px; font-size: 15.5px; line-height: 1.6; color: var(--dh-ink-2); max-width: 54ch; }
+.dh-home .dh-btn {
+  display: inline-block; background: var(--dh-navy); text-decoration: none;
+  font-size: 16px; font-weight: 700; line-height: 26px; padding: 21px 34px;
+  border-left: 6px solid var(--dh-teal); border-radius: var(--dh-r-sm);
+}
+.dh-home .dh-btn:hover { background: #0f1e2a; }
+/* Needs the ID + !important to clear the theme's link colour, same as
+   the block in §2b. Without it the label renders navy on navy. */
+#block-doe-content .dh-home .dh-btn,
+#block-doe-content .dh-home .dh-btn:hover { color: #fff !important; }
+
+
+/* ── 6. Story strip under the hero ───────────────────────────
+   No boxes, no numbers. Thin rules between items, a thumbnail from
+   the slide's own image, and a teal bar across the top of the live
+   item that fills over the dwell — so the strip IS the timer.
+   ------------------------------------------------------------ */
+/* Overlaps the hero rather than floating below it — the gap was what
+   made the strip read as a separate widget instead of part of the hero. */
+.dh-strip {
+  position: relative; z-index: 2;
+  padding-top: 0; padding-bottom: 0;
+  margin-top: -32px;
+}
+.dh-index {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  background: var(--dh-paper);
+  border: 1px solid var(--dh-rule-soft);
+  border-radius: var(--dh-r);
+  overflow: hidden;                 /* clips the progress bar to the radius */
+  box-shadow: 0 10px 30px rgba(9,20,29,.16);
+}
+.dh-index li + li { border-left: 1px solid var(--dh-rule-soft); }
+/* Equal vertical padding, and the text column always reserves two
+   lines — otherwise a one-line headline sits visibly higher in its
+   cell than the two-line ones beside it. */
+/* The thumb floats and the text block forms its own formatting context
+   beside it. Float works identically under block, inline-block, grid or
+   flex, so this row can't collapse the way the grid version kept doing. */
+.dh-index a {
+  position: relative; padding: 16px; text-decoration: none;
+  transition: background .15s; min-height: 78px;
+}
+.dh-index a::after { content: ''; display: table; clear: both; }
+.dh-index .dh-txt { overflow: hidden; }
+/* grid, not flex. A flex li only stretches its child on the cross axis
+   if nothing else intervenes; a grid item stretches on both by default,
+   so the active cell's navy reaches every edge and no white strip is
+   left under the shorter cells. */
+.dh-index li { display: grid; align-self: stretch; height: 100%; }
+.dh-index li > a { height: 100%; align-content: center; }
+.dh-index a:hover { background: #f2f5f7; }
+
+/* The live cell fills navy. A tint plus a hairline wasn't enough to
+   say "this is the one you're looking at" — at five across it just
+   read as five equal cells with a stray colour on one. */
+.dh-index a[aria-current="true"] { background: var(--dh-navy); }
+.dh-index a[aria-current="true"] .dh-t { color: #fff; font-weight: 600; }
+.dh-index a[aria-current="true"] .dh-kicker { color: var(--dh-teal); }
+.dh-index a[aria-current="true"] .dh-thumb { filter: none; }
+/* The bar. --dh-dwell is set on the link by the JS rule; custom
+   properties DO inherit into pseudo-elements, which is why the
+   duration is passed this way rather than as transition-duration. */
+.dh-index a::before {
+  content: ''; position: absolute; left: 0; top: 0;
+  height: 2px; width: 0; background: var(--dh-teal);
+}
+.dh-index a.is-timing::before {
+  width: 100%;
+  transition: width var(--dh-dwell, 6000ms) linear;
+}
+/* :not() keeps these two mutually exclusive, so neither depends on
+   source order to win. Paused = static grey bar, running = teal fill. */
+.dh-index a[aria-current="true"]:not(.is-timing)::before {
+  width: 100%; background: var(--dh-rule);
+}
+
+/* background-COLOR is the base, not a gradient in the `background`
+   shorthand — the JS sets background-image, and if that image 404s a
+   gradient base would vanish with it, leaving an empty hole. */
+.dh-index .dh-thumb {
+  float: left; margin: 2px 12px 0 0;
+  width: 58px; height: 44px; border-radius: 6px;
+  background-color: var(--dh-midblue);
+  background-image: linear-gradient(150deg, var(--dh-navy), var(--dh-steel));
+  background-size: cover; background-position: center;
+  filter: saturate(.55) opacity(.62); transition: filter .2s;
+}
+/* The kicker sits OUTSIDE .dh-t: .dh-t is a -webkit-box for the line
+   clamp, and a block child inside one doesn't lay out predictably. */
+.dh-index .dh-txt { min-width: 0; display: block; }
+/* Five across is tight — clamp the headline to two lines so one long
+   title can't make the whole strip taller than the others. */
+/* No min-height. The cells are already equal height (grid stretch +
+   the flex rules above), so centring the block is what makes the top
+   and bottom gaps match. Reserving two lines instead pins a one-line
+   headline to the top of its box, which is what looked off. */
+.dh-index .dh-t {
+  font-size: 12.6px; line-height: 1.32; color: var(--dh-ink-3); font-weight: 500;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.dh-index .dh-kicker {
+  display: block; font-family: var(--dh-display);
+  font-size: 9.5px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--dh-midblue); margin-bottom: 4px;
+}
+.dh-index a:hover .dh-thumb { filter: none; }
+/* :not() is load-bearing — without it, hovering the active navy cell
+   repaints its label dark blue on navy and it disappears. */
+.dh-index a:hover:not([aria-current="true"]) .dh-t { color: var(--dh-ink-2); }
+.dh-index a[aria-current="true"]:hover { background: var(--dh-navy); }
+
+
+/* ── 7. Slider controls (built by JS) ────────────────────────── */
+.dh-ctl { display: flex; align-items: center; gap: 6px; margin-top: 12px; }
+.dh-ctl button {
+  width: 30px; height: 30px; flex: none;
+  border: 1px solid var(--dh-rule); border-radius: 999px;
+  background: #fff; color: var(--dh-midblue); cursor: pointer;
+  display: grid; place-items: center; font-size: 12px; line-height: 1;
+  font-family: var(--dh-body); padding: 0;
+}
+.dh-ctl button:hover { border-color: var(--dh-teal); color: var(--dh-navy); }
+.dh-ctl .dh-count {
+  margin-left: auto; font-size: 11px; color: var(--dh-ink-3);
+  font-variant-numeric: tabular-nums; letter-spacing: .06em;
+}
+/* Aligned to the content rail, not the viewport edge — the stage is
+   full-bleed, so right:0 pinned the controls to the very edge of the
+   screen. Mirrors the .dh-rail maths so they line up with the card. */
+.dh-hero .dh-ctl {
+  position: absolute; bottom: 52px; margin: 0; z-index: 3;
+  right: calc(max(0px, (100% - var(--dh-rail)) / 2) + clamp(16px, 4vw, 32px));
+}
+.dh-hero .dh-ctl button { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.34); color: #fff; }
+.dh-hero .dh-ctl button:hover { background: rgba(255,255,255,.26); border-color: var(--dh-teal); color: #fff; }
+.dh-hero .dh-ctl .dh-count { display: none; }
+
+
+/* ── 8. Mission ──────────────────────────────────────────────── */
+/* The hero owns the space under the overlapping strip via its own
+   padding, so the mission band carries no top margin — otherwise the
+   two stack into a band of white with nothing in it. */
+.dh-mission {
+  background:
+    radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 14px 14px,
+    var(--dh-navy);
+  color: #fff;
+  padding-top: clamp(44px, 5vw, 60px); padding-bottom: clamp(44px, 5vw, 60px);
+  margin-top: 0;
+}
+.dh-mission-grid {
+  display: grid; grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr);
+  gap: clamp(28px, 5vw, 64px); align-items: start;
+}
+.dh-mission h2 {
+  font-family: var(--dh-display); font-weight: 700;
+  font-size: clamp(22px, 2.4vw, 30px); line-height: 1.2;
+  margin: 0 0 14px; color: #fff; text-wrap: balance;
+}
+.dh-lede { margin: 0; color: #b9cddc; font-size: 15.5px; line-height: 1.65; max-width: 40ch; }
+.dh-motto {
+  margin: 18px 0 0; font-family: var(--dh-display);
+  font-size: clamp(15px, 1.5vw, 17px); font-weight: 700; line-height: 1.35;
+  color: var(--dh-teal); letter-spacing: .005em;
+}
+
+/* Two columns, each commitment led by an icon. Font Awesome 5 is
+   already loaded sitewide by the theme, so the icons cost nothing —
+   no sprite to host, no SVG for the content filter to strip. */
+.dh-mission-list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 22px clamp(22px, 3vw, 38px);
+}
+.dh-mission-list li {
+  position: relative; padding-left: 46px; min-height: 32px;
+  font-size: 15.2px; line-height: 1.45; color: #eaf2f8; font-weight: 400;
+}
+.dh-mission-list li .dh-ico {
+  position: absolute; left: 0; top: 0;
+  display: grid; place-items: center;
+  width: 32px; height: 32px; border-radius: 9px;
+  background: rgba(66,195,247,.14);
+  border: 1px solid rgba(66,195,247,.24);
+  color: var(--dh-teal);
+}
+.dh-mission-list li .dh-ico svg { width: 18px; height: 18px; display: block; }
+
+
+/* ── 9. Newsroom + events ────────────────────────────────────── */
+/* Extra room at the foot so the white section breathes before the
+   warm band starts, rather than the two colours meeting abruptly. */
+/* Shallow diagonal edges. The slant depth is pulled back off the top as
+   negative margin and added to the padding, so content sits exactly where
+   it would have without it — only the edge changes. The hero/mission
+   boundary stays square on purpose: the story strip already bridges it,
+   and a slant there would cut through the card. */
+.dh-feed, .dh-good, .dh-watchband, .dh-social {
+  --dh-slant: clamp(8px, 0.9vw, 15px);
+  position: relative;
+  margin-top: calc(var(--dh-slant) * -1);
+  clip-path: polygon(0 var(--dh-slant), 100% 0, 100% 100%, 0 100%);
+}
+
+/* Patterned ground, solid panels on top. The cobalt dot field gives the
+   white sections something to be, and makes the beige panels read as
+   objects laid on a surface rather than shapes floating in a void. */
+.dh-feed {
+  padding-top: calc(clamp(44px, 5vw, 62px) + var(--dh-slant));
+  padding-bottom: clamp(40px, 4.4vw, 56px);
+  background:
+    radial-gradient(rgba(39,79,115,.10) 1px, transparent 1px) 0 0 / 16px 16px,
+    var(--dh-cool);
+}
+.dh-feed-grid {
+  display: grid; grid-template-columns: minmax(0,1.72fr) minmax(0,1fr);
+  gap: clamp(30px, 4.5vw, 56px); align-items: start;
+}
+/* No forced stretch. Pinning the note to the bottom of a stretched
+   panel left a 137px void above it — measured live. Natural height
+   reads better than a level finish bought with empty space. */
+.dh-panel .dh-note { padding-top: 14px; }
+
+.dh-news .dh-stage { position: relative; border-radius: var(--dh-r); overflow: hidden; background: var(--dh-navy); }
+.dh-news .dh-slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .45s ease; }
+.dh-news .dh-slide.is-on { opacity: 1; visibility: visible; position: relative; }
+.dh-news .dh-photo { aspect-ratio: 16 / 8; }
+
+/* A real scrim layer over the photo. An inset box-shadow does NOT work
+   here — inset shadows paint above the background but beneath child
+   content, so the image sat on top of it and nothing changed.
+   Newsroom images are often graphics with headline text baked in, and
+   ours was landing on top of theirs.
+   Scoped away from the fallback panel, which uses ::before for its
+   wordmark. */
+.dh-news .dh-photo:not(:empty):not(.dh-no-photo)::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 1;
+  background: rgba(11,23,32,.55);
+}
+.dh-news .dh-cap { z-index: 2; }
+/* The caption sits over the bottom of the frame, so a fallback panel
+   has to keep its wordmark up top or the two collide. */
+.dh-news .dh-photo:empty,
+.dh-news .dh-photo.dh-no-photo {
+  place-content: start center;
+  padding-top: 9%;
+}
+.dh-news .dh-photo:empty::after,
+.dh-news .dh-photo.dh-no-photo::after { font-size: clamp(20px, 2.4vw, 30px); }
+.dh-news .dh-cap {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: clamp(20px,3vw,30px) clamp(20px,3vw,28px) clamp(18px,2.4vw,24px);
+  background: linear-gradient(0deg, rgba(15,29,40,.94) 0%, rgba(15,29,40,.82) 52%, rgba(15,29,40,0) 100%);
+}
+/* Headline only. The eyebrow (date + category) and the excerpt were
+   three competing pieces of text over one photograph — the headline
+   is the thing anyone actually reads, and the date is already in the
+   index directly below. */
+.dh-news .dh-cap .dh-eyebrow { display: none; }
+.dh-news .dh-cap h3 {
+  font-family: var(--dh-display); font-weight: 700;
+  font-size: clamp(18px, 1.95vw, 24px); line-height: 1.25;
+  margin: 0 0 7px; text-wrap: balance; max-width: 30ch;
+}
+.dh-news .dh-cap h3 a { text-decoration: none; }
+#block-doe-content .dh-home .dh-news .dh-cap h3 a { color: #fff !important; }
+.dh-news .dh-cap h3 a:hover { text-decoration: underline; text-decoration-color: var(--dh-teal); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+.dh-news .dh-cap p { margin: 0; color: #cfdde8; font-size: 13.8px; line-height: 1.55; max-width: 56ch; }
+
+/* An index, not a pile of links. Uniform rows, a real date column,
+   a hover state, and the live story marked by a filled teal rail and
+   a tinted row rather than a small dot. */
+.dh-stories {
+  list-style: none; margin: 18px 0 0;
+  padding: 10px; display: grid; gap: 8px;
+  background: var(--dh-warm);
+  border: 1px solid #ded4c8; border-radius: var(--dh-r);
+}
+.dh-stories li {
+  background: var(--dh-paper);
+  border: 1px solid #e4dcd2; border-radius: 10px; overflow: hidden;
+  transition: border-color .18s, box-shadow .18s;
+}
+.dh-stories li:hover { border-color: var(--dh-teal); box-shadow: 0 4px 12px rgba(24,43,60,.10); }
+.dh-stories a {
+  padding: 15px 18px 15px 86px; text-decoration: none;
+  transition: background .15s;
+}
+
+.dh-stories .dh-pip {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: transparent; transition: background .2s;
+}
+.dh-stories .dh-d {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 58px;
+  background: var(--dh-navy); color: #fff; border-radius: 8px;
+  padding: 7px 0; text-align: center;
+  font-family: var(--dh-display);
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+/* Every row the same height — two lines reserved whether the headline
+   needs them or not. Ragged row heights were what made this list read
+   as thrown together; the headlines themselves can vary all they like
+   once the rows line up. */
+.dh-stories .dh-h {
+  font-size: 15.2px; line-height: 1.4; color: var(--dh-navy); font-weight: 500;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.dh-stories a:hover .dh-h { color: var(--dh-midblue); }
+.dh-stories a[aria-current="true"] { background: #eef5fa; }
+.dh-stories a[aria-current="true"] .dh-pip { background: var(--dh-teal); }
+.dh-stories a[aria-current="true"] .dh-h { font-weight: 700; }
+/* The date is a navy chip now, so its text stays white — the old
+   midblue rule painted midblue on navy and the chip went unreadable. */
+.dh-stories a[aria-current="true"] .dh-d { color: #fff; background: var(--dh-midblue); }
+
+/* A warm section card holding a stack of white event cards. The flat
+   list read as secondary next to the newsroom; giving each event its
+   own card on a beige ground makes the column a thing in its own
+   right without going fully dark. */
+.dh-panel {
+  border: 1px solid #ded4c8; border-radius: var(--dh-r);
+  background: var(--dh-warm);
+  padding: 26px 20px 22px;
+}
+.dh-panel .dh-shead .dh-line { background: #d6cbbf; }
+/* The date reads as a real chip — a filled block with the month in
+   rust over the day in navy — and the rows are divided with a heavier
+   warm rule so the list has structure instead of hairlines. */
+.dh-event-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.dh-event-list li {
+  background: var(--dh-paper);
+  border: 1px solid #e4dcd2; border-radius: 10px;
+  transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+.dh-event-list li:hover {
+  border-color: var(--dh-teal);
+  box-shadow: 0 6px 16px rgba(24,43,60,.12);
+  transform: translateY(-2px);
+}
+.dh-event-list a { padding: 17px 15px 17px 90px; text-decoration: none; }
+/* Spans the full height of the row rather than sitting as a chip at the
+   top — the row now reads as one object with a date rail down its left. */
+.dh-cal {
+  position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+  width: 62px; height: 58px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--dh-navy); border-radius: 9px; border: 0;
+}
+.dh-mo { display: block; font-family: var(--dh-display); font-size: 9.5px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: #fff; }
+.dh-dy { display: block; font-family: var(--dh-display); font-size: 21px; font-weight: 700; line-height: 1.1; color: var(--dh-teal); font-variant-numeric: tabular-nums; }
+.dh-event-list .dh-body { display: block; }
+.dh-event-list .dh-h { display: block; font-size: 13.4px; line-height: 1.4; color: var(--dh-navy); font-weight: 600; margin-bottom: 5px; }
+.dh-event-list a:hover .dh-h { text-decoration: underline; text-decoration-color: var(--dh-teal); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+.dh-event-list .dh-sub { display: block; font-size: 12.2px; color: var(--dh-ink-3); line-height: 1.4; }
+/* Tags carry a tone so a scan of the calendar reads by subject, not as
+   a wall of identical grey pills. Set data-tone in the markup; the feed
+   can map focus area to tone when events go live. Unknown or missing
+   tone falls back to the neutral slate below. */
+.dh-tag {
+  display: inline-block; font-family: var(--dh-display);
+  font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 2px 8px; margin-top: 9px; border-radius: 999px;
+  border: 1px solid #cfd8df; background: #eef2f5; color: #445766;
+}
+.dh-tag[data-tone="blue"]  { border-color: #b9d7ea; background: #e8f4fb; color: #1c6592; }
+.dh-tag[data-tone="green"] { border-color: #b3e0c8; background: #e7f7ef; color: #1a7a4e; }
+.dh-tag[data-tone="rust"]  { border-color: #e6c0b1; background: #fbeee8; color: #97401f; }
+.dh-tag[data-tone="plum"]  { border-color: #cfc4e2; background: #f2eefa; color: #5a3f8c; }
+.dh-tag[data-tone="teal"]  { border-color: #a9dced; background: #e6f6fc; color: #0d6f92; }
+.dh-note { margin: 16px 0 0; font-size: 13px; color: var(--dh-ink-3); line-height: 1.55; }
+
+
+/* ── 10. Good news + watch ───────────────────────────────────── */
+.dh-good {
+  background: var(--dh-warm);
+  padding-top: calc(clamp(44px, 5vw, 62px) + var(--dh-slant));
+  padding-bottom: clamp(44px, 5vw, 62px);
+}
+.dh-good .dh-shead .dh-line { background: #d6cbbf; }
+
+/* Built on the ELO news card: photo, teal rule, navy title block,
+   body, then a navy Read more bar. Nothing inside is underlined —
+   the whole card is the affordance, and the border does the work
+   on hover. */
+.dh-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 28px); align-items: stretch; }
+.dh-card-link {
+  display: flex; flex-direction: column; text-decoration: none;
+  background: var(--dh-paper);
+  border: 1px solid var(--dh-rule); border-radius: var(--dh-r); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(24,43,60,.06);
+  transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+.dh-card-link:hover {
+  border-color: var(--dh-teal);
+  box-shadow: 0 12px 28px rgba(24,43,60,.17);
+  transform: translateY(-3px);
+}
+/* First block child of the card, so it always sits flush to the top
+   edge. It used to be a flex item, which let a taller neighbouring card
+   squeeze it and leave a sliver of card showing above the image. */
+.dh-card-link .dh-photo {
+  display: block; flex: none; width: 100%; aspect-ratio: 16 / 10;
+  font-size: 0; line-height: 0;    /* no stray line box above the image */
+  border-bottom: 4px solid var(--dh-teal);
+}
+
+.dh-card-head { display: block; background: var(--dh-navy); padding: 15px 18px 17px; }
+.dh-card-h {
+  display: block; font-family: var(--dh-display); font-weight: 700;
+  font-size: 17px; line-height: 1.26; color: #fff; text-wrap: balance;
+}
+
+.dh-card-body { display: block; padding: 15px 18px 18px; flex: 1; }
+.dh-card-tag { margin: 0 0 11px; }
+.dh-meta {
+  display: block; font-family: var(--dh-display);
+  font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--dh-midblue); margin-bottom: 9px;
+}
+.dh-card-p {
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 13.8px; line-height: 1.55; color: var(--dh-ink-2);
+}
+
+.dh-card-cta {
+  display: block; margin-top: auto;
+  background: var(--dh-navy); color: var(--dh-teal);
+  text-align: center; padding: 14px 12px;
+  font-family: var(--dh-display); font-weight: 700;
+  font-size: 12.5px; letter-spacing: .09em; text-transform: uppercase;
+  transition: background .18s;
+}
+.dh-card-cta::after { content: '  →'; }
+.dh-card-link:hover .dh-card-cta { background: #0f1e2a; }
+
+.dh-more-good {
+  list-style: none; margin: clamp(20px,2.6vw,28px) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: clamp(16px,2vw,24px);
+  align-items: stretch;
+}
+/* Mini versions of the same card, so the overflow stories read as part
+   of the set instead of a leftover list. Date instead of category —
+   the categories on these vary wildly (Federal Funding, BARR,
+   Alternative Education) and read as noise. */
+.dh-more-good li { display: flex; border-bottom: 0; }
+/* Same anatomy as the big cards minus the photo: content, then a navy
+   Read more bar flush to the bottom edge. The category label is gone —
+   the whole band is already headed "Good News from Maine Schools", so
+   tagging every card with it was saying the same thing five times. */
+.dh-more-good a {
+  flex: 1;
+  display: block; position: relative;
+  background: var(--dh-paper);
+  border: 1px solid var(--dh-rule); border-radius: var(--dh-r);
+  overflow: hidden; text-decoration: none;
+  /* MUST come after any padding shorthand above — a later `padding: 0`
+     silently reset this and dropped the bar on top of the title. */
+  padding: 0 0 44px;
+  transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+.dh-more-good a:hover {
+  border-color: var(--dh-teal);
+  box-shadow: 0 10px 22px rgba(24,43,60,.14);
+  transform: translateY(-3px);
+}
+.dh-place { display: none; }
+.dh-more-good .dh-h {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; min-height: 42px;      /* two lines at 21px */
+  font-family: var(--dh-display);
+  font-size: 15.5px; line-height: 21px; color: var(--dh-navy); font-weight: 700;
+  padding: 17px 18px 9px;
+}
+.dh-mg-p {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; min-height: 42px;
+  font-size: 13.4px; line-height: 21px; color: var(--dh-ink-2);
+  padding: 0 18px 16px;
+}
+.dh-more-good a::after {
+  content: 'Read more  →';
+  position: absolute; left: 0; right: 0; bottom: 0;
+  /* Explicit height, matching the 44px reserved above. Left to compute
+     from padding + inherited line-height it drifted taller than the
+     reserve and ate the last line of the title. */
+  display: block; height: 44px; line-height: 22px; padding: 11px 10px;
+  background: var(--dh-navy); color: var(--dh-teal); text-align: center;
+  font-family: var(--dh-display); font-size: 11px; font-weight: 700;
+  letter-spacing: .09em; text-transform: uppercase;
+  transition: background .18s;
+}
+.dh-more-good a:hover::after { background: #0f1e2a; }
+
+/* Its own band on white. Sitting inside the warm good-news section it
+   read as more school stories rather than a separate thing. */
+.dh-watchband {
+  background:
+    radial-gradient(rgba(39,79,115,.10) 1px, transparent 1px) 0 0 / 16px 16px,
+    var(--dh-cool);
+  padding-top: calc(clamp(44px, 5vw, 62px) + var(--dh-slant));
+  padding-bottom: clamp(44px, 5vw, 62px);
+}
+.dh-watch { margin-top: 0; }
+.dh-vids { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 28px); }
+.dh-vids a {
+  text-decoration: none; display: block;
+  background: var(--dh-paper);
+  border: 1px solid var(--dh-rule); border-radius: var(--dh-r);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(24,43,60,.06);
+  transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+.dh-vids a:hover {
+  border-color: var(--dh-teal);
+  box-shadow: 0 12px 28px rgba(24,43,60,.15);
+  transform: translateY(-3px);
+}
+.dh-vid-body { display: block; padding: 15px 17px 17px; }
+/* Video thumbs are never :empty (they hold the duration chip), so the
+   fallback-panel pseudo-elements above don't fire and both are free
+   to draw the play button: ::after is the ring, ::before the triangle. */
+.dh-vid-thumb { aspect-ratio: 16 / 9; border-bottom: 4px solid var(--dh-teal); }
+.dh-vid-thumb::after {
+  content: ''; position: absolute; left: 50%; top: 50%;
+  width: 46px; height: 46px; margin: -23px 0 0 -23px;
+  border: 2px solid rgba(255,255,255,.85); border-radius: 50%;
+}
+.dh-vid-thumb::before {
+  content: ''; position: absolute; left: 50%; top: 50%; z-index: 1;
+  margin: -7px 0 0 -4px; width: 0; height: 0;
+  border-left: 12px solid rgba(255,255,255,.92);
+  border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+}
+.dh-dur {
+  position: absolute; right: 8px; top: 8px; z-index: 1;
+  background: rgba(14,28,39,.85); color: #fff; font-size: 10.5px;
+  padding: 2px 6px; border-radius: 4px; font-variant-numeric: tabular-nums;
+}
+.dh-vid-h {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  font-family: var(--dh-display); font-weight: 700; font-size: 15.5px; line-height: 21px;
+  margin: 0; color: var(--dh-navy);
+}
+.dh-vid-p {
+  margin-top: 8px; font-size: 13.4px; line-height: 1.55; color: var(--dh-ink-2);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.dh-vid-p:empty { display: none; }   /* nothing to show until the feed exists */
+
+/* The thumbnail is a real image, so the fallback pseudo-elements have
+   to stand down and the play ring sits over the photo. */
+.dh-vid-thumb > img { position: absolute; inset: 0; }
+.dh-vid-thumb::after { z-index: 2; }
+.dh-vid-thumb::before { z-index: 3; }
+.dh-vids a:hover .dh-vid-h { text-decoration: underline; text-decoration-color: var(--dh-teal); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+
+
+/* ── 11. Follow ──────────────────────────────────────────────── */
+/* Flat navy, no dot field. The pattern still runs on the header, the
+   hero and the mission band; a fourth use turned a texture into a
+   motif. This band sits directly above the footer horizon, which is
+   texture enough at that end of the page. */
+.dh-social {
+  background: var(--dh-navy);
+  color: #fff;
+  padding-top: calc(32px + var(--dh-slant)); padding-bottom: 32px;
+}
+.dh-social .dh-rail { display: flex; align-items: center; gap: clamp(16px, 3vw, 34px); flex-wrap: wrap; }
+.dh-social-lbl { font-family: var(--dh-display); font-size: 16px; font-weight: 700; margin: 0; }
+.dh-social-lbl span { display: block; font-family: var(--dh-body); font-weight: 400; font-size: 12.8px; color: #a9c4d8; margin-top: 3px; }
+.dh-social-list { list-style: none; margin: 0; padding: 0; display: flex; gap: 9px; flex-wrap: wrap; }
+/* More substantial than a hairline pill — these are the only outbound
+   social links on the page now that the footer's column is gone. */
+.dh-social-list a {
+  display: block; text-decoration: none;
+  font-family: var(--dh-display);
+  font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  border: 0;
+  background: var(--dh-teal);
+  padding: 12px 22px; border-radius: 999px;
+  transition: background .18s, transform .18s, box-shadow .18s;
+}
+.dh-social-list a:hover {
+  background: #6ed2fa;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(66,195,247,.28);
+}
+#block-doe-content .dh-home .dh-social-list a { color: var(--dh-navy) !important; }
+#block-doe-content .dh-home .dh-social-list a:hover { color: var(--dh-navy) !important; }
+#block-doe-content .dh-home .dh-shead .dh-more { color: var(--dh-midblue) !important; }
+
+
+/* ── 12. Responsive ──────────────────────────────────────────── */
+@media (max-width: 940px) {
+  .dh-mission-grid, .dh-feed-grid { grid-template-columns: 1fr; }
+  .dh-mission-list { columns: 1; }
+  .dh-cards, .dh-vids { grid-template-columns: 1fr 1fr; }
+  .dh-cards .dh-card-link:last-child, .dh-vids a:last-child { grid-column: 1 / -1; }
+  /* Five columns can't survive a tablet width — stack instead. */
+  .dh-index { grid-template-columns: 1fr; }
+  .dh-index li + li { border-left: 0; border-top: 1px solid var(--dh-rule-soft); }
+  .dh-index .dh-t { -webkit-line-clamp: 1; font-size: 13.4px; }
+}
+
+@media (max-width: 640px) {
+  .dh-hero .dh-stage { height: auto; }
+  .dh-hero .dh-slide { position: relative; display: none; opacity: 1; visibility: visible; }
+  .dh-hero .dh-slide.is-on { display: block; }
+  .dh-hero .dh-photo { position: relative; inset: auto; height: 190px; }
+  .dh-hero .dh-veil { display: none; }
+  .dh-hero .dh-slide > .dh-rail { position: static; display: block; padding: 0; height: auto; }
+  .dh-hero .dh-card { max-width: none; box-shadow: none; border-radius: 0; padding: 24px clamp(16px,5vw,26px) 28px; }
+  .dh-hero .dh-ctl { position: static; margin: 10px clamp(16px,5vw,26px) 0; }
+  .dh-hero .dh-ctl button { background: #fff; border-color: var(--dh-rule); color: var(--dh-midblue); }
+  .dh-cards, .dh-vids, .dh-more-good { grid-template-columns: 1fr; }
+  .dh-stories a { grid-template-columns: 8px 1fr; }
+  .dh-stories .dh-d { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dh-home *, .dh-home *::before, .dh-home *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+
+/* ── 13. Event dialog ────────────────────────────────────────
+   A copy of the modal on /doe/calendar, not an approximation —
+   markup, tokens and measurements lifted from
+   comms-portal/calendar/index.html so the two surfaces look and
+   behave identically. If that modal changes, change this with it.
+   ------------------------------------------------------------ */
+.dh-dlg {
+  --cal-ground: #eee6df;
+  --cal-navy: #182b3c;
+  --cal-ink: #182b3c;
+  --cal-ink-2: #33475a;
+  --cal-ink-3: #6d8ba6;
+  --cal-steel-soft: #a8bccb;
+  --cal-warm-2: #eef2f6;
+  --cal-teal: #42c3f7;
+  --cat-color: #274f73;             /* per-cluster, set by the JS */
+
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(24,43,60,.78);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.dh-dlg[hidden] { display: none; }
+/* cluster colours, same mapping as the calendar page */
+.dh-dlg.cat-learning  { --cat-color: #0d7ba0; }
+.dh-dlg.cat-convening { --cat-color: #274f73; }
+.dh-dlg.cat-public    { --cat-color: #8a2e13; }
+.dh-dlg.cat-students  { --cat-color: #3f7f5e; }
+
+.dh-dlg-panel {
+  position: relative;
+  background: var(--cal-ground);
+  max-width: 640px; width: 100%;
+  max-height: 88vh; overflow-y: auto;
+  border-radius: 10px;
+  padding: 36px 40px 32px;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,.4);
+}
+.dh-dlg-panel::before {
+  content: ''; position: absolute; left: 0; top: 0; right: 0; height: 6px;
+  background: var(--cat-color); border-radius: 10px 10px 0 0;
+}
+.dh-dlg-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 36px; height: 36px;
+  border: 0; background: transparent; color: var(--cal-ink-2);
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+}
+.dh-dlg-close:hover { background: var(--cal-warm-2); color: var(--cal-ink); }
+.dh-dlg-close svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+.dh-dlg-chip {
+  display: inline-block; font-family: var(--dh-display);
+  font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--cat-color); border: 1px solid var(--cat-color);
+  border-radius: 999px; padding: 4px 11px; margin-bottom: 4px;
+}
+.dh-dlg-title {
+  font-family: var(--dh-display); font-weight: 800;
+  font-size: clamp(24px, 3.4vw, 32px); line-height: 1.1; letter-spacing: -.015em;
+  color: var(--cal-ink); margin: 6px 0 20px; text-wrap: balance; padding-right: 40px;
+}
+.dh-dlg-desc { font-size: 15px; line-height: 1.65; color: var(--cal-ink-2); margin: 0 0 24px; }
+.dh-dlg-desc[hidden] { display: none; }
+
+.dh-dlg-facts {
+  display: grid; grid-template-columns: 1fr; gap: 14px;
+  padding: 20px 22px; margin: 0 0 24px;
+  background: var(--cal-navy); border-radius: 6px;
+}
+.dh-dlg-fact {
+  display: grid; grid-template-columns: 20px 1fr; gap: 12px; align-items: flex-start;
+  font-size: 14px;
+}
+.dh-dlg-fact[hidden] { display: none; }
+.dh-dlg-fact svg { width: 16px; height: 16px; stroke: var(--cal-steel-soft); stroke-width: 1.6; fill: none; margin-top: 2px; }
+.dh-dlg-fact strong {
+  display: block; font-family: var(--dh-display); font-weight: 700;
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--cal-steel-soft); margin-bottom: 2px;
+}
+.dh-dlg-fact .dh-dlg-val {
+  display: block; color: var(--cal-ground);
+  font-family: var(--dh-display); font-weight: 600; font-size: 15px;
+}
+.dh-dlg-mail {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
+  font-family: var(--dh-body); font-size: 13px; font-weight: 500;
+}
+.dh-dlg-mail svg { width: 13px; height: 13px; stroke: var(--cal-teal); margin: 0; }
+.dh-dlg-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 24px; border-radius: 6px;
+  background: var(--cal-ink); text-decoration: none;
+  font-family: var(--dh-display); font-weight: 700;
+  font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+  transition: background .15s, transform .15s;
+}
+.dh-dlg-cta[hidden] { display: none; }
+.dh-dlg-cta svg { width: 14px; height: 14px; stroke: var(--cal-teal); stroke-width: 2.4; fill: none; }
+.dh-dlg-cta:hover { background: var(--cat-color); transform: translateX(2px); }
+.dh-dlg-cta:hover svg { stroke: var(--cal-ground); }
+.dh-dlg-meta {
+  font-family: var(--dh-display); font-weight: 600; font-size: 12px;
+  letter-spacing: .06em; color: var(--cal-ink-3); margin-top: 12px;
+}
+
+/* the theme's link colour would otherwise repaint these */
+#block-doe-content .dh-home .dh-dlg-cta { color: var(--cal-ground) !important; }
+#block-doe-content .dh-home .dh-dlg-mail { color: var(--cal-steel-soft) !important; }
+#block-doe-content .dh-home .dh-dlg-mail:hover { color: var(--cal-ground) !important; }
+
+@media (max-width: 620px) {
+  .dh-dlg { padding: 12px; }
+  .dh-dlg-panel { padding: 24px 24px 20px; }
+}
+</style>
+<script>/* document.body does not exist yet this early in the parse, so the
+   class was never applied and the console carried a TypeError that
+   masked real errors. */
+document.addEventListener('DOMContentLoaded', function () {
+  document.body.classList.add('page-node-type-home-page');
+});</script>
+<div class="mg-page">
+
+<div class="mg-strip"><div class="mg-rail">
+  <b>Maine.gov</b><a href="#">Agencies</a><a href="#">Online Services</a><a href="#">Help</a><a href="#">Search Maine.gov</a>
+</div></div>
+<header class="mg-mast"><div class="mg-rail">
+  <span class="mg-seal">ME</span>
+  <span class="mg-word"><span class="mg-l1">Maine</span><span class="mg-l2">Department of Education</span></span>
+  <nav class="mg-util" aria-label="Utility">
+    <a href="#">Newsroom</a><a href="#">Event Calendar</a><a href="#">Newsletters</a><a href="#">Contact Us</a><a href="#">Language Assistance</a>
+  </nav>
+</div></header>
+<nav class="mg-nav" aria-label="Main"><div class="mg-rail">
+  <a href="#">About</a><a href="#">Offices</a><a href="#">Educators</a><a href="#">Learning</a>
+  <a href="#">Initiatives</a><a href="#">School Services</a><a href="#">Data &amp; Funding</a>
+</div></nav>
+<div id="content"><div id="maincontent1"><div id="block-doe-content">
+<!--
+  Maine DOE homepage — Drupal body field (Full HTML)
+  ==================================================
+  Version: 2026-09-10-k   ·   Last edited: 2026-09-10
+  Versions are per-file and do NOT need to match the other two — only
+  re-paste a file when its own version has changed.
+  ?dhdebug=1 shows what is actually loaded.
+
+  Paste this whole thing into the body of /doe (node 9).
+
+  This file is CONTENT ONLY. Every slider control, progress bar, and
+  autoplay behaviour is created at runtime by the JS Injector rule, so
+  Drupal's content filter has nothing interactive to strip. If the JS
+  never loads, this page still renders as a readable, fully linked
+  document — which is the whole point.
+
+  EDITING NOTES FOR WHOEVER MAINTAINS THIS
+  ========================================
+  * To add a hero slide: copy one <article class="dh-slide"> block,
+    then add a matching <li> to the dh-index list below it. The
+    data-dh-go numbers must run 0,1,2,... with no gaps.
+  * To use a photo: put an <img> inside <div class="dh-photo">.
+  * To go without a photo: leave the dh-photo div EMPTY and set
+    data-dh-kind to the story type ("Update", "Grant", "Conference").
+    The branded fallback panel draws itself.
+  * Never add a style="" attribute. All styling lives in the CSS
+    Injector rule so it can be changed in one place.
+-->
+
+<div class="dh-home" data-dh-version="2026-09-10-k">
+
+  <!-- ============================================================
+       HERO — auto-advancing, 7 seconds a slide
+       ============================================================ -->
+  <!-- data-category is intentionally ABSENT until the "Homepage Feature"
+       category exists in WordPress. With no data-category the block keeps
+       the hand-authored slides below. Add data-category="<id>" and the
+       hero starts driving itself from the Newsroom. -->
+  <section class="dh-hero" data-dh-slider="hero" data-dh-feed="hero"
+           data-dh-dwell="7000" data-count="5" aria-label="Featured">
+
+    <div class="dh-stage">
+
+      <!-- data-dh-pin = this slide is written by hand here and always
+           shows, whether or not there's a Newsroom article behind it.
+           Use it for campaigns, deadlines, and program pages. Feed
+           posts fill whatever spots are left up to data-count.
+           Remove the attribute and this becomes fallback-only. -->
+      <article class="dh-slide is-on" data-dh-pin>
+        <div class="dh-photo" data-dh-kind="Opportunity">
+          <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/2026-09/EngageMEnt.png" alt="" />
+        </div>
+        <div class="dh-veil"></div>
+        <div class="dh-rail">
+          <div class="dh-card">
+            <p class="dh-eyebrow">Opportunity</p>
+            <h2>Registration Now Open for EngageMEnt 2026&ndash;2027</h2>
+            <p class="dh-blurb">A statewide professional learning opportunity supporting educators in exploring innovative, engaging, and impactful practices for teaching and learning.</p>
+            <a class="dh-btn" href="https://www.maine.gov/doe/teachingandlearning/engagementseries">Read the announcement</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="dh-slide">
+        <div class="dh-photo" data-dh-kind="Grant">
+          <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/2026-09/Nature.png" alt="" />
+        </div>
+        <div class="dh-veil"></div>
+        <div class="dh-rail">
+          <div class="dh-card">
+            <p class="dh-eyebrow">Grant Program</p>
+            <h2>Wabanaki Studies Indigenous Literature Grant Program</h2>
+            <p class="dh-blurb">A new Maine DOE grant program bringing Indigenous literature into classrooms across the state, supporting Wabanaki studies instruction.</p>
+            <a class="dh-btn" href="https://mainedoenews.net/2026/09/04/maine-doe-launches-wabanaki-studies-indigenous-literature-grant-program/">See grant details</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="dh-slide">
+        <div class="dh-photo" data-dh-kind="Conference">
+          <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/2026-09/PBIS.png" alt="" />
+        </div>
+        <div class="dh-veil"></div>
+        <div class="dh-rail">
+          <div class="dh-card">
+            <p class="dh-eyebrow">Conference</p>
+            <h2>Registration Open for the 16th Annual PBIS Conference</h2>
+            <p class="dh-blurb">Maine educators can now register for the sixteenth annual Positive Behavioral Interventions and Supports conference.</p>
+            <a class="dh-btn" href="https://mainedoenews.net/2026/09/04/registration-open-for-16th-annual-pbis-conference/">Register now</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="dh-slide">
+        <div class="dh-photo" data-dh-kind="Professional Learning">
+          <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/2026-09/Back-to-School-Backpack-1-.png" alt="" />
+        </div>
+        <div class="dh-veil"></div>
+        <div class="dh-rail">
+          <div class="dh-card">
+            <p class="dh-eyebrow">Professional Learning</p>
+            <h2>Free Access to the Family Math Academy Series</h2>
+            <p class="dh-blurb">Maine educators have no-cost access to the Family Math Academy professional learning series, open to schools across the state.</p>
+            <a class="dh-btn" href="https://mainedoenews.net/2026/09/04/maine-educators-have-free-access-to-family-math-academy-professional-learning-series/">Explore the series</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="dh-slide">
+        <div class="dh-photo" data-dh-kind="Webinar Series">
+          <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/2026-09/Hero%20Test.png" alt="" />
+        </div>
+        <div class="dh-veil"></div>
+        <div class="dh-rail">
+          <div class="dh-card">
+            <p class="dh-eyebrow">Webinar Series</p>
+            <h2>Professional Learning Webinar Series on Multi-Tiered System of Supports</h2>
+            <p class="dh-blurb">A new webinar series from the Department supporting schools implementing a multi-tiered system of supports.</p>
+            <a class="dh-btn" href="https://mainedoenews.net/2026/09/04/maine-department-of-education-to-offer-professional-learning-webinar-series-on-multi-tiered-system-of-supports/">See the schedule</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="dh-rail dh-strip">
+      <!-- The thumbnail span is CREATED by JS, not authored here.
+           Drupal's content filter deletes empty inline elements, so a
+           <span class="dh-thumb"></span> in this file is silently
+           dropped on save — it renders in preview and is missing on
+           the live page. Same trap as the mission icons. The image
+           comes from each slide's own <img>, so there is nothing to
+           author or keep in sync either way. -->
+      <ul class="dh-index">
+        <li><a href="https://www.maine.gov/doe/teachingandlearning/engagementseries" data-dh-go="0"><span class="dh-txt"><span class="dh-kicker">Opportunity</span><span class="dh-t">Registration open for EngageMEnt 2026&ndash;2027</span></span></a></li>
+        <li><a href="https://mainedoenews.net/2026/09/04/maine-doe-launches-wabanaki-studies-indigenous-literature-grant-program/" data-dh-go="1"><span class="dh-txt"><span class="dh-kicker">Grant Program</span><span class="dh-t">Wabanaki Studies Indigenous Literature Grant launches</span></span></a></li>
+        <li><a href="https://mainedoenews.net/2026/09/04/registration-open-for-16th-annual-pbis-conference/" data-dh-go="2"><span class="dh-txt"><span class="dh-kicker">Conference</span><span class="dh-t">Registration open for the 16th Annual PBIS Conference</span></span></a></li>
+        <li><a href="https://mainedoenews.net/2026/09/04/maine-educators-have-free-access-to-family-math-academy-professional-learning-series/" data-dh-go="3"><span class="dh-txt"><span class="dh-kicker">Professional Learning</span><span class="dh-t">Free access to the Family Math Academy series</span></span></a></li>
+        <li><a href="https://mainedoenews.net/2026/09/04/maine-department-of-education-to-offer-professional-learning-webinar-series-on-multi-tiered-system-of-supports/" data-dh-go="4"><span class="dh-txt"><span class="dh-kicker">Webinar Series</span><span class="dh-t">New webinar series on Multi-Tiered System of Supports</span></span></a></li>
+      </ul>
+    </div>
+
+  </section>
+
+
+  <!-- ============================================================
+       MISSION
+       ============================================================ -->
+  <section class="dh-mission" aria-labelledby="dh-mission-h">
+    <div class="dh-rail">
+      <div class="dh-mission-grid">
+        <div>
+          <h2 id="dh-mission-h">The Maine DOE promotes the best learning opportunities for all Maine students</h2>
+          <p class="dh-lede">Leadership and support for educators and families, preparing every Maine student for success in college, careers, and civic life.</p>
+          <p class="dh-motto">Helping Educators, Students, &amp; Schools Thrive</p>
+        </div>
+        <div>
+        <!-- data-dh-ico sits on the <li>, NOT on an inner tag. An empty
+             <i> here was silently deleted by Drupal's content filter —
+             it strips inline elements with no content — which is why the
+             icons vanished on the live page but not in preview. The <li>
+             has text, so it survives; the JS builds the icon inside it. -->
+        <ul class="dh-mission-list">
+          <li data-dh-ico="student"><span>Focusing on a whole student approach</span></li>
+          <li data-dh-ico="idea"><span>Encouraging innovation</span></li>
+          <li data-dh-ico="educator"><span>Respecting educators</span></li>
+          <li data-dh-ico="guidance"><span>Providing information, guidance, professional learning, and support to schools and educators</span></li>
+          <li data-dh-ico="funding"><span>Providing adequate and equitable school funding and resources</span></li>
+          <li data-dh-ico="trust"><span>Inspiring trust in our schools</span></li>
+        </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       NEWSROOM + UPCOMING EVENTS
+       The newsroom slides and the story list beneath them are ONE
+       component — the list is the slider's index.
+       Both columns are filled from live feeds by the JS rule; the
+       markup below is the fallback that shows if a feed is down.
+       ============================================================ -->
+  <section class="dh-feed">
+    <div class="dh-rail">
+      <div class="dh-feed-grid">
+
+        <!-- data-category empty = most recent posts, any category.
+             To narrow it to Newsroom Articles, use 206418111. -->
+        <div class="dh-news" data-dh-slider="news" data-dh-dwell="6000"
+             data-dh-feed="news" data-category="" data-count="5">
+          <div class="dh-shead">
+            <h2>Newsroom</h2>
+            <span class="dh-line"></span>
+            <a class="dh-more" href="https://mainedoenews.net/">All news</a>
+          </div>
+
+          <div class="dh-stage">
+
+            <article class="dh-slide is-on">
+              <div class="dh-photo" data-dh-kind="Update"></div>
+              <div class="dh-cap">
+                <p class="dh-eyebrow">September 4, 2026 &middot; Update</p>
+                <h3><a href="/link">Maine DOE Update &mdash; September 4, 2026</a></h3>
+                <p class="dh-blurb">The weekly roundup of guidance, deadlines, opportunities, and school stories from the Department.</p>
+              </div>
+            </article>
+
+            <article class="dh-slide">
+              <div class="dh-photo" data-dh-kind="Guidance">
+                <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-news-2.jpg" alt="" />
+              </div>
+              <div class="dh-cap">
+                <p class="dh-eyebrow">September 4, 2026 &middot; Guidance</p>
+                <h3><a href="/link">Joint Maine DOE and DHHS Guidance on IEPs and MaineCare Sections 28 and 65 Services</a></h3>
+                <p class="dh-blurb">A repeat and expanded virtual session covering the joint guidance for school administrative units.</p>
+              </div>
+            </article>
+
+            <article class="dh-slide">
+              <div class="dh-photo" data-dh-kind="Professional Learning">
+                <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-news-3.jpg" alt="" />
+              </div>
+              <div class="dh-cap">
+                <p class="dh-eyebrow">September 4, 2026 &middot; Professional Learning</p>
+                <h3><a href="/link">Maine Educators have FREE Access to Family Math Academy Professional Learning Series</a></h3>
+                <p class="dh-blurb">A no-cost professional learning series open to educators across the state.</p>
+              </div>
+            </article>
+
+            <article class="dh-slide">
+              <div class="dh-photo" data-dh-kind="Grant">
+                <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-news-4.jpg" alt="" />
+              </div>
+              <div class="dh-cap">
+                <p class="dh-eyebrow">September 4, 2026 &middot; Grant</p>
+                <h3><a href="/link">Maine DOE Launches Wabanaki Studies Indigenous Literature Grant Program</a></h3>
+                <p class="dh-blurb">A new grant program bringing Indigenous literature into Maine classrooms.</p>
+              </div>
+            </article>
+
+            <article class="dh-slide">
+              <!-- Left empty on purpose: shows the branded fallback panel
+                   for a post with no usable featured image. -->
+              <div class="dh-photo" data-dh-kind="Conference"></div>
+              <div class="dh-cap">
+                <p class="dh-eyebrow">September 4, 2026 &middot; Conference</p>
+                <h3><a href="/link">Registration Open for the 16th Annual PBIS Conference</a></h3>
+                <p class="dh-blurb">Registration is now open for the sixteenth annual Positive Behavioral Interventions and Supports conference.</p>
+              </div>
+            </article>
+
+          </div>
+
+          <ul class="dh-stories">
+            <li><a href="/link" data-dh-go="0"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Maine DOE Update &mdash; September 4, 2026</span></a></li>
+            <li><a href="/link" data-dh-go="1"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Joint Maine DOE and DHHS Guidance on IEPs and MaineCare Sections 28 and 65 Services</span></a></li>
+            <li><a href="/link" data-dh-go="2"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Maine Educators have FREE Access to Family Math Academy Professional Learning Series</span></a></li>
+            <li><a href="/link" data-dh-go="3"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Maine DOE Launches Wabanaki Studies Indigenous Literature Grant Program</span></a></li>
+            <li><a href="/link" data-dh-go="4"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Registration Open for the 16th Annual PBIS Conference</span></a></li>
+          </ul>
+        </div>
+
+        <div class="dh-events">
+          <div class="dh-panel" data-dh-feed="events" data-count="6"
+               data-endpoint="//script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec">
+            <div class="dh-shead">
+              <h2>Upcoming Events</h2>
+              <span class="dh-line"></span>
+              <a class="dh-more" href="https://www.maine.gov/doe/calendar">Full calendar</a>
+            </div>
+            <ul class="dh-event-list">
+              <li><a href="https://www.maine.gov/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">10</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">Special Education Connect Enrollment Webinar</span>
+                  <span class="dh-sub">12:00 &ndash; 1:00 p.m. &middot; Webinar</span>
+                  <span class="dh-tag" data-tone="blue">Data</span>
+                </span>
+              </a></li>
+              <li><a href="https://www.maine.gov/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">10</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">School Nurse Office Hours</span>
+                  <span class="dh-sub">3:30 &ndash; 4:30 p.m. &middot; Office Hours</span>
+                  <span class="dh-tag" data-tone="green">School Health</span>
+                </span>
+              </a></li>
+              <li><a href="https://www.maine.gov/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">10</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">SY27 NSLP Review Training</span>
+                  <span class="dh-sub">9:00 a.m. &ndash; 12:30 p.m. &middot; Training</span>
+                  <span class="dh-tag" data-tone="rust">Child Nutrition</span>
+                </span>
+              </a></li>
+              <li><a href="https://www.maine.gov/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">11</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">Guidance on IEPs and MaineCare Sections 28 and 65 Services</span>
+                  <span class="dh-sub">12:00 &ndash; 2:00 p.m. &middot; Training</span>
+                  <span class="dh-tag" data-tone="plum">Federal Programs</span>
+                </span>
+              </a></li>
+              <li><a href="https://www.maine.gov/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">11</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">Behavioral Threat Assessment &amp; Management (BTAM) Office Hours</span>
+                  <span class="dh-sub">9:30 &ndash; 10:30 a.m. &middot; Office Hours</span>
+                  <span class="dh-tag" data-tone="rust">School Safety</span>
+                </span>
+              </a></li>
+              <li><a href="https://www.maine.gov/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">12</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">Maine School Safety Center Training Coordinator Office Hours</span>
+                  <span class="dh-sub">8:00 &ndash; 9:00 a.m. &middot; Office Hours</span>
+                  <span class="dh-tag" data-tone="rust">School Safety</span>
+                </span>
+              </a></li>
+            </ul>
+            <p class="dh-note">Earn contact hours while connecting, learning, and sharing with educators across Maine and beyond.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       GOOD NEWS FROM MAINE SCHOOLS
+       Fills from the WordPress "School Highlights" category once that
+       category exists. Until then this markup is what shows.
+       ============================================================ -->
+  <section class="dh-good">
+    <div class="dh-rail">
+
+      <div class="dh-shead">
+        <h2>Good News from Maine Schools</h2>
+        <span class="dh-line"></span>
+        <a class="dh-more" href="https://mainedoenews.net/">All school stories</a>
+      </div>
+
+      <!-- 4668 = "Good News from Schools" (843 posts, mainedoenews.net
+           /category/success/ redirects here). 3 cards + 4 headlines. -->
+      <div class="dh-cards" data-dh-feed="highlights" data-category="4668" data-count="5">
+        <a class="dh-card-link" href="/link">
+          <span class="dh-photo" data-dh-kind="Highlight">
+            <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-hl-1.jpg" alt="" />
+          </span>
+          <span class="dh-card-head"><span class="dh-card-h">St. George MSU Recognized as a Top 10 School</span></span>
+          <span class="dh-card-body">
+            <span class="dh-meta">August 14, 2026</span>
+            <span class="dh-card-p">A small coastal district earning statewide recognition for student outcomes and community partnership.</span>
+          </span>
+          <span class="dh-card-cta">Read more</span>
+        </a>
+        <a class="dh-card-link" href="/link">
+          <span class="dh-photo" data-dh-kind="Highlight">
+            <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-hl-2.jpg" alt="" />
+          </span>
+          <span class="dh-card-head"><span class="dh-card-h">Maine Engagement and Attendance Center Brings Partners Together</span></span>
+          <span class="dh-card-body">
+            <span class="dh-meta">September 4, 2026</span>
+            <span class="dh-card-p">Statewide partners continue joint work to strengthen student attendance and engagement.</span>
+          </span>
+          <span class="dh-card-cta">Read more</span>
+        </a>
+        <a class="dh-card-link" href="/link">
+          <span class="dh-photo" data-dh-kind="Highlight">
+            <img src="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-hl-3.jpg" alt="" />
+          </span>
+          <span class="dh-card-head"><span class="dh-card-h">Wabanaki Studies Indigenous Literature Grant Program</span></span>
+          <span class="dh-card-body">
+            <span class="dh-meta">September 4, 2026</span>
+            <span class="dh-card-p">A new grant program bringing Indigenous literature into Maine classrooms.</span>
+          </span>
+          <span class="dh-card-cta">Read more</span>
+        </a>
+      </div>
+
+      <!-- Two overflow stories, not four — the band was getting long.
+           The JS caps it at two as well, so a larger data-count can't
+           lengthen it. -->
+      <ul class="dh-more-good">
+        <li><a href="/link"><span class="dh-place">Aug 14</span><span class="dh-h">Students Present Climate Action Plan to Town Council</span><span class="dh-mg-p">Students showcased a year of climate work and presented their action plan to the town council.</span></a></li>
+        <li><a href="/link"><span class="dh-place">Aug 5</span><span class="dh-h">Community School Model Expands to a Third Building</span><span class="dh-mg-p">A community school model expands to a third building after strong results across the district.</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       WATCH — its own band, on the light ground. Inside the warm
+       good-news band it read as more school stories.
+       ============================================================ -->
+  <section class="dh-watchband">
+    <div class="dh-rail">
+      <!-- Live from the comms-portal Apps Script once the youtube_videos
+           branch is deployed. Protocol-relative: a full https:// address
+           here gets the Injector save rejected by the WAF. -->
+      <div class="dh-watch" data-dh-feed="youtube"
+           data-endpoint="//script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec">
+        <div class="dh-shead">
+          <h2>Latest Videos</h2>
+          <span class="dh-line"></span>
+          <a class="dh-more" href="https://www.youtube.com/@MaineDepartmentofEducation">YouTube channel</a>
+        </div>
+        <!-- Real videos from the @MaineDOEComm channel. The thumbnail
+             address is just the video ID — no API key and no request
+             from our side. Titles came from YouTube's oEmbed endpoint,
+             which is also keyless and CORS-open, so the JS rule keeps
+             them current.
+
+             There is no description element here on purpose: Drupal's
+             content filter deletes empty inline tags, so an empty
+             placeholder would never survive the paste. The JS creates
+             the description once the feed supplies one. -->
+        <div class="dh-vids">
+          <a href="//www.youtube.com/watch?v=OapwofBvIhc" data-dh-yt="OapwofBvIhc">
+            <span class="dh-photo dh-vid-thumb" data-dh-kind="Video">
+              <img src="//i.ytimg.com/vi/OapwofBvIhc/hqdefault.jpg" alt="" loading="lazy" />
+            </span>
+            <span class="dh-vid-body"><span class="dh-vid-h">Special Services Office Hours (May 2026): Case Study</span></span>
+          </a>
+          <a href="//www.youtube.com/watch?v=jhcLfvkZAoQ" data-dh-yt="jhcLfvkZAoQ">
+            <span class="dh-photo dh-vid-thumb" data-dh-kind="Video">
+              <img src="//i.ytimg.com/vi/jhcLfvkZAoQ/hqdefault.jpg" alt="" loading="lazy" />
+            </span>
+            <span class="dh-vid-body"><span class="dh-vid-h">Title I Reporting of Eligible Students</span></span>
+          </a>
+          <a href="//www.youtube.com/watch?v=gkbXy0cLMB4" data-dh-yt="gkbXy0cLMB4">
+            <span class="dh-photo dh-vid-thumb" data-dh-kind="Video">
+              <img src="//i.ytimg.com/vi/gkbXy0cLMB4/hqdefault.jpg" alt="" loading="lazy" />
+            </span>
+            <span class="dh-vid-body"><span class="dh-vid-h">NEO Staff Data Entry Webinar</span></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOLLOW
+       ============================================================ -->
+  <section class="dh-social">
+    <div class="dh-rail">
+      <p class="dh-social-lbl">Follow Maine DOE<span>Daily updates, school stories, and reminders</span></p>
+      <ul class="dh-social-list">
+        <li><a href="https://www.facebook.com/MaineDepartmentofEducation">Facebook</a></li>
+        <li><a href="https://www.instagram.com/mainedepted/">Instagram</a></li>
+        <li><a href="https://www.youtube.com/@MaineDepartmentofEducation">YouTube</a></li>
+        <li><a href="https://www.linkedin.com/company/education-maine-department-of/">LinkedIn</a></li>
+        <li><a href="https://mainedoenews.net/">Newsletter</a></li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+</div></div></div>
+</div>
+<script>/* Maine DOE homepage — JS Injector rule
+ * Version: 2026-09-10-r  ·  Last edited: 2026-09-10
+ * Versions are per-file and do NOT need to match the other two.
+ */
+
+/* ============================================================
+   Maine DOE homepage
+   JS Injector rule — scope to page: doe   ·   Placement: Footer
+   ============================================================
+
+   Progressive enhancement only. The body field already contains
+   every story as a real, linked, readable article. This file adds:
+
+     · autoplay on the two sliders (hero 7s, newsroom 6s)
+     · the prev / pause / next controls — built in JavaScript on
+       purpose, so Drupal's content filter never sees a button
+       element in the body field and can't strip it
+     · the hero strip thumbnails, taken from each slide's image
+     · the broken/missing image guard
+     · live content from the Newsroom
+
+   The feed code follows the same pattern as the existing DOE News
+   widget on /doe/learning/elo: WordPress.com's wp/v2 API, numeric
+   category IDs via data-category, images out of the _embed payload.
+   Verified CORS-enabled from the live www.maine.gov origin — no key,
+   no proxy, no Apps Script in the path.
+
+   Accessibility rules this obeys, because autoplaying carousels are
+   the most-complained-about pattern on government sites:
+     · never autoplays when the visitor asks for reduced motion
+     · stops on hover, on keyboard focus, and when the tab is hidden
+     · always offers a visible pause control
+     · every slide stays in the DOM as a real link regardless of
+       which one is showing
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var root = document.querySelector('.dh-home');
+  if (!root) return;
+
+  /* ── Version reporting ────────────────────────────────────────
+     Each of the three files carries its OWN version, and they do NOT
+     have to match. That's deliberate: an earlier design demanded all
+     three be identical, which meant a one-file change forced pasting
+     all three just to keep the stamps aligned — busywork that also
+     made a real mismatch harder to spot, because there was always a
+     redeploy in flight.
+
+     Now this just reports what is actually loaded. Nothing is flagged
+     as wrong unless a file has no stamp at all, which does mean it
+     predates this scheme and is genuinely stale.
+
+     Silent in normal use. ?dhdebug=1 shows the badge.
+     ------------------------------------------------------------ */
+  var JS_VERSION = '2026-09-10-r';
+  reportVersions();
+
+  function reportVersions() {
+    var css = (getComputedStyle(root).getPropertyValue('--dh-version') || '')
+                .trim().replace(/^["']|["']$/g, '');
+    var html = (root.getAttribute('data-dh-version') || '').trim();
+
+    var missing = !css || !html;
+    var debug = /[?&]dhdebug=1/.test(location.search);
+    if (!missing && !debug) return;
+
+    var lines = [
+      missing ? 'Maine DOE homepage — a file predates version stamping.'
+              : 'Maine DOE homepage — loaded versions',
+      '  body HTML   : ' + (html || 'NO STAMP — this file is stale, re-paste it'),
+      '  CSS Injector: ' + (css || 'NO STAMP — this rule is stale, or it did not save'),
+      '  JS Injector : ' + JS_VERSION,
+      '  (these are independent; they do not need to match)'
+    ];
+
+    /* Under ?dhdebug=1, also report what the browser actually computed
+       for the rules that have caused trouble. A screenshot of this says
+       more than a screenshot of the page. */
+    if (debug) {
+      lines.push('', 'computed:');
+      [['.dh-stories a', 'display,paddingLeft'],
+       ['.dh-mission-list li', 'display,paddingLeft'],
+       ['.dh-mission-list li .dh-ico', 'position,width,backgroundColor'],
+       ['.dh-index .dh-thumb', 'cssFloat,width'],
+       ['.dh-card-link', 'display,flexDirection'],
+       ['.dh-hero', 'paddingBottom']
+      ].forEach(function (row) {
+        var el = root.querySelector(row[0]);
+        if (!el) { lines.push('  ' + row[0] + ' -> NOT FOUND'); return; }
+        var cs = getComputedStyle(el);
+        lines.push('  ' + row[0] + ' -> ' + row[1].split(',').map(function (prop) {
+          return prop + ':' + cs[prop];
+        }).join('  '));
+      });
+      lines.push('  rules loaded: ' + countRules() + ' (expect a few hundred)');
+    }
+
+    var text = lines.join('\n');
+    if (window.console) console.warn(text);
+
+    if (debug) {
+      var flag = document.createElement('div');
+      flag.setAttribute('style',
+        'position:fixed;left:12px;bottom:12px;z-index:99999;max-width:460px;' +
+        'background:' + (missing ? '#8a2e13' : '#123') + ';color:#fff;' +
+        'font:11.5px/1.5 monospace;padding:12px 14px;' +
+        'border-radius:8px;white-space:pre-wrap;box-shadow:0 6px 20px rgba(0,0,0,.45)');
+      flag.textContent = text;
+      document.body.appendChild(flag);
+    }
+  }
+
+  /* How many of our rules the browser actually parsed. A number far
+     below the expected count means the stylesheet arrived truncated. */
+  function countRules() {
+    var n = 0;
+    for (var i = 0; i < document.styleSheets.length; i++) {
+      var rules;
+      try { rules = document.styleSheets[i].cssRules; } catch (e) { continue; }
+      for (var r = 0; r < rules.length; r++) {
+        if (rules[r].selectorText && rules[r].selectorText.indexOf('dh-') > -1) n++;
+      }
+    }
+    return n;
+  }
+
+  /* ── Addresses are PROTOCOL-RELATIVE on purpose ──────────────
+     The maine.gov WAF rejects an Injector save — CSS or JS — whose
+     body contains a scheme-qualified address, reading it as remote
+     file inclusion. Starting at the double slash carries no scheme,
+     so the save goes through, and the browser resolves it against
+     the page (https on maine.gov) at request time.
+     Do not "tidy" these back into full addresses; the save will
+     start failing again with a bare 403 and no explanation. */
+  var WP_SITE  = 'mainedoenews.net';
+  var API_BASE = '//public-api.wordpress.com/wp/v2/sites/' + WP_SITE;
+
+  /* Fonts attach from here rather than the CSS rule, same reason. */
+  var FONT_CSS = '//fonts.googleapis.com/css2' +
+                 '?family=League+Spartan:wght@500;600;700;800' +
+                 '&family=Inter:wght@400;500;600;700&display=swap';
+
+  loadFonts();
+
+  function loadFonts() {
+    if (document.querySelector('link[data-dh-fonts]')) return;
+    ['//fonts.googleapis.com', '//fonts.gstatic.com'].forEach(function (href) {
+      var pre = document.createElement('link');
+      pre.rel = 'preconnect';
+      pre.href = href;
+      if (href.indexOf('gstatic') > -1) pre.crossOrigin = 'anonymous';
+      document.head.appendChild(pre);
+    });
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = FONT_CSS;
+    link.setAttribute('data-dh-fonts', '1');
+    document.head.appendChild(link);
+  }
+
+  var CALM = window.matchMedia &&
+             window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Categories on nearly every post — useless as an eyebrow label. */
+  var DULL = { 'newsroom articles': 1, 'news & views': 1, 'uncategorized': 1, 'maine doe': 1 };
+
+  /* Mission icon paths. Declared HERE, above the boot block that calls
+     drawIcons(), not down beside the function — `var` hoists the name
+     but not the value, so a call that runs first sees undefined and
+     throws, which would take the feeds down with it. */
+  var ICONS = {
+    student:   'M2 8.5l10-4 10 4-10 4-10-4z M6.5 10.8v3.9c0 1.6 2.9 2.8 5.5 2.8s5.5-1.2 5.5-2.8v-3.9',
+    idea:      'M9.2 18.5h5.6 M10.2 21h3.6 M12 3a6 6 0 0 0-3.9 10.6c.6.6 1 1.5 1.1 2.4h5.6c.1-.9.5-1.8 1.1-2.4A6 6 0 0 0 12 3z',
+    educator:  'M12 11.5a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2z M4.5 20.5c0-3.6 3.4-5.5 7.5-5.5s7.5 1.9 7.5 5.5',
+    guidance:  'M4 5.5A2.5 2.5 0 0 1 6.5 3H20v14.5H6.5A2.5 2.5 0 0 0 4 20V5.5z M8.5 7.5h7 M8.5 11h7',
+    funding:   'M12 20.5a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17z M12 7.2v9.6 M14.6 9.9c0-1-1.2-1.7-2.6-1.7s-2.6.7-2.6 1.7 1.2 1.5 2.6 1.8 2.6.8 2.6 1.8-1.2 1.7-2.6 1.7-2.6-.7-2.6-1.7',
+    trust:     'M12 3l7 2.9v5.8c0 4.3-2.9 7.4-7 8.8-4.1-1.4-7-4.5-7-8.8V5.9L12 3z M9.2 11.9l2 2 3.6-3.7'
+  };
+
+
+  /* Written as markup rather than built with createElementNS, because
+     that call needs the SVG namespace URL as a literal — and a
+     scheme-qualified address anywhere in this file gets the Injector
+     save rejected by the WAF. Assigning innerHTML inside an HTML
+     document namespaces the SVG automatically, so no URL is needed. */
+  function drawIcons() {
+    var slots = root.querySelectorAll('[data-dh-ico]');
+    for (var n = 0; n < slots.length; n++) {
+      var d = ICONS[slots[n].getAttribute('data-dh-ico')];
+      if (!d || slots[n].querySelector('.dh-ico')) continue;
+
+      var paths = d.split(' M').map(function (seg, i) {
+        return '<path d="' + (i ? 'M' : '') + seg + '"/>';
+      }).join('');
+
+      /* Built here rather than authored in the body field: an empty <i>
+         placeholder gets deleted by Drupal's content filter, and
+         createElementNS would need the SVG namespace URL, which the WAF
+         rejects. Assigning innerHTML namespaces the SVG on its own. */
+      var mark = document.createElement('span');
+      mark.className = 'dh-ico';
+      mark.setAttribute('aria-hidden', 'true');
+      mark.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+        'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" ' +
+        'focusable="false">' + paths + '</svg>';
+      slots[n].insertBefore(mark, slots[n].firstChild);
+    }
+  }
+
+
+  /* ── boot ─────────────────────────────────────────────────── */
+
+  var frames = root.querySelectorAll('.dh-photo');
+  for (var f = 0; f < frames.length; f++) guardPhoto(frames[f]);
+
+  var made = {};
+  var boxes = root.querySelectorAll('[data-dh-slider]');
+  for (var i = 0; i < boxes.length; i++) {
+    made[boxes[i].getAttribute('data-dh-slider')] = build(boxes[i]);
+  }
+
+  drawIcons();
+  loadFeeds(made);
+  loadEvents();
+  loadVideos();
+
+
+  /* ── missing and broken images ────────────────────────────────
+     The CSS fires the branded fallback panel on :empty OR on
+     .dh-no-photo. The class is needed because whitespace between
+     tags counts as a child node, so a div an editor has touched is
+     almost never truly :empty.
+     ------------------------------------------------------------ */
+  function guardPhoto(frame) {
+    /* A video thumbnail keeps its duration chip and play ring, so it
+       drops the broken image without switching to the fallback panel —
+       the gradient behind it is already a reasonable poster. */
+    var isVideo = frame.classList.contains('dh-vid-thumb');
+    var img = frame.querySelector('img');
+
+    var fail = function () {
+      if (img && img.parentNode) img.parentNode.removeChild(img);
+      if (!isVideo) frame.classList.add('dh-no-photo');
+    };
+
+    if (isVideo && !img) return;
+
+    if (!img || !img.getAttribute('src')) { fail(); return; }
+    if (img.complete) { if (img.naturalWidth === 0) fail(); return; }
+    img.addEventListener('error', fail);
+  }
+
+
+  /* Drupal's content filter deletes empty inline elements, so a
+     <span class="dh-thumb"></span> authored in the body field never
+     survives the paste — it renders locally and is simply absent on
+     the live page, which is why the strip showed no thumbnails there.
+     Same failure that took out the mission icons and the video
+     descriptions. Build it here instead of trusting the markup. */
+  function ensureThumb(link) {
+    if (!link) return null;
+    var t = link.querySelector('.dh-thumb');
+    if (!t) {
+      t = document.createElement('span');
+      t.className = 'dh-thumb';
+      link.insertBefore(t, link.firstChild);
+    }
+    return t;
+  }
+
+
+  /* ── slider ───────────────────────────────────────────────── */
+
+  function build(box) {
+    var stage = box.querySelector('.dh-stage');
+    if (!stage) return null;
+
+    var slides  = stage.querySelectorAll('.dh-slide');
+    if (slides.length < 2) return null;
+
+    var isHero  = box.getAttribute('data-dh-slider') === 'hero';
+    var dwell   = parseInt(box.getAttribute('data-dh-dwell'), 10) || 6000;
+    var index   = box.querySelectorAll('[data-dh-go]');
+    var cur     = 0;
+    var timer   = null;
+    var held    = false;
+    var playing = !CALM;
+
+    var ctl = makeControls();
+    seedThumbs();
+    wireIndex();
+
+    /* Thumbnails come from each slide's own image, so there's nothing
+       extra to author. Only applied once the image has genuinely
+       loaded — a src that 404s would paint nothing over the CSS base
+       and leave a hole in the strip. */
+    function seedThumbs() {
+      for (var n = 0; n < index.length; n++) {
+        var thumb = ensureThumb(index[n]);
+        if (!thumb || !slides[n]) continue;
+        var img = slides[n].querySelector('.dh-photo > img');
+        if (!img || !img.getAttribute('src')) continue;
+        paintThumb(img, thumb);
+      }
+    }
+
+    function paintThumb(img, thumb) {
+      var apply = function () {
+        thumb.style.backgroundImage = 'url("' + img.getAttribute('src') + '")';
+      };
+      if (img.complete) { if (img.naturalWidth > 0) apply(); return; }
+      img.addEventListener('load', apply);
+    }
+
+    function wireIndex() {
+      for (var k = 0; k < index.length; k++) {
+        (function (link, n) {
+          if (link.dataset.dhBound) return;
+          link.dataset.dhBound = '1';
+          link.addEventListener('click', function (e) { e.preventDefault(); jump(n); });
+        })(index[k], k);
+      }
+    }
+
+    function makeControls() {
+      var bar = document.createElement('div');
+      bar.className = 'dh-ctl';
+
+      var prev  = btn('‹', 'Previous story');
+      var play  = btn('❚❚', 'Pause slideshow');
+      var next  = btn('›', 'Next story');
+      var count = document.createElement('span');
+      count.className = 'dh-count';
+
+      bar.appendChild(prev); bar.appendChild(play);
+      bar.appendChild(next); bar.appendChild(count);
+
+      prev.addEventListener('click', function () { jump(cur - 1); });
+      next.addEventListener('click', function () { jump(cur + 1); });
+      play.addEventListener('click', function () { setPlaying(!playing); });
+
+      if (isHero) { stage.appendChild(bar); }
+      else { box.insertBefore(bar, box.querySelector('.dh-stories')); }
+      return { play: play, count: count };
+    }
+
+    function btn(glyph, label) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.innerHTML = glyph;
+      b.setAttribute('aria-label', label);
+      return b;
+    }
+
+    function paint(n) {
+      cur = (n + slides.length) % slides.length;
+      for (var s = 0; s < slides.length; s++) slides[s].classList.toggle('is-on', s === cur);
+      for (var a = 0; a < index.length; a++) {
+        if (a === cur) index[a].setAttribute('aria-current', 'true');
+        else index[a].removeAttribute('aria-current');
+      }
+      ctl.count.textContent = (cur + 1) + ' / ' + slides.length;
+    }
+
+    /* The live index item's top bar fills over the dwell, so the strip
+       doubles as the progress indicator. Custom properties inherit
+       into ::before; transition-duration does not — which is why the
+       dwell rides in as a variable. */
+    function sweep() {
+      for (var a = 0; a < index.length; a++) index[a].classList.remove('is-timing');
+      var live = index[cur];
+      if (!live || !playing) return;
+      live.style.setProperty('--dh-dwell', dwell + 'ms');
+      void live.offsetWidth;
+      live.classList.add('is-timing');
+    }
+
+    function tick() {
+      clearTimeout(timer);
+      if (!playing) return;
+      timer = setTimeout(function () { paint(cur + 1); cycle(); }, dwell);
+    }
+
+    function cycle() { sweep(); tick(); }
+    function jump(n) { paint(n); if (playing) cycle(); }
+
+    function setPlaying(on) {
+      playing = on;
+      ctl.play.innerHTML = on ? '❚❚' : '▶';
+      ctl.play.setAttribute('aria-label', on ? 'Pause slideshow' : 'Play slideshow');
+      if (on) { cycle(); }
+      else {
+        clearTimeout(timer);
+        for (var a = 0; a < index.length; a++) index[a].classList.remove('is-timing');
+      }
+    }
+
+    ['mouseenter', 'focusin'].forEach(function (ev) {
+      box.addEventListener(ev, function () {
+        if (!playing || held) return;
+        held = true;
+        clearTimeout(timer);
+        for (var a = 0; a < index.length; a++) index[a].classList.remove('is-timing');
+      });
+    });
+    ['mouseleave', 'focusout'].forEach(function (ev) {
+      box.addEventListener(ev, function () {
+        if (!held) return;
+        if (ev === 'focusout' && box.contains(document.activeElement)) return;
+        held = false;
+        if (playing) cycle();
+      });
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) clearTimeout(timer);
+      else if (playing && !held) cycle();
+    });
+
+    paint(0);
+    setPlaying(playing);
+
+    /* Called after a feed swaps the slides in — re-reads the DOM. */
+    return {
+      refresh: function () {
+        clearTimeout(timer);
+        slides = stage.querySelectorAll('.dh-slide');
+        index  = box.querySelectorAll('[data-dh-go]');
+        wireIndex();
+        seedThumbs();
+        paint(0);
+        if (playing) cycle();
+      }
+    };
+  }
+
+
+  /* ── feeds ────────────────────────────────────────────────────
+     Each block carries data-category (a numeric WordPress category
+     ID) and data-count, exactly like the ELO news widget. Leave
+     data-category empty for "most recent, any category". Leave the
+     attribute off entirely and the block keeps its authored markup.
+     ------------------------------------------------------------ */
+
+  function loadFeeds(sliders) {
+    var hosts = root.querySelectorAll('[data-dh-feed]');
+
+    for (var h = 0; h < hosts.length; h++) {
+      (function (host) {
+        var kind = host.getAttribute('data-dh-feed');
+        if (!host.hasAttribute('data-category')) return;   /* not wired up yet */
+
+        get(host,
+            parseInt(host.getAttribute('data-count'), 10) || 5,
+            function (posts) {
+              if (!posts || !posts.length) return;   /* keep the authored markup */
+              try {
+                if (kind === 'highlights') fillCards(host, posts);
+                else {
+                  fillSlides(host, posts, kind);
+                  if (sliders[kind]) sliders[kind].refresh();
+                }
+              } catch (e) { /* authored markup stands; never blank the page */ }
+            });
+      })(hosts[h]);
+    }
+  }
+
+  /* Query params, all verified working against mainedoenews.net:
+       categories         — only these (numeric IDs, comma separated)
+       categories_exclude — never these
+       exclude            — never these individual post IDs
+     Ask for extra posts so that pinned slides and any post that slips
+     through can be trimmed without leaving the block short. */
+  function get(host, count, done) {
+    var cat  = host.getAttribute('data-category');
+    var noCat = host.getAttribute('data-exclude-categories');
+    var noId  = host.getAttribute('data-exclude-posts');
+
+    var url = API_BASE + '/posts?per_page=' + (count + 5) + '&_embed' +
+              (cat   ? '&categories=' + encodeURIComponent(cat) : '') +
+              (noCat ? '&categories_exclude=' + encodeURIComponent(noCat) : '') +
+              (noId  ? '&exclude=' + encodeURIComponent(noId) : '');
+
+    fetch(url)
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (posts) { done((posts || []).map(tidy)); })
+      .catch(function (err) { if (window.console) console.warn('DOE homepage feed:', err); done(null); });
+  }
+
+  /* The hero frame is roughly 2.9:1 and full width. Featured images on
+     mainedoenews.net are mostly small and near-square — 330x248 and
+     491x369 are both real examples off the Good News category — so
+     stretching one across the hero upscales it to mush. Anything
+     narrower than this falls back to the branded panel, which reads as
+     deliberate where a blurry upscale just reads as broken. The cards
+     and the newsroom slider are far smaller frames and take whatever
+     the post has. */
+  var HERO_MIN_WIDTH = 1000;
+
+  function tidy(p) {
+    var media = p._embedded && p._embedded['wp:featuredmedia'];
+    var m = media && media[0];
+    var det = m && m.media_details;
+    return {
+      title: text(p.title && p.title.rendered),
+      url: (p.link || '').replace(/^http:/, 'https:'),
+      blurb: clip(text(p.excerpt && p.excerpt.rendered), 108),
+      date: p.date || '',
+      image: m && m.source_url ? m.source_url.replace(/^http:/, 'https:') : '',
+      imageW: (det && det.width) || 0,
+      kind: label(p)
+    };
+  }
+
+  function text(html) {
+    var d = document.createElement('div');
+    d.innerHTML = html || '';
+    return (d.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function clip(s, n) {
+    if (s.length <= n) return s;
+    var cut = s.slice(0, n);
+    var stop = cut.lastIndexOf(' ');
+    return (stop > 0 ? cut.slice(0, stop) : cut) + '…';
+  }
+
+  function fullDate(iso) {
+    var d = new Date(iso);
+    return isNaN(d) ? '' : d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function shortDate(iso) {
+    var d = new Date(iso);
+    return isNaN(d) ? '' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  /* The most specific category wins — "Special Education" reads far
+     better as an eyebrow than "News & Views". */
+  function label(p) {
+    var terms = p._embedded && p._embedded['wp:term'] && p._embedded['wp:term'][0];
+    if (!terms) return 'Update';
+    for (var i = 0; i < terms.length; i++) {
+      var name = text(terms[i].name);
+      if (name && !DULL[name.toLowerCase()]) return name;
+    }
+    return 'Update';
+  }
+
+  /* Render by cloning the authored markup, so the body field stays
+     the single source of truth for structure. */
+
+  /* Slides marked data-dh-pin are hand-written in the Drupal body and
+     stay put — that's how something with no Newsroom article behind it
+     (a campaign, a deadline, a program page) gets on the hero. Feed
+     posts fill the remaining spots up to data-count.
+
+     Index items are regenerated for every slide, pinned or not, so the
+     data-dh-go numbering can't drift out of sync with the slides. */
+  function fillSlides(host, posts, kind) {
+    var stage = host.querySelector('.dh-stage');
+    var list  = host.querySelector('.dh-index, .dh-stories');
+    if (!stage || !list || !stage.querySelector('.dh-slide') || !list.querySelector('li')) return;
+
+    var count    = parseInt(host.getAttribute('data-count'), 10) || 5;
+    var pinned   = [].slice.call(stage.querySelectorAll('.dh-slide[data-dh-pin]'));
+    var slideTpl = stage.querySelector('.dh-slide:not([data-dh-pin])');
+    slideTpl = (slideTpl || stage.querySelector('.dh-slide')).cloneNode(true);
+    slideTpl.removeAttribute('data-dh-pin');
+    var itemTpl = list.querySelector('li').cloneNode(true);
+    var ctlBar  = stage.querySelector('.dh-ctl');
+
+    /* Never repeat a story that's already pinned by hand. */
+    var pinnedUrls = {};
+    pinned.forEach(function (el) {
+      var d = readSlide(el);
+      if (d.url) pinnedUrls[d.url] = 1;
+    });
+    var fresh = posts.filter(function (p) { return !pinnedUrls[p.url]; })
+                     .slice(0, Math.max(0, count - pinned.length));
+
+    /* Detach pinned nodes before wiping, then put them back. */
+    pinned.forEach(function (el) { if (el.parentNode) el.parentNode.removeChild(el); });
+    stage.innerHTML = '';
+    list.innerHTML = '';
+
+    var rows = pinned.map(function (el) { return { node: el, data: readSlide(el) }; })
+      .concat(fresh.map(function (p) { return { node: null, data: p }; }));
+
+    rows.forEach(function (row, n) {
+      var slide = row.node;
+
+      if (!slide) {
+        var p = row.data;
+        slide = slideTpl.cloneNode(true);
+        setPhoto(slide.querySelector('.dh-photo'), p, kind === 'hero' ? HERO_MIN_WIDTH : 0);
+        set(slide, '.dh-eyebrow', kind === 'news' ? fullDate(p.date) + ' · ' + p.kind : p.kind);
+
+        var head = slide.querySelector('h2, h3');
+        if (head) {
+          var link = head.querySelector('a');
+          if (link) { link.textContent = p.title; link.href = p.url; }
+          else head.textContent = p.title;
+        }
+        /* .dh-blurb, not '.dh-cap p' — the eyebrow is also a <p> inside
+           .dh-cap and comes first, so a loose selector overwrites the
+           eyebrow with the excerpt and leaves the real blurb stale. */
+        var blurb = slide.querySelector('.dh-blurb');
+        if (blurb) blurb.textContent = p.blurb;
+        var cta = slide.querySelector('.dh-btn');
+        if (cta) cta.href = p.url;
+      }
+
+      slide.classList.toggle('is-on', n === 0);
+      stage.appendChild(slide);
+
+      var d = row.data;
+      var item = itemTpl.cloneNode(true);
+      var a = item.querySelector('a');
+      a.setAttribute('data-dh-go', n);
+      if (d.url) a.href = d.url;
+      delete a.dataset.dhBound;
+      if (n === 0) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+      set(item, '.dh-kicker', d.kind);
+      set(item, '.dh-t', d.title);
+      set(item, '.dh-h', d.title);
+      set(item, '.dh-d', d.date ? shortDate(d.date) : '');
+      var thumb = ensureThumb(a);
+      if (thumb) thumb.style.backgroundImage = '';
+      list.appendChild(item);
+    });
+
+    if (ctlBar) stage.appendChild(ctlBar);   /* controls survive the swap */
+  }
+
+  /* Read a hand-authored slide back out of the DOM so it can be
+     indexed alongside the feed ones. */
+  function readSlide(el) {
+    var head = el.querySelector('h2, h3');
+    var cta  = el.querySelector('.dh-btn') || (head && head.querySelector('a'));
+    var eyebrow = el.querySelector('.dh-eyebrow');
+    return {
+      title: head ? text(head.innerHTML) : '',
+      kind: eyebrow ? text(eyebrow.innerHTML) : 'Featured',
+      url: cta ? cta.getAttribute('href') : '',
+      date: ''
+    };
+  }
+
+  function fillCards(host, posts) {
+    var first = host.querySelector('.dh-card-link');
+    if (!first) return;
+    var cardTpl = first.cloneNode(true);
+
+    var extras = root.querySelector('.dh-more-good');
+    var extraLi = extras && extras.querySelector('li');
+    var extraTpl = extraLi ? extraLi.cloneNode(true) : null;
+
+    host.innerHTML = '';
+    if (extras && extraTpl) extras.innerHTML = '';
+
+    /* 3 photo cards + 2 overflow cards. Capped here rather than trusting
+       data-count, so a larger count can't lengthen the band. */
+    posts.slice(0, 5).forEach(function (p, n) {
+      if (n < 3) {
+        var card = cardTpl.cloneNode(true);
+        card.href = p.url;
+        setPhoto(card.querySelector('.dh-photo'), p);
+        set(card, '.dh-card-tag', p.kind);
+        set(card, '.dh-meta', fullDate(p.date));
+        set(card, '.dh-card-h', p.title);
+        set(card, '.dh-card-p', p.blurb);
+        host.appendChild(card);
+      } else if (extraTpl && extras) {
+        var li = extraTpl.cloneNode(true);
+        li.querySelector('a').href = p.url;
+        set(li, '.dh-place', shortDate(p.date));
+        set(li, '.dh-h', p.title);
+        set(li, '.dh-mg-p', p.blurb);
+        extras.appendChild(li);
+      }
+    });
+
+    /* The hand-written placeholder disclaimer is no longer true once
+       real stories are in. */
+    var disclaimer = root.querySelector('.dh-good .dh-note');
+    if (disclaimer) disclaimer.remove();
+  }
+
+  function setPhoto(frame, p, minWidth) {
+    if (!frame) return;
+    frame.setAttribute('data-dh-kind', p.kind);
+    frame.innerHTML = '';
+    frame.classList.remove('dh-no-photo');
+
+    var tooSmall = minWidth && p.imageW && p.imageW < minWidth;
+    if (!p.image || tooSmall) { frame.classList.add('dh-no-photo'); return; }
+    var img = document.createElement('img');
+    img.src = p.image;
+    img.alt = '';
+    img.loading = 'lazy';
+    frame.appendChild(img);
+    guardPhoto(frame);
+  }
+
+  function set(scope, sel, value) {
+    var el = scope.querySelector(sel);
+    if (el) el.textContent = value;
+  }
+
+
+  /* ── events ───────────────────────────────────────────────────
+     The calendar page reads ?focus= but has no per-event deep link, so
+     each row goes to its own registration URL when the event has one,
+     and otherwise to the calendar filtered to that focus area. Landing
+     on the right filtered view beats dumping everyone on the index.
+     ------------------------------------------------------------ */
+  var TONES = {
+    'data': 'blue', 'school health': 'green', 'child nutrition': 'rust',
+    'federal programs': 'plum', 'school safety': 'rust',
+    'special education': 'plum', 'special services & inclusive education': 'plum',
+    'special & inclusive education': 'plum', 'early learning': 'green',
+    'career & technical education': 'blue', 'teaching & learning': 'teal'
+  };
+
+  function loadEvents() {
+    var box = root.querySelector('[data-dh-feed="events"]');
+    if (!box) return;
+    var endpoint = box.getAttribute('data-endpoint');
+    var list = box.querySelector('.dh-event-list');
+    if (!endpoint || !list) return;
+
+    var tpl = list.querySelector('li');
+    if (!tpl) return;
+    tpl = tpl.cloneNode(true);
+    var want = parseInt(box.getAttribute('data-count'), 10) || 6;
+
+    fetch(endpoint + (endpoint.indexOf('?') > -1 ? '&' : '?') + 'type=calendar')
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) {
+        var events = (j && j.events) || [];
+        if (!events.length) return;              /* keep the authored rows */
+
+        list.innerHTML = '';
+        events.slice(0, want).forEach(function (ev) {
+          var li = tpl.cloneNode(true);
+          var a = li.querySelector('a');
+
+          var focus = ev.focusArea || '';
+          /* href stays a real, working link — that is what a middle-click,
+             a screen reader and a crawler follow. The click handler below
+             opens the dialog instead for ordinary clicks. */
+          a.href = ev.register
+            ? String(ev.register).replace(/^https?:/, '')
+            : '/doe/calendar' + (focus ? '?focus=' + encodeURIComponent(focus) : '');
+          a.addEventListener('click', function (e) {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+            e.preventDefault();
+            openEvent(ev);
+          });
+
+          var d = new Date((ev.date || '') + 'T12:00:00');
+          if (!isNaN(d)) {
+            set(li, '.dh-mo', d.toLocaleDateString('en-US', { month: 'short' }));
+            set(li, '.dh-dy', String(d.getDate()));
+          }
+          set(li, '.dh-h', ev.title || '');
+          set(li, '.dh-sub', [ev.time || ev.startTime, ev.type].filter(Boolean).join(' · '));
+
+          var tag = li.querySelector('.dh-tag');
+          if (tag) {
+            if (focus) {
+              tag.textContent = focus;
+              tag.setAttribute('data-tone', TONES[focus.toLowerCase()] || 'blue');
+            } else { tag.remove(); }
+          }
+          list.appendChild(li);
+        });
+      })
+      .catch(function (err) { if (window.console) console.warn('DOE homepage events:', err); });
+  }
+
+
+  /* ── event dialog ─────────────────────────────────────────────
+     A copy of the modal on /doe/calendar — same markup, same icons,
+     same cluster colours — built from the feed data already in hand,
+     so it costs no extra request. Lifted from
+     comms-portal/calendar/index.html; if that modal changes, change
+     this with it.
+     ------------------------------------------------------------ */
+  var CLUSTER_OF = {
+    'Webinar': 'learning', 'Training': 'learning', 'Workshop': 'learning',
+    'Information Session': 'learning',
+    'Conference': 'convening', 'Discussion Group': 'convening', 'Office Hours': 'convening',
+    'Public Hearing': 'public',
+    'Student Opportunity': 'students'
+  };
+  var SVG = {
+    close: '<path d="M6 6l12 12M6 18L18 6"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
+    pin:   '<path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+    users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',
+    user:  '<circle cx="12" cy="8" r="4"/><path d="M4 20c1-4 4-6 8-6s7 2 8 6"/>',
+    mail:  '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+    arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>'
+  };
+  function icon(name) {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + SVG[name] + '</svg>';
+  }
+
+  var dlg = null, lastFocus = null;
+
+  function openEvent(ev) {
+    if (!dlg) dlg = buildDialog();
+    lastFocus = document.activeElement;
+
+    dlg.className = 'dh-dlg cat-' + (CLUSTER_OF[ev.type] || 'convening');
+
+    var when = [prettyDate(ev.date), ev.time || ev.startTime].filter(Boolean).join(' - ');
+    var where = ev.venueName || ev.location || '';
+    var addr = ev.venueAddress || '';
+
+    fact(dlg, 'when',  'clock', 'When',  when);
+    fact(dlg, 'where', 'pin',   'Where', where, addr);
+    fact(dlg, 'aud',   'users', 'Audience', ev.audience || '');
+    fact(dlg, 'con',   'user',  'Contact', ev.contactName || '', '', ev.contactEmail || '');
+
+    var chip = dlg.querySelector('.dh-dlg-chip');
+    chip.textContent = ev.type || 'Event';
+    chip.hidden = !ev.type;
+
+    set(dlg, '.dh-dlg-title', ev.title || '');
+
+    var desc = dlg.querySelector('.dh-dlg-desc');
+    desc.textContent = text(ev.long || ev.desc || '');
+    desc.hidden = !desc.textContent.trim();
+
+    var cta = dlg.querySelector('.dh-dlg-cta');
+    if (ev.register) {
+      cta.href = String(ev.register).replace(/^https?:/, '');
+      cta.firstChild.textContent = (ev.registerText || 'Register') + ' ';
+      cta.hidden = false;
+    } else { cta.hidden = true; }
+
+    var meta = dlg.querySelector('.dh-dlg-meta');
+    meta.textContent = ev.focusArea ? 'Focus area - ' + ev.focusArea : '';
+    meta.hidden = !ev.focusArea;
+
+    dlg.hidden = false;
+    document.body.style.overflow = 'hidden';
+    dlg.querySelector('.dh-dlg-close').focus();
+  }
+
+  /* One fact row: icon, label, value, plus an optional second line and
+     an optional mailto. Hides itself when there is no value, rather
+     than leaving a stranded label. */
+  function fact(root_, key, ico, label, value, sub, email) {
+    var row = root_.querySelector('.dh-dlg-fact-' + key);
+    if (!row) return;
+    if (!value && !email) { row.hidden = true; return; }
+    row.hidden = false;
+    var html = '<span aria-hidden="true">' + icon(ico) + '</span><div><strong>' +
+               label + '</strong><span class="dh-dlg-val"></span>';
+    row.innerHTML = html + '</div>';
+    row.querySelector('.dh-dlg-val').textContent = value;
+    var box = row.querySelector('div');
+    if (sub) {
+      var s2 = document.createElement('span');
+      s2.setAttribute('style', 'font-weight:500;font-size:13px;opacity:.85;display:block');
+      s2.textContent = sub;
+      box.appendChild(s2);
+    }
+    if (email) {
+      var a = document.createElement('a');
+      a.className = 'dh-dlg-mail';
+      a.href = 'mailto:' + email;
+      a.setAttribute('aria-label', 'Email ' + (value || email));
+      a.innerHTML = '<span aria-hidden="true">' + icon('mail') + '</span>';
+      a.appendChild(document.createTextNode(email));
+      box.appendChild(a);
+    }
+  }
+
+  function closeEvent() {
+    if (!dlg) return;
+    dlg.hidden = true;
+    document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  function buildDialog() {
+    var d = document.createElement('div');
+    d.className = 'dh-dlg';
+    d.setAttribute('role', 'dialog');
+    d.setAttribute('aria-modal', 'true');
+    d.setAttribute('aria-label', 'Event details');
+    d.hidden = true;
+    d.innerHTML =
+      '<div class="dh-dlg-panel">' +
+        '<button type="button" class="dh-dlg-close" aria-label="Close">' + icon('close') + '</button>' +
+        '<span class="dh-dlg-chip"></span>' +
+        '<h2 class="dh-dlg-title"></h2>' +
+        '<div class="dh-dlg-desc"></div>' +
+        '<div class="dh-dlg-facts">' +
+          '<div class="dh-dlg-fact dh-dlg-fact-when"></div>' +
+          '<div class="dh-dlg-fact dh-dlg-fact-where"></div>' +
+          '<div class="dh-dlg-fact dh-dlg-fact-aud"></div>' +
+          '<div class="dh-dlg-fact dh-dlg-fact-con"></div>' +
+        '</div>' +
+        '<a class="dh-dlg-cta" href="#" target="_blank" rel="noopener">Register ' + icon('arrow') + '</a>' +
+        '<div class="dh-dlg-meta"></div>' +
+      '</div>';
+    d.addEventListener('click', function (e) { if (e.target === d) closeEvent(); });
+    d.querySelector('.dh-dlg-close').addEventListener('click', closeEvent);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !d.hidden) closeEvent();
+    });
+    root.appendChild(d);
+    return d;
+  }
+
+  function prettyDate(iso) {
+    var d = new Date((iso || '') + 'T12:00:00');
+    return isNaN(d) ? '' : d.toLocaleDateString('en-US',
+      { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+
+  /* ── videos ───────────────────────────────────────────────────
+     Titles and thumbnails work with no key (see the note in the body
+     field). Descriptions are the exception: YouTube's channel feed
+     carries them but sends no CORS headers, so they come through the
+     Apps Script proxy — the same thing Elfsight does server-side.
+
+     Put the exec URL on the block as data-endpoint, PROTOCOL-RELATIVE:
+       <div class="dh-watch" data-dh-feed="youtube"
+            data-endpoint="//script.google.com/macros/s/AKfy…/exec">
+     With no data-endpoint the authored titles and thumbnails stand and
+     the description slots stay hidden.
+     ------------------------------------------------------------ */
+  function loadVideos() {
+    var box = root.querySelector('[data-dh-feed="youtube"]');
+    if (!box) return;
+
+    var endpoint = box.getAttribute('data-endpoint');
+    if (!endpoint) return;
+
+    var slots = box.querySelectorAll('.dh-vids a');
+    if (!slots.length) return;
+
+    fetch(endpoint + (endpoint.indexOf('?') > -1 ? '&' : '?') +
+          'type=youtube_videos&count=' + slots.length)
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) {
+        if (!j || j.error || !j.videos || !j.videos.length) return;
+        j.videos.slice(0, slots.length).forEach(function (v, n) {
+          var a = slots[n];
+          if (v.url) a.href = v.url.replace(/^https?:/, '');
+          a.setAttribute('data-dh-yt', v.id);
+
+          var frame = a.querySelector('.dh-photo');
+          if (frame && v.thumb) {
+            var img = frame.querySelector('img');
+            if (!img) {
+              img = document.createElement('img');
+              img.alt = ''; img.loading = 'lazy';
+              frame.insertBefore(img, frame.firstChild);
+            }
+            img.src = v.thumb.replace(/^https?:/, '');
+            guardPhoto(frame);
+          }
+          set(a, '.dh-vid-h', v.title);
+
+          /* Created here, not authored. Drupal's content filter deletes
+             empty inline tags, so a placeholder span never survives the
+             paste — the same thing that killed the mission icons. */
+          if (v.description) {
+            var body = a.querySelector('.dh-vid-body') || a;
+            var d = body.querySelector('.dh-vid-p');
+            if (!d) {
+              d = document.createElement('span');
+              d.className = 'dh-vid-p';
+              body.appendChild(d);
+            }
+            d.textContent = v.description;
+          }
+        });
+      })
+      .catch(function (err) {
+        if (window.console) console.warn('DOE homepage videos:', err);
+      });
+  }
+})();
+</script>

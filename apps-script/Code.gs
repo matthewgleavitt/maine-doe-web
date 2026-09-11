@@ -642,6 +642,14 @@ function doGet(e) {
       // WordPress.com Stats API — requires an OAuth token in Script Properties.
       result = getNewsroomStats();
 
+    } else if (type === 'youtube_videos') {
+      // Homepage "Latest Videos" band — title, description, thumbnail per
+      // video. Uses the same YouTube Advanced Service as youtube_stats
+      // below, so there is no separate API key.
+      result = getHomepageVideos_(
+        parseInt((e.parameter && e.parameter.count) || '3', 10) || 3
+      );
+
     } else if (type === 'youtube_stats') {
       // YouTube Data API v3 + YouTube Analytics API via Apps Script Advanced Services.
       result = getYouTubeStats();
@@ -704,7 +712,7 @@ function doGet(e) {
         ttl = 21600; break;
       // Moderate — template + inbox data. TTLs must be >= the warmCache
       // interval (10 min) so warming actually holds — 900s gives a safe margin.
-      case 'youtube': case 'templates': case 'announcements':
+      case 'youtube': case 'youtube_videos': case 'templates': case 'announcements':
         ttl = 900; break;
       // Stable — Drupal indexes, Mailchimp campaigns, WP.com stats rarely change hour-to-hour
       case 'drupal_pages': case 'drupal_files': case 'publications':
@@ -3144,4 +3152,95 @@ function submitNewEvent(fields) {
   }
 
   return { ok: true, id: eventId, editToken: editToken, editUrl: editUrl };
+}
+
+
+/* ============================================================
+   HOMEPAGE YOUTUBE FEED  (added 2026-09-10)
+   ============================================================
+   Serves ?type=youtube_videos for the maine.gov/doe homepage's
+   "Latest Videos" band.
+
+   Uses the YouTube Advanced Service already enabled for
+   getYouTubeStats(), and the existing YT_CHANNEL_ID script property —
+   no new key, no new project.
+
+   Nothing else in this file calls these functions, and the router
+   branch only fires on ?type=youtube_videos, so the portal is
+   unaffected.
+   ============================================================ */
+
+var YT_VIDEOS_CACHE_KEY = 'homepage_videos_v2';
+var YT_VIDEOS_CACHE_SECONDS = 1800;   // 30 minutes
+
+function getHomepageVideos_(count) {
+  count = Math.min(Math.max(count || 3, 1), 10);
+
+  var cache = CacheService.getScriptCache();
+  var key = YT_VIDEOS_CACHE_KEY + '_' + count;
+  var hit = cache.get(key);
+  if (hit) {
+    try { return JSON.parse(hit); } catch (err) { /* fall through and refetch */ }
+  }
+
+  var channelId = PropertiesService.getScriptProperties().getProperty('YT_CHANNEL_ID');
+  if (!channelId) {
+    return { error: 'YT_CHANNEL_ID is not set in Script Properties. ' +
+                    'It must be the channel id starting "UC…", not the @handle.' };
+  }
+
+  try {
+    /* Same Advanced Service getYouTubeStats() already uses — no API key.
+       The uploads playlist is the channel id with UC swapped for UU, but
+       reading it from contentDetails is the documented way and survives
+       any future change to that convention. */
+    var ch = YouTube.Channels.list('contentDetails', { id: channelId });
+    if (!ch.items || !ch.items.length) {
+      return { error: 'Channel not found: ' + channelId };
+    }
+    var uploads = ch.items[0].contentDetails.relatedPlaylists.uploads;
+
+    var list = YouTube.PlaylistItems.list('snippet', {
+      playlistId: uploads,
+      maxResults: count
+    });
+
+    var videos = (list.items || []).map(function (item) {
+      var s = item.snippet || {};
+      var id = (s.resourceId && s.resourceId.videoId) || '';
+      return {
+        id: id,
+        title: s.title || '',
+        description: _ytTrimDescription_(s.description || '', 180),
+        /* Built from the id rather than read from the payload — the
+           thumbnail set varies per video, this address never does. */
+        thumb: id ? 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg' : '',
+        url: id ? 'https://www.youtube.com/watch?v=' + id : '',
+        published: s.publishedAt || ''
+      };
+    }).filter(function (v) { return !!v.id; });
+
+    var payload = {
+      videos: videos,
+      count: videos.length,
+      generated: new Date().toISOString()
+    };
+    cache.put(key, JSON.stringify(payload), YT_VIDEOS_CACHE_SECONDS);
+    return payload;
+
+  } catch (err) {
+    return { error: String(err) };
+  }
+}
+
+/* Descriptions on these videos usually open with a sentence or two of
+   prose and then run into links, timestamps and boilerplate. Take the
+   leading paragraph, drop any URLs, and cut on a word boundary. */
+function _ytTrimDescription_(text, max) {
+  var first = String(text).split(/\n\s*\n/)[0] || '';
+  first = first.replace(/https?:\/\/\S+/g, '').replace(/\s+/g, ' ').trim();
+  if (first.length <= max) return first;
+  var cut = first.slice(0, max);
+  var stop = cut.lastIndexOf(' ');
+  return (stop > 0 ? cut.slice(0, stop) : cut) + '…';
 }

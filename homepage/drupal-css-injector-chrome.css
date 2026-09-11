@@ -1,0 +1,442 @@
+/* Maine DOE site chrome — header + footer
+ * Version: 2026-09-11-a  ·  Last edited: 2026-09-11
+ * SEPARATE CSS Injector rule from the homepage one. Versions are
+ * per-file and do not need to match.
+ *
+ * ============================================================
+ * SCOPE — read this before deploying
+ * ============================================================
+ * Every rule below is prefixed `html body.node-id-5073`, which is the
+ * node id of /doe/home26 and nothing else. Header and footer are Drupal
+ * blocks shared by every page on the site, so without that prefix this
+ * would restyle maine.gov/doe entirely.
+ *
+ * The leading `html` is not decoration. An older copy of this file was
+ * loading AFTER this one, so on every property they both set, the stale
+ * copy won on source order — hover colours, link padding, the lot. The
+ * extra type selector wins on specificity instead, which source order
+ * cannot override. Keep it even after the stale rule is deleted.
+ *
+ * TO GO SITE-WIDE LATER: find and replace `html body.node-id-5073` with
+ * `html body` throughout, and change the injector rule's page scoping
+ * from `doe/home26` to all pages. Nothing else needs to change.
+ *
+ * ============================================================
+ * NOTES
+ * ============================================================
+ * · The theme's logo is a background image on .sub-container, so that
+ *   background is cleared and the logo re-placed on the h2.logo link.
+ *   If the header ever stops showing a logo, that clear is why.
+ * · No scheme-qualified addresses anywhere — the maine.gov WAF rejects
+ *   an Injector save containing one. The logo is referenced by
+ *   root-relative path, which carries no scheme and is same-origin.
+ * · The header is navy, matching the page bands. The only logo on the
+ *   site is "Maine DOE White Background Logo.png" — a logo ON a white
+ *   plate — which cannot simply be dropped onto a dark bar. It sits in
+ *   a white rounded plate of its own instead, which reads as a
+ *   deliberate lockup rather than a stray white rectangle.
+ *   If a transparent or knockout version is ever uploaded, delete the
+ *   .logo a background/padding/border-radius and point it at that file.
+ * · The footer moves from grey to the brand's warm white with a teal
+ *   keyline on top, and drops from five columns to two. Social lives in
+ *   the page's "Follow Maine DOE" band now. Before going site-wide,
+ *   note that Helpful Links / Related Sites carried A-Z Site Index,
+ *   Careers and Certification — check nothing else depends on them.
+ * ============================================================ */
+
+html body.node-id-5073 {
+  --c-navy: #182b3c;
+  --c-midblue: #274f73;
+  --c-teal: #42c3f7;
+  --c-warm: #eee6df;
+  --c-ink: #182b3c;
+  --c-ink-2: #3d4a56;
+  --c-rule: #d8d2ca;
+  --c-deep: #101e29;      /* footer ground — a step below --c-navy so the
+                             navy Follow band above it reads as separate */
+  --c-display: 'League Spartan', 'Century Gothic', 'Trebuchet MS', sans-serif;
+  --c-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --c-rail: 1200px;
+}
+
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+
+html body.node-id-5073 #container > header {
+  background:
+    radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 14px 14px,
+    var(--c-navy);
+  border-bottom: 0;
+}
+
+/* Same rail as the page below it, so the logo lines up with the hero
+   card rather than sitting 60px off on its own margin. */
+html body.node-id-5073 #container > header .sub-container {
+  /* The theme paints the whole header — logo included — as a background
+     on THIS element: a white background-COLOR plus header.jpg on top,
+     not an <img> and not a background on the logo link. Clearing only
+     the image left a white 1200px box sitting on the navy, which is
+     exactly what it looked like. `background: none` clears both. */
+  background: none !important;
+  max-width: var(--c-rail);
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 32px);
+  display: flex;
+  align-items: center;
+  gap: 20px 24px;
+  flex-wrap: wrap;              /* drop to a second row instead of overrunning the logo */
+  min-height: 92px;
+  padding-block: 10px;
+}
+
+/* The markup is <h2 class="logo"><a>Department of Education</a></h2>
+   with the text pushed off-screen by text-indent, so the logo has to
+   come in as a background image. */
+html body.node-id-5073 #container > header h2.logo {
+  margin: 0 !important; padding: 0 !important; flex: none;
+  height: auto !important; line-height: 0;
+}
+/* White plate, because the only available logo has a white background
+   baked in. Sized so the artwork sits centred with even breathing room
+   rather than filling the plate edge to edge. */
+html body.node-id-5073 #container > header h2.logo a {
+  display: block !important;
+  width: 168px !important; height: 62px !important;
+  background-color: #fff;
+  background-image: url(/doe/sites/maine.gov.doe/files/inline-images/Maine%20DOE%20White%20Background%20Logo.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 140px auto;
+  border-radius: 10px;
+}
+
+/* `justify-content: flex-end` overflows off the START edge, so when the
+   links + search were wider than this box the whole cluster slid LEFT
+   across the logo. Wrapping is the safety valve: if it ever doesn't fit,
+   the search drops to its own line instead of landing on the wordmark.
+   With the pipe spacing fixed below there is ~90px of slack at 1400, so
+   it does not wrap in practice. */
+html body.node-id-5073 .header_nav_search {
+  margin-left: auto; margin-right: 0 !important; padding: 0 !important;
+  float: none !important;
+  min-width: 0; flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px clamp(16px, 2vw, 28px);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+/* The theme floats #vtopnav right and forbids it wrapping, both with
+   !important. A floated flex container shrink-wraps to max-content, so
+   it reports its unwrapped width to the flex row above and that row
+   can never shrink it. */
+html body.node-id-5073 .header_nav_search > nav { min-width: 0; flex: 0 1 auto; }
+
+/* Utility links */
+/* --pipe-gap is used twice on purpose: once as the row's column gap
+   (space BEFORE each divider) and once as the divider's own right
+   margin (space AFTER it, before its label). The divider lives inside
+   the li, so the row gap alone leaves it flush against its own text.
+   One variable keeps the two halves equal.
+   It has to be a MARGIN, not a gap on the li: the markup has a newline
+   between </a> and </li>, which renders as a ~3px anonymous flex item,
+   and an li-level gap spaces that too — which read as 25px on one side
+   against 11px on the other. */
+html body.node-id-5073 #vtopnav {
+  --pipe-gap: clamp(9px, 0.85vw, 13px);
+  display: flex; align-items: center;
+  gap: 6px var(--pipe-gap);
+  margin: 0; padding: 0; list-style: none;
+  float: none !important;       /* theme floats it right */
+  flex-wrap: wrap !important;   /* theme forbids wrapping */
+  min-width: 0;
+  justify-content: flex-end;
+}
+html body.node-id-5073 #vtopnav li {
+  margin: 0; padding: 0; border: 0;
+  display: flex; align-items: center;
+  /* Collapses the newline between </a> and </li>, which otherwise
+     renders as a ~3px anonymous flex item and lands between the label
+     and the next divider — 15px on one side of the pipe against 12px
+     on the other. The label sets its own size, so this is invisible. */
+  font-size: 0;
+}
+/* Hairline pipes between items — a divider, not a character, so it
+   stays put regardless of the theme's list styling.
+   `margin: 0` is stated, not just omitted — the previous version gave
+   this a 28px right margin, so each 1px divider actually cost 32px.
+   Four of those is 128px of invented width, which is what pushed the
+   link cluster left across the logo. An omitted declaration cannot be
+   overridden; a stated one can. The row's `gap` does the spacing. */
+html body.node-id-5073 #vtopnav li + li::before {
+  content: '';
+  width: 1px; height: 14px; flex: none;
+  margin: 0 var(--pipe-gap) 0 0;
+  background: rgba(255,255,255,.24);
+}
+html body.node-id-5073 #vtopnav a {
+  font-family: var(--c-body);
+  font-size: 13.5px !important; font-weight: 600 !important;
+  letter-spacing: .01em;
+  color: #cddbe6 !important;
+  text-decoration: none !important;
+  padding: 4px 0 !important;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+html body.node-id-5073 #vtopnav a:hover,
+html body.node-id-5073 #vtopnav a:focus {
+  color: #fff !important;
+  border-bottom-color: var(--c-teal);
+}
+
+/* Search */
+/* The form has its own white background — that was the white rectangle
+   behind the field — and the theme positions the submit absolutely, so
+   it overlapped the input by 35px. Both undone here. */
+html body.node-id-5073 #block-doe-search form,
+html body.node-id-5073 form#search-block-form {
+  display: flex !important; align-items: center; gap: 0;
+  background: none !important; border: 0 !important;
+  padding: 0 !important; margin: 0 !important;
+}
+html body.node-id-5073 #block-doe-search .js-form-item { margin: 0 !important; padding: 0 !important; }
+html body.node-id-5073 #block-doe-search .form-actions,
+html body.node-id-5073 #block-doe-search #edit-actions {
+  margin: 0 !important; padding: 0 !important; width: auto !important;
+  display: block !important; position: static !important;
+}
+html body.node-id-5073 input.form-search.topsearch {
+  font-family: var(--c-body); font-size: 13.5px;
+  width: 210px; height: 42px; padding: 0 18px;
+  border: 1px solid #fff; border-right: 0;
+  border-radius: 999px 0 0 999px;
+  background: #fff !important; color: var(--c-ink) !important;
+}
+html body.node-id-5073 input.form-search.topsearch::placeholder { color: #7c8894; }
+html body.node-id-5073 input.form-search.topsearch:focus {
+  outline: none; border-color: var(--c-teal);
+  box-shadow: 0 0 0 3px rgba(66,195,247,.35);
+}
+/* !important throughout: the theme targets this by id, which outranks
+   any class-based selector we can write. */
+html body.node-id-5073 #block-doe-search .form-submit,
+html body.node-id-5073 #block-doe-search input#edit-submit {
+  position: static !important;
+  font-family: var(--c-display) !important;
+  font-size: 12px !important; font-weight: 700 !important;
+  letter-spacing: .08em; text-transform: uppercase;
+  height: 42px !important; width: auto !important; padding: 0 22px !important;
+  margin: 0 !important;
+  background: var(--c-teal) !important; color: var(--c-navy) !important;
+  border: 0 !important; border-radius: 0 999px 999px 0 !important;
+  cursor: pointer;
+}
+html body.node-id-5073 #block-doe-search input#edit-submit:hover { background: #6ed2fa !important; }
+
+
+/* ── MAIN MENU ──────────────────────────────────────────────
+   The theme puts the navy on the <ul> itself, 1280px wide inside a
+   .sub-container with 60px margins. With the header now on the 1200
+   rail the two no longer lined up, and white showed either side of the
+   menu bar. Navy moves to the block so it runs full width, and the
+   menu content sits on the same rail as everything else.
+   ------------------------------------------------------------ */
+/* Mid-blue, NOT navy — a step lighter than the header above it. Making
+   both navy merged them into one slab; the tonal step is what lets the
+   menu read as its own band. Same relationship as the mock.
+   No bottom rule: the hover indicator is already teal, and a teal band
+   rule underneath collided with it. */
+html body.node-id-5073 #block-doe-mainmenu,
+html body.node-id-5073 #block-doe-mainmenu nav,
+html body.node-id-5073 #block-doe-mainmenu nav.megamenu {
+  background: var(--c-midblue) !important;
+}
+html body.node-id-5073 #block-doe-mainmenu .sub-container {
+  max-width: var(--c-rail);
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 32px);
+}
+html body.node-id-5073 #block-doe-mainmenu ul.sf-menu,
+html body.node-id-5073 #block-doe-mainmenu ul.sf-menu > li {
+  background: transparent !important;
+  width: auto;
+}
+
+/* The theme's own arrow markers — 7 spans, each reserving 12px inside a
+   48px right padding. Hiding them lets the items tighten up, and the
+   teal underline says "this opens" more quietly. */
+html body.node-id-5073 #block-doe-mainmenu .sf-sub-indicator { display: none !important; }
+
+html body.node-id-5073 #block-doe-mainmenu ul.sf-menu > li > a {
+  font-family: var(--c-body) !important;
+  font-size: 14.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: .01em;
+  color: #fff !important;
+  padding: 15px 18px !important;
+  border: 0 !important;
+  transition: box-shadow .15s, background-color .15s;
+}
+/* inset shadow, not a border — a border adds 3px to every item, which
+   pushed the dropdown down and made it overlap the underline */
+html body.node-id-5073 #block-doe-mainmenu ul.sf-menu > li > a:hover,
+html body.node-id-5073 #block-doe-mainmenu ul.sf-menu > li > a:focus,
+html body.node-id-5073 #block-doe-mainmenu ul.sf-menu > li.sfHover > a {
+  box-shadow: inset 0 -3px 0 var(--c-teal);
+  background: rgba(0,0,0,.16);
+}
+
+
+/* ── PAGE CHROME ────────────────────────────────────────────
+   A homepage does not need a breadcrumb to itself or an H1 repeating
+   the page name — and together they were putting a 89px white band
+   between the nav and the hero.
+   Node-scoped, so every other page keeps both.
+   ------------------------------------------------------------ */
+html body.node-id-5073 #block-doe-breadcrumbs,
+html body.node-id-5073 #block-doe-pagetitle { display: none !important; }
+
+
+/* ── FOOTER ─────────────────────────────────────────────────── */
+
+/* Dark, with a Maine landscape surfacing at the bottom edge.
+   The warm-white version read as more page content rather than as the
+   end of the page — the header, hero and mission band are all navy and
+   then the page simply faded out on cream.
+
+   The gradient is near-opaque where the panels sit and opens up toward
+   the bottom, so the photograph emerges as a horizon instead of sitting
+   behind the text. Same effect the maine.gov/ifw treeline gets, using a
+   real photograph rather than an illustration.
+
+   Ground is --c-deep, one step below --c-navy, so the navy Follow band
+   directly above does not merge into it. The teal keyline does the rest.
+
+   PHOTO: currently Nature.png, which the hero also uses. It is the only
+   wide Maine landscape on hand and the treatment is different enough to
+   carry it, but a dedicated footer photograph would be better — swap the
+   one address below, nothing else changes. It wants to be wide, quiet,
+   no faces, and no strong focal point; the bottom half is what shows. */
+html body.node-id-5073 #footer {
+  background:
+    linear-gradient(180deg,
+      rgba(16,30,41,.985) 0%,
+      rgba(16,30,41,.955) 42%,
+      rgba(16,30,41,.80) 78%,
+      rgba(16,30,41,.58) 100%),
+    url(/doe/sites/maine.gov.doe/files/2026-09/Nature.png) center 88% / cover no-repeat,
+    var(--c-deep);
+  border-top: 4px solid var(--c-teal);
+  color: #c5d3de;
+  font-family: var(--c-body);
+  padding: clamp(34px, 4vw, 52px) 0 clamp(76px, 7vw, 130px);
+}
+
+/* The theme floats five fixed-width columns. Grid instead, on the same
+   rail as everything else, so the columns actually align with the page
+   above and reflow sensibly at narrow widths. */
+html body.node-id-5073 #footer .sub-container,
+html body.node-id-5073 #footer > div:not(.footer_column) {
+  max-width: var(--c-rail);
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 32px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 40px);
+  align-items: start;
+}
+/* Two columns, not five. The page's own "Follow Maine DOE" band carries
+   the social links now, and Helpful Links / Related Sites were a second
+   navigation competing with the main menu. What remains is what a
+   footer is actually for: who this is, and how to reach them.
+
+   Hidden by position because the content lives in Drupal blocks this
+   rule cannot edit. IF THE BLOCK ORDER CHANGES, revisit these numbers.
+   Order today: 1 Site Information · 2 Stay Connected · 3 Contact Us ·
+   4 Helpful Links · 5 Related Sites. */
+html body.node-id-5073 #footer .footer_column:nth-child(2),
+html body.node-id-5073 #footer .footer_column:nth-child(4),
+html body.node-id-5073 #footer .footer_column:nth-child(5) { display: none !important; }
+
+/* Both remaining columns sit in panels, matching the card language of
+   the page above — two sections on a ground, not two stacks of text. */
+html body.node-id-5073 #footer .footer_column:nth-child(1),
+html body.node-id-5073 #footer .footer_column:nth-child(3) {
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 14px;
+  padding: 24px 26px 22px !important;
+  backdrop-filter: blur(3px);
+}
+
+html body.node-id-5073 #footer .footer_column {
+  float: none !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Column headings share the page's section-header language. */
+html body.node-id-5073 #footer .footer_column h1,
+html body.node-id-5073 #footer .footer_column h2,
+html body.node-id-5073 #footer .footer_column h3,
+html body.node-id-5073 #footer .footer_column h4 {
+  font-family: var(--c-display);
+  font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 14px; padding: 0 0 0 11px;
+  border-left: 4px solid var(--c-teal);
+  line-height: 1.2;
+}
+
+html body.node-id-5073 #footer .footer_column,
+html body.node-id-5073 #footer .footer_column p,
+html body.node-id-5073 #footer .footer_column li {
+  font-size: 13.5px; line-height: 1.6;
+}
+html body.node-id-5073 #footer .footer_column ul { list-style: none; margin: 0; padding: 0; }
+html body.node-id-5073 #footer .footer_column li { margin: 0 0 7px; padding: 0; }
+html body.node-id-5073 #footer .footer_column li::before { content: none; }
+
+/* Footer links carry a standing teal underline rather than appearing
+   only on hover — in a two-column footer there are few enough of them
+   that they should read as links at a glance. */
+html body.node-id-5073 #footer a {
+  color: #ffffff !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  border-bottom: 2px solid rgba(66,195,247,.55);
+  padding: 0 0 1px !important;
+  transition: border-color .15s, background-color .15s;
+}
+html body.node-id-5073 #footer a:hover,
+html body.node-id-5073 #footer a:focus {
+  color: #ffffff !important;
+  border-bottom-color: var(--c-teal);
+  background: rgba(66,195,247,.22);
+}
+
+/* The only logo on the site has a white background baked in, so on a
+   dark footer it lands as a white rectangle. Rounding it turns that
+   into the same deliberate white plate the header logo sits on. */
+html body.node-id-5073 #footer .footer_column img {
+  display: block;
+  width: auto; max-width: 215px; height: auto;
+  margin: 0 0 18px;
+  border-radius: 10px;
+}
+/* Site Information is the footer's voice now, so give it a real measure. */
+html body.node-id-5073 #footer .footer_column:nth-child(1) p {
+  max-width: 60ch; font-size: 14px; line-height: 1.65;
+}
+
+@media (max-width: 620px) {
+  html body.node-id-5073 #footer .sub-container,
+  html body.node-id-5073 #footer > div:not(.footer_column) {
+    grid-template-columns: 1fr;
+  }
+  html body.node-id-5073 #container > header .sub-container { flex-wrap: wrap; padding-block: 14px; }
+  html body.node-id-5073 .header_nav_search { margin-left: 0; justify-content: flex-start; }
+  html body.node-id-5073 input.form-search.topsearch { width: 100%; }
+}

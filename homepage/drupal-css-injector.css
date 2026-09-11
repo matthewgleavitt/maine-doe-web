@@ -1,0 +1,1056 @@
+/* Maine DOE homepage — CSS Injector rule
+ * Version: 2026-09-10-s  ·  Last edited: 2026-09-10
+ * Versions are per-file and do NOT need to match the other two.
+ */
+
+/* ============================================================
+   Maine DOE homepage
+   CSS Injector rule — scope to page: doe  (front page, node 9)
+   ============================================================
+
+   Everything is scoped to .dh-home, the wrapper div in the body
+   field, so nothing can leak to another page even if the injector
+   scoping is ever loosened. The only two rules that reach outside
+   .dh-home are the theme-container overrides at the top, and both
+   are pinned to the homepage body class.
+
+   Class names are all dh- prefixed on purpose: Bootstrap 4 is
+   loaded sitewide and owns .card, .btn, .row, .tag and friends.
+   ============================================================ */
+
+/* NO FONT IMPORT HERE — ON PURPOSE.
+   A scheme-qualified web address anywhere in a CSS Injector POST body
+   gets the save rejected with a bare 403 by the maine.gov WAF, which
+   reads it as remote file inclusion. The fonts are attached by the JS
+   Injector rule instead, using a protocol-relative address.
+   Custom properties, block comments and tag names inside comments are
+   all fine — the 53KB newsletter rule live on the site uses all three.
+   Keep this file free of scheme-qualified addresses and nothing else
+   needs avoiding. */
+
+
+/* ── 1. Theme containers ─────────────────────────────────────
+   The homepage content region has no max-width — it renders at the
+   full viewport with 16px of padding (12px under ~620px). Zeroing
+   that padding here lets the colour bands run true edge-to-edge
+   with no negative margins and no 100vw tricks, which means no risk
+   of a horizontal scrollbar on Windows. The .dh-rail class supplies
+   the gutters instead.
+   #maincontent1 holds only the (empty) page-title block and the
+   content block on this page, so this is safe.
+   ------------------------------------------------------------ */
+/* padding: 0 — not just the sides. The theme's 10px top padding puts
+   a white gap between the blue main nav and the hero. */
+body.page-node-type-home-page #maincontent1 {
+  padding: 0;
+}
+body.page-node-type-home-page #block-doe-content {
+  overflow: hidden;      /* contains the bands' backgrounds cleanly */
+}
+
+
+/* ── 2. Tokens ───────────────────────────────────────────────
+   Swap the two font stacks here and the whole page follows.
+   To go back to the site's own faces, set:
+     --dh-display: Segoe,"Segoe UI","Trebuchet MS",Verdana,sans-serif;
+     --dh-body:    "Helvetica Neue",Arial,sans-serif;
+   and remove the loadFonts() call from the JS Injector rule.
+   ------------------------------------------------------------ */
+.dh-home {
+  /* Version handshake. The JS rule reads this and warns in the console
+     if the three files are out of step. Bump all three together. */
+  --dh-version: "2026-09-10-s";
+
+  --dh-display: 'League Spartan', 'Century Gothic', 'Trebuchet MS', sans-serif;
+  --dh-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+
+  --dh-navy: #182b3c;
+  --dh-midblue: #274f73;
+  --dh-steel: #6d8ba6;
+  --dh-teal: #42c3f7;
+  --dh-rust: #8a2e13;
+  --dh-warm: #eee6df;
+
+  --dh-ink: #182b3c;
+  --dh-ink-2: #3d4a56;
+  --dh-ink-3: #55616d;
+  --dh-rule: #d8d2ca;
+  --dh-rule-soft: #e8e3dc;
+  --dh-paper: #ffffff;
+  --dh-cool: #f6f8fb;    /* faint cobalt-tinted ground for the light bands */
+
+  --dh-r: 14px;
+  --dh-r-sm: 8px;
+  --dh-rail: 1200px;
+
+  font-family: var(--dh-body);
+  color: var(--dh-ink);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dh-home *,
+.dh-home *::before,
+.dh-home *::after { box-sizing: border-box; }
+
+.dh-home img { max-width: 100%; }
+.dh-home a:focus-visible,
+.dh-home button:focus-visible { outline: 3px solid var(--dh-teal); outline-offset: 2px; }
+
+
+/* ── 2b. Beating the theme's link rules ──────────────────────
+   The maine.gov theme ships these, and both carry !important:
+
+     #content a, .maincontent a, #maincontent1 a { color:#274f73 !important }
+     #content li a                               { display:inline-block !important }
+
+   !important can only be beaten by !important at equal-or-higher
+   specificity, and theirs carry an ID — so these have to as well.
+   That is why #block-doe-content appears here and nowhere else.
+
+   The display rule is the one that does real damage: every list item
+   link on this page is a grid (the calendar rows, the story strip,
+   the good-news list), and inline-block silently collapses all three
+   into stacked text.
+
+   If the content block's ID ever changes, these are the rules to
+   update — the symptom will be blue link text and collapsed rows.
+   ------------------------------------------------------------ */
+#block-doe-content .dh-home a { color: inherit !important; }
+
+/* block, not grid. These four rows used to be CSS grids, which meant
+   their whole layout hung on beating the theme's
+   `#content li a { display:inline-block !important }`. Whenever that
+   override didn't land — a stale aggregate, a partial save — the rows
+   shrink-wrapped and every headline wrapped one word per line.
+
+   They're now plain blocks with the label absolutely positioned into
+   reserved padding. That works under block, inline-block, grid or
+   flex, so a missing rule can no longer collapse them. */
+#block-doe-content .dh-home .dh-index a,
+#block-doe-content .dh-home .dh-event-list a,
+#block-doe-content .dh-home .dh-more-good a { display: block !important; }
+
+/* Flex only to centre the row's contents. If it ever loses to the theme
+   the text still flows into the reserved padding — it just sits at the
+   top instead of centred, which is a cosmetic loss, not a collapse. */
+#block-doe-content .dh-home .dh-stories a {
+  display: flex !important; align-items: center; min-height: 76px;
+}
+
+.dh-index a, .dh-stories a, .dh-event-list a, .dh-more-good a {
+  width: 100%; position: relative;
+}
+
+#block-doe-content .dh-home .dh-card-link { display: flex !important; flex-direction: column; }
+
+/* Anchor padding, restated at ID + !important. The theme forces
+   `padding: 4px 0` onto anchors — measured live — which silently ate
+   every padding value below. Any new anchor component needs a line
+   here or it will inherit that 4px and look subtly wrong. */
+#block-doe-content .dh-home .dh-card-link,
+#block-doe-content .dh-home .dh-vids a      { padding: 0 !important; }
+#block-doe-content .dh-home .dh-index a     { padding: 16px !important; }
+#block-doe-content .dh-home .dh-stories a   { padding: 15px 18px 15px 86px !important; }
+#block-doe-content .dh-home .dh-event-list a{ padding: 17px 15px 17px 90px !important; }
+#block-doe-content .dh-home .dh-more-good a { padding: 0 0 44px !important; }
+#block-doe-content .dh-home .dh-btn         { padding: 21px 34px !important; }
+#block-doe-content .dh-home .dh-social-list a { padding: 11px 20px !important; }
+#block-doe-content .dh-home .dh-shead .dh-more { padding: 0 !important; }
+#block-doe-content .dh-home .dh-vids a { display: block !important; }
+
+/* Bootstrap ships `a:hover { text-decoration: underline }` sitewide, and
+   because a card is one big anchor that underlines every word inside it
+   — title, date, excerpt and all. Cards say "clickable" through their
+   border and Read more bar, so the underline is switched off outright. */
+#block-doe-content .dh-home .dh-card-link,
+#block-doe-content .dh-home .dh-card-link:hover,
+#block-doe-content .dh-home .dh-card-link *,
+#block-doe-content .dh-home .dh-more-good a,
+#block-doe-content .dh-home .dh-more-good a:hover,
+#block-doe-content .dh-home .dh-more-good a *,
+#block-doe-content .dh-home .dh-vids a,
+#block-doe-content .dh-home .dh-vids a:hover,
+#block-doe-content .dh-home .dh-vids a *,
+#block-doe-content .dh-home .dh-event-list a,
+#block-doe-content .dh-home .dh-event-list a:hover,
+#block-doe-content .dh-home .dh-event-list a * { text-decoration: none !important; }
+
+.dh-rail {
+  max-width: var(--dh-rail);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(16px, 4vw, 32px);
+  padding-right: clamp(16px, 4vw, 32px);
+}
+
+
+/* ── 3. Section header — the repeated cohesion device ───────── */
+.dh-shead { display: flex; align-items: center; gap: 16px; padding-bottom: 22px; }
+.dh-shead h2 {
+  font-family: var(--dh-display);
+  font-size: 21px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+  margin: 0; padding-left: 15px; border-left: 5px solid var(--dh-teal);
+  color: var(--dh-navy); white-space: nowrap;
+}
+.dh-shead .dh-line { flex: 1; height: 1px; background: var(--dh-rule); }
+.dh-shead .dh-more {
+  font-size: 13px; font-weight: 600; color: var(--dh-midblue);
+  text-decoration: none; white-space: nowrap; border-bottom: 1px solid transparent;
+}
+/* Literal arrow character rather than a unicode escape sequence —
+   backslash-hex is the other thing WAFs flag in a posted stylesheet. */
+.dh-shead .dh-more::after { content: ' →'; }
+.dh-shead .dh-more:hover { border-bottom-color: var(--dh-teal); }
+
+
+/* ── 4. Photos + the branded fallback ────────────────────────
+   An EMPTY .dh-photo becomes the fallback panel automatically, so
+   an editor just omits the image tag and sets data-dh-kind.
+   ------------------------------------------------------------ */
+.dh-photo {
+  position: relative; overflow: hidden; display: block;
+  background: linear-gradient(150deg, var(--dh-navy) 0%, var(--dh-midblue) 60%, var(--dh-steel) 100%);
+}
+.dh-photo > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* :empty covers the no-JS case; .dh-no-photo is added by the JS rule
+   when an image is absent or fails to load. Both are needed —
+   whitespace between tags counts as a child, so a div an editor has
+   touched is almost never truly :empty. */
+.dh-photo:empty,
+.dh-photo.dh-no-photo {
+  background:
+    radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px) 0 0 / 11px 11px,
+    linear-gradient(155deg, #12222f 0%, var(--dh-navy) 48%, var(--dh-midblue) 100%);
+  display: grid; place-content: center; justify-items: center; gap: 8px;
+  text-align: center; padding: 20px;
+}
+.dh-photo:empty::before,
+.dh-photo.dh-no-photo::before {
+  content: 'Maine Department of Education';
+  font-family: var(--dh-display);
+  font-size: 11px; font-weight: 600; letter-spacing: .19em; text-transform: uppercase;
+  color: #8fb0c9;
+}
+.dh-photo:empty::after,
+.dh-photo.dh-no-photo::after {
+  content: attr(data-dh-kind);
+  font-family: var(--dh-display);
+  font-size: clamp(24px, 3.2vw, 38px); font-weight: 700; line-height: 1;
+  color: rgba(255,255,255,.16);
+}
+
+
+/* ── 5. Hero ─────────────────────────────────────────────────── */
+/* No bottom padding at all. The strip straddles the boundary between
+   the hero and the mission band; any padding here shows as a band of
+   white with nothing in it. */
+.dh-hero {
+  background:
+    radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 14px 14px,
+    var(--dh-navy);
+  padding-bottom: 0;
+}
+/* If a hero slide has no image, push the fallback wordmark clear of
+   the white card rather than letting it sit behind it. */
+@media (min-width: 641px) {
+  .dh-hero .dh-photo:empty,
+  .dh-hero .dh-photo.dh-no-photo { padding-left: 54%; }
+}
+.dh-hero .dh-stage { position: relative; height: clamp(400px, 42vw, 500px); background: var(--dh-navy); }
+.dh-hero .dh-slide {
+  position: absolute; inset: 0; opacity: 0; visibility: hidden;
+  transition: opacity .5s ease;
+}
+.dh-hero .dh-slide.is-on { opacity: 1; visibility: visible; }
+.dh-hero .dh-photo { position: absolute; inset: 0; }
+.dh-hero .dh-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(24,43,60,.88) 0%, rgba(24,43,60,.55) 46%, rgba(24,43,60,.12) 100%);
+}
+/* Centred, but in a box that stops short of the bottom. The strip
+   overlaps the hero by 32px, so a true centre put the tallest slides
+   within ~18px of it. Reserving the space here shifts every card up
+   by half of it and keeps the clearance constant. */
+.dh-hero .dh-slide > .dh-rail {
+  position: relative; height: 100%; display: flex; align-items: center;
+  padding-bottom: 56px;
+}
+.dh-hero .dh-card {
+  background: var(--dh-paper); max-width: 620px;
+  padding: clamp(26px, 3.4vw, 38px);
+  border-top: 4px solid var(--dh-teal); border-radius: var(--dh-r);
+  box-shadow: 0 18px 44px rgba(9,20,29,.34);
+}
+.dh-eyebrow {
+  font-family: var(--dh-display);
+  font-size: 11px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase;
+  color: var(--dh-midblue); margin: 0 0 12px;
+}
+/* Two lines are reserved whatever the headline. Slide titles here run
+   44–75 characters, so without this the card jumped a full line
+   between slides and the whole thing visibly resized mid-rotation. */
+.dh-hero .dh-card h2 {
+  font-family: var(--dh-display); font-weight: 700;
+  font-size: clamp(25px, 3vw, 37px); line-height: 1.14; letter-spacing: -.01em;
+  min-height: 2.28em;
+  margin: 0 0 14px; color: var(--dh-navy); text-wrap: balance;
+}
+.dh-hero .dh-card p { margin: 0 0 20px; font-size: 15.5px; line-height: 1.6; color: var(--dh-ink-2); max-width: 54ch; }
+.dh-home .dh-btn {
+  display: inline-block; background: var(--dh-navy); text-decoration: none;
+  font-size: 16px; font-weight: 700; line-height: 26px; padding: 21px 34px;
+  border-left: 6px solid var(--dh-teal); border-radius: var(--dh-r-sm);
+}
+.dh-home .dh-btn:hover { background: #0f1e2a; }
+/* Needs the ID + !important to clear the theme's link colour, same as
+   the block in §2b. Without it the label renders navy on navy. */
+#block-doe-content .dh-home .dh-btn,
+#block-doe-content .dh-home .dh-btn:hover { color: #fff !important; }
+
+
+/* ── 6. Story strip under the hero ───────────────────────────
+   No boxes, no numbers. Thin rules between items, a thumbnail from
+   the slide's own image, and a teal bar across the top of the live
+   item that fills over the dwell — so the strip IS the timer.
+   ------------------------------------------------------------ */
+/* Overlaps the hero rather than floating below it — the gap was what
+   made the strip read as a separate widget instead of part of the hero. */
+.dh-strip {
+  position: relative; z-index: 2;
+  padding-top: 0; padding-bottom: 0;
+  margin-top: -32px;
+}
+.dh-index {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  background: var(--dh-paper);
+  border: 1px solid var(--dh-rule-soft);
+  border-radius: var(--dh-r);
+  overflow: hidden;                 /* clips the progress bar to the radius */
+  box-shadow: 0 10px 30px rgba(9,20,29,.16);
+}
+.dh-index li + li { border-left: 1px solid var(--dh-rule-soft); }
+/* Equal vertical padding, and the text column always reserves two
+   lines — otherwise a one-line headline sits visibly higher in its
+   cell than the two-line ones beside it. */
+/* The thumb floats and the text block forms its own formatting context
+   beside it. Float works identically under block, inline-block, grid or
+   flex, so this row can't collapse the way the grid version kept doing. */
+.dh-index a {
+  position: relative; padding: 16px; text-decoration: none;
+  transition: background .15s; min-height: 78px;
+}
+.dh-index a::after { content: ''; display: table; clear: both; }
+.dh-index .dh-txt { overflow: hidden; }
+/* grid, not flex. A flex li only stretches its child on the cross axis
+   if nothing else intervenes; a grid item stretches on both by default,
+   so the active cell's navy reaches every edge and no white strip is
+   left under the shorter cells. */
+.dh-index li { display: grid; align-self: stretch; height: 100%; }
+.dh-index li > a { height: 100%; align-content: center; }
+.dh-index a:hover { background: #f2f5f7; }
+
+/* The live cell fills navy. A tint plus a hairline wasn't enough to
+   say "this is the one you're looking at" — at five across it just
+   read as five equal cells with a stray colour on one. */
+.dh-index a[aria-current="true"] { background: var(--dh-navy); }
+.dh-index a[aria-current="true"] .dh-t { color: #fff; font-weight: 600; }
+.dh-index a[aria-current="true"] .dh-kicker { color: var(--dh-teal); }
+.dh-index a[aria-current="true"] .dh-thumb { filter: none; }
+/* The bar. --dh-dwell is set on the link by the JS rule; custom
+   properties DO inherit into pseudo-elements, which is why the
+   duration is passed this way rather than as transition-duration. */
+.dh-index a::before {
+  content: ''; position: absolute; left: 0; top: 0;
+  height: 2px; width: 0; background: var(--dh-teal);
+}
+.dh-index a.is-timing::before {
+  width: 100%;
+  transition: width var(--dh-dwell, 6000ms) linear;
+}
+/* :not() keeps these two mutually exclusive, so neither depends on
+   source order to win. Paused = static grey bar, running = teal fill. */
+.dh-index a[aria-current="true"]:not(.is-timing)::before {
+  width: 100%; background: var(--dh-rule);
+}
+
+/* background-COLOR is the base, not a gradient in the `background`
+   shorthand — the JS sets background-image, and if that image 404s a
+   gradient base would vanish with it, leaving an empty hole. */
+.dh-index .dh-thumb {
+  float: left; margin: 2px 12px 0 0;
+  width: 58px; height: 44px; border-radius: 6px;
+  background-color: var(--dh-midblue);
+  background-image: linear-gradient(150deg, var(--dh-navy), var(--dh-steel));
+  background-size: cover; background-position: center;
+  filter: saturate(.55) opacity(.62); transition: filter .2s;
+}
+/* The kicker sits OUTSIDE .dh-t: .dh-t is a -webkit-box for the line
+   clamp, and a block child inside one doesn't lay out predictably. */
+.dh-index .dh-txt { min-width: 0; display: block; }
+/* Five across is tight — clamp the headline to two lines so one long
+   title can't make the whole strip taller than the others. */
+/* No min-height. The cells are already equal height (grid stretch +
+   the flex rules above), so centring the block is what makes the top
+   and bottom gaps match. Reserving two lines instead pins a one-line
+   headline to the top of its box, which is what looked off. */
+.dh-index .dh-t {
+  font-size: 12.6px; line-height: 1.32; color: var(--dh-ink-3); font-weight: 500;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.dh-index .dh-kicker {
+  display: block; font-family: var(--dh-display);
+  font-size: 9.5px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--dh-midblue); margin-bottom: 4px;
+}
+.dh-index a:hover .dh-thumb { filter: none; }
+/* :not() is load-bearing — without it, hovering the active navy cell
+   repaints its label dark blue on navy and it disappears. */
+.dh-index a:hover:not([aria-current="true"]) .dh-t { color: var(--dh-ink-2); }
+.dh-index a[aria-current="true"]:hover { background: var(--dh-navy); }
+
+
+/* ── 7. Slider controls (built by JS) ────────────────────────── */
+.dh-ctl { display: flex; align-items: center; gap: 6px; margin-top: 12px; }
+.dh-ctl button {
+  width: 30px; height: 30px; flex: none;
+  border: 1px solid var(--dh-rule); border-radius: 999px;
+  background: #fff; color: var(--dh-midblue); cursor: pointer;
+  display: grid; place-items: center; font-size: 12px; line-height: 1;
+  font-family: var(--dh-body); padding: 0;
+}
+.dh-ctl button:hover { border-color: var(--dh-teal); color: var(--dh-navy); }
+.dh-ctl .dh-count {
+  margin-left: auto; font-size: 11px; color: var(--dh-ink-3);
+  font-variant-numeric: tabular-nums; letter-spacing: .06em;
+}
+/* Aligned to the content rail, not the viewport edge — the stage is
+   full-bleed, so right:0 pinned the controls to the very edge of the
+   screen. Mirrors the .dh-rail maths so they line up with the card. */
+.dh-hero .dh-ctl {
+  position: absolute; bottom: 52px; margin: 0; z-index: 3;
+  right: calc(max(0px, (100% - var(--dh-rail)) / 2) + clamp(16px, 4vw, 32px));
+}
+.dh-hero .dh-ctl button { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.34); color: #fff; }
+.dh-hero .dh-ctl button:hover { background: rgba(255,255,255,.26); border-color: var(--dh-teal); color: #fff; }
+.dh-hero .dh-ctl .dh-count { display: none; }
+
+
+/* ── 8. Mission ──────────────────────────────────────────────── */
+/* The hero owns the space under the overlapping strip via its own
+   padding, so the mission band carries no top margin — otherwise the
+   two stack into a band of white with nothing in it. */
+.dh-mission {
+  background:
+    radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 14px 14px,
+    var(--dh-navy);
+  color: #fff;
+  padding-top: clamp(44px, 5vw, 60px); padding-bottom: clamp(44px, 5vw, 60px);
+  margin-top: 0;
+}
+.dh-mission-grid {
+  display: grid; grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr);
+  gap: clamp(28px, 5vw, 64px); align-items: start;
+}
+.dh-mission h2 {
+  font-family: var(--dh-display); font-weight: 700;
+  font-size: clamp(22px, 2.4vw, 30px); line-height: 1.2;
+  margin: 0 0 14px; color: #fff; text-wrap: balance;
+}
+.dh-lede { margin: 0; color: #b9cddc; font-size: 15.5px; line-height: 1.65; max-width: 40ch; }
+.dh-motto {
+  margin: 18px 0 0; font-family: var(--dh-display);
+  font-size: clamp(15px, 1.5vw, 17px); font-weight: 700; line-height: 1.35;
+  color: var(--dh-teal); letter-spacing: .005em;
+}
+
+/* Two columns, each commitment led by an icon. Font Awesome 5 is
+   already loaded sitewide by the theme, so the icons cost nothing —
+   no sprite to host, no SVG for the content filter to strip. */
+.dh-mission-list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 22px clamp(22px, 3vw, 38px);
+}
+.dh-mission-list li {
+  position: relative; padding-left: 46px; min-height: 32px;
+  font-size: 15.2px; line-height: 1.45; color: #eaf2f8; font-weight: 400;
+}
+.dh-mission-list li .dh-ico {
+  position: absolute; left: 0; top: 0;
+  display: grid; place-items: center;
+  width: 32px; height: 32px; border-radius: 9px;
+  background: rgba(66,195,247,.14);
+  border: 1px solid rgba(66,195,247,.24);
+  color: var(--dh-teal);
+}
+.dh-mission-list li .dh-ico svg { width: 18px; height: 18px; display: block; }
+
+
+/* ── 9. Newsroom + events ────────────────────────────────────── */
+/* Extra room at the foot so the white section breathes before the
+   warm band starts, rather than the two colours meeting abruptly. */
+/* Shallow diagonal edges. The slant depth is pulled back off the top as
+   negative margin and added to the padding, so content sits exactly where
+   it would have without it — only the edge changes. The hero/mission
+   boundary stays square on purpose: the story strip already bridges it,
+   and a slant there would cut through the card. */
+.dh-feed, .dh-good, .dh-watchband, .dh-social {
+  --dh-slant: clamp(8px, 0.9vw, 15px);
+  position: relative;
+  margin-top: calc(var(--dh-slant) * -1);
+  clip-path: polygon(0 var(--dh-slant), 100% 0, 100% 100%, 0 100%);
+}
+
+/* Patterned ground, solid panels on top. The cobalt dot field gives the
+   white sections something to be, and makes the beige panels read as
+   objects laid on a surface rather than shapes floating in a void. */
+.dh-feed {
+  padding-top: calc(clamp(44px, 5vw, 62px) + var(--dh-slant));
+  padding-bottom: clamp(40px, 4.4vw, 56px);
+  background:
+    radial-gradient(rgba(39,79,115,.10) 1px, transparent 1px) 0 0 / 16px 16px,
+    var(--dh-cool);
+}
+.dh-feed-grid {
+  display: grid; grid-template-columns: minmax(0,1.72fr) minmax(0,1fr);
+  gap: clamp(30px, 4.5vw, 56px); align-items: start;
+}
+/* No forced stretch. Pinning the note to the bottom of a stretched
+   panel left a 137px void above it — measured live. Natural height
+   reads better than a level finish bought with empty space. */
+.dh-panel .dh-note { padding-top: 14px; }
+
+.dh-news .dh-stage { position: relative; border-radius: var(--dh-r); overflow: hidden; background: var(--dh-navy); }
+.dh-news .dh-slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .45s ease; }
+.dh-news .dh-slide.is-on { opacity: 1; visibility: visible; position: relative; }
+.dh-news .dh-photo { aspect-ratio: 16 / 8; }
+
+/* A real scrim layer over the photo. An inset box-shadow does NOT work
+   here — inset shadows paint above the background but beneath child
+   content, so the image sat on top of it and nothing changed.
+   Newsroom images are often graphics with headline text baked in, and
+   ours was landing on top of theirs.
+   Scoped away from the fallback panel, which uses ::before for its
+   wordmark. */
+.dh-news .dh-photo:not(:empty):not(.dh-no-photo)::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 1;
+  background: rgba(11,23,32,.55);
+}
+.dh-news .dh-cap { z-index: 2; }
+/* The caption sits over the bottom of the frame, so a fallback panel
+   has to keep its wordmark up top or the two collide. */
+.dh-news .dh-photo:empty,
+.dh-news .dh-photo.dh-no-photo {
+  place-content: start center;
+  padding-top: 9%;
+}
+.dh-news .dh-photo:empty::after,
+.dh-news .dh-photo.dh-no-photo::after { font-size: clamp(20px, 2.4vw, 30px); }
+.dh-news .dh-cap {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: clamp(20px,3vw,30px) clamp(20px,3vw,28px) clamp(18px,2.4vw,24px);
+  background: linear-gradient(0deg, rgba(15,29,40,.94) 0%, rgba(15,29,40,.82) 52%, rgba(15,29,40,0) 100%);
+}
+/* Headline only. The eyebrow (date + category) and the excerpt were
+   three competing pieces of text over one photograph — the headline
+   is the thing anyone actually reads, and the date is already in the
+   index directly below. */
+.dh-news .dh-cap .dh-eyebrow { display: none; }
+.dh-news .dh-cap h3 {
+  font-family: var(--dh-display); font-weight: 700;
+  font-size: clamp(18px, 1.95vw, 24px); line-height: 1.25;
+  margin: 0 0 7px; text-wrap: balance; max-width: 30ch;
+}
+.dh-news .dh-cap h3 a { text-decoration: none; }
+#block-doe-content .dh-home .dh-news .dh-cap h3 a { color: #fff !important; }
+.dh-news .dh-cap h3 a:hover { text-decoration: underline; text-decoration-color: var(--dh-teal); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+.dh-news .dh-cap p { margin: 0; color: #cfdde8; font-size: 13.8px; line-height: 1.55; max-width: 56ch; }
+
+/* An index, not a pile of links. Uniform rows, a real date column,
+   a hover state, and the live story marked by a filled teal rail and
+   a tinted row rather than a small dot. */
+.dh-stories {
+  list-style: none; margin: 18px 0 0;
+  padding: 10px; display: grid; gap: 8px;
+  background: var(--dh-warm);
+  border: 1px solid #ded4c8; border-radius: var(--dh-r);
+}
+.dh-stories li {
+  background: var(--dh-paper);
+  border: 1px solid #e4dcd2; border-radius: 10px; overflow: hidden;
+  transition: border-color .18s, box-shadow .18s;
+}
+.dh-stories li:hover { border-color: var(--dh-teal); box-shadow: 0 4px 12px rgba(24,43,60,.10); }
+.dh-stories a {
+  padding: 15px 18px 15px 86px; text-decoration: none;
+  transition: background .15s;
+}
+
+.dh-stories .dh-pip {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: transparent; transition: background .2s;
+}
+.dh-stories .dh-d {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 58px;
+  background: var(--dh-navy); color: #fff; border-radius: 8px;
+  padding: 7px 0; text-align: center;
+  font-family: var(--dh-display);
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+/* Every row the same height — two lines reserved whether the headline
+   needs them or not. Ragged row heights were what made this list read
+   as thrown together; the headlines themselves can vary all they like
+   once the rows line up. */
+.dh-stories .dh-h {
+  font-size: 15.2px; line-height: 1.4; color: var(--dh-navy); font-weight: 500;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.dh-stories a:hover .dh-h { color: var(--dh-midblue); }
+.dh-stories a[aria-current="true"] { background: #eef5fa; }
+.dh-stories a[aria-current="true"] .dh-pip { background: var(--dh-teal); }
+.dh-stories a[aria-current="true"] .dh-h { font-weight: 700; }
+/* The date is a navy chip now, so its text stays white — the old
+   midblue rule painted midblue on navy and the chip went unreadable. */
+.dh-stories a[aria-current="true"] .dh-d { color: #fff; background: var(--dh-midblue); }
+
+/* A warm section card holding a stack of white event cards. The flat
+   list read as secondary next to the newsroom; giving each event its
+   own card on a beige ground makes the column a thing in its own
+   right without going fully dark. */
+.dh-panel {
+  border: 1px solid #ded4c8; border-radius: var(--dh-r);
+  background: var(--dh-warm);
+  padding: 26px 20px 22px;
+}
+.dh-panel .dh-shead .dh-line { background: #d6cbbf; }
+/* The date reads as a real chip — a filled block with the month in
+   rust over the day in navy — and the rows are divided with a heavier
+   warm rule so the list has structure instead of hairlines. */
+.dh-event-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.dh-event-list li {
+  background: var(--dh-paper);
+  border: 1px solid #e4dcd2; border-radius: 10px;
+  transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+.dh-event-list li:hover {
+  border-color: var(--dh-teal);
+  box-shadow: 0 6px 16px rgba(24,43,60,.12);
+  transform: translateY(-2px);
+}
+.dh-event-list a { padding: 17px 15px 17px 90px; text-decoration: none; }
+/* Spans the full height of the row rather than sitting as a chip at the
+   top — the row now reads as one object with a date rail down its left. */
+.dh-cal {
+  position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+  width: 62px; height: 58px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--dh-navy); border-radius: 9px; border: 0;
+}
+.dh-mo { display: block; font-family: var(--dh-display); font-size: 9.5px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: #fff; }
+.dh-dy { display: block; font-family: var(--dh-display); font-size: 21px; font-weight: 700; line-height: 1.1; color: var(--dh-teal); font-variant-numeric: tabular-nums; }
+.dh-event-list .dh-body { display: block; }
+.dh-event-list .dh-h { display: block; font-size: 13.4px; line-height: 1.4; color: var(--dh-navy); font-weight: 600; margin-bottom: 5px; }
+.dh-event-list a:hover .dh-h { text-decoration: underline; text-decoration-color: var(--dh-teal); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+.dh-event-list .dh-sub { display: block; font-size: 12.2px; color: var(--dh-ink-3); line-height: 1.4; }
+/* Tags carry a tone so a scan of the calendar reads by subject, not as
+   a wall of identical grey pills. Set data-tone in the markup; the feed
+   can map focus area to tone when events go live. Unknown or missing
+   tone falls back to the neutral slate below. */
+.dh-tag {
+  display: inline-block; font-family: var(--dh-display);
+  font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 2px 8px; margin-top: 9px; border-radius: 999px;
+  border: 1px solid #cfd8df; background: #eef2f5; color: #445766;
+}
+.dh-tag[data-tone="blue"]  { border-color: #b9d7ea; background: #e8f4fb; color: #1c6592; }
+.dh-tag[data-tone="green"] { border-color: #b3e0c8; background: #e7f7ef; color: #1a7a4e; }
+.dh-tag[data-tone="rust"]  { border-color: #e6c0b1; background: #fbeee8; color: #97401f; }
+.dh-tag[data-tone="plum"]  { border-color: #cfc4e2; background: #f2eefa; color: #5a3f8c; }
+.dh-tag[data-tone="teal"]  { border-color: #a9dced; background: #e6f6fc; color: #0d6f92; }
+.dh-note { margin: 16px 0 0; font-size: 13px; color: var(--dh-ink-3); line-height: 1.55; }
+
+
+/* ── 10. Good news + watch ───────────────────────────────────── */
+.dh-good {
+  background: var(--dh-warm);
+  padding-top: calc(clamp(44px, 5vw, 62px) + var(--dh-slant));
+  padding-bottom: clamp(44px, 5vw, 62px);
+}
+.dh-good .dh-shead .dh-line { background: #d6cbbf; }
+
+/* Built on the ELO news card: photo, teal rule, navy title block,
+   body, then a navy Read more bar. Nothing inside is underlined —
+   the whole card is the affordance, and the border does the work
+   on hover. */
+.dh-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 28px); align-items: stretch; }
+.dh-card-link {
+  display: flex; flex-direction: column; text-decoration: none;
+  background: var(--dh-paper);
+  border: 1px solid var(--dh-rule); border-radius: var(--dh-r); overflow: hidden;
+  box-shadow: 0 1px 3px rgba(24,43,60,.06);
+  transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+.dh-card-link:hover {
+  border-color: var(--dh-teal);
+  box-shadow: 0 12px 28px rgba(24,43,60,.17);
+  transform: translateY(-3px);
+}
+/* First block child of the card, so it always sits flush to the top
+   edge. It used to be a flex item, which let a taller neighbouring card
+   squeeze it and leave a sliver of card showing above the image. */
+.dh-card-link .dh-photo {
+  display: block; flex: none; width: 100%; aspect-ratio: 16 / 10;
+  font-size: 0; line-height: 0;    /* no stray line box above the image */
+  border-bottom: 4px solid var(--dh-teal);
+}
+
+.dh-card-head { display: block; background: var(--dh-navy); padding: 15px 18px 17px; }
+.dh-card-h {
+  display: block; font-family: var(--dh-display); font-weight: 700;
+  font-size: 17px; line-height: 1.26; color: #fff; text-wrap: balance;
+}
+
+.dh-card-body { display: block; padding: 15px 18px 18px; flex: 1; }
+.dh-card-tag { margin: 0 0 11px; }
+.dh-meta {
+  display: block; font-family: var(--dh-display);
+  font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--dh-midblue); margin-bottom: 9px;
+}
+.dh-card-p {
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 13.8px; line-height: 1.55; color: var(--dh-ink-2);
+}
+
+.dh-card-cta {
+  display: block; margin-top: auto;
+  background: var(--dh-navy); color: var(--dh-teal);
+  text-align: center; padding: 14px 12px;
+  font-family: var(--dh-display); font-weight: 700;
+  font-size: 12.5px; letter-spacing: .09em; text-transform: uppercase;
+  transition: background .18s;
+}
+.dh-card-cta::after { content: '  →'; }
+.dh-card-link:hover .dh-card-cta { background: #0f1e2a; }
+
+.dh-more-good {
+  list-style: none; margin: clamp(20px,2.6vw,28px) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: clamp(16px,2vw,24px);
+  align-items: stretch;
+}
+/* Mini versions of the same card, so the overflow stories read as part
+   of the set instead of a leftover list. Date instead of category —
+   the categories on these vary wildly (Federal Funding, BARR,
+   Alternative Education) and read as noise. */
+.dh-more-good li { display: flex; border-bottom: 0; }
+/* Same anatomy as the big cards minus the photo: content, then a navy
+   Read more bar flush to the bottom edge. The category label is gone —
+   the whole band is already headed "Good News from Maine Schools", so
+   tagging every card with it was saying the same thing five times. */
+.dh-more-good a {
+  flex: 1;
+  display: block; position: relative;
+  background: var(--dh-paper);
+  border: 1px solid var(--dh-rule); border-radius: var(--dh-r);
+  overflow: hidden; text-decoration: none;
+  /* MUST come after any padding shorthand above — a later `padding: 0`
+     silently reset this and dropped the bar on top of the title. */
+  padding: 0 0 44px;
+  transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+.dh-more-good a:hover {
+  border-color: var(--dh-teal);
+  box-shadow: 0 10px 22px rgba(24,43,60,.14);
+  transform: translateY(-3px);
+}
+.dh-place { display: none; }
+.dh-more-good .dh-h {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; min-height: 42px;      /* two lines at 21px */
+  font-family: var(--dh-display);
+  font-size: 15.5px; line-height: 21px; color: var(--dh-navy); font-weight: 700;
+  padding: 17px 18px 9px;
+}
+.dh-mg-p {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; min-height: 42px;
+  font-size: 13.4px; line-height: 21px; color: var(--dh-ink-2);
+  padding: 0 18px 16px;
+}
+.dh-more-good a::after {
+  content: 'Read more  →';
+  position: absolute; left: 0; right: 0; bottom: 0;
+  /* Explicit height, matching the 44px reserved above. Left to compute
+     from padding + inherited line-height it drifted taller than the
+     reserve and ate the last line of the title. */
+  display: block; height: 44px; line-height: 22px; padding: 11px 10px;
+  background: var(--dh-navy); color: var(--dh-teal); text-align: center;
+  font-family: var(--dh-display); font-size: 11px; font-weight: 700;
+  letter-spacing: .09em; text-transform: uppercase;
+  transition: background .18s;
+}
+.dh-more-good a:hover::after { background: #0f1e2a; }
+
+/* Its own band on white. Sitting inside the warm good-news section it
+   read as more school stories rather than a separate thing. */
+.dh-watchband {
+  background:
+    radial-gradient(rgba(39,79,115,.10) 1px, transparent 1px) 0 0 / 16px 16px,
+    var(--dh-cool);
+  padding-top: calc(clamp(44px, 5vw, 62px) + var(--dh-slant));
+  padding-bottom: clamp(44px, 5vw, 62px);
+}
+.dh-watch { margin-top: 0; }
+.dh-vids { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 28px); }
+.dh-vids a {
+  text-decoration: none; display: block;
+  background: var(--dh-paper);
+  border: 1px solid var(--dh-rule); border-radius: var(--dh-r);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(24,43,60,.06);
+  transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+.dh-vids a:hover {
+  border-color: var(--dh-teal);
+  box-shadow: 0 12px 28px rgba(24,43,60,.15);
+  transform: translateY(-3px);
+}
+.dh-vid-body { display: block; padding: 15px 17px 17px; }
+/* Video thumbs are never :empty (they hold the duration chip), so the
+   fallback-panel pseudo-elements above don't fire and both are free
+   to draw the play button: ::after is the ring, ::before the triangle. */
+.dh-vid-thumb { aspect-ratio: 16 / 9; border-bottom: 4px solid var(--dh-teal); }
+.dh-vid-thumb::after {
+  content: ''; position: absolute; left: 50%; top: 50%;
+  width: 46px; height: 46px; margin: -23px 0 0 -23px;
+  border: 2px solid rgba(255,255,255,.85); border-radius: 50%;
+}
+.dh-vid-thumb::before {
+  content: ''; position: absolute; left: 50%; top: 50%; z-index: 1;
+  margin: -7px 0 0 -4px; width: 0; height: 0;
+  border-left: 12px solid rgba(255,255,255,.92);
+  border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+}
+.dh-dur {
+  position: absolute; right: 8px; top: 8px; z-index: 1;
+  background: rgba(14,28,39,.85); color: #fff; font-size: 10.5px;
+  padding: 2px 6px; border-radius: 4px; font-variant-numeric: tabular-nums;
+}
+.dh-vid-h {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  font-family: var(--dh-display); font-weight: 700; font-size: 15.5px; line-height: 21px;
+  margin: 0; color: var(--dh-navy);
+}
+.dh-vid-p {
+  margin-top: 8px; font-size: 13.4px; line-height: 1.55; color: var(--dh-ink-2);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.dh-vid-p:empty { display: none; }   /* nothing to show until the feed exists */
+
+/* The thumbnail is a real image, so the fallback pseudo-elements have
+   to stand down and the play ring sits over the photo. */
+.dh-vid-thumb > img { position: absolute; inset: 0; }
+.dh-vid-thumb::after { z-index: 2; }
+.dh-vid-thumb::before { z-index: 3; }
+.dh-vids a:hover .dh-vid-h { text-decoration: underline; text-decoration-color: var(--dh-teal); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+
+
+/* ── 11. Follow ──────────────────────────────────────────────── */
+/* Flat navy, no dot field. The pattern still runs on the header, the
+   hero and the mission band; a fourth use turned a texture into a
+   motif. This band sits directly above the footer horizon, which is
+   texture enough at that end of the page. */
+.dh-social {
+  background: var(--dh-navy);
+  color: #fff;
+  padding-top: calc(32px + var(--dh-slant)); padding-bottom: 32px;
+}
+.dh-social .dh-rail { display: flex; align-items: center; gap: clamp(16px, 3vw, 34px); flex-wrap: wrap; }
+.dh-social-lbl { font-family: var(--dh-display); font-size: 16px; font-weight: 700; margin: 0; }
+.dh-social-lbl span { display: block; font-family: var(--dh-body); font-weight: 400; font-size: 12.8px; color: #a9c4d8; margin-top: 3px; }
+.dh-social-list { list-style: none; margin: 0; padding: 0; display: flex; gap: 9px; flex-wrap: wrap; }
+/* More substantial than a hairline pill — these are the only outbound
+   social links on the page now that the footer's column is gone. */
+.dh-social-list a {
+  display: block; text-decoration: none;
+  font-family: var(--dh-display);
+  font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  border: 0;
+  background: var(--dh-teal);
+  padding: 12px 22px; border-radius: 999px;
+  transition: background .18s, transform .18s, box-shadow .18s;
+}
+.dh-social-list a:hover {
+  background: #6ed2fa;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(66,195,247,.28);
+}
+#block-doe-content .dh-home .dh-social-list a { color: var(--dh-navy) !important; }
+#block-doe-content .dh-home .dh-social-list a:hover { color: var(--dh-navy) !important; }
+#block-doe-content .dh-home .dh-shead .dh-more { color: var(--dh-midblue) !important; }
+
+
+/* ── 12. Responsive ──────────────────────────────────────────── */
+@media (max-width: 940px) {
+  .dh-mission-grid, .dh-feed-grid { grid-template-columns: 1fr; }
+  .dh-mission-list { columns: 1; }
+  .dh-cards, .dh-vids { grid-template-columns: 1fr 1fr; }
+  .dh-cards .dh-card-link:last-child, .dh-vids a:last-child { grid-column: 1 / -1; }
+  /* Five columns can't survive a tablet width — stack instead. */
+  .dh-index { grid-template-columns: 1fr; }
+  .dh-index li + li { border-left: 0; border-top: 1px solid var(--dh-rule-soft); }
+  .dh-index .dh-t { -webkit-line-clamp: 1; font-size: 13.4px; }
+}
+
+@media (max-width: 640px) {
+  .dh-hero .dh-stage { height: auto; }
+  .dh-hero .dh-slide { position: relative; display: none; opacity: 1; visibility: visible; }
+  .dh-hero .dh-slide.is-on { display: block; }
+  .dh-hero .dh-photo { position: relative; inset: auto; height: 190px; }
+  .dh-hero .dh-veil { display: none; }
+  .dh-hero .dh-slide > .dh-rail { position: static; display: block; padding: 0; height: auto; }
+  .dh-hero .dh-card { max-width: none; box-shadow: none; border-radius: 0; padding: 24px clamp(16px,5vw,26px) 28px; }
+  .dh-hero .dh-ctl { position: static; margin: 10px clamp(16px,5vw,26px) 0; }
+  .dh-hero .dh-ctl button { background: #fff; border-color: var(--dh-rule); color: var(--dh-midblue); }
+  .dh-cards, .dh-vids, .dh-more-good { grid-template-columns: 1fr; }
+  .dh-stories a { grid-template-columns: 8px 1fr; }
+  .dh-stories .dh-d { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dh-home *, .dh-home *::before, .dh-home *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+
+/* ── 13. Event dialog ────────────────────────────────────────
+   A copy of the modal on /doe/calendar, not an approximation —
+   markup, tokens and measurements lifted from
+   comms-portal/calendar/index.html so the two surfaces look and
+   behave identically. If that modal changes, change this with it.
+   ------------------------------------------------------------ */
+.dh-dlg {
+  --cal-ground: #eee6df;
+  --cal-navy: #182b3c;
+  --cal-ink: #182b3c;
+  --cal-ink-2: #33475a;
+  --cal-ink-3: #6d8ba6;
+  --cal-steel-soft: #a8bccb;
+  --cal-warm-2: #eef2f6;
+  --cal-teal: #42c3f7;
+  --cat-color: #274f73;             /* per-cluster, set by the JS */
+
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(24,43,60,.78);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.dh-dlg[hidden] { display: none; }
+/* cluster colours, same mapping as the calendar page */
+.dh-dlg.cat-learning  { --cat-color: #0d7ba0; }
+.dh-dlg.cat-convening { --cat-color: #274f73; }
+.dh-dlg.cat-public    { --cat-color: #8a2e13; }
+.dh-dlg.cat-students  { --cat-color: #3f7f5e; }
+
+.dh-dlg-panel {
+  position: relative;
+  background: var(--cal-ground);
+  max-width: 640px; width: 100%;
+  max-height: 88vh; overflow-y: auto;
+  border-radius: 10px;
+  padding: 36px 40px 32px;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,.4);
+}
+.dh-dlg-panel::before {
+  content: ''; position: absolute; left: 0; top: 0; right: 0; height: 6px;
+  background: var(--cat-color); border-radius: 10px 10px 0 0;
+}
+.dh-dlg-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 36px; height: 36px;
+  border: 0; background: transparent; color: var(--cal-ink-2);
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+}
+.dh-dlg-close:hover { background: var(--cal-warm-2); color: var(--cal-ink); }
+.dh-dlg-close svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+.dh-dlg-chip {
+  display: inline-block; font-family: var(--dh-display);
+  font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--cat-color); border: 1px solid var(--cat-color);
+  border-radius: 999px; padding: 4px 11px; margin-bottom: 4px;
+}
+.dh-dlg-title {
+  font-family: var(--dh-display); font-weight: 800;
+  font-size: clamp(24px, 3.4vw, 32px); line-height: 1.1; letter-spacing: -.015em;
+  color: var(--cal-ink); margin: 6px 0 20px; text-wrap: balance; padding-right: 40px;
+}
+.dh-dlg-desc { font-size: 15px; line-height: 1.65; color: var(--cal-ink-2); margin: 0 0 24px; }
+.dh-dlg-desc[hidden] { display: none; }
+
+.dh-dlg-facts {
+  display: grid; grid-template-columns: 1fr; gap: 14px;
+  padding: 20px 22px; margin: 0 0 24px;
+  background: var(--cal-navy); border-radius: 6px;
+}
+.dh-dlg-fact {
+  display: grid; grid-template-columns: 20px 1fr; gap: 12px; align-items: flex-start;
+  font-size: 14px;
+}
+.dh-dlg-fact[hidden] { display: none; }
+.dh-dlg-fact svg { width: 16px; height: 16px; stroke: var(--cal-steel-soft); stroke-width: 1.6; fill: none; margin-top: 2px; }
+.dh-dlg-fact strong {
+  display: block; font-family: var(--dh-display); font-weight: 700;
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--cal-steel-soft); margin-bottom: 2px;
+}
+.dh-dlg-fact .dh-dlg-val {
+  display: block; color: var(--cal-ground);
+  font-family: var(--dh-display); font-weight: 600; font-size: 15px;
+}
+.dh-dlg-mail {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
+  font-family: var(--dh-body); font-size: 13px; font-weight: 500;
+}
+.dh-dlg-mail svg { width: 13px; height: 13px; stroke: var(--cal-teal); margin: 0; }
+.dh-dlg-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 24px; border-radius: 6px;
+  background: var(--cal-ink); text-decoration: none;
+  font-family: var(--dh-display); font-weight: 700;
+  font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+  transition: background .15s, transform .15s;
+}
+.dh-dlg-cta[hidden] { display: none; }
+.dh-dlg-cta svg { width: 14px; height: 14px; stroke: var(--cal-teal); stroke-width: 2.4; fill: none; }
+.dh-dlg-cta:hover { background: var(--cat-color); transform: translateX(2px); }
+.dh-dlg-cta:hover svg { stroke: var(--cal-ground); }
+.dh-dlg-meta {
+  font-family: var(--dh-display); font-weight: 600; font-size: 12px;
+  letter-spacing: .06em; color: var(--cal-ink-3); margin-top: 12px;
+}
+
+/* the theme's link colour would otherwise repaint these */
+#block-doe-content .dh-home .dh-dlg-cta { color: var(--cal-ground) !important; }
+#block-doe-content .dh-home .dh-dlg-mail { color: var(--cal-steel-soft) !important; }
+#block-doe-content .dh-home .dh-dlg-mail:hover { color: var(--cal-ground) !important; }
+
+@media (max-width: 620px) {
+  .dh-dlg { padding: 12px; }
+  .dh-dlg-panel { padding: 24px 24px 20px; }
+}

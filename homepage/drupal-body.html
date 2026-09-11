@@ -1,0 +1,460 @@
+<!--
+  Maine DOE homepage — Drupal body field (Full HTML)
+  ==================================================
+  Version: 2026-09-10-k   ·   Last edited: 2026-09-10
+  Versions are per-file and do NOT need to match the other two — only
+  re-paste a file when its own version has changed.
+  ?dhdebug=1 shows what is actually loaded.
+
+  Paste this whole thing into the body of /doe (node 9).
+
+  This file is CONTENT ONLY. Every slider control, progress bar, and
+  autoplay behaviour is created at runtime by the JS Injector rule, so
+  Drupal's content filter has nothing interactive to strip. If the JS
+  never loads, this page still renders as a readable, fully linked
+  document — which is the whole point.
+
+  EDITING NOTES FOR WHOEVER MAINTAINS THIS
+  ========================================
+  * To add a hero slide: copy one <article class="dh-slide"> block,
+    then add a matching <li> to the dh-index list below it. The
+    data-dh-go numbers must run 0,1,2,... with no gaps.
+  * To use a photo: put an <img> inside <div class="dh-photo">.
+  * To go without a photo: leave the dh-photo div EMPTY and set
+    data-dh-kind to the story type ("Update", "Grant", "Conference").
+    The branded fallback panel draws itself.
+  * Never add a style="" attribute. All styling lives in the CSS
+    Injector rule so it can be changed in one place.
+-->
+
+<div class="dh-home" data-dh-version="2026-09-10-k">
+
+  <!-- ============================================================
+       HERO — auto-advancing, 7 seconds a slide
+       ============================================================ -->
+  <!-- data-category is intentionally ABSENT until the "Homepage Feature"
+       category exists in WordPress. With no data-category the block keeps
+       the hand-authored slides below. Add data-category="<id>" and the
+       hero starts driving itself from the Newsroom. -->
+  <section class="dh-hero" data-dh-slider="hero" data-dh-feed="hero"
+           data-dh-dwell="7000" data-count="5" aria-label="Featured">
+
+    <div class="dh-stage">
+
+      <!-- data-dh-pin = this slide is written by hand here and always
+           shows, whether or not there's a Newsroom article behind it.
+           Use it for campaigns, deadlines, and program pages. Feed
+           posts fill whatever spots are left up to data-count.
+           Remove the attribute and this becomes fallback-only. -->
+      <article class="dh-slide is-on" data-dh-pin>
+        <div class="dh-photo" data-dh-kind="Opportunity">
+          <img src="/doe/sites/maine.gov.doe/files/2026-09/EngageMEnt.png" alt="" />
+        </div>
+        <div class="dh-veil"></div>
+        <div class="dh-rail">
+          <div class="dh-card">
+            <p class="dh-eyebrow">Opportunity</p>
+            <h2>Registration Now Open for EngageMEnt 2026&ndash;2027</h2>
+            <p class="dh-blurb">A statewide professional learning opportunity supporting educators in exploring innovative, engaging, and impactful practices for teaching and learning.</p>
+            <a class="dh-btn" href="/doe/teachingandlearning/engagementseries">Read the announcement</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="dh-slide">
+        <div class="dh-photo" data-dh-kind="Grant">
+          <img src="/doe/sites/maine.gov.doe/files/2026-09/Nature.png" alt="" />
+        </div>
+        <div class="dh-veil"></div>
+        <div class="dh-rail">
+          <div class="dh-card">
+            <p class="dh-eyebrow">Grant Program</p>
+            <h2>Wabanaki Studies Indigenous Literature Grant Program</h2>
+            <p class="dh-blurb">A new Maine DOE grant program bringing Indigenous literature into classrooms across the state, supporting Wabanaki studies instruction.</p>
+            <a class="dh-btn" href="https://mainedoenews.net/2026/09/04/maine-doe-launches-wabanaki-studies-indigenous-literature-grant-program/">See grant details</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="dh-slide">
+        <div class="dh-photo" data-dh-kind="Conference">
+          <img src="/doe/sites/maine.gov.doe/files/2026-09/PBIS.png" alt="" />
+        </div>
+        <div class="dh-veil"></div>
+        <div class="dh-rail">
+          <div class="dh-card">
+            <p class="dh-eyebrow">Conference</p>
+            <h2>Registration Open for the 16th Annual PBIS Conference</h2>
+            <p class="dh-blurb">Maine educators can now register for the sixteenth annual Positive Behavioral Interventions and Supports conference.</p>
+            <a class="dh-btn" href="https://mainedoenews.net/2026/09/04/registration-open-for-16th-annual-pbis-conference/">Register now</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="dh-slide">
+        <div class="dh-photo" data-dh-kind="Professional Learning">
+          <img src="/doe/sites/maine.gov.doe/files/2026-09/Back-to-School-Backpack-1-.png" alt="" />
+        </div>
+        <div class="dh-veil"></div>
+        <div class="dh-rail">
+          <div class="dh-card">
+            <p class="dh-eyebrow">Professional Learning</p>
+            <h2>Free Access to the Family Math Academy Series</h2>
+            <p class="dh-blurb">Maine educators have no-cost access to the Family Math Academy professional learning series, open to schools across the state.</p>
+            <a class="dh-btn" href="https://mainedoenews.net/2026/09/04/maine-educators-have-free-access-to-family-math-academy-professional-learning-series/">Explore the series</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="dh-slide">
+        <div class="dh-photo" data-dh-kind="Webinar Series">
+          <img src="/doe/sites/maine.gov.doe/files/2026-09/Hero%20Test.png" alt="" />
+        </div>
+        <div class="dh-veil"></div>
+        <div class="dh-rail">
+          <div class="dh-card">
+            <p class="dh-eyebrow">Webinar Series</p>
+            <h2>Professional Learning Webinar Series on Multi-Tiered System of Supports</h2>
+            <p class="dh-blurb">A new webinar series from the Department supporting schools implementing a multi-tiered system of supports.</p>
+            <a class="dh-btn" href="https://mainedoenews.net/2026/09/04/maine-department-of-education-to-offer-professional-learning-webinar-series-on-multi-tiered-system-of-supports/">See the schedule</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="dh-rail dh-strip">
+      <!-- The thumbnail span is CREATED by JS, not authored here.
+           Drupal's content filter deletes empty inline elements, so a
+           <span class="dh-thumb"></span> in this file is silently
+           dropped on save — it renders in preview and is missing on
+           the live page. Same trap as the mission icons. The image
+           comes from each slide's own <img>, so there is nothing to
+           author or keep in sync either way. -->
+      <ul class="dh-index">
+        <li><a href="/doe/teachingandlearning/engagementseries" data-dh-go="0"><span class="dh-txt"><span class="dh-kicker">Opportunity</span><span class="dh-t">Registration open for EngageMEnt 2026&ndash;2027</span></span></a></li>
+        <li><a href="https://mainedoenews.net/2026/09/04/maine-doe-launches-wabanaki-studies-indigenous-literature-grant-program/" data-dh-go="1"><span class="dh-txt"><span class="dh-kicker">Grant Program</span><span class="dh-t">Wabanaki Studies Indigenous Literature Grant launches</span></span></a></li>
+        <li><a href="https://mainedoenews.net/2026/09/04/registration-open-for-16th-annual-pbis-conference/" data-dh-go="2"><span class="dh-txt"><span class="dh-kicker">Conference</span><span class="dh-t">Registration open for the 16th Annual PBIS Conference</span></span></a></li>
+        <li><a href="https://mainedoenews.net/2026/09/04/maine-educators-have-free-access-to-family-math-academy-professional-learning-series/" data-dh-go="3"><span class="dh-txt"><span class="dh-kicker">Professional Learning</span><span class="dh-t">Free access to the Family Math Academy series</span></span></a></li>
+        <li><a href="https://mainedoenews.net/2026/09/04/maine-department-of-education-to-offer-professional-learning-webinar-series-on-multi-tiered-system-of-supports/" data-dh-go="4"><span class="dh-txt"><span class="dh-kicker">Webinar Series</span><span class="dh-t">New webinar series on Multi-Tiered System of Supports</span></span></a></li>
+      </ul>
+    </div>
+
+  </section>
+
+
+  <!-- ============================================================
+       MISSION
+       ============================================================ -->
+  <section class="dh-mission" aria-labelledby="dh-mission-h">
+    <div class="dh-rail">
+      <div class="dh-mission-grid">
+        <div>
+          <h2 id="dh-mission-h">The Maine DOE promotes the best learning opportunities for all Maine students</h2>
+          <p class="dh-lede">Leadership and support for educators and families, preparing every Maine student for success in college, careers, and civic life.</p>
+          <p class="dh-motto">Helping Educators, Students, &amp; Schools Thrive</p>
+        </div>
+        <div>
+        <!-- data-dh-ico sits on the <li>, NOT on an inner tag. An empty
+             <i> here was silently deleted by Drupal's content filter —
+             it strips inline elements with no content — which is why the
+             icons vanished on the live page but not in preview. The <li>
+             has text, so it survives; the JS builds the icon inside it. -->
+        <ul class="dh-mission-list">
+          <li data-dh-ico="student"><span>Focusing on a whole student approach</span></li>
+          <li data-dh-ico="idea"><span>Encouraging innovation</span></li>
+          <li data-dh-ico="educator"><span>Respecting educators</span></li>
+          <li data-dh-ico="guidance"><span>Providing information, guidance, professional learning, and support to schools and educators</span></li>
+          <li data-dh-ico="funding"><span>Providing adequate and equitable school funding and resources</span></li>
+          <li data-dh-ico="trust"><span>Inspiring trust in our schools</span></li>
+        </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       NEWSROOM + UPCOMING EVENTS
+       The newsroom slides and the story list beneath them are ONE
+       component — the list is the slider's index.
+       Both columns are filled from live feeds by the JS rule; the
+       markup below is the fallback that shows if a feed is down.
+       ============================================================ -->
+  <section class="dh-feed">
+    <div class="dh-rail">
+      <div class="dh-feed-grid">
+
+        <!-- data-category empty = most recent posts, any category.
+             To narrow it to Newsroom Articles, use 206418111. -->
+        <div class="dh-news" data-dh-slider="news" data-dh-dwell="6000"
+             data-dh-feed="news" data-category="" data-count="5">
+          <div class="dh-shead">
+            <h2>Newsroom</h2>
+            <span class="dh-line"></span>
+            <a class="dh-more" href="https://mainedoenews.net/">All news</a>
+          </div>
+
+          <div class="dh-stage">
+
+            <article class="dh-slide is-on">
+              <div class="dh-photo" data-dh-kind="Update"></div>
+              <div class="dh-cap">
+                <p class="dh-eyebrow">September 4, 2026 &middot; Update</p>
+                <h3><a href="/link">Maine DOE Update &mdash; September 4, 2026</a></h3>
+                <p class="dh-blurb">The weekly roundup of guidance, deadlines, opportunities, and school stories from the Department.</p>
+              </div>
+            </article>
+
+            <article class="dh-slide">
+              <div class="dh-photo" data-dh-kind="Guidance">
+                <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-news-2.jpg" alt="" />
+              </div>
+              <div class="dh-cap">
+                <p class="dh-eyebrow">September 4, 2026 &middot; Guidance</p>
+                <h3><a href="/link">Joint Maine DOE and DHHS Guidance on IEPs and MaineCare Sections 28 and 65 Services</a></h3>
+                <p class="dh-blurb">A repeat and expanded virtual session covering the joint guidance for school administrative units.</p>
+              </div>
+            </article>
+
+            <article class="dh-slide">
+              <div class="dh-photo" data-dh-kind="Professional Learning">
+                <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-news-3.jpg" alt="" />
+              </div>
+              <div class="dh-cap">
+                <p class="dh-eyebrow">September 4, 2026 &middot; Professional Learning</p>
+                <h3><a href="/link">Maine Educators have FREE Access to Family Math Academy Professional Learning Series</a></h3>
+                <p class="dh-blurb">A no-cost professional learning series open to educators across the state.</p>
+              </div>
+            </article>
+
+            <article class="dh-slide">
+              <div class="dh-photo" data-dh-kind="Grant">
+                <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-news-4.jpg" alt="" />
+              </div>
+              <div class="dh-cap">
+                <p class="dh-eyebrow">September 4, 2026 &middot; Grant</p>
+                <h3><a href="/link">Maine DOE Launches Wabanaki Studies Indigenous Literature Grant Program</a></h3>
+                <p class="dh-blurb">A new grant program bringing Indigenous literature into Maine classrooms.</p>
+              </div>
+            </article>
+
+            <article class="dh-slide">
+              <!-- Left empty on purpose: shows the branded fallback panel
+                   for a post with no usable featured image. -->
+              <div class="dh-photo" data-dh-kind="Conference"></div>
+              <div class="dh-cap">
+                <p class="dh-eyebrow">September 4, 2026 &middot; Conference</p>
+                <h3><a href="/link">Registration Open for the 16th Annual PBIS Conference</a></h3>
+                <p class="dh-blurb">Registration is now open for the sixteenth annual Positive Behavioral Interventions and Supports conference.</p>
+              </div>
+            </article>
+
+          </div>
+
+          <ul class="dh-stories">
+            <li><a href="/link" data-dh-go="0"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Maine DOE Update &mdash; September 4, 2026</span></a></li>
+            <li><a href="/link" data-dh-go="1"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Joint Maine DOE and DHHS Guidance on IEPs and MaineCare Sections 28 and 65 Services</span></a></li>
+            <li><a href="/link" data-dh-go="2"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Maine Educators have FREE Access to Family Math Academy Professional Learning Series</span></a></li>
+            <li><a href="/link" data-dh-go="3"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Maine DOE Launches Wabanaki Studies Indigenous Literature Grant Program</span></a></li>
+            <li><a href="/link" data-dh-go="4"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Registration Open for the 16th Annual PBIS Conference</span></a></li>
+          </ul>
+        </div>
+
+        <div class="dh-events">
+          <div class="dh-panel" data-dh-feed="events" data-count="6"
+               data-endpoint="//script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec">
+            <div class="dh-shead">
+              <h2>Upcoming Events</h2>
+              <span class="dh-line"></span>
+              <a class="dh-more" href="/doe/calendar">Full calendar</a>
+            </div>
+            <ul class="dh-event-list">
+              <li><a href="/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">10</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">Special Education Connect Enrollment Webinar</span>
+                  <span class="dh-sub">12:00 &ndash; 1:00 p.m. &middot; Webinar</span>
+                  <span class="dh-tag" data-tone="blue">Data</span>
+                </span>
+              </a></li>
+              <li><a href="/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">10</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">School Nurse Office Hours</span>
+                  <span class="dh-sub">3:30 &ndash; 4:30 p.m. &middot; Office Hours</span>
+                  <span class="dh-tag" data-tone="green">School Health</span>
+                </span>
+              </a></li>
+              <li><a href="/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">10</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">SY27 NSLP Review Training</span>
+                  <span class="dh-sub">9:00 a.m. &ndash; 12:30 p.m. &middot; Training</span>
+                  <span class="dh-tag" data-tone="rust">Child Nutrition</span>
+                </span>
+              </a></li>
+              <li><a href="/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">11</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">Guidance on IEPs and MaineCare Sections 28 and 65 Services</span>
+                  <span class="dh-sub">12:00 &ndash; 2:00 p.m. &middot; Training</span>
+                  <span class="dh-tag" data-tone="plum">Federal Programs</span>
+                </span>
+              </a></li>
+              <li><a href="/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">11</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">Behavioral Threat Assessment &amp; Management (BTAM) Office Hours</span>
+                  <span class="dh-sub">9:30 &ndash; 10:30 a.m. &middot; Office Hours</span>
+                  <span class="dh-tag" data-tone="rust">School Safety</span>
+                </span>
+              </a></li>
+              <li><a href="/doe/calendar">
+                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">12</span></span>
+                <span class="dh-body">
+                  <span class="dh-h">Maine School Safety Center Training Coordinator Office Hours</span>
+                  <span class="dh-sub">8:00 &ndash; 9:00 a.m. &middot; Office Hours</span>
+                  <span class="dh-tag" data-tone="rust">School Safety</span>
+                </span>
+              </a></li>
+            </ul>
+            <p class="dh-note">Earn contact hours while connecting, learning, and sharing with educators across Maine and beyond.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       GOOD NEWS FROM MAINE SCHOOLS
+       Fills from the WordPress "School Highlights" category once that
+       category exists. Until then this markup is what shows.
+       ============================================================ -->
+  <section class="dh-good">
+    <div class="dh-rail">
+
+      <div class="dh-shead">
+        <h2>Good News from Maine Schools</h2>
+        <span class="dh-line"></span>
+        <a class="dh-more" href="https://mainedoenews.net/">All school stories</a>
+      </div>
+
+      <!-- 4668 = "Good News from Schools" (843 posts, mainedoenews.net
+           /category/success/ redirects here). 3 cards + 4 headlines. -->
+      <div class="dh-cards" data-dh-feed="highlights" data-category="4668" data-count="5">
+        <a class="dh-card-link" href="/link">
+          <span class="dh-photo" data-dh-kind="Highlight">
+            <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-hl-1.jpg" alt="" />
+          </span>
+          <span class="dh-card-head"><span class="dh-card-h">St. George MSU Recognized as a Top 10 School</span></span>
+          <span class="dh-card-body">
+            <span class="dh-meta">August 14, 2026</span>
+            <span class="dh-card-p">A small coastal district earning statewide recognition for student outcomes and community partnership.</span>
+          </span>
+          <span class="dh-card-cta">Read more</span>
+        </a>
+        <a class="dh-card-link" href="/link">
+          <span class="dh-photo" data-dh-kind="Highlight">
+            <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-hl-2.jpg" alt="" />
+          </span>
+          <span class="dh-card-head"><span class="dh-card-h">Maine Engagement and Attendance Center Brings Partners Together</span></span>
+          <span class="dh-card-body">
+            <span class="dh-meta">September 4, 2026</span>
+            <span class="dh-card-p">Statewide partners continue joint work to strengthen student attendance and engagement.</span>
+          </span>
+          <span class="dh-card-cta">Read more</span>
+        </a>
+        <a class="dh-card-link" href="/link">
+          <span class="dh-photo" data-dh-kind="Highlight">
+            <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-hl-3.jpg" alt="" />
+          </span>
+          <span class="dh-card-head"><span class="dh-card-h">Wabanaki Studies Indigenous Literature Grant Program</span></span>
+          <span class="dh-card-body">
+            <span class="dh-meta">September 4, 2026</span>
+            <span class="dh-card-p">A new grant program bringing Indigenous literature into Maine classrooms.</span>
+          </span>
+          <span class="dh-card-cta">Read more</span>
+        </a>
+      </div>
+
+      <!-- Two overflow stories, not four — the band was getting long.
+           The JS caps it at two as well, so a larger data-count can't
+           lengthen it. -->
+      <ul class="dh-more-good">
+        <li><a href="/link"><span class="dh-place">Aug 14</span><span class="dh-h">Students Present Climate Action Plan to Town Council</span><span class="dh-mg-p">Students showcased a year of climate work and presented their action plan to the town council.</span></a></li>
+        <li><a href="/link"><span class="dh-place">Aug 5</span><span class="dh-h">Community School Model Expands to a Third Building</span><span class="dh-mg-p">A community school model expands to a third building after strong results across the district.</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       WATCH — its own band, on the light ground. Inside the warm
+       good-news band it read as more school stories.
+       ============================================================ -->
+  <section class="dh-watchband">
+    <div class="dh-rail">
+      <!-- Live from the comms-portal Apps Script once the youtube_videos
+           branch is deployed. Protocol-relative: a full https:// address
+           here gets the Injector save rejected by the WAF. -->
+      <div class="dh-watch" data-dh-feed="youtube"
+           data-endpoint="//script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec">
+        <div class="dh-shead">
+          <h2>Latest Videos</h2>
+          <span class="dh-line"></span>
+          <a class="dh-more" href="https://www.youtube.com/@MaineDepartmentofEducation">YouTube channel</a>
+        </div>
+        <!-- Real videos from the @MaineDOEComm channel. The thumbnail
+             address is just the video ID — no API key and no request
+             from our side. Titles came from YouTube's oEmbed endpoint,
+             which is also keyless and CORS-open, so the JS rule keeps
+             them current.
+
+             There is no description element here on purpose: Drupal's
+             content filter deletes empty inline tags, so an empty
+             placeholder would never survive the paste. The JS creates
+             the description once the feed supplies one. -->
+        <div class="dh-vids">
+          <a href="//www.youtube.com/watch?v=OapwofBvIhc" data-dh-yt="OapwofBvIhc">
+            <span class="dh-photo dh-vid-thumb" data-dh-kind="Video">
+              <img src="//i.ytimg.com/vi/OapwofBvIhc/hqdefault.jpg" alt="" loading="lazy" />
+            </span>
+            <span class="dh-vid-body"><span class="dh-vid-h">Special Services Office Hours (May 2026): Case Study</span></span>
+          </a>
+          <a href="//www.youtube.com/watch?v=jhcLfvkZAoQ" data-dh-yt="jhcLfvkZAoQ">
+            <span class="dh-photo dh-vid-thumb" data-dh-kind="Video">
+              <img src="//i.ytimg.com/vi/jhcLfvkZAoQ/hqdefault.jpg" alt="" loading="lazy" />
+            </span>
+            <span class="dh-vid-body"><span class="dh-vid-h">Title I Reporting of Eligible Students</span></span>
+          </a>
+          <a href="//www.youtube.com/watch?v=gkbXy0cLMB4" data-dh-yt="gkbXy0cLMB4">
+            <span class="dh-photo dh-vid-thumb" data-dh-kind="Video">
+              <img src="//i.ytimg.com/vi/gkbXy0cLMB4/hqdefault.jpg" alt="" loading="lazy" />
+            </span>
+            <span class="dh-vid-body"><span class="dh-vid-h">NEO Staff Data Entry Webinar</span></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOLLOW
+       ============================================================ -->
+  <section class="dh-social">
+    <div class="dh-rail">
+      <p class="dh-social-lbl">Follow Maine DOE<span>Daily updates, school stories, and reminders</span></p>
+      <ul class="dh-social-list">
+        <li><a href="https://www.facebook.com/MaineDepartmentofEducation">Facebook</a></li>
+        <li><a href="https://www.instagram.com/mainedepted/">Instagram</a></li>
+        <li><a href="https://www.youtube.com/@MaineDepartmentofEducation">YouTube</a></li>
+        <li><a href="https://www.linkedin.com/company/education-maine-department-of/">LinkedIn</a></li>
+        <li><a href="https://mainedoenews.net/">Newsletter</a></li>
+      </ul>
+    </div>
+  </section>
+
+</div>
