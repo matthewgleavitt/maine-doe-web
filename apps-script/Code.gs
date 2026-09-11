@@ -2461,7 +2461,13 @@ function getPublishedEvents() {
   for (var r = 1; r < data.length; r++) {
     var row = data[r];
     var status = String(row[idx['Status']] || '').trim();
-    if (status !== 'Published' && status !== 'Cancelled') continue;
+    // Cancelled events used to fall through here (an old plan was to render
+    // them with strikethrough on the frontend for a grace period), but the
+    // frontend never implemented the strikethrough UI, so cancelled events
+    // appeared indistinguishable from live ones. Now: hide them from the
+    // public feed as soon as deleteEvent sets Status = Cancelled. The row
+    // stays in the sheet as an audit trail; it just doesn't get shipped.
+    if (status !== 'Published') continue;
     if (!row[idx['Title']]) continue;
 
     var base = _rowToEvent(row, idx, status);
