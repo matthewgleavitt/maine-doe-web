@@ -1069,7 +1069,22 @@ function filtered() {
       if (!hay.includes(q)) return false;
     }
     return true;
-  }).sort((a,b) => a.date.localeCompare(b.date));
+  }).sort((a,b) => sortKey(a).localeCompare(sortKey(b)));
+}
+
+// Chronological sort key — date + start time as 24-hour HH:MM. Without
+// converting the 12-hour startTime string ("3:00 PM") to 24-hour first, a
+// straight string sort puts 3:00 PM before 8:30 AM on the same day.
+function sortKey(ev) {
+  const d = String(ev.date || '');
+  const t = String(ev.startTime || '');
+  const m = t.match(/^\s*(\d+):(\d+)\s*([AP]M)?\s*$/i);
+  if (!m) return d + ' 00:00';
+  let h = parseInt(m[1], 10);
+  const ap = (m[3] || '').toUpperCase();
+  if (ap === 'PM' && h !== 12) h += 12;
+  if (ap === 'AM' && h === 12) h = 0;
+  return d + ' ' + (h < 10 ? '0' + h : h) + ':' + m[2];
 }
 
 function cardBanner(e) {

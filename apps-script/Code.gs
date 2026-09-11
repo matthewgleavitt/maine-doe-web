@@ -2484,8 +2484,23 @@ function getPublishedEvents() {
     }
   }
 
+  // Sort by date then time-of-day. startTime is a 12-hour string like
+  // "3:00 PM" or "8:30 AM" — string-comparing those puts 3:00 PM before
+  // 8:30 AM because "3" < "8" alphabetically. Convert to a 24-hour HH:MM
+  // key first so the compare works chronologically.
+  function _sortKey(ev) {
+    var d = String(ev.date || '');
+    var t = String(ev.startTime || '');
+    var m = t.match(/^\s*(\d+):(\d+)\s*([AP]M)?\s*$/i);
+    if (!m) return d + ' 00:00';
+    var h = parseInt(m[1], 10);
+    var ap = (m[3] || '').toUpperCase();
+    if (ap === 'PM' && h !== 12) h += 12;
+    if (ap === 'AM' && h === 12) h = 0;
+    return d + ' ' + (h < 10 ? '0' + h : h) + ':' + m[2];
+  }
   events.sort(function(a, b) {
-    return (a.date + a.startTime).localeCompare(b.date + b.startTime);
+    return _sortKey(a).localeCompare(_sortKey(b));
   });
 
   return { events: events, count: events.length, generated: nowET };
