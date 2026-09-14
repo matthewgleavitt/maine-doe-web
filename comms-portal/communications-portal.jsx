@@ -330,7 +330,7 @@ function AnalyticsModule() {
   const [pageSearch, setPageSearch] = useState("");
   const [fileSearch, setFileSearch] = useState("");
   const [ownerFilter, setOwnerFilter] = useState("");
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA432dtGEN-UzmSDtzlaL7SEVxChnMOfl0Lgr2BEhg/exec";
   const DRUPAL_API = "https://www.maine.gov/doe/jsonapi/node/multi_column_page";
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);

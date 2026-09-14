@@ -1,5 +1,5 @@
 /* Maine DOE homepage — JS Injector rule
- * Version: 2026-09-10-r  ·  Last edited: 2026-09-10
+ * Version: 2026-09-14-d  ·  Last edited: 2026-09-10
  * Versions are per-file and do NOT need to match the other two.
  */
 
@@ -53,7 +53,7 @@
 
      Silent in normal use. ?dhdebug=1 shows the badge.
      ------------------------------------------------------------ */
-  var JS_VERSION = '2026-09-10-r';
+  var JS_VERSION = '2026-09-14-d';
   reportVersions();
 
   function reportVersions() {
@@ -222,6 +222,7 @@
   }
 
   drawIcons();
+  sizeHeadlines();     /* authored slides too, not just fed ones */
   loadFeeds(made);
   loadEvents();
   loadVideos();
@@ -270,6 +271,14 @@
     return t;
   }
 
+
+  /* data-dh-tpl marks a row that exists ONLY as a clone source. The
+     feed handlers wipe their container on a successful fill, so these
+     never render then; the marker covers the failure case, where the
+     old fallback rows would have shown a hard-coded September date as
+     though it were current. Hidden in CSS, and stripped from every
+     clone below — a clone that kept it would be invisible.
+     Page A carries no such attributes, so all of this is inert there. */
 
   /* ── slider ───────────────────────────────────────────────── */
 
@@ -459,6 +468,7 @@
                 if (kind === 'highlights') fillCards(host, posts);
                 else {
                   fillSlides(host, posts, kind);
+                  if (kind === 'hero') sizeHeadlines();
                   if (sliders[kind]) sliders[kind].refresh();
                 }
               } catch (e) { /* authored markup stands; never blank the page */ }
@@ -489,15 +499,61 @@
       .catch(function (err) { if (window.console) console.warn('DOE homepage feed:', err); done(null); });
   }
 
-  /* The hero frame is roughly 2.9:1 and full width. Featured images on
-     mainedoenews.net are mostly small and near-square — 330x248 and
-     491x369 are both real examples off the Good News category — so
-     stretching one across the hero upscales it to mush. Anything
-     narrower than this falls back to the branded panel, which reads as
-     deliberate where a blurry upscale just reads as broken. The cards
-     and the newsroom slider are far smaller frames and take whatever
-     the post has. */
+  /* ── Hero images come from somewhere ELSE than the thumbnails ──
+     The featured image on a Newsroom post is the MARKETING GRAPHIC —
+     a designed square or 16:9 card with type baked into it. That is
+     the right image for the newsroom list and the good-news cards,
+     and the wrong one stretched across a 2.5:1 hero, where the crop
+     slices through its own lettering.
+
+     Measured on the last 20 posts, which is why this is not a matter
+     of taste: 7 had NO featured image at all, and of the 13 that did,
+     ZERO were wider than 2:1. Six were exactly 1280x720, three were
+     square, two were portrait (one 3072x4080).
+
+     So a Homepage Feature post carries a SECOND image — a wide
+     photograph placed in the post body and given the CSS class below
+     in the block editor's Advanced panel. mainedoenews.net hides it
+     from readers with one rule, so the article still shows only the
+     marketing graphic.
+
+     There is deliberately NO fallback to the featured image here. A
+     marketing graphic cropped to a letterbox looks broken; the branded
+     panel looks intentional. Missing hero photo means branded panel.
+     ------------------------------------------------------------ */
+  var HERO_CLASS     = 'homepage-hero';
   var HERO_MIN_WIDTH = 1000;
+  var HERO_MIN_RATIO = 1.3;
+  var HERO_CROP      = '1600,640';
+
+  /* Photon crops server-side. Verified against the live CDN: ?resize=W,H
+     returns an exact, smart-cropped image, while ?fit=, ?crop=1 and a
+     bare ?w= are all ignored on these URLs. Cropping here rather than in
+     CSS means the browser downloads the cropped version instead of the
+     full-resolution original. */
+  function cropped(src) {
+    return src ? src.split('?')[0] + '?resize=' + HERO_CROP : src;
+  }
+
+  /* DOMParser, NOT innerHTML on a detached div: assigning article HTML
+     to innerHTML starts a network request for every image in every
+     article in the feed. A DOMParser document has no browsing context,
+     so nothing loads. */
+  function heroPhoto(html) {
+    if (!html || html.indexOf(HERO_CLASS) < 0) return null;
+    var doc;
+    try { doc = new DOMParser().parseFromString(html, 'text/html'); }
+    catch (e) { return null; }
+    var img = doc.querySelector('.' + HERO_CLASS + ' img, img.' + HERO_CLASS);
+    if (!img) return null;
+    var src = img.getAttribute('src') || '';
+    if (!src) return null;
+    var w = parseInt(img.getAttribute('width'), 10) || 0;
+    var h = parseInt(img.getAttribute('height'), 10) || 0;
+    if (w && w < HERO_MIN_WIDTH) return null;
+    if (w && h && w / h < HERO_MIN_RATIO) return null;
+    return cropped(src.replace(/^http:/, 'https:'));
+  }
 
   function tidy(p) {
     var media = p._embedded && p._embedded['wp:featuredmedia'];
@@ -506,10 +562,11 @@
     return {
       title: text(p.title && p.title.rendered),
       url: (p.link || '').replace(/^http:/, 'https:'),
-      blurb: clip(text(p.excerpt && p.excerpt.rendered), 108),
+      blurb: clip(text(p.excerpt && p.excerpt.rendered), 150),
       date: p.date || '',
       image: m && m.source_url ? m.source_url.replace(/^http:/, 'https:') : '',
       imageW: (det && det.width) || 0,
+      heroImage: heroPhoto(p.content && p.content.rendered),
       kind: label(p)
     };
   }
@@ -520,8 +577,21 @@
     return (d.textContent || '').replace(/\s+/g, ' ').trim();
   }
 
+  /* Stop on a SENTENCE, not a character count. 12 of the last 14
+     excerpts on mainedoenews.net were WordPress auto-excerpts — a
+     verbatim chop of the article's opening, ~500 characters — so a
+     hard character clip left the hero mid-thought. Ending on a full
+     stop reads as written copy even when nobody wrote it. */
   function clip(s, n) {
     if (s.length <= n) return s;
+    var window = s.slice(0, n + 40);
+    var end = Math.max(window.lastIndexOf('. '), window.lastIndexOf('! '),
+                       window.lastIndexOf('? '));
+    /* Only honour a sentence break that isn't uselessly short, and
+       don't break on an initial or an abbreviation like "U.S. ". */
+    if (end >= n * 0.45 && !/\s[A-Z]$|\b[A-Z]\.[A-Z]$/.test(window.slice(0, end))) {
+      return window.slice(0, end + 1);
+    }
     var cut = s.slice(0, n);
     var stop = cut.lastIndexOf(' ');
     return (stop > 0 ? cut.slice(0, stop) : cut) + '…';
@@ -566,10 +636,19 @@
 
     var count    = parseInt(host.getAttribute('data-count'), 10) || 5;
     var pinned   = [].slice.call(stage.querySelectorAll('.dh-slide[data-dh-pin]'));
+    /* The unpinned authored slides are FILLER, not scaffolding to be
+       thrown away. Without this the hero collapsed from five slides to
+       two the moment the first post was tagged, because one feed post
+       replaced all four of them. They now top the hero back up to
+       data-count whenever the feed is short, so the slide count is
+       stable at five from zero tagged posts through to five. */
+    var filler   = [].slice.call(stage.querySelectorAll('.dh-slide:not([data-dh-pin]):not([data-dh-tpl])'));
     var slideTpl = stage.querySelector('.dh-slide:not([data-dh-pin])');
     slideTpl = (slideTpl || stage.querySelector('.dh-slide')).cloneNode(true);
     slideTpl.removeAttribute('data-dh-pin');
+    slideTpl.removeAttribute('data-dh-tpl');
     var itemTpl = list.querySelector('li').cloneNode(true);
+    itemTpl.removeAttribute('data-dh-tpl');
     var ctlBar  = stage.querySelector('.dh-ctl');
 
     /* Never repeat a story that's already pinned by hand. */
@@ -581,13 +660,23 @@
     var fresh = posts.filter(function (p) { return !pinnedUrls[p.url]; })
                      .slice(0, Math.max(0, count - pinned.length));
 
-    /* Detach pinned nodes before wiping, then put them back. */
-    pinned.forEach(function (el) { if (el.parentNode) el.parentNode.removeChild(el); });
+    /* Filler never duplicates a story the feed already supplied, and is
+       trimmed to whatever room is left. */
+    var freshUrls = {};
+    fresh.forEach(function (p) { if (p.url) freshUrls[p.url] = 1; });
+    var pad = filler.filter(function (el) {
+      var d = readSlide(el);
+      return !(d.url && freshUrls[d.url]);
+    }).slice(0, Math.max(0, count - pinned.length - fresh.length));
+
+    /* Detach reused nodes before wiping, then put them back. */
+    pinned.concat(pad).forEach(function (el) { if (el.parentNode) el.parentNode.removeChild(el); });
     stage.innerHTML = '';
     list.innerHTML = '';
 
     var rows = pinned.map(function (el) { return { node: el, data: readSlide(el) }; })
-      .concat(fresh.map(function (p) { return { node: null, data: p }; }));
+      .concat(fresh.map(function (p) { return { node: null, data: p }; }))
+      .concat(pad.map(function (el) { return { node: el, data: readSlide(el) }; }));
 
     rows.forEach(function (row, n) {
       var slide = row.node;
@@ -595,7 +684,7 @@
       if (!slide) {
         var p = row.data;
         slide = slideTpl.cloneNode(true);
-        setPhoto(slide.querySelector('.dh-photo'), p, kind === 'hero' ? HERO_MIN_WIDTH : 0);
+        setPhoto(slide.querySelector('.dh-photo'), p, kind === 'hero');
         set(slide, '.dh-eyebrow', kind === 'news' ? fullDate(p.date) + ' · ' + p.kind : p.kind);
 
         var head = slide.querySelector('h2, h3');
@@ -654,10 +743,12 @@
     var first = host.querySelector('.dh-card-link');
     if (!first) return;
     var cardTpl = first.cloneNode(true);
+    cardTpl.removeAttribute('data-dh-tpl');
 
     var extras = root.querySelector('.dh-more-good');
     var extraLi = extras && extras.querySelector('li');
     var extraTpl = extraLi ? extraLi.cloneNode(true) : null;
+    if (extraTpl) extraTpl.removeAttribute('data-dh-tpl');
 
     host.innerHTML = '';
     if (extras && extraTpl) extras.innerHTML = '';
@@ -690,20 +781,36 @@
     if (disclaimer) disclaimer.remove();
   }
 
-  function setPhoto(frame, p, minWidth) {
+  function setPhoto(frame, p, isHero) {
     if (!frame) return;
     frame.setAttribute('data-dh-kind', p.kind);
     frame.innerHTML = '';
     frame.classList.remove('dh-no-photo');
 
-    var tooSmall = minWidth && p.imageW && p.imageW < minWidth;
-    if (!p.image || tooSmall) { frame.classList.add('dh-no-photo'); return; }
+    /* The hero takes ONLY the tagged body photograph — never the
+       featured image. See the note beside HERO_CLASS. */
+    var src = isHero ? p.heroImage : p.image;
+    if (!src) { frame.classList.add('dh-no-photo'); return; }
     var img = document.createElement('img');
-    img.src = p.image;
+    img.src = src;
     img.alt = '';
     img.loading = 'lazy';
     frame.appendChild(img);
     guardPhoto(frame);
+  }
+
+  /* Feed headlines run 36 to 149 characters (median 97) where the
+     hand-authored ones were 44 to 75, so a single type size cannot
+     serve both — the long ones wrapped to five lines and pushed the
+     card into the story strip. The CSS steps the size down off this
+     attribute. Applied to every hero headline, authored or fed, so
+     pinned and filler slides size the same way. */
+  function sizeHeadlines() {
+    var heads = root.querySelectorAll('.dh-hero .dh-card h2');
+    for (var i = 0; i < heads.length; i++) {
+      var n = (heads[i].textContent || '').trim().length;
+      heads[i].setAttribute('data-dh-len', n > 112 ? 'xl' : n > 82 ? 'l' : 'm');
+    }
   }
 
   function set(scope, sel, value) {
@@ -736,6 +843,7 @@
     var tpl = list.querySelector('li');
     if (!tpl) return;
     tpl = tpl.cloneNode(true);
+    tpl.removeAttribute('data-dh-tpl');
     var want = parseInt(box.getAttribute('data-count'), 10) || 6;
 
     fetch(endpoint + (endpoint.indexOf('?') > -1 ? '&' : '?') + 'type=calendar')

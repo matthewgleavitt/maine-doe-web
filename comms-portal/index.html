@@ -244,7 +244,7 @@ function Portal(){
   // Session-scoped cache-buster for iframes — fresh on every portal load, cached within a session.
   const [sessionV]=useState(()=>Date.now().toString(36));
 
-  const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw98yVhSSYfD2HhJGilZBYYE_dc_R9lY4ZKNxmRRyzHXVvQdVyPkBg_iYXDcAygSkqnTQ/exec';
+  const SCRIPT_URL='https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA432dtGEN-UzmSDtzlaL7SEVxChnMOfl0Lgr2BEhg/exec';
 
   useEffect(()=>{
     // Track viewport width for responsive layout, but NEVER auto-collapse the sidebar.

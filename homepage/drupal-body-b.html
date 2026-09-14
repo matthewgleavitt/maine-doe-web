@@ -1,7 +1,7 @@
 <!--
-  Maine DOE homepage — Drupal body field (Full HTML)
+  Maine DOE homepage — Drupal body field (Full HTML) — VARIANT B
   ==================================================
-  Version: 2026-09-14-a   ·   Last edited: 2026-09-10
+  Version: 2026-09-14-B1   ·   Last edited: 2026-09-10
   Versions are per-file and do NOT need to match the other two — only
   re-paste a file when its own version has changed.
   ?dhdebug=1 shows what is actually loaded.
@@ -27,7 +27,7 @@
     Injector rule so it can be changed in one place.
 -->
 
-<div class="dh-home" data-dh-version="2026-09-14-a">
+<div class="dh-home" data-dh-version="2026-09-14-B1">
 
   <!-- ============================================================
        HERO — auto-advancing, 7 seconds a slide
@@ -198,7 +198,7 @@
 
           <div class="dh-stage">
 
-            <article class="dh-slide is-on">
+            <article class="dh-slide is-on" data-dh-tpl>
               <div class="dh-photo" data-dh-kind="Update"></div>
               <div class="dh-cap">
                 <p class="dh-eyebrow">September 4, 2026 &middot; Update</p>
@@ -207,58 +207,10 @@
               </div>
             </article>
 
-            <article class="dh-slide">
-              <div class="dh-photo" data-dh-kind="Guidance">
-                <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-news-2.jpg" alt="" />
-              </div>
-              <div class="dh-cap">
-                <p class="dh-eyebrow">September 4, 2026 &middot; Guidance</p>
-                <h3><a href="/link">Joint Maine DOE and DHHS Guidance on IEPs and MaineCare Sections 28 and 65 Services</a></h3>
-                <p class="dh-blurb">A repeat and expanded virtual session covering the joint guidance for school administrative units.</p>
-              </div>
-            </article>
-
-            <article class="dh-slide">
-              <div class="dh-photo" data-dh-kind="Professional Learning">
-                <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-news-3.jpg" alt="" />
-              </div>
-              <div class="dh-cap">
-                <p class="dh-eyebrow">September 4, 2026 &middot; Professional Learning</p>
-                <h3><a href="/link">Maine Educators have FREE Access to Family Math Academy Professional Learning Series</a></h3>
-                <p class="dh-blurb">A no-cost professional learning series open to educators across the state.</p>
-              </div>
-            </article>
-
-            <article class="dh-slide">
-              <div class="dh-photo" data-dh-kind="Grant">
-                <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-news-4.jpg" alt="" />
-              </div>
-              <div class="dh-cap">
-                <p class="dh-eyebrow">September 4, 2026 &middot; Grant</p>
-                <h3><a href="/link">Maine DOE Launches Wabanaki Studies Indigenous Literature Grant Program</a></h3>
-                <p class="dh-blurb">A new grant program bringing Indigenous literature into Maine classrooms.</p>
-              </div>
-            </article>
-
-            <article class="dh-slide">
-              <!-- Left empty on purpose: shows the branded fallback panel
-                   for a post with no usable featured image. -->
-              <div class="dh-photo" data-dh-kind="Conference"></div>
-              <div class="dh-cap">
-                <p class="dh-eyebrow">September 4, 2026 &middot; Conference</p>
-                <h3><a href="/link">Registration Open for the 16th Annual PBIS Conference</a></h3>
-                <p class="dh-blurb">Registration is now open for the sixteenth annual Positive Behavioral Interventions and Supports conference.</p>
-              </div>
-            </article>
-
           </div>
 
           <ul class="dh-stories">
-            <li><a href="/link" data-dh-go="0"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Maine DOE Update &mdash; September 4, 2026</span></a></li>
-            <li><a href="/link" data-dh-go="1"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Joint Maine DOE and DHHS Guidance on IEPs and MaineCare Sections 28 and 65 Services</span></a></li>
-            <li><a href="/link" data-dh-go="2"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Maine Educators have FREE Access to Family Math Academy Professional Learning Series</span></a></li>
-            <li><a href="/link" data-dh-go="3"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Maine DOE Launches Wabanaki Studies Indigenous Literature Grant Program</span></a></li>
-            <li><a href="/link" data-dh-go="4"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Registration Open for the 16th Annual PBIS Conference</span></a></li>
+            <li data-dh-tpl><a href="/link" data-dh-go="0"><span class="dh-pip"></span><span class="dh-d">Sep 4</span><span class="dh-h">Maine DOE Update &mdash; September 4, 2026</span></a></li>
           </ul>
         </div>
 
@@ -271,52 +223,12 @@
               <a class="dh-more" href="/doe/calendar">Full calendar</a>
             </div>
             <ul class="dh-event-list">
-              <li><a href="/doe/calendar">
+              <li data-dh-tpl><a href="/doe/calendar">
                 <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">10</span></span>
                 <span class="dh-body">
                   <span class="dh-h">Special Education Connect Enrollment Webinar</span>
                   <span class="dh-sub">12:00 &ndash; 1:00 p.m. &middot; Webinar</span>
                   <span class="dh-tag" data-tone="blue">Data</span>
-                </span>
-              </a></li>
-              <li><a href="/doe/calendar">
-                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">10</span></span>
-                <span class="dh-body">
-                  <span class="dh-h">School Nurse Office Hours</span>
-                  <span class="dh-sub">3:30 &ndash; 4:30 p.m. &middot; Office Hours</span>
-                  <span class="dh-tag" data-tone="green">School Health</span>
-                </span>
-              </a></li>
-              <li><a href="/doe/calendar">
-                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">10</span></span>
-                <span class="dh-body">
-                  <span class="dh-h">SY27 NSLP Review Training</span>
-                  <span class="dh-sub">9:00 a.m. &ndash; 12:30 p.m. &middot; Training</span>
-                  <span class="dh-tag" data-tone="rust">Child Nutrition</span>
-                </span>
-              </a></li>
-              <li><a href="/doe/calendar">
-                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">11</span></span>
-                <span class="dh-body">
-                  <span class="dh-h">Guidance on IEPs and MaineCare Sections 28 and 65 Services</span>
-                  <span class="dh-sub">12:00 &ndash; 2:00 p.m. &middot; Training</span>
-                  <span class="dh-tag" data-tone="plum">Federal Programs</span>
-                </span>
-              </a></li>
-              <li><a href="/doe/calendar">
-                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">11</span></span>
-                <span class="dh-body">
-                  <span class="dh-h">Behavioral Threat Assessment &amp; Management (BTAM) Office Hours</span>
-                  <span class="dh-sub">9:30 &ndash; 10:30 a.m. &middot; Office Hours</span>
-                  <span class="dh-tag" data-tone="rust">School Safety</span>
-                </span>
-              </a></li>
-              <li><a href="/doe/calendar">
-                <span class="dh-cal"><span class="dh-mo">Sep</span><span class="dh-dy">12</span></span>
-                <span class="dh-body">
-                  <span class="dh-h">Maine School Safety Center Training Coordinator Office Hours</span>
-                  <span class="dh-sub">8:00 &ndash; 9:00 a.m. &middot; Office Hours</span>
-                  <span class="dh-tag" data-tone="rust">School Safety</span>
                 </span>
               </a></li>
             </ul>
@@ -346,36 +258,14 @@
       <!-- 4668 = "Good News from Schools" (843 posts, mainedoenews.net
            /category/success/ redirects here). 3 cards + 4 headlines. -->
       <div class="dh-cards" data-dh-feed="highlights" data-category="4668" data-count="5">
-        <a class="dh-card-link" href="/link">
+        <a class="dh-card-link" href="/link" data-dh-tpl>
           <span class="dh-photo" data-dh-kind="Highlight">
-            <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-hl-1.jpg" alt="" />
+            &nbsp;
           </span>
           <span class="dh-card-head"><span class="dh-card-h">St. George MSU Recognized as a Top 10 School</span></span>
           <span class="dh-card-body">
             <span class="dh-meta">August 14, 2026</span>
             <span class="dh-card-p">A small coastal district earning statewide recognition for student outcomes and community partnership.</span>
-          </span>
-          <span class="dh-card-cta">Read more</span>
-        </a>
-        <a class="dh-card-link" href="/link">
-          <span class="dh-photo" data-dh-kind="Highlight">
-            <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-hl-2.jpg" alt="" />
-          </span>
-          <span class="dh-card-head"><span class="dh-card-h">Maine Engagement and Attendance Center Brings Partners Together</span></span>
-          <span class="dh-card-body">
-            <span class="dh-meta">September 4, 2026</span>
-            <span class="dh-card-p">Statewide partners continue joint work to strengthen student attendance and engagement.</span>
-          </span>
-          <span class="dh-card-cta">Read more</span>
-        </a>
-        <a class="dh-card-link" href="/link">
-          <span class="dh-photo" data-dh-kind="Highlight">
-            <img src="/doe/sites/maine.gov.doe/files/inline-images/PLACEHOLDER-hl-3.jpg" alt="" />
-          </span>
-          <span class="dh-card-head"><span class="dh-card-h">Wabanaki Studies Indigenous Literature Grant Program</span></span>
-          <span class="dh-card-body">
-            <span class="dh-meta">September 4, 2026</span>
-            <span class="dh-card-p">A new grant program bringing Indigenous literature into Maine classrooms.</span>
           </span>
           <span class="dh-card-cta">Read more</span>
         </a>
@@ -385,8 +275,7 @@
            The JS caps it at two as well, so a larger data-count can't
            lengthen it. -->
       <ul class="dh-more-good">
-        <li><a href="/link"><span class="dh-place">Aug 14</span><span class="dh-h">Students Present Climate Action Plan to Town Council</span><span class="dh-mg-p">Students showcased a year of climate work and presented their action plan to the town council.</span></a></li>
-        <li><a href="/link"><span class="dh-place">Aug 5</span><span class="dh-h">Community School Model Expands to a Third Building</span><span class="dh-mg-p">A community school model expands to a third building after strong results across the district.</span></a></li>
+        <li data-dh-tpl><a href="/link"><span class="dh-place">Aug 14</span><span class="dh-h">Students Present Climate Action Plan to Town Council</span><span class="dh-mg-p">Students showcased a year of climate work and presented their action plan to the town council.</span></a></li>
       </ul>
     </div>
   </section>

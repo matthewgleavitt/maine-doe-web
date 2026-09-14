@@ -1,5 +1,5 @@
 /* Maine DOE homepage — CSS Injector rule
- * Version: 2026-09-10-s  ·  Last edited: 2026-09-10
+ * Version: 2026-09-14-c  ·  Last edited: 2026-09-10
  * Versions are per-file and do NOT need to match the other two.
  */
 
@@ -59,7 +59,7 @@ body.page-node-type-home-page #block-doe-content {
 .dh-home {
   /* Version handshake. The JS rule reads this and warns in the console
      if the three files are out of step. Bump all three together. */
-  --dh-version: "2026-09-10-s";
+  --dh-version: "2026-09-14-c";
 
   --dh-display: 'League Spartan', 'Century Gothic', 'Trebuchet MS', sans-serif;
   --dh-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
@@ -243,6 +243,11 @@ body.page-node-type-home-page #block-doe-content {
 }
 
 
+/* A clone-source row. Present so the JS has something to copy, never
+   meant to be seen — see the note beside data-dh-tpl in the JS rule. */
+.dh-home [data-dh-tpl] { display: none !important; }
+
+
 /* ── 5. Hero ─────────────────────────────────────────────────── */
 /* No bottom padding at all. The strip straddles the boundary between
    the hero and the mission band; any padding here shows as a band of
@@ -259,7 +264,7 @@ body.page-node-type-home-page #block-doe-content {
   .dh-hero .dh-photo:empty,
   .dh-hero .dh-photo.dh-no-photo { padding-left: 54%; }
 }
-.dh-hero .dh-stage { position: relative; height: clamp(400px, 42vw, 500px); background: var(--dh-navy); }
+.dh-hero .dh-stage { position: relative; height: clamp(420px, 44vw, 540px); background: var(--dh-navy); }
 .dh-hero .dh-slide {
   position: absolute; inset: 0; opacity: 0; visibility: hidden;
   transition: opacity .5s ease;
@@ -280,7 +285,7 @@ body.page-node-type-home-page #block-doe-content {
 }
 .dh-hero .dh-card {
   background: var(--dh-paper); max-width: 620px;
-  padding: clamp(26px, 3.4vw, 38px);
+  padding: clamp(24px, 2.9vw, 32px);
   border-top: 4px solid var(--dh-teal); border-radius: var(--dh-r);
   box-shadow: 0 18px 44px rgba(9,20,29,.34);
 }
@@ -289,15 +294,22 @@ body.page-node-type-home-page #block-doe-content {
   font-size: 11px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase;
   color: var(--dh-midblue); margin: 0 0 12px;
 }
-/* Two lines are reserved whatever the headline. Slide titles here run
-   44–75 characters, so without this the card jumped a full line
-   between slides and the whole thing visibly resized mid-rotation. */
+/* Two lines are reserved whatever the headline, so the card doesn't
+   visibly resize mid-rotation.
+
+   The size steps DOWN for long headlines. Hand-authored slide titles
+   run 44–75 characters, but Newsroom titles run 36–149 with a median
+   of 97 — at one fixed size the long ones wrapped to five lines and
+   pushed the card down into the story strip. data-dh-len is set by the
+   JS rule from the headline's own length. */
 .dh-hero .dh-card h2 {
   font-family: var(--dh-display); font-weight: 700;
-  font-size: clamp(25px, 3vw, 37px); line-height: 1.14; letter-spacing: -.01em;
+  font-size: clamp(24px, 2.8vw, 34px); line-height: 1.14; letter-spacing: -.01em;
   min-height: 2.28em;
   margin: 0 0 14px; color: var(--dh-navy); text-wrap: balance;
 }
+.dh-hero .dh-card h2[data-dh-len="l"]  { font-size: clamp(21px, 2.4vw, 29px); }
+.dh-hero .dh-card h2[data-dh-len="xl"] { font-size: clamp(19px, 2.0vw, 25px); line-height: 1.2; }
 .dh-hero .dh-card p { margin: 0 0 20px; font-size: 15.5px; line-height: 1.6; color: var(--dh-ink-2); max-width: 54ch; }
 .dh-home .dh-btn {
   display: inline-block; background: var(--dh-navy); text-decoration: none;
