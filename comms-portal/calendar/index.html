@@ -911,12 +911,15 @@ function hydrateFromCache() {
   } catch(e) { return false; }
 }
 
-// Retry-once + 25s AbortController timeout — Apps Script cold-start can take
-// 5-15s and occasionally hangs. First attempt fast; second gives it room.
+// Retry-once + 60s AbortController timeout — Apps Script cold-start of the
+// calendar feed can take 40-50 seconds now that we're iterating hundreds of
+// occurrences after recurrence expansion (BTAM 16 dates × ECSE series ×
+// MTSS 9-date series × ~90 events total). The old 25s timeout was aborting
+// requests mid-flight and surfacing "signal aborted" errors to viewers.
 async function fetchCalendarJson() {
   const attempt = async () => {
     const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 25000);
+    const t = setTimeout(() => ctrl.abort(), 60000);
     try { const r = await fetch(CALENDAR_ENDPOINT, { cache: 'no-store', signal: ctrl.signal }); return await r.json(); }
     finally { clearTimeout(t); }
   };
