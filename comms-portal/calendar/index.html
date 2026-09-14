@@ -911,23 +911,39 @@ function hydrateFromCache() {
   } catch(e) { return false; }
 }
 
-// Retry-once + 60s AbortController timeout — Apps Script cold-start of the
-// calendar feed can take 40-50 seconds now that we're iterating hundreds of
-// occurrences after recurrence expansion (BTAM 16 dates × ECSE series ×
-// MTSS 9-date series × ~90 events total). The old 25s timeout was aborting
-// requests mid-flight and surfacing "signal aborted" errors to viewers.
+// Resilient fetch — the Apps Script feed is currently returning HTTP 404 on
+// ~2 of 3 requests (Google-side deployment/routing issue). When it works
+// it's a fast ~3s cache hit; when it 404s, the body is an HTML error page.
+// This tries up to 3 attempts, checks status + Content-Type before calling
+// .json(), and only retries when the response isn't a valid JSON payload.
 async function fetchCalendarJson() {
   const attempt = async () => {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 60000);
-    try { const r = await fetch(CALENDAR_ENDPOINT, { cache: 'no-store', signal: ctrl.signal }); return await r.json(); }
-    finally { clearTimeout(t); }
+    try {
+      const r = await fetch(CALENDAR_ENDPOINT, { cache: 'no-store', signal: ctrl.signal });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const ct = r.headers.get('content-type') || '';
+      // Apps Script redirects to googleusercontent for the payload; the CT
+      // should end up as application/json. If we somehow got text/html, the
+      // upstream returned an error page — treat as retryable failure.
+      const body = await r.text();
+      if (ct.indexOf('json') === -1 && body.trim().charAt(0) !== '{') {
+        throw new Error('non-JSON response');
+      }
+      return JSON.parse(body);
+    } finally { clearTimeout(t); }
   };
-  try { return await attempt(); }
-  catch(e) {
-    await new Promise(r => setTimeout(r, 1200));
-    return await attempt();
+  let lastErr;
+  for (let i = 0; i < 3; i++) {
+    try { return await attempt(); }
+    catch(e) {
+      lastErr = e;
+      console.warn('[calendar] fetch attempt ' + (i+1) + ' failed:', e.message);
+      if (i < 2) await new Promise(r => setTimeout(r, 1400 + i * 800));
+    }
   }
+  throw lastErr;
 }
 
 async function loadEvents() {
