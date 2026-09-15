@@ -242,13 +242,6 @@ function App(){
               backdropFilter:'blur(4px)'}}>
             <Sv d={ic.bag} size={14} color="#42c3f7"/> Maine DOE Store
           </a>
-          <a href="https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=q6g_QX0gYkubzeoajy-GTiGF60qzFrBElcy-PhPoPLtUQVdYOE8xRkM3TzZLUk0zNDQ2VVpOMjdDMi4u" target="_blank" rel="noopener noreferrer"
-            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 22px',borderRadius:10,
-              background:'rgba(255,255,255,0.06)',color:'#ffffff',textDecoration:'none',fontSize:13,fontWeight:700,
-              border:'1.5px solid rgba(52,211,153,0.55)',
-              backdropFilter:'blur(4px)'}}>
-            <Sv d={ic.msg} size={14} color="#34d399"/> Take the feedback survey
-          </a>
         </div>
       </div>
     </div>
@@ -483,6 +476,26 @@ function App(){
             Shop full store <Sv d={ic.ext} size={12} color={B.teal}/>
           </a>
         </div>
+
+        {/* Feedback survey — scoped to the store, so it lives inside this tab
+            (not in the hero, which spans every Homebase tab). */}
+        <a href="https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=q6g_QX0gYkubzeoajy-GTiGF60qzFrBElcy-PhPoPLtUQVdYOE8xRkM3TzZLUk0zNDQ2VVpOMjdDMi4u" target="_blank" rel="noopener noreferrer"
+          style={{display:'flex',alignItems:'center',gap:14,padding:'14px 18px',marginBottom:20,
+            background:'linear-gradient(135deg,#ecfdf5,#f0fdf4)',border:'1.5px solid #86efac',borderRadius:12,
+            textDecoration:'none',color:B.navy,transition:'all 0.15s'}}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor='#34d399';e.currentTarget.style.transform='translateY(-1px)';e.currentTarget.style.boxShadow='0 4px 14px rgba(52,211,153,0.15)';}}
+          onMouseLeave={e=>{e.currentTarget.style.borderColor='#86efac';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none';}}>
+          <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,#34d399,#059669)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 3px 10px rgba(52,211,153,0.35)'}}>
+            <Sv d={ic.msg} size={17} color="#fff"/>
+          </div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:13.5,fontWeight:800,color:B.navy,marginBottom:2}}>Help shape the store</div>
+            <div style={{fontSize:12,color:'#065f46',fontWeight:500,lineHeight:1.45}}>What gear would you like to see? Share feedback in a quick survey.</div>
+          </div>
+          <div style={{display:'inline-flex',alignItems:'center',gap:5,padding:'7px 12px',borderRadius:8,background:'#182b3c',color:'#34d399',fontSize:11.5,fontWeight:800,letterSpacing:'.04em',flexShrink:0}}>
+            Take the survey <Sv d={ic.ext} size={11} color="#34d399"/>
+          </div>
+        </a>
 
         {storeError&&!storeData&&<div style={{padding:'14px 18px',background:'#fef2f2',border:'1px solid #fecaca',borderRadius:10,marginBottom:16,fontSize:13,color:'#7f1d1d'}}>
           Store catalog couldn't load right now. <a href="https://mainedoe.itemorder.com/shop/home" target="_blank" rel="noopener noreferrer" style={{color:'#7f1d1d',fontWeight:700}}>Open the store directly ↗</a>
