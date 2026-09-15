@@ -519,6 +519,20 @@ function doGet(e) {
   var type = (e && e.parameter && e.parameter.type) || 'pages';
   var days = (e && e.parameter && e.parameter.days) || '30';
   var cacheKey = 'portal_' + type + '_' + days;
+
+  // ?count=N on the calendar feed returns only the first N events.
+  // The homepage shows six and was downloading all ~330 — 485KB to render
+  // 9KB of panel, which is what made it the slowest thing on the page.
+  //
+  // The trim happens on the way OUT, never before the cache write, so the
+  // cache key stays 'portal_calendar_30' and one entry still serves both
+  // callers: the calendar page (no count, gets everything) and the
+  // homepage (count=6). Putting count in the cache key instead would
+  // double the warming cost and halve the hit rate for no gain.
+  var calCount = 0;
+  if (type === 'calendar') {
+    calCount = parseInt((e && e.parameter && e.parameter.count) || '0', 10) || 0;
+  }
   // Per-user endpoints must include the identity in the cache key or one
   // user's cached response gets served to the next user with the same TTL.
   if (type === 'my_events') {
@@ -560,7 +574,7 @@ function doGet(e) {
                      type === 'pages' || type === 'files');
     var cached = isChunked ? chunkedCacheGet(cache, cacheKey) : cache.get(cacheKey);
     if (cached) {
-      var output = ContentService.createTextOutput(cached);
+      var output = ContentService.createTextOutput(_trimCalendar_(cached, calCount));
       output.setMimeType(ContentService.MimeType.JSON);
       return output;
     }
@@ -634,6 +648,9 @@ function doGet(e) {
 
     } else if (type === 'publications') {
       result = getPublications();
+
+    } else if (type === 'store') {
+      result = getStore();
 
     } else if (type === 'commons') {
       result = getCommonsPosts();
@@ -714,6 +731,10 @@ function doGet(e) {
       // interval (10 min) so warming actually holds — 900s gives a safe margin.
       case 'youtube': case 'youtube_videos': case 'templates': case 'announcements':
         ttl = 900; break;
+      // Store catalog — public OrderMyGear inventory. 15 min TTL so warmed
+      // entries outlive the 10-min warmer; catalog changes rarely.
+      case 'store':
+        ttl = 900; break;
       // Stable — Drupal indexes, Mailchimp campaigns, WP.com stats rarely change hour-to-hour
       case 'drupal_pages': case 'drupal_files': case 'publications':
         ttl = 1800; break;
@@ -743,9 +764,34 @@ function doGet(e) {
     }
   }
 
-  var output = ContentService.createTextOutput(jsonStr);
+  var output = ContentService.createTextOutput(_trimCalendar_(jsonStr, calCount));
   output.setMimeType(ContentService.MimeType.JSON);
   return output;
+}
+
+/**
+ * Return only the first `count` events from a calendar payload.
+ *
+ * Applied at both exit points of doGet — the cached one and the freshly
+ * built one — and ALWAYS after the cache has been written, so the stored
+ * entry stays complete and the calendar page is unaffected.
+ *
+ * count <= 0, a non-calendar payload, or anything that fails to parse
+ * comes back untouched: this must never be able to break a response.
+ */
+function _trimCalendar_(jsonStr, count) {
+  if (!count || count <= 0 || !jsonStr) return jsonStr;
+  try {
+    var data = JSON.parse(jsonStr);
+    if (!data || !data.events || !data.events.length) return jsonStr;
+    if (data.events.length <= count) return jsonStr;
+    data.events = data.events.slice(0, count);
+    data.count = data.events.length;
+    data.truncated = true;          // so a caller can tell this is a slice
+    return JSON.stringify(data);
+  } catch (err) {
+    return jsonStr;
+  }
 }
 
 function doPost(e) {
@@ -1154,6 +1200,102 @@ function _decodeEntities(s) {
     .replace(/&#x([0-9a-fA-F]+);?/g, function(_, code) {
       try { return String.fromCodePoint(parseInt(code, 16)); } catch (e) { return ''; }
     });
+}
+
+
+// ═══════════════════════════════════════════
+// MAINE DOE STORE (OrderMyGear / itemorder.com)
+// ═══════════════════════════════════════════
+//
+// The store's iframe embed is blocked by CSP (frame-ancestors 'self' + warpdrive
+// only), so we can't embed it directly. Fortunately their storefront is a
+// Next.js SSR page and inlines the full catalog as a __NEXT_DATA__ JSON blob.
+// We fetch the home page, extract the blob, and hand the catalog to the
+// portal so we can render it inside the Homebase Store tab.
+//
+// If OrderMyGear rebuilds their frontend and the blob shape changes, this
+// endpoint returns { error, categories: [] } — the frontend keeps its last
+// sessionStorage snapshot so users see something rather than nothing.
+
+var STORE_URL = 'https://mainedoe.itemorder.com/shop/home';
+var STORE_PRODUCT_URL = 'https://mainedoe.itemorder.com/shop/product/';
+var STORE_CATEGORY_URL = 'https://mainedoe.itemorder.com/shop/category/';
+
+function getStore() {
+  var CACHE_KEY = 'store_catalog_v1';
+  var cache = CacheService.getScriptCache();
+  var cached = cache.get(CACHE_KEY);
+  if (cached) {
+    try { return JSON.parse(cached); } catch (e) { /* fall through */ }
+  }
+
+  var html;
+  try {
+    var resp = UrlFetchApp.fetch(STORE_URL, {
+      muteHttpExceptions: true,
+      followRedirects: true,
+      headers: { 'User-Agent': 'Mozilla/5.0 MaineDOE-CommsPortal' }
+    });
+    if (resp.getResponseCode() !== 200) {
+      return { error: 'Store returned ' + resp.getResponseCode(), categories: [] };
+    }
+    html = resp.getContentText();
+  } catch (err) {
+    return { error: 'Fetch failed: ' + err.message, categories: [] };
+  }
+
+  var blobMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+  if (!blobMatch) {
+    return { error: '__NEXT_DATA__ blob not found — store frontend may have changed', categories: [] };
+  }
+
+  var pageProps;
+  try {
+    pageProps = JSON.parse(blobMatch[1]).props.pageProps;
+  } catch (err) {
+    return { error: 'Blob JSON parse failed: ' + err.message, categories: [] };
+  }
+
+  // categories is an object keyed by display name: {"Tees": [...], "Polos": [...]}
+  // Preserve insertion order — that's the order the store owner set in OrderMyGear.
+  var catObj = pageProps.categories || {};
+  var categories = [];
+  var totalProducts = 0;
+  Object.keys(catObj).forEach(function(name) {
+    var items = catObj[name];
+    if (!Array.isArray(items) || !items.length) return;
+    var products = items.filter(function(p) { return p && p.id; }).map(function(p) {
+      return {
+        id: String(p.id),
+        name: p.name || 'Untitled product',
+        image: p.image || '',
+        minPriceCents: p.min_price != null ? p.min_price : p.price,
+        maxPriceCents: p.max_price != null ? p.max_price : p.price,
+        isAvailable: p.is_available !== false,
+        colorCount: p.color_count || 0,
+        url: STORE_PRODUCT_URL + p.id + '/',
+      };
+    });
+    totalProducts += products.length;
+    categories.push({
+      name: name,
+      id: items[0] && items[0].category_id ? String(items[0].category_id) : '',
+      url: items[0] && items[0].category_id
+        ? STORE_CATEGORY_URL + items[0].category_id + '/'
+        : STORE_URL,
+      products: products,
+    });
+  });
+
+  var result = {
+    categories: categories,
+    count: totalProducts,
+    storeUrl: STORE_URL,
+    storeName: (pageProps.store && (pageProps.store.name || pageProps.store.title)) || 'Maine DOE Store',
+    fetched: new Date().toISOString(),
+  };
+  try { cache.put(CACHE_KEY, JSON.stringify(result), 900); } catch (e) { /* size cap; ignore */ }
+  return result;
 }
 
 
@@ -2092,6 +2234,15 @@ function warmCache() {
     cache.put('portal_moderation_30', modData, 90);
     warmed.push('moderation');
   } catch(e) { Logger.log('Warm moderation failed: ' + e.message); }
+
+  // Store catalog — scrape of the OrderMyGear storefront. Cheap fetch but
+  // warm it so the Homebase Store tab is instant. getStore() also caches
+  // internally under store_catalog_v1 as a defensive second layer.
+  try {
+    var storeData = JSON.stringify(getStore());
+    cache.put('portal_store_30', storeData, 900);
+    warmed.push('store');
+  } catch(e) { Logger.log('Warm store failed: ' + e.message); }
 
   // Calendar feed — expensive because getPublishedEvents iterates the
   // EventSubmissions sheet AND expands every recurring series. Went from

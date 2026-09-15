@@ -59,6 +59,7 @@ const ic={
   ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
   book:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"],
   bag:["M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z","M3 6h18","M16 10a4 4 0 01-8 0"],
+  msg:["M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"],
 };
 
 const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0'};
@@ -69,8 +70,21 @@ const tabs=[
   {id:'announcements',label:'Notifications',icon:ic.bell},
   {id:'news',label:'Maine DOE News',icon:ic.news},
   {id:'social',label:'Social',icon:ic.users},
+  {id:'store',label:'Store',icon:ic.bag},
   {id:'contact',label:'Contact',icon:ic.mail},
 ];
+
+// Prices from OrderMyGear come in cents ("2315" = $23.15).
+function formatCents(c){
+  if(c==null||isNaN(c)) return '';
+  return '$'+(Math.round(c)/100).toFixed(2).replace(/\.00$/,'');
+}
+function formatPriceRange(p){
+  var lo=p&&p.minPriceCents, hi=p&&p.maxPriceCents;
+  if(lo==null&&hi==null) return '';
+  if(lo==null||lo===hi) return formatCents(hi);
+  return formatCents(lo)+' – '+formatCents(hi);
+}
 
 // Collapse redundant whitespace in announcement messages so old plain-text rows
 // (\n\n \n\n between paragraphs) don't render as huge gaps. HTML messages pass through.
@@ -101,6 +115,17 @@ function App(){
   const newsRef=useRef(null);
   const goodNewsRef=useRef(null);
 
+  // Store catalog — sessionStorage rehydration so the tab renders instantly
+  // on return, then updates when the fresh fetch lands.
+  const [storeData,setStoreData]=useState(()=>{
+    try{ const s=sessionStorage.getItem('doe_store_catalog'); if(s){ return JSON.parse(s); } }catch(e){}
+    return null;
+  });
+  const [storeLoading,setStoreLoading]=useState(()=>{
+    try{ return !sessionStorage.getItem('doe_store_catalog'); }catch(e){ return true; }
+  });
+  const [storeError,setStoreError]=useState(null);
+
   useEffect(()=>{
     // Retry-once + 25s AbortController — same shape as index.html so a cold
     // Apps Script call doesn't leave Notifications empty when it eventually errors.
@@ -122,6 +147,39 @@ function App(){
         try{ sessionStorage.setItem('doe_welcome_announcements',JSON.stringify(j.rows)); }catch(e){}
       }
       setLoading(false);
+    })();
+  },[]);
+
+  // Store catalog — fetched once on mount so hopping to the Store tab is
+  // instant. Same retry-once shape as announcements above. Google's Apps
+  // Script edge occasionally 404s cold; the second try + sessionStorage
+  // rehydration keep the tab useful across those blips.
+  useEffect(()=>{
+    const attempt=async()=>{
+      const c=new AbortController();
+      const t=setTimeout(()=>c.abort(),30000);
+      try{
+        const r=await fetch(API+'?type=store',{signal:c.signal,cache:'no-store'});
+        const text=await r.text();
+        if(text.trim().charAt(0)!=='{') throw new Error('non-JSON response');
+        return JSON.parse(text);
+      } finally { clearTimeout(t); }
+    };
+    (async()=>{
+      let j=null;
+      try{ j=await attempt(); }
+      catch(e){
+        await new Promise(r=>setTimeout(r,1400));
+        try{ j=await attempt(); }catch(e2){ console.warn('[welcome] store fetch failed:',e2.message); setStoreError(e2.message||'fetch failed'); }
+      }
+      if(j&&Array.isArray(j.categories)){
+        setStoreData(j);
+        setStoreError(j.error||null);
+        try{ sessionStorage.setItem('doe_store_catalog',JSON.stringify(j)); }catch(e){}
+      } else if(j&&j.error){
+        setStoreError(j.error);
+      }
+      setStoreLoading(false);
     })();
   },[]);
 
@@ -183,6 +241,13 @@ function App(){
               border:'1.5px solid rgba(66,195,247,0.55)',
               backdropFilter:'blur(4px)'}}>
             <Sv d={ic.bag} size={14} color="#42c3f7"/> Maine DOE Store
+          </a>
+          <a href="https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=q6g_QX0gYkubzeoajy-GTiGF60qzFrBElcy-PhPoPLtUQVdYOE8xRkM3TzZLUk0zNDQ2VVpOMjdDMi4u" target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 22px',borderRadius:10,
+              background:'rgba(255,255,255,0.06)',color:'#ffffff',textDecoration:'none',fontSize:13,fontWeight:700,
+              border:'1.5px solid rgba(52,211,153,0.55)',
+              backdropFilter:'blur(4px)'}}>
+            <Sv d={ic.msg} size={14} color="#34d399"/> Take the feedback survey
           </a>
         </div>
       </div>
@@ -399,6 +464,79 @@ function App(){
       </div>}
 
       {/* Calendar moved to the Calendar section in the sidebar. */}
+
+      {/* ── STORE ── */}
+      {tab==='store'&&<div>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,flexWrap:'wrap',marginBottom:16}}>
+          <div>
+            <h3 style={{fontSize:14,fontWeight:700,color:B.navy,textTransform:'uppercase',letterSpacing:'.05em',display:'flex',alignItems:'center',gap:10,margin:0}}>
+              <span style={{width:16,height:2,background:B.teal,borderRadius:1}}/>Maine DOE Store
+            </h3>
+            <p style={{fontSize:12.5,color:B.txtMute,margin:'6px 0 0',lineHeight:1.55,maxWidth:640,fontWeight:500}}>
+              Official Maine DOE branded gear — hosted by OrderMyGear. Every item opens the real store in a new tab; checkout happens there.
+            </p>
+          </div>
+          <a href="https://mainedoe.itemorder.com/shop/home" target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:8,
+              background:B.navy,color:B.teal,textDecoration:'none',fontSize:12,fontWeight:700,
+              letterSpacing:'.04em'}}>
+            Shop full store <Sv d={ic.ext} size={12} color={B.teal}/>
+          </a>
+        </div>
+
+        {storeError&&!storeData&&<div style={{padding:'14px 18px',background:'#fef2f2',border:'1px solid #fecaca',borderRadius:10,marginBottom:16,fontSize:13,color:'#7f1d1d'}}>
+          Store catalog couldn't load right now. <a href="https://mainedoe.itemorder.com/shop/home" target="_blank" rel="noopener noreferrer" style={{color:'#7f1d1d',fontWeight:700}}>Open the store directly ↗</a>
+        </div>}
+
+        {storeLoading&&!storeData&&<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:14}}>
+          {[0,1,2,3,4,5,6,7].map(i=>(
+            <div key={i} style={{background:B.wh,border:`2px solid ${B.border}30`,borderRadius:12,padding:12,animation:`fadeIn 0.4s ease ${i*0.05}s both`}}>
+              <div style={{width:'100%',aspectRatio:'1/1',background:'#e2e8f0',borderRadius:8,marginBottom:10}}/>
+              <div style={{height:12,background:'#e2e8f0',borderRadius:4,marginBottom:6}}/>
+              <div style={{height:10,background:'#e2e8f0',borderRadius:4,width:'60%'}}/>
+            </div>
+          ))}
+        </div>}
+
+        {storeData&&storeData.categories&&storeData.categories.map((cat,ci)=>(
+          <section key={cat.name+ci} style={{marginBottom:28}}>
+            <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',gap:12,marginBottom:12,paddingBottom:8,borderBottom:`1px solid ${B.border}30`}}>
+              <h4 style={{fontSize:13,fontWeight:800,color:B.navy,textTransform:'uppercase',letterSpacing:'.08em',margin:0}}>
+                {cat.name} <span style={{color:B.txtMute,fontWeight:600,marginLeft:6}}>({cat.products.length})</span>
+              </h4>
+              {cat.url&&<a href={cat.url} target="_blank" rel="noopener noreferrer"
+                style={{fontSize:11,fontWeight:700,color:B.teal,textDecoration:'none',letterSpacing:'.04em'}}>
+                View category ↗
+              </a>}
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:14}}>
+              {cat.products.map((p,pi)=>(
+                <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer"
+                  style={{background:B.wh,border:`2px solid ${B.border}30`,borderRadius:12,padding:12,
+                    textDecoration:'none',color:B.navy,transition:'all 0.15s',display:'flex',flexDirection:'column',
+                    opacity:p.isAvailable===false?0.55:1}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor=B.teal;e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 6px 20px rgba(24,43,60,0.08)';}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor=B.border+'30';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none';}}>
+                  <div style={{position:'relative',width:'100%',aspectRatio:'1/1',background:'#f8fafc',borderRadius:8,overflow:'hidden',marginBottom:10}}>
+                    {p.image?<img src={p.image} alt={p.name} loading="lazy"
+                      style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}/>:null}
+                    {p.isAvailable===false&&<div style={{position:'absolute',top:8,left:8,padding:'3px 8px',borderRadius:4,background:'rgba(24,43,60,0.85)',color:'#fff',fontSize:10,fontWeight:800,letterSpacing:'.06em',textTransform:'uppercase'}}>Unavailable</div>}
+                  </div>
+                  <div style={{fontSize:13,fontWeight:700,lineHeight:1.35,marginBottom:6,minHeight:35,color:B.navy}}>{p.name}</div>
+                  <div style={{marginTop:'auto',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
+                    <span style={{fontSize:13,fontWeight:800,color:B.navy}}>{formatPriceRange(p)}</span>
+                    {p.colorCount>1&&<span style={{fontSize:10,fontWeight:700,color:B.txtMute,letterSpacing:'.04em',textTransform:'uppercase'}}>{p.colorCount} colors</span>}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+
+        {storeData&&(!storeData.categories||!storeData.categories.length)&&!storeLoading&&<div style={{padding:'40px 20px',textAlign:'center',color:B.txtMute,fontSize:13}}>
+          No products in the catalog right now.
+        </div>}
+      </div>}
 
       {/* ── CONTACT ── */}
       {tab==='contact'&&<div>
