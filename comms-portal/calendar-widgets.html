@@ -282,12 +282,39 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// Resilient fetch — Apps Script's edge layer intermittently returns HTML
+// error pages (HTTP 404 with 8KB of Google's product-page JS) instead of
+// routing to our code. 3 attempts, 60s timeout each, detects non-JSON.
+// Same shape as calendar/index.html and youtube-tracker.html.
+async function fetchFeedJson() {
+  const attempt = async () => {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 60000);
+    try {
+      const r = await fetch(FEED_URL, { cache: 'no-store', signal: ctrl.signal });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const body = await r.text();
+      if (body.trim().charAt(0) !== '{') throw new Error('non-JSON response (edge routing failure)');
+      return JSON.parse(body);
+    } finally { clearTimeout(t); }
+  };
+  let lastErr;
+  for (let i = 0; i < 3; i++) {
+    try { return await attempt(); }
+    catch (e) {
+      lastErr = e;
+      console.warn('[widgets] feed attempt ' + (i + 1) + ' failed:', e.message);
+      if (i < 2) await new Promise(r => setTimeout(r, 1400 + i * 800));
+    }
+  }
+  throw lastErr;
+}
+
 // Populate the focus + type dropdowns dynamically from live event data.
 // Programs list is hand-curated for now (matches PROGRAMS in events-tracker.html).
 async function populateFilters() {
   try {
-    const res = await fetch(FEED_URL);
-    const data = await res.json();
+    const data = await fetchFeedJson();
     const events = data.events || [];
 
     const focusCounts = {}, typeCounts = {}, programCounts = {};
