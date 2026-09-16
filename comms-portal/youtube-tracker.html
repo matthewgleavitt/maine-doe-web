@@ -382,10 +382,10 @@ function App(){
     throw lastErr || new Error('fetch failed');
   }
 
-  async function load(){
+  async function load({refresh=false}={}){
     setLoading(true); setErr(null);
     try{
-      const j=await fetchJson(API+'?type=youtube');
+      const j=await fetchJson(API+'?type=youtube'+(refresh?'&refresh=1':''));
       if(j.error) throw new Error(j.error);
       setData(j.rows||[]);
     }
@@ -456,7 +456,8 @@ function App(){
         const body=encodeURIComponent('Hi '+(j.name||completeModal.requestor)+',\r\n\r\nYour video "'+completeModal.title+'" is now on YouTube and can be viewed here:\r\n\r\n'+completeModal.url+'\r\n\r\nPlease review and let me know if there are any edits needed.\r\n\r\nThanks,\r\nMatt Leavitt\r\nWebsite & Technology Coordinator\r\nMaine Department of Education');
         const a=document.createElement('a');a.href='mailto:'+encodeURIComponent(j.email)+'?subject='+subj+'&body='+body;a.click();
       }
-      await load();setCompleteModal(null);
+      // Force-refresh — belt-and-suspenders in case the backend eviction race loses.
+      await load({refresh:true});setCompleteModal(null);
     }catch(e){console.error(e);}
     setCompleting(false);
   }

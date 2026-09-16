@@ -857,6 +857,11 @@ function doPost(e) {
           }
         } catch(webhookErr) { Logger.log('Teams webhook failed: ' + webhookErr.message); }
 
+        // Evict the 15-min YouTube cache so the tracker sees this new
+        // row immediately on next fetch (was: submitters wouldn't see
+        // their own submission for up to 15 minutes).
+        try { CacheService.getScriptCache().remove('portal_youtube_30'); } catch(_) {}
+
         result = { success: true, message: 'Submission received!' };
       }
 
@@ -905,6 +910,12 @@ function doPost(e) {
                 });
               }
             } catch(webhookErr) { Logger.log('Teams webhook failed: ' + webhookErr.message); }
+
+            // Evict the 15-min YouTube cache so the tracker table and
+            // counter reflect the completion immediately (was: row still
+            // showed "Received" and the yellow counter didn't decrement
+            // for up to 15 minutes after clicking Complete).
+            try { CacheService.getScriptCache().remove('portal_youtube_30'); } catch(_) {}
 
             result = { success: true, message: 'Marked complete!', email: requestorEmail, name: requestorName };
             break;
@@ -2541,6 +2552,11 @@ function markSubmissionUploaded(rowIndex, videoId) {
     var existing = String(sheet.getRange(rowIndex, notesCol).getValue() || '');
     sheet.getRange(rowIndex, notesCol).setValue((existing ? existing + ' | ' : '') + 'YT: https://youtu.be/' + videoId);
   }
+
+  // Evict the 15-min YouTube cache so the tracker reflects the auto-upload
+  // immediately — otherwise the row shows the pre-upload status for up
+  // to 15 minutes after processYouTubeUploads runs.
+  try { CacheService.getScriptCache().remove('portal_youtube_30'); } catch(_) {}
 }
 
 function notifyTeams(message) {
