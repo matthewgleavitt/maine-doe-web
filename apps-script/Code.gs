@@ -2612,25 +2612,38 @@ function _ytUploadResumable(file, uploadUrl, token, opts) {
     }
 
     var end = Math.min(offset + CHUNK - 1, total - 1);
+    var expected = end - offset + 1;
 
-    // Pull one chunk from Drive using a Range header. Response body is
-    // exactly the chunk size — safely under the 50 MB response ceiling.
-    var driveResp = UrlFetchApp.fetch(
-      'https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media',
-      {
-        method: 'get',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Range': 'bytes=' + offset + '-' + end
-        },
-        muteHttpExceptions: true
+    // Pull one chunk from Drive using a Range header. UrlFetchApp
+    // occasionally hands back a truncated body — we caught this last run
+    // (asked for 16 MB, got 12.4 MB, YouTube 400'd on the size mismatch).
+    // Verify length; retry up to 3× on short reads with a small backoff.
+    var chunkBytes = null;
+    for (var attempt = 0; attempt < 3; attempt++) {
+      var driveResp = UrlFetchApp.fetch(
+        'https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media',
+        {
+          method: 'get',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Range': 'bytes=' + offset + '-' + end
+          },
+          muteHttpExceptions: true
+        }
+      );
+      var driveCode = driveResp.getResponseCode();
+      if (driveCode !== 206 && driveCode !== 200) {
+        throw new Error('Drive chunk fetch failed at offset ' + offset + ': HTTP ' + driveCode + ' ' + driveResp.getContentText().substring(0, 300));
       }
-    );
-    var driveCode = driveResp.getResponseCode();
-    if (driveCode !== 206 && driveCode !== 200) {
-      throw new Error('Drive chunk fetch failed at offset ' + offset + ': HTTP ' + driveCode + ' ' + driveResp.getContentText().substring(0, 300));
+      chunkBytes = driveResp.getContent();
+      if (chunkBytes.length === expected) break;
+      Logger.log('    Drive returned ' + chunkBytes.length + '/' + expected + ' bytes — retry ' + (attempt + 1));
+      Utilities.sleep(1000 * (attempt + 1));
     }
-    var chunkBytes = driveResp.getContent();
+    if (chunkBytes.length !== expected) {
+      // Bail cleanly so the resume path can retry from this offset next tick.
+      throw new Error('Drive kept returning short chunks at offset ' + offset + ' (' + chunkBytes.length + '/' + expected + ') — bailing so resume can retry');
+    }
 
     // PUT the chunk to YouTube's resumable session URL.
     var putResp = UrlFetchApp.fetch(uploadUrl, {
