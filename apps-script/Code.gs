@@ -2426,22 +2426,11 @@ function processYouTubeUploads() {
       var uploadUrl = initResp.getHeaders()['Location'] || initResp.getHeaders()['location'];
       if (!uploadUrl) throw new Error('No upload URL returned');
 
-      // Step 2: Upload full file via resumable URL
-      var uploadResp = UrlFetchApp.fetch(uploadUrl, {
-        method: 'put',
-        payload: file.getBlob(),
-        headers: {
-          'Authorization': 'Bearer ' + token
-        },
-        muteHttpExceptions: true
-      });
-
-      var code = uploadResp.getResponseCode();
-      if (code !== 200 && code !== 201) {
-        throw new Error('Upload failed: ' + code + ' ' + uploadResp.getContentText());
-      }
-
-      var result = JSON.parse(uploadResp.getContentText());
+      // Step 2: Upload the file. Small files can go in one PUT; larger ones
+      // MUST be chunked because Apps Script's Blob (and UrlFetch payload)
+      // cap at 50MB. Streaming chunks via the resumable protocol keeps us
+      // well under both limits and matches how the YT SDK does it.
+      var result = _ytUploadResumable(file, uploadUrl, token);
 
       if (result && result.id) {
         Logger.log('YouTube upload success: ' + result.id + ' — ' + title);
@@ -2481,6 +2470,90 @@ function processYouTubeUploads() {
     }
     Logger.log('Uploaded ' + uploaded.length + ' video(s) to YouTube');
   }
+}
+
+/**
+ * Chunked resumable upload for YouTube — required because Apps Script's
+ * Blob and UrlFetch payload cap at 50 MB.
+ *
+ *   • Streams the Drive file down in 8 MB chunks using a Range header
+ *     (each chunk lands as its own Blob, well under the 50 MB limit).
+ *   • PUTs each chunk to the YouTube resumable-session URL with the
+ *     matching Content-Range header. YT returns 308 while it wants more
+ *     data, 200/201 with the final Video resource when the last chunk
+ *     lands.
+ *   • 8 MB × N chunks over UrlFetch takes ~1–2 s each, so a 1 GB video
+ *     finishes in ~4 min — comfortably inside Apps Script's 6-min
+ *     trigger execution budget. Bigger files may time out; treat
+ *     ~1.5 GB as the practical ceiling for this pipeline.
+ *
+ * Chunk size must be a multiple of 256 KB per YT's resumable-upload spec;
+ * 8 MB (8_388_608 bytes = 32 × 256 KB) is a safe pick.
+ */
+function _ytUploadResumable(file, uploadUrl, token) {
+  var CHUNK = 8 * 1024 * 1024;
+  var total = file.getSize();
+  var fileId = file.getId();
+  var mime = file.getMimeType();
+  var offset = 0;
+  var finalResult = null;
+
+  Logger.log('  chunked upload: ' + total + ' bytes in ' + Math.ceil(total / CHUNK) + ' chunk(s) of ' + CHUNK);
+
+  while (offset < total) {
+    var end = Math.min(offset + CHUNK - 1, total - 1);
+    var len = end - offset + 1;
+
+    // Pull one chunk from Drive using a Range header. Response body is
+    // exactly `len` bytes — safely under the 50 MB blob ceiling.
+    var driveResp = UrlFetchApp.fetch(
+      'https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media',
+      {
+        method: 'get',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Range': 'bytes=' + offset + '-' + end
+        },
+        muteHttpExceptions: true
+      }
+    );
+    var driveCode = driveResp.getResponseCode();
+    if (driveCode !== 206 && driveCode !== 200) {
+      throw new Error('Drive chunk fetch failed at offset ' + offset + ': HTTP ' + driveCode + ' ' + driveResp.getContentText().substring(0, 300));
+    }
+    var chunkBytes = driveResp.getContent();
+
+    // PUT the chunk to YouTube's resumable session URL. The Location URL
+    // returned by the init POST is pre-authorized; the PUT still accepts
+    // the same bearer token, and including it defends against edge cases.
+    var putResp = UrlFetchApp.fetch(uploadUrl, {
+      method: 'put',
+      payload: chunkBytes,
+      contentType: mime,
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Range': 'bytes ' + offset + '-' + end + '/' + total
+      },
+      muteHttpExceptions: true
+    });
+    var code = putResp.getResponseCode();
+
+    if (code === 308) {
+      // Resume Incomplete — YT accepted the chunk, wants the next one.
+      offset = end + 1;
+    } else if (code === 200 || code === 201) {
+      // Final chunk — body contains the Video resource.
+      finalResult = JSON.parse(putResp.getContentText());
+      offset = total; // ensure loop exits
+    } else {
+      throw new Error('YouTube chunk upload failed at offset ' + offset + '/' + total + ': HTTP ' + code + ' ' + putResp.getContentText().substring(0, 500));
+    }
+  }
+
+  if (!finalResult || !finalResult.id) {
+    throw new Error('Upload finished but no video resource returned');
+  }
+  return finalResult;
 }
 
 function matchToSubmission(filename) {
