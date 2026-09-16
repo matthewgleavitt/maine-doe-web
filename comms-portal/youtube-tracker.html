@@ -29,7 +29,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#18
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
 <script type="text/babel">
-const {useState,useEffect,useMemo} = React;
+const {useState,useEffect,useMemo,useRef} = React;
 
 const Sv=({d,size=20,color='currentColor',style})=>(
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
@@ -324,6 +324,7 @@ function App(){
   const [expanded,setExpanded]=useState(null);
   const [showForm,setShowForm]=useState(false);
   const [submitting,setSubmitting]=useState(false);
+  const submittingRef=useRef(false); // sync guard vs. React's async state
   const [submitMsg,setSubmitMsg]=useState(null);
   const [completeModal,setCompleteModal]=useState(null);
   const [completing,setCompleting]=useState(false);
@@ -409,8 +410,14 @@ function App(){
   },[data,search,filter]);
 
   async function handleSubmit(){
-    if(!form.requestor||!form.title||!form.email){setSubmitMsg({ok:false,t:'Name, email, and video title are required.'});return;}
-    if(!form.proofread){setSubmitMsg({ok:false,t:'Please acknowledge that you have proofread all content.'});return;}
+    // Hard guard against double-submit — button disabled={submitting} isn't
+    // enough because React state updates are async, so a rapid double-click
+    // fires two POSTs before the DOM disables. Two rows landed in the sheet
+    // for Daniella Crone and Suzanne Perry on 9/16 from exactly this race.
+    if(submittingRef.current)return;
+    submittingRef.current=true;
+    if(!form.requestor||!form.title||!form.email){submittingRef.current=false;setSubmitMsg({ok:false,t:'Name, email, and video title are required.'});return;}
+    if(!form.proofread){submittingRef.current=false;setSubmitMsg({ok:false,t:'Please acknowledge that you have proofread all content.'});return;}
     setSubmitting(true);setSubmitMsg(null);
     try{
       const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'youtube_submit',...form})});
@@ -432,7 +439,7 @@ function App(){
       }
       else setSubmitMsg({ok:false,t:j.error||'Something went wrong.'});
     }catch(e){setSubmitMsg({ok:false,t:e.message});}
-    setSubmitting(false);
+    finally{ submittingRef.current=false; setSubmitting(false); }
   }
 
   async function loadYtStats(force){
