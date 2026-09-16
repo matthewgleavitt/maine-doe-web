@@ -2362,6 +2362,8 @@ function warmCache() {
 var YT_UPLOAD_FOLDER = '1i5Hp9HSxyya3sgVA4HSMmMosIYRCLlv1';
 var YT_PROCESSED_FOLDER = null; // auto-detected from "Processed" subfolder
 
+var YT_RESUME_STATE_KEY = 'YT_UPLOAD_RESUME_STATE';
+
 function processYouTubeUploads() {
   var folder = DriveApp.getFolderById(YT_UPLOAD_FOLDER);
 
@@ -2369,9 +2371,65 @@ function processYouTubeUploads() {
   var processedFolders = folder.getFoldersByName('Processed');
   var processed = processedFolders.hasNext() ? processedFolders.next() : folder.createFolder('Processed');
 
+  var props = PropertiesService.getScriptProperties();
+  var uploaded = [];
+
+  // ─── Resume path ───────────────────────────────────────────────────
+  // If the last run hit its time budget mid-upload, it saved state
+  // in Script Properties. Finish that upload first — no new files
+  // this tick — so a single big video eventually completes across
+  // successive 10-minute triggers instead of restarting each time.
+  var savedJson = props.getProperty(YT_RESUME_STATE_KEY);
+  if (savedJson) {
+    var savedState = null;
+    try { savedState = JSON.parse(savedJson); } catch (parseErr) { savedState = null; }
+    if (savedState && savedState.fileId && savedState.uploadUrl && savedState.offset != null) {
+      var resumeFile = null;
+      try { resumeFile = DriveApp.getFileById(savedState.fileId); } catch (_) { resumeFile = null; }
+      if (resumeFile) {
+        try {
+          Logger.log('Resuming upload: ' + savedState.filename + ' from offset ' + savedState.offset + '/' + savedState.totalSize);
+          var resumeToken = ScriptApp.getOAuthToken();
+          var resumeRes = _ytUploadResumable(resumeFile, savedState.uploadUrl, resumeToken, { startOffset: savedState.offset });
+
+          if (resumeRes.done && resumeRes.result && resumeRes.result.id) {
+            Logger.log('Resumed upload complete: ' + resumeRes.result.id);
+            resumeFile.moveTo(processed);
+            if (savedState.rowIndex > 0) {
+              markSubmissionUploaded(savedState.rowIndex, resumeRes.result.id);
+            }
+            uploaded.push({
+              title: savedState.title,
+              videoId: resumeRes.result.id,
+              url: 'https://www.youtube.com/watch?v=' + resumeRes.result.id,
+              requestor: savedState.requestor || '',
+              email: savedState.email || ''
+            });
+            props.deleteProperty(YT_RESUME_STATE_KEY);
+          } else if (!resumeRes.done) {
+            // Still not done — save updated offset and exit. Next trigger continues.
+            savedState.offset = resumeRes.offset;
+            props.setProperty(YT_RESUME_STATE_KEY, JSON.stringify(savedState));
+            Logger.log('Paused resume at offset ' + resumeRes.offset + ' — will continue next trigger');
+            _notifyYtUploads(uploaded);
+            return;
+          }
+        } catch (resumeErr) {
+          Logger.log('Resume failed: ' + resumeErr.message + ' — clearing state, file will retry from scratch next run');
+          props.deleteProperty(YT_RESUME_STATE_KEY);
+        }
+      } else {
+        Logger.log('Resume state points at a missing file — clearing state');
+        props.deleteProperty(YT_RESUME_STATE_KEY);
+      }
+    } else {
+      props.deleteProperty(YT_RESUME_STATE_KEY);
+    }
+  }
+
+  // ─── Fresh scan path ───────────────────────────────────────────────
   var files = folder.getFiles();
   var videoExtensions = ['mp4','mov','avi','wmv','flv','mkv','webm','m4v','mpg','mpeg','3gp'];
-  var uploaded = [];
 
   while (files.hasNext()) {
     var file = files.next();
@@ -2426,30 +2484,48 @@ function processYouTubeUploads() {
       var uploadUrl = initResp.getHeaders()['Location'] || initResp.getHeaders()['location'];
       if (!uploadUrl) throw new Error('No upload URL returned');
 
-      // Step 2: Upload the file. Small files can go in one PUT; larger ones
-      // MUST be chunked because Apps Script's Blob (and UrlFetch payload)
-      // cap at 50MB. Streaming chunks via the resumable protocol keeps us
-      // well under both limits and matches how the YT SDK does it.
-      var result = _ytUploadResumable(file, uploadUrl, token);
+      // Step 2: Upload the file, chunked. May return {done:false} if the
+      // time budget is hit — in that case save state and let the next
+      // trigger tick resume this same session.
+      var uploadRes = _ytUploadResumable(file, uploadUrl, token);
 
-      if (result && result.id) {
-        Logger.log('YouTube upload success: ' + result.id + ' — ' + title);
+      if (uploadRes.done && uploadRes.result && uploadRes.result.id) {
+        Logger.log('YouTube upload success: ' + uploadRes.result.id + ' — ' + title);
 
         // Move to Processed
         file.moveTo(processed);
 
         // Update Sheet submission if matched
         if (meta.rowIndex > 0) {
-          markSubmissionUploaded(meta.rowIndex, result.id);
+          markSubmissionUploaded(meta.rowIndex, uploadRes.result.id);
         }
 
         uploaded.push({
           title: title,
-          videoId: result.id,
-          url: 'https://www.youtube.com/watch?v=' + result.id,
+          videoId: uploadRes.result.id,
+          url: 'https://www.youtube.com/watch?v=' + uploadRes.result.id,
           requestor: meta.requestor || '',
           email: meta.email || ''
         });
+      } else if (!uploadRes.done) {
+        // Time budget hit mid-upload — persist state and stop; the next
+        // trigger tick will pick this same session back up. Only one
+        // in-flight upload at a time (YT_RESUME_STATE_KEY is a single
+        // slot); other pending files wait until this one completes.
+        props.setProperty(YT_RESUME_STATE_KEY, JSON.stringify({
+          fileId: file.getId(),
+          filename: name,
+          uploadUrl: uploadUrl,
+          offset: uploadRes.offset,
+          totalSize: file.getSize(),
+          title: title,
+          requestor: meta.requestor || '',
+          email: meta.email || '',
+          rowIndex: meta.rowIndex || 0,
+          startedAt: new Date().toISOString()
+        }));
+        Logger.log('Paused ' + name + ' at offset ' + uploadRes.offset + '/' + file.getSize() + ' — resume next trigger');
+        break; // don't start any more files this tick
       }
     } catch (e) {
       Logger.log('YouTube upload FAILED for ' + name + ': ' + e.message);
@@ -2457,19 +2533,21 @@ function processYouTubeUploads() {
     }
   }
 
-  // Send Teams notification for each upload
-  if (uploaded.length > 0) {
-    for (var i = 0; i < uploaded.length; i++) {
-      var u = uploaded[i];
-      notifyTeams('🎬 **Auto-uploaded to YouTube**\\n\\n' +
-        '**Title:** ' + u.title + '\\n' +
-        '**Video:** [View on YouTube](' + u.url + ')\\n' +
-        '**Status:** Private (review in YouTube Studio)\\n' +
-        (u.requestor ? '**Requested by:** ' + u.requestor : '') +
-        '\\n\\n_Review metadata and set to Public/Unlisted when ready._');
-    }
-    Logger.log('Uploaded ' + uploaded.length + ' video(s) to YouTube');
+  _notifyYtUploads(uploaded);
+}
+
+function _notifyYtUploads(uploaded) {
+  if (!uploaded || !uploaded.length) return;
+  for (var i = 0; i < uploaded.length; i++) {
+    var u = uploaded[i];
+    notifyTeams('🎬 **Auto-uploaded to YouTube**\\n\\n' +
+      '**Title:** ' + u.title + '\\n' +
+      '**Video:** [View on YouTube](' + u.url + ')\\n' +
+      '**Status:** Private (review in YouTube Studio)\\n' +
+      (u.requestor ? '**Requested by:** ' + u.requestor : '') +
+      '\\n\\n_Review metadata and set to Public/Unlisted when ready._');
   }
+  Logger.log('Uploaded ' + uploaded.length + ' video(s) to YouTube');
 }
 
 /**
@@ -2490,22 +2568,47 @@ function processYouTubeUploads() {
  * Chunk size must be a multiple of 256 KB per YT's resumable-upload spec;
  * 8 MB (8_388_608 bytes = 32 × 256 KB) is a safe pick.
  */
-function _ytUploadResumable(file, uploadUrl, token) {
-  var CHUNK = 8 * 1024 * 1024;
+/**
+ * Chunked resumable YouTube upload with a time budget.
+ *
+ * Returns { done: bool, result?: object, offset?: number }:
+ *   done:true  — upload finished; result is the YT video resource
+ *   done:false — time budget hit mid-upload; offset is where to resume
+ *
+ * The caller persists uploadUrl + offset in Script Properties on a
+ * partial return, and the next trigger tick calls this again with
+ * opts.startOffset to pick up where we left off. That's how we survive
+ * Apps Script's 6-minute execution ceiling on ~1 GB+ files.
+ *
+ * Chunk size (40 MB) is the largest safe multiple of 256 KB under both
+ * the UrlFetch 50 MB payload cap AND the 50 MB response cap when we
+ * pull the chunk from Drive. Fewer chunks = fewer round-trip taxes;
+ * an 8 MB chunk timed out at 64 round-trips within 6 min last run.
+ */
+function _ytUploadResumable(file, uploadUrl, token, opts) {
+  var CHUNK = 40 * 1024 * 1024;             // 40 MB, 163840 × 256 KB
+  var TIME_BUDGET_MS = 4 * 60 * 1000;       // leave 2 min buffer under the 6-min execution ceiling
+  var SAFETY_MS = 45 * 1000;                // if less than this remains, don't start another chunk
+
   var total = file.getSize();
   var fileId = file.getId();
   var mime = file.getMimeType();
-  var offset = 0;
-  var finalResult = null;
+  var offset = (opts && opts.startOffset) || 0;
+  var deadline = Date.now() + TIME_BUDGET_MS;
 
-  Logger.log('  chunked upload: ' + total + ' bytes in ' + Math.ceil(total / CHUNK) + ' chunk(s) of ' + CHUNK);
+  Logger.log('  chunked upload: ' + total + ' bytes, chunk=' + CHUNK + ', startOffset=' + offset);
 
   while (offset < total) {
+    // Bail cleanly before starting a chunk that likely won't finish inside the trigger window.
+    if (Date.now() + SAFETY_MS > deadline) {
+      Logger.log('  time budget nearly spent at offset ' + offset + '/' + total + ' — pausing for resume next tick');
+      return { done: false, offset: offset };
+    }
+
     var end = Math.min(offset + CHUNK - 1, total - 1);
-    var len = end - offset + 1;
 
     // Pull one chunk from Drive using a Range header. Response body is
-    // exactly `len` bytes — safely under the 50 MB blob ceiling.
+    // exactly the chunk size — safely under the 50 MB response ceiling.
     var driveResp = UrlFetchApp.fetch(
       'https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media',
       {
@@ -2523,9 +2626,7 @@ function _ytUploadResumable(file, uploadUrl, token) {
     }
     var chunkBytes = driveResp.getContent();
 
-    // PUT the chunk to YouTube's resumable session URL. The Location URL
-    // returned by the init POST is pre-authorized; the PUT still accepts
-    // the same bearer token, and including it defends against edge cases.
+    // PUT the chunk to YouTube's resumable session URL.
     var putResp = UrlFetchApp.fetch(uploadUrl, {
       method: 'put',
       payload: chunkBytes,
@@ -2539,21 +2640,19 @@ function _ytUploadResumable(file, uploadUrl, token) {
     var code = putResp.getResponseCode();
 
     if (code === 308) {
-      // Resume Incomplete — YT accepted the chunk, wants the next one.
       offset = end + 1;
+      var pct = Math.round((offset / total) * 100);
+      Logger.log('    ' + pct + '% (' + offset + '/' + total + ')');
     } else if (code === 200 || code === 201) {
-      // Final chunk — body contains the Video resource.
-      finalResult = JSON.parse(putResp.getContentText());
-      offset = total; // ensure loop exits
+      Logger.log('    100% (' + total + '/' + total + ') — final chunk accepted');
+      return { done: true, result: JSON.parse(putResp.getContentText()) };
     } else {
       throw new Error('YouTube chunk upload failed at offset ' + offset + '/' + total + ': HTTP ' + code + ' ' + putResp.getContentText().substring(0, 500));
     }
   }
 
-  if (!finalResult || !finalResult.id) {
-    throw new Error('Upload finished but no video resource returned');
-  }
-  return finalResult;
+  // Reached total without a 200/201 — defensive; shouldn't happen in practice.
+  throw new Error('Upload loop exited without a final 200/201 response');
 }
 
 function matchToSubmission(filename) {
