@@ -474,37 +474,102 @@ function App(){
     // ── 2. Chunked PUT to YouTube ────────────────────────────────
     // Chunks must be multiples of 256 KB per YT resumable spec.
     // 8 MB keeps memory low and matches YT's recommended range.
+    // Each chunk retries up to 3× on transport failures — network blips
+    // during a multi-minute upload are common and shouldn't restart the
+    // whole file. On persistent failure of one chunk, we query YouTube
+    // for the "how much did you actually get?" byte offset and resume
+    // from there (that's what a resumable session is FOR).
     const CHUNK=8*1024*1024;
+    const MAX_CHUNK_RETRIES=3;
     let offset=0, videoId=null;
     setUploadPhase('uploading');
+
+    const putChunk=async(start,endExclusive)=>{
+      const chunk=videoFile.slice(start,endExclusive);
+      return fetch(uploadUrl,{
+        method:'PUT',
+        headers:{
+          'Content-Type':videoFile.type||'video/mp4',
+          'Content-Range':`bytes ${start}-${endExclusive-1}/${videoFile.size}`,
+        },
+        body:chunk,
+      });
+    };
+
+    // Ask YouTube where we actually are — send a Content-Range with * as
+    // the length. Response 308 with a Range header tells us the last
+    // byte YT successfully received.
+    const queryResumeOffset=async()=>{
+      try{
+        const r=await fetch(uploadUrl,{
+          method:'PUT',
+          headers:{'Content-Range':`bytes */${videoFile.size}`},
+        });
+        if(r.status===200||r.status===201){ return {done:true, resp:r}; }
+        if(r.status===308){
+          const range=r.headers.get('Range')||r.headers.get('range');
+          if(range){
+            const m=range.match(/^bytes=0-(\d+)$/i);
+            if(m) return {done:false, offset:parseInt(m[1],10)+1};
+          }
+          return {done:false, offset:0};
+        }
+      }catch(e){/* fall through */}
+      return null;
+    };
+
     while(offset<videoFile.size){
       const end=Math.min(offset+CHUNK, videoFile.size);
-      const chunk=videoFile.slice(offset,end);
-      try{
-        const putResp=await fetch(uploadUrl,{
-          method:'PUT',
-          headers:{
-            'Content-Type':videoFile.type||'video/mp4',
-            'Content-Range':`bytes ${offset}-${end-1}/${videoFile.size}`,
-          },
-          body:chunk,
-        });
-        if(putResp.status===308){
-          offset=end;
-          setUploadPct(offset/videoFile.size);
-          setUploadedBytes(offset);
-        } else if(putResp.status===200||putResp.status===201){
-          const videoData=await putResp.json();
+      let putResp=null, lastErr=null;
+
+      for(let attempt=0; attempt<MAX_CHUNK_RETRIES; attempt++){
+        try{
+          putResp=await putChunk(offset,end);
+          break;
+        }catch(e){
+          lastErr=e;
+          console.warn(`[v2] chunk PUT failed (attempt ${attempt+1}) at offset ${offset}:`, e.message);
+          // Small backoff before retrying — 1s, 2s, 4s
+          await new Promise(r=>setTimeout(r, 1000*Math.pow(2,attempt)));
+        }
+      }
+
+      if(!putResp){
+        // All in-line retries failed. Try to reconcile with YouTube:
+        // did the last chunk actually land despite the client seeing a
+        // transport error? Ask YT where it thinks we are.
+        const status=await queryResumeOffset();
+        if(status&&status.done&&status.resp){
+          const videoData=await status.resp.json();
           videoId=videoData.id;
           setUploadPct(1);
           setUploadedBytes(videoFile.size);
           break;
-        } else {
-          const errText=await putResp.text();
-          throw new Error(`YT rejected chunk at ${offset}: HTTP ${putResp.status} ${errText.substring(0,300)}`);
         }
-      }catch(e){
-        return bail('Upload failed at '+Math.round(100*offset/videoFile.size)+'%: '+e.message);
+        if(status&&typeof status.offset==='number'&&status.offset>offset){
+          // YT actually did receive the chunk (transport error was on the
+          // response, not the request) — advance and continue.
+          offset=status.offset;
+          setUploadPct(offset/videoFile.size);
+          setUploadedBytes(offset);
+          continue;
+        }
+        return bail('Upload failed at '+Math.round(100*offset/videoFile.size)+'%: '+(lastErr?lastErr.message:'network error'));
+      }
+
+      if(putResp.status===308){
+        offset=end;
+        setUploadPct(offset/videoFile.size);
+        setUploadedBytes(offset);
+      } else if(putResp.status===200||putResp.status===201){
+        const videoData=await putResp.json();
+        videoId=videoData.id;
+        setUploadPct(1);
+        setUploadedBytes(videoFile.size);
+        break;
+      } else {
+        const errText=await putResp.text();
+        return bail('YouTube rejected chunk at '+Math.round(100*offset/videoFile.size)+'%: HTTP '+putResp.status+' '+errText.substring(0,300));
       }
     }
 
