@@ -2586,7 +2586,13 @@ function _notifyYtUploads(uploaded) {
  * an 8 MB chunk timed out at 64 round-trips within 6 min last run.
  */
 function _ytUploadResumable(file, uploadUrl, token, opts) {
-  var CHUNK = 40 * 1024 * 1024;             // 40 MB, 163840 × 256 KB
+  // 40 MB chunks OOM'd — Apps Script per-execution heap is ~100 MB and
+  // a chunk this big gets copied (Drive response body → byte array →
+  // outgoing PUT payload), so peak memory is roughly 3× the chunk size.
+  // 8 MB worked but timed out at 64 round-trips; 16 MB should stay
+  // comfortably under both ceilings (peak ~50 MB, ~32 round-trips for a
+  // 510 MB video).
+  var CHUNK = 16 * 1024 * 1024;             // 16 MB = 64 × 256 KB
   var TIME_BUDGET_MS = 4 * 60 * 1000;       // leave 2 min buffer under the 6-min execution ceiling
   var SAFETY_MS = 45 * 1000;                // if less than this remains, don't start another chunk
 
