@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="gate.js"></script>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=League+Spartan:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Tracker v2 (Direct Upload) | Maine DOE Communications Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#f3f6f9;color:#182b3c;min-height:100vh}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideUpBar{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#a8bdd040;border-radius:3px}
+.portal-bar{display:flex;align-items:center;gap:12px;padding:0 24px;height:52px;background:linear-gradient(90deg,#0a1520,#0e1c2a);border-bottom:1px solid rgba(66,195,247,0.1);font-family:"DM Sans",-apple-system,sans-serif;flex-shrink:0}
+.portal-bar .me-badge{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#42c3f7,#34d399);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0c1926;flex-shrink:0}
+.portal-bar .crumb{display:flex;align-items:center;gap:8px;flex:1;font-size:13px}
+.portal-bar .crumb a{color:#94a3b8;text-decoration:none;font-weight:500}
+.portal-bar .crumb .sep{color:#475569;font-size:11px}
+.portal-bar .crumb .current{color:#e2e8f0;font-weight:700}
+</style>
+</head>
+<body>
+<div id="portal-bar" class="portal-bar"><div class="me-badge">ME</div><div class="crumb"><a href="index.html">Portal</a><span class="sep">›</span><span class="current">YouTube Tracker · v2</span></div></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useMemo,useRef} = React;
+
+const Sv=({d,size=20,color='currentColor',style})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,...style}}>
+    {Array.isArray(d)?d.map((p,i)=><path key={i} d={p}/>):<path d={d}/>}
+  </svg>
+);
+
+const ic={
+  video:["M23 7l-7 5 7 5V7z","M14 5H3a2 2 0 00-2 2v10a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2z"],
+  upload:["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4","M17 8l-5-5-5 5","M12 3v12"],
+  folder:["M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"],
+  ext:["M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6","M15 3h6v6","M10 14L21 3"],
+  clock:["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 6v6l4 2"],
+  check:["M22 11.08V12a10 10 0 11-5.93-9.14","M22 4L12 14.01l-3-3"],
+  tick:["M20 6L9 17l-5-5"],
+  play:["M5 3l14 9-14 9V3z"],
+  search:"M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",
+  x:["M18 6L6 18","M6 6l12 12"],
+  spin:["M12 2v4","M12 18v4","M4.93 4.93l2.83 2.83","M16.24 16.24l2.83 2.83","M2 12h4","M18 12h4"],
+  trash:["M3 6h18","M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2","M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6","M10 11v6","M14 11v6"],
+};
+
+const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',green:'#16a34a'};
+const API='https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA432dtGEN-UzmSDtzlaL7SEVxChnMOfl0Lgr2BEhg/exec';
+const DRIVE_MAIN='https://drive.google.com/drive/folders/1i5Hp9HSxyya3sgVA4HSMmMosIYRCLlv1';
+const DRIVE_ENGINE='https://drive.google.com/drive/folders/1tVV6XLt33yNhfrgqqfxaW1bzH0Q9s6Dc';
+
+const ST={Received:{bg:'#dbeafe',color:'#1e40af',border:'#93c5fd'},Processing:{bg:'#fef3c7',color:'#92400e',border:'#fcd34d'},Complete:{bg:'#d1fae5',color:'#065f46',border:'#6ee7b7'}};
+
+function Input({label,required,children}){
+  return <div style={{marginBottom:14}}>
+    <label style={{display:'block',fontSize:12,fontWeight:700,color:B.navy,marginBottom:5,textTransform:'uppercase',letterSpacing:'.03em'}}>{label}{required&&' *'}</label>
+    {children}
+  </div>;
+}
+
+function Field({value,onChange,placeholder,type,onFocus,onBlur}){
+  const s={width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:B.txt,outline:'none',background:B.wh};
+  const f=e=>e.currentTarget.style.borderColor=B.teal;
+  const b=e=>e.currentTarget.style.borderColor=`${B.border}30`;
+  if(type==='textarea') return <textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={{...s,resize:'vertical',minHeight:100}} onFocus={f} onBlur={b}/>;
+  return <input type={type||'text'} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={f} onBlur={b}/>;
+}
+
+function YouTubeAnalytics({stats,loading,error,onReload}){
+  const [q,setQ]=useState('');
+  const [sort,setSort]=useState('date');
+  const [selected,setSelected]=useState(new Set());
+  const [page,setPage]=useState(0);
+  const PAGE_SIZE=50;
+
+  function toggleSelect(id){
+    setSelected(prev=>{const s=new Set(prev); if(s.has(id)) s.delete(id); else s.add(id); return s;});
+  }
+  function clearSelection(){ setSelected(new Set()); }
+  function requestDeletion(){
+    const list=(stats?.videos||[]).filter(v=>selected.has(v.id));
+    if(!list.length) return;
+    const body='Hi Matt,\r\n\r\nPlease delete the following '+list.length+' YouTube video'+(list.length===1?'':'s')+':\r\n\r\n'+
+      list.map(v=>'• '+v.title+'\r\n  '+v.url+'\r\n  '+v.views.toLocaleString()+' views · Published '+(v.publishedAt||'').split('T')[0]).join('\r\n\r\n')+
+      '\r\n\r\nReason: [please fill in]\r\n\r\nThanks!';
+    const subject='YouTube video deletion request: '+list.length+' video'+(list.length===1?'':'s');
+    window.location.href='mailto:matthew.g.leavitt@maine.gov?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  }
+
+  function fmtDur(iso){
+    // ISO 8601 duration "PT12M34S" → "12:34"
+    if(!iso) return '';
+    const m=String(iso).match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+    if(!m) return '';
+    const h=+m[1]||0, mm=+m[2]||0, ss=+m[3]||0;
+    if(h) return h+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+    return mm+':'+String(ss).padStart(2,'0');
+  }
+  function fmtDate(iso){
+    if(!iso) return '';
+    try{const d=new Date(iso); if(isNaN(d.getTime())) return ''; return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return '';}
+  }
+  function fmtMinutes(mins){
+    if(!mins) return '0m';
+    if(mins>=60) return Math.round(mins/60)+' hrs';
+    return Math.round(mins)+' min';
+  }
+
+  const videos=(stats?.videos||[]).slice();
+  const filtered=useMemo(()=>{
+    const ql=q.trim().toLowerCase();
+    let list=videos.filter(v=>!ql||String(v.title||'').toLowerCase().includes(ql));
+    if(sort==='views') list=list.slice().sort((a,b)=>(b.views||0)-(a.views||0));
+    if(sort==='date')  list=list.slice().sort((a,b)=>String(b.publishedAt||'').localeCompare(String(a.publishedAt||'')));
+    return list;
+  },[videos,q,sort]);
+  const totalPages=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
+  const currentPage=Math.min(page,totalPages-1);
+  const pagedVideos=useMemo(()=>filtered.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE),[filtered,currentPage]);
+
+  if(loading) return <div style={{background:'#ffffff',borderRadius:14,padding:'60px 20px',textAlign:'center',border:`2px solid ${B.border}30`,display:'flex',alignItems:'center',justifyContent:'center',gap:12}}>
+    <Sv d={ic.spin} size={20} color="#ef4444" style={{animation:'spin 1s linear infinite'}}/>
+    <span style={{color:B.txtSec,fontSize:13,fontWeight:600}}>Loading YouTube analytics...</span>
+  </div>;
+
+  if(error) return <div style={{background:'#ffffff',borderRadius:14,padding:'26px 28px',border:`2px solid ${B.border}30`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+    <div style={{display:'flex',alignItems:'flex-start',gap:14,flexWrap:'wrap'}}>
+      <div style={{width:44,height:44,borderRadius:12,background:'#f59e0b18',border:'1.5px solid #f59e0b40',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+        <Sv d={["M12 9v4","M12 17h.01","M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"]} size={22} color="#a16207"/>
+      </div>
+      <div style={{flex:1,minWidth:280}}>
+        <div style={{fontSize:14,fontWeight:800,color:B.navy,marginBottom:6}}>YouTube analytics aren't connected yet</div>
+        <p style={{fontSize:13,color:B.txtSec,lineHeight:1.65,fontWeight:500,margin:'0 0 8px'}}>{error}</p>
+        <p style={{fontSize:12,color:B.txtMute,margin:'0 0 12px',lineHeight:1.6}}>
+          Setup: enable <strong>YouTube Data API v3</strong> and <strong>YouTube Analytics API</strong> as Services in this Apps Script project, set <code style={{background:'#f1f5f9',padding:'1px 6px',borderRadius:4,fontSize:11,fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace'}}>YT_CHANNEL_ID</code> in Script Properties (channel ID starts with UC…), and confirm the running Google account has Owner or Manager role on the channel.
+        </p>
+        <button onClick={onReload} style={{padding:'8px 14px',borderRadius:8,border:'none',background:B.navy,color:'#fff',fontSize:12.5,fontWeight:700,cursor:'pointer'}}>Try again</button>
+      </div>
+    </div>
+  </div>;
+
+  if(!stats) return null;
+  const ch=stats.channel||{};
+  const a=stats.analytics;
+
+  return <div style={{animation:'fadeIn 0.3s ease'}}>
+    {/* Channel card */}
+    <div style={{background:B.wh,borderRadius:16,border:`2px solid ${B.border}30`,padding:'22px 26px',marginBottom:20,boxShadow:'0 2px 12px rgba(0,0,0,0.04)',display:'flex',alignItems:'center',gap:18,flexWrap:'wrap'}}>
+      {ch.thumbnail&&<img src={ch.thumbnail} alt={ch.title} style={{width:64,height:64,borderRadius:'50%',objectFit:'cover',flexShrink:0}}/>}
+      <div style={{flex:1,minWidth:220}}>
+        <div style={{fontSize:11,fontWeight:700,color:'#ef4444',textTransform:'uppercase',letterSpacing:'.09em',marginBottom:4}}>Channel</div>
+        <div style={{fontSize:19,fontWeight:800,color:B.navy,marginBottom:2,letterSpacing:'.005em'}}>{ch.title}</div>
+        {ch.customUrl&&<a href={'https://www.youtube.com/'+ch.customUrl} target="_blank" rel="noopener noreferrer" style={{fontSize:12,fontWeight:600,color:'#ef4444',textDecoration:'none'}}>{ch.customUrl} ↗</a>}
+      </div>
+      <button onClick={onReload} style={{padding:'8px 16px',borderRadius:9,border:`1.5px solid ${B.border}50`,background:B.wh,color:B.navy,fontSize:12.5,fontWeight:700,cursor:'pointer'}}>Refresh</button>
+    </div>
+
+    {/* All-time tiles */}
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:14,marginBottom:16}}>
+      {[
+        {l:'Subscribers',v:(ch.subscribers||0).toLocaleString(),c:'#ef4444'},
+        {l:'All-time views',v:(ch.totalViews||0).toLocaleString(),c:'#dc2626'},
+        {l:'Videos published',v:(ch.videoCount||0).toLocaleString(),c:'#0d7ba0'},
+      ].map((m,i)=>(
+        <div key={i} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${B.border}30`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+          <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:800,letterSpacing:.5,marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
+            <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
+          </div>
+          <div style={{fontSize:22,fontWeight:800,color:B.navy,lineHeight:1.15}}>{m.v}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* Last thirty days — only if Analytics API returned data. When it doesn't
+        (Brand Account channel + personal OAuth token → Forbidden), the section
+        just doesn't render. No confusing "not connected" callout. */}
+    {a&&<div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:'18px 22px',marginBottom:20}}>
+      <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:14,flexWrap:'wrap',gap:8}}>
+        <h3 style={{fontSize:13,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.06em'}}>Last 30 days</h3>
+        <span style={{fontSize:11,color:B.txtMute,fontWeight:600}}>{a.period.start} → {a.period.end}</span>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12}}>
+        {[
+          {l:'Views',v:(a.views||0).toLocaleString(),c:'#ef4444'},
+          {l:'Watch time',v:fmtMinutes(a.watchTimeMinutes),c:'#dc2626'},
+          {l:'Avg view (sec)',v:Math.round(a.avgViewSeconds||0).toLocaleString(),c:'#0d7ba0'},
+          {l:'Net subscribers',v:(a.netSubscribers>=0?'+':'')+(a.netSubscribers||0).toLocaleString(),c:a.netSubscribers>=0?'#16a34a':'#8a2e13'},
+          {l:'Likes',v:(a.likes||0).toLocaleString(),c:'#f472b6'},
+          {l:'Comments',v:(a.comments||0).toLocaleString(),c:'#274f73'},
+          {l:'Shares',v:(a.shares||0).toLocaleString(),c:'#0d7ba0'},
+        ].map((m,i)=>(
+          <div key={i} style={{padding:'12px 14px',borderRadius:10,background:'#f8fafc',border:`1px solid ${B.border}30`}}>
+            <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:800,letterSpacing:.5,marginBottom:4,display:'flex',alignItems:'center',gap:5}}>
+              <span style={{width:6,height:6,borderRadius:'50%',background:m.c}}/>{m.l}
+            </div>
+            <div style={{fontSize:18,fontWeight:800,color:B.navy,lineHeight:1.15,fontVariantNumeric:'tabular-nums'}}>{m.v}</div>
+          </div>
+        ))}
+      </div>
+    </div>}
+
+    {/* Video search + table */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:'18px 22px',marginBottom:20}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,flexWrap:'wrap',marginBottom:12}}>
+        <h3 style={{fontSize:13,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.06em'}}>Recent uploads</h3>
+        <span style={{fontSize:11.5,color:B.txtMute,fontWeight:600}}>{videos.length} videos loaded</span>
+      </div>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,padding:'9px 14px',background:B.wh,borderRadius:10,border:`1.5px solid ${B.border}40`,flex:'1 1 240px'}}>
+          <Sv d={["M11 3a8 8 0 108 8","M21 21l-4.35-4.35"]} size={15} color={B.txtMute}/>
+          <input type="text" value={q} onChange={e=>{setQ(e.target.value);setPage(0);}} placeholder="Search by title..."
+            style={{border:'none',outline:'none',flex:1,fontSize:13.5,color:B.navy,fontWeight:500,background:'transparent',fontFamily:'inherit'}}/>
+          {q&&<span onClick={()=>{setQ('');setPage(0);}} style={{cursor:'pointer',color:B.txtMute,fontWeight:800,fontSize:16,lineHeight:1}}>×</span>}
+        </div>
+        <div style={{display:'flex',gap:4,padding:4,borderRadius:10,background:'#f1f5f9',fontSize:12,fontWeight:700}}>
+          {['date','views'].map(s=>(
+            <button key={s} onClick={()=>{setSort(s);setPage(0);}}
+              style={{padding:'6px 12px',borderRadius:7,border:'none',background:sort===s?B.wh:'transparent',color:sort===s?B.navy:B.txtMute,cursor:'pointer',fontFamily:'inherit',fontWeight:700,fontSize:12,textTransform:'capitalize',boxShadow:sort===s?'0 1px 3px rgba(24,43,60,0.08)':'none'}}>
+              {s==='date'?'Newest':'Most viewed'}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={{border:`1px solid ${B.border}30`,borderRadius:10,overflow:'hidden'}}>
+        <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+          <thead style={{background:'#e2e8f0'}}>
+            <tr>
+              <th title="Click the trashcan to select videos to request deletion" style={{padding:'10px 8px 10px 14px',width:52,textAlign:'center',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em'}}>Delete</th>
+              <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em'}}>Video</th>
+              <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:110}}>Published</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:90}}>Views</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:B.navy,fontSize:11,textTransform:'uppercase',letterSpacing:'.05em',whiteSpace:'nowrap',width:70}}>Likes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length===0?<tr><td colSpan={5} style={{padding:'30px 20px',textAlign:'center',color:B.txtMute,fontWeight:500}}>{q?`No videos match "${q}"`:'No videos loaded'}</td></tr>
+            :pagedVideos.map((v,i)=>{
+              const isSel=selected.has(v.id);
+              return <tr key={v.id||i} style={{borderTop:`1px solid ${B.border}25`,background:isSel?'#fef2f2':'transparent'}}>
+                <td style={{padding:'10px 8px 10px 14px',textAlign:'center'}}>
+                  <button onClick={()=>toggleSelect(v.id)}
+                    title={isSel?'Remove from deletion request':'Add to deletion request'}
+                    aria-label={isSel?'Remove from deletion request':'Add to deletion request'}
+                    aria-pressed={isSel}
+                    style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:30,height:30,borderRadius:8,cursor:'pointer',fontFamily:'inherit',
+                      border:`1.5px solid ${isSel?'#ef4444':B.border+'50'}`,
+                      background:isSel?'#ef4444':'transparent',
+                      color:isSel?'#ffffff':'#94a3b8',
+                      transition:'all .15s ease'}}
+                    onMouseEnter={e=>{if(!isSel){e.currentTarget.style.borderColor='#ef4444';e.currentTarget.style.color='#ef4444';e.currentTarget.style.background='#fef2f2';}}}
+                    onMouseLeave={e=>{if(!isSel){e.currentTarget.style.borderColor=B.border+'50';e.currentTarget.style.color='#94a3b8';e.currentTarget.style.background='transparent';}}}>
+                    <Sv d={ic.trash} size={15} color="currentColor"/>
+                  </button>
+                </td>
+                <td style={{padding:'10px 14px'}}>
+                  <a href={v.url} target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:10,color:B.navy,textDecoration:'none',fontWeight:600}}>
+                    {v.thumbnail&&<img src={v.thumbnail} alt="" style={{width:60,height:34,objectFit:'cover',borderRadius:4,flexShrink:0}}/>}
+                    <span style={{overflow:'hidden',textOverflow:'ellipsis'}}>{v.title}</span>
+                  </a>
+                </td>
+                <td style={{padding:'10px 14px',color:B.txtSec,fontSize:12,fontWeight:600,whiteSpace:'nowrap'}}>{fmtDate(v.publishedAt)}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',fontWeight:800,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',color:'#ef4444'}}>{(v.views||0).toLocaleString()}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',fontWeight:700,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',color:B.txtSec}}>{(v.likes||0).toLocaleString()}</td>
+              </tr>;
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div style={{marginTop:12,display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:8}}>
+        <div style={{fontSize:11.5,color:B.txtMute,fontWeight:600}}>
+          Showing {(currentPage*PAGE_SIZE+1).toLocaleString()}–{Math.min((currentPage+1)*PAGE_SIZE,filtered.length).toLocaleString()} of {filtered.length.toLocaleString()} video{filtered.length===1?'':'s'}
+        </div>
+        {totalPages>1&&<div style={{display:'flex',alignItems:'center',gap:6}}>
+          <button onClick={()=>setPage(0)} disabled={currentPage===0}
+            style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}40`,background:B.wh,color:currentPage===0?B.border:B.txtSec,fontSize:12,fontWeight:700,cursor:currentPage===0?'default':'pointer',fontFamily:'inherit'}}>First</button>
+          <button onClick={()=>setPage(p=>Math.max(0,p-1))} disabled={currentPage===0}
+            style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}40`,background:B.wh,color:currentPage===0?B.border:B.txtSec,fontSize:12,fontWeight:700,cursor:currentPage===0?'default':'pointer',fontFamily:'inherit'}}>Prev</button>
+          <span style={{padding:'6px 12px',fontSize:12,fontWeight:700,color:B.navy,fontVariantNumeric:'tabular-nums'}}>Page {currentPage+1} of {totalPages}</span>
+          <button onClick={()=>setPage(p=>Math.min(totalPages-1,p+1))} disabled={currentPage>=totalPages-1}
+            style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}40`,background:B.wh,color:currentPage>=totalPages-1?B.border:B.txtSec,fontSize:12,fontWeight:700,cursor:currentPage>=totalPages-1?'default':'pointer',fontFamily:'inherit'}}>Next</button>
+          <button onClick={()=>setPage(totalPages-1)} disabled={currentPage>=totalPages-1}
+            style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${B.border}40`,background:B.wh,color:currentPage>=totalPages-1?B.border:B.txtSec,fontSize:12,fontWeight:700,cursor:currentPage>=totalPages-1?'default':'pointer',fontFamily:'inherit'}}>Last</button>
+        </div>}
+      </div>
+    </div>
+
+    {/* Floating selection action bar — pinned to bottom of viewport */}
+    {selected.size>0&&<div style={{position:'fixed',left:'50%',bottom:24,transform:'translateX(-50%)',zIndex:1000,display:'flex',alignItems:'center',gap:14,padding:'14px 20px',background:B.navy,borderRadius:999,boxShadow:'0 12px 32px rgba(12,25,38,0.35),0 4px 12px rgba(12,25,38,0.25)',border:'2px solid rgba(255,255,255,0.12)',animation:'slideUpBar .25s ease',maxWidth:'calc(100vw - 32px)'}}>
+      <span style={{display:'inline-flex',alignItems:'center',gap:8,color:'#fff',fontSize:14,fontWeight:700,whiteSpace:'nowrap'}}>
+        <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:'50%',background:'rgba(255,255,255,0.14)',fontSize:13,fontWeight:800}}>{selected.size}</span>
+        video{selected.size!==1?'s':''} selected
+      </span>
+      <div style={{width:1,height:26,background:'rgba(255,255,255,0.18)'}}/>
+      <button onClick={requestDeletion}
+        style={{padding:'10px 20px',borderRadius:999,border:'none',background:'#dc2626',color:'#fff',fontSize:13.5,fontWeight:800,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8,boxShadow:'0 4px 12px rgba(220,38,38,0.4)',whiteSpace:'nowrap',fontFamily:'inherit'}}>
+        <Sv d={["M3 6h18","M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"]} size={15} color="#fff"/> Request deletion
+      </button>
+      <button onClick={clearSelection}
+        style={{padding:'10px 16px',borderRadius:999,border:'1.5px solid rgba(255,255,255,0.22)',background:'transparent',color:'#fff',fontSize:13,fontWeight:600,cursor:'pointer',whiteSpace:'nowrap',fontFamily:'inherit'}}>
+        Clear
+      </button>
+    </div>}
+  </div>;
+}
+
+function App(){
+  const [tab,setTab]=useState('submissions');
+  const [ytStats,setYtStats]=useState(null);
+  const [ytStatsError,setYtStatsError]=useState(null);
+  const [ytStatsLoading,setYtStatsLoading]=useState(false);
+  const [data,setData]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [err,setErr]=useState(null);
+  const [search,setSearch]=useState('');
+  const [filter,setFilter]=useState('');
+  const [expanded,setExpanded]=useState(null);
+  const [showForm,setShowForm]=useState(false);
+  const [submitting,setSubmitting]=useState(false);
+  const submittingRef=useRef(false); // sync guard vs. React's async state
+  const [submitMsg,setSubmitMsg]=useState(null);
+  const [completeModal,setCompleteModal]=useState(null);
+  const [completing,setCompleting]=useState(false);
+  // v2 additions — direct-upload state
+  const [videoFile,setVideoFile]=useState(null);   // File object picked by the user
+  const [uploadPhase,setUploadPhase]=useState(''); // '', 'init', 'uploading', 'finalizing', 'done'
+  const [uploadPct,setUploadPct]=useState(0);      // 0..1
+  const [uploadedBytes,setUploadedBytes]=useState(0);
+  const emptyForm={requestor:'',email:'',team:'',title:'',description:'',mediaType:'',playlist:'',privacy:'Public',engine:'No',engineCourse:'',notes:'',proofread:false};
+  const [form,setForm]=useState(emptyForm);
+  const uf=(k,v)=>setForm(p=>({...p,[k]:v}));
+  // Confirm-on-close: only prompt if the user has actually typed something.
+  // Short form → no draft persistence, just a "are you sure" gate.
+  function tryCloseForm(){
+    const dirty=Object.keys(emptyForm).some(k=>{
+      const v=form[k];
+      if(typeof v==='boolean') return v!==emptyForm[k];
+      return String(v||'').trim()!==String(emptyForm[k]||'').trim();
+    });
+    if(!dirty){ setShowForm(false); return; }
+    if(window.confirm('Are you sure you want to close this form? Your progress will not be saved.')){
+      setForm(emptyForm);
+      setShowForm(false);
+    }
+  }
+
+  // Retry once with a delay if the first fetch fails or returns malformed
+  // JSON — Apps Script cold-starts can chunk a response weirdly on the first
+  // request after idle. 25s timeout so we can't hang forever.
+  // Resilient fetch — Apps Script's edge layer intermittently returns HTML
+  // error pages (HTTP 404 with 8KB of Google's product-page JS) instead of
+  // routing to our code. 3 attempts with graduated backoff, 60s timeout each,
+  // detects non-JSON bodies and retries on those too. Same shape as calendar.
+  async function fetchJson(url, {timeoutMs=60000, retries=2} = {}){
+    let lastErr;
+    for (let attempt=0; attempt<=retries; attempt++){
+      const ctrl=new AbortController();
+      const t=setTimeout(()=>ctrl.abort(), timeoutMs);
+      try{
+        const r=await fetch(url,{signal:ctrl.signal,cache:'no-store'});
+        clearTimeout(t);
+        if(!r.ok){ lastErr=new Error('HTTP '+r.status); }
+        else {
+          const text=await r.text();
+          if(text.trim().charAt(0)==='{'){
+            try{return JSON.parse(text);}
+            catch(parseErr){ lastErr=parseErr; }
+          } else {
+            lastErr=new Error('non-JSON response (edge routing failure)');
+          }
+        }
+      }catch(fetchErr){
+        clearTimeout(t);
+        lastErr=fetchErr;
+      }
+      if(attempt<retries){
+        console.warn('[youtube] fetch attempt '+(attempt+1)+' failed:', lastErr && lastErr.message);
+        await new Promise(res=>setTimeout(res, 1400+attempt*800));
+      }
+    }
+    throw lastErr || new Error('fetch failed');
+  }
+
+  async function load({refresh=false}={}){
+    setLoading(true); setErr(null);
+    try{
+      const j=await fetchJson(API+'?type=youtube'+(refresh?'&refresh=1':''));
+      if(j.error) throw new Error(j.error);
+      setData(j.rows||[]);
+    }
+    catch(e){setErr(e.message);}
+    setLoading(false);
+  }
+  useEffect(()=>{load();},[]);
+
+  const stats=useMemo(()=>({
+    total:data.length,
+    received:data.filter(s=>s.status==='Received').length,
+    processing:data.filter(s=>s.status==='Processing').length,
+    complete:data.filter(s=>s.status==='Complete').length,
+  }),[data]);
+
+  const filtered=useMemo(()=>{
+    let r=data;
+    if(search){const q=search.toLowerCase();r=r.filter(s=>(s.title||'').toLowerCase().includes(q)||(s.requestor||'').toLowerCase().includes(q)||(s.team||'').toLowerCase().includes(q));}
+    if(filter)r=r.filter(s=>s.status===filter);
+    return r;
+  },[data,search,filter]);
+
+  // v2 direct-upload flow:
+  //   1. POST metadata + file size to Apps Script (action=youtube_init_upload).
+  //      Backend inserts a sheet row (status='Uploading'), uses the stored
+  //      OAuth token for the requested channel to open a YouTube resumable
+  //      upload session, and returns { uploadUrl, rowIndex }.
+  //   2. Browser streams the file directly to uploadUrl in 8 MB chunks.
+  //      YouTube's resumable-upload session URL supports CORS PUTs without
+  //      any Authorization header — the URL itself is pre-signed.
+  //   3. On the last chunk YT returns HTTP 200/201 with the Video resource
+  //      (including the video id). Browser POSTs that back to Apps Script
+  //      (action=youtube_finalize_upload) to flip the row to 'Uploaded'
+  //      and ping Teams.
+  //
+  // Warn the user before closing the tab mid-upload — closing mid-flight
+  // leaves an orphaned resumable session on YouTube's side that eventually
+  // expires and stays as a broken partial.
+  useEffect(()=>{
+    const onBeforeUnload=(e)=>{
+      if(submittingRef.current){ e.preventDefault(); e.returnValue=''; return ''; }
+    };
+    window.addEventListener('beforeunload',onBeforeUnload);
+    return ()=>window.removeEventListener('beforeunload',onBeforeUnload);
+  },[]);
+
+  async function handleSubmit(){
+    if(submittingRef.current)return;
+    submittingRef.current=true;
+    const bail=(t)=>{ submittingRef.current=false; setSubmitting(false); setUploadPhase(''); setUploadPct(0); setSubmitMsg({ok:false,t}); };
+
+    if(!form.requestor||!form.title||!form.email){ return bail('Name, email, and video title are required.'); }
+    if(!form.proofread){ return bail('Please acknowledge that you have proofread all content.'); }
+    if(!videoFile){ return bail('Choose a video file to upload.'); }
+
+    setSubmitting(true); setSubmitMsg(null); setUploadPct(0); setUploadedBytes(0);
+    const channel = form.engine==='Yes' ? 'engine' : 'main';
+    let rowIndex=null, uploadUrl=null;
+
+    // ── 1. Init the resumable session server-side ────────────────
+    try{
+      setUploadPhase('init');
+      const initResp=await fetch(API,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body:JSON.stringify({
+          action:'youtube_init_upload',
+          channel,
+          size:videoFile.size,
+          mimeType:videoFile.type||'video/mp4',
+          ...form,
+        })
+      });
+      const j=await initResp.json();
+      if(j.error||!j.uploadUrl) throw new Error(j.error||'No upload URL returned');
+      uploadUrl=j.uploadUrl;
+      rowIndex=j.rowIndex;
+    }catch(e){ return bail('Could not start upload: '+e.message); }
+
+    // ── 2. Chunked PUT to YouTube ────────────────────────────────
+    // Chunks must be multiples of 256 KB per YT resumable spec.
+    // 8 MB keeps memory low and matches YT's recommended range.
+    const CHUNK=8*1024*1024;
+    let offset=0, videoId=null;
+    setUploadPhase('uploading');
+    while(offset<videoFile.size){
+      const end=Math.min(offset+CHUNK, videoFile.size);
+      const chunk=videoFile.slice(offset,end);
+      try{
+        const putResp=await fetch(uploadUrl,{
+          method:'PUT',
+          headers:{
+            'Content-Type':videoFile.type||'video/mp4',
+            'Content-Range':`bytes ${offset}-${end-1}/${videoFile.size}`,
+          },
+          body:chunk,
+        });
+        if(putResp.status===308){
+          offset=end;
+          setUploadPct(offset/videoFile.size);
+          setUploadedBytes(offset);
+        } else if(putResp.status===200||putResp.status===201){
+          const videoData=await putResp.json();
+          videoId=videoData.id;
+          setUploadPct(1);
+          setUploadedBytes(videoFile.size);
+          break;
+        } else {
+          const errText=await putResp.text();
+          throw new Error(`YT rejected chunk at ${offset}: HTTP ${putResp.status} ${errText.substring(0,300)}`);
+        }
+      }catch(e){
+        return bail('Upload failed at '+Math.round(100*offset/videoFile.size)+'%: '+e.message);
+      }
+    }
+
+    if(!videoId){ return bail('Upload finished but no video id was returned by YouTube.'); }
+
+    // ── 3. Finalize — flip sheet row, ping Teams ─────────────────
+    try{
+      setUploadPhase('finalizing');
+      await fetch(API,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body:JSON.stringify({
+          action:'youtube_finalize_upload',
+          channel,
+          rowIndex,
+          videoId,
+          title:form.title,
+          requestor:form.requestor,
+        })
+      });
+    }catch(e){ /* non-fatal — the video is already on YT */ }
+
+    setUploadPhase('done');
+    setSubmitMsg({ok:true,t:`Uploaded! youtu.be/${videoId}`});
+    setForm(emptyForm);
+    setVideoFile(null);
+    submittingRef.current=false; setSubmitting(false);
+    // Refresh the tracker table so the new row appears immediately.
+    load({refresh:true});
+    setTimeout(()=>{ setShowForm(false); setSubmitMsg(null); setUploadPhase(''); setUploadPct(0); },5000);
+  }
+
+  async function loadYtStats(force){
+    setYtStatsLoading(true); setYtStatsError(null);
+    try{
+      const j=await fetchJson(API+'?type=youtube_stats'+(force?'&refresh=1':''));
+      if(j.error) setYtStatsError(j.error);
+      else setYtStats(j);
+    }catch(e){setYtStatsError('Could not reach the analytics endpoint.');}
+    setYtStatsLoading(false);
+  }
+
+  async function handleComplete(){
+    if(!completeModal?.url)return;
+    setCompleting(true);
+    try{
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'youtube_complete',title:completeModal.title,requestor:completeModal.requestor,youtubeUrl:completeModal.url})});
+      const j=await r.json();
+      if(j.success&&j.email){
+        const subj=encodeURIComponent('Your video is now on YouTube: '+completeModal.title);
+        const body=encodeURIComponent('Hi '+(j.name||completeModal.requestor)+',\r\n\r\nYour video "'+completeModal.title+'" is now on YouTube and can be viewed here:\r\n\r\n'+completeModal.url+'\r\n\r\nPlease review and let me know if there are any edits needed.\r\n\r\nThanks,\r\nMatt Leavitt\r\nWebsite & Technology Coordinator\r\nMaine Department of Education');
+        const a=document.createElement('a');a.href='mailto:'+encodeURIComponent(j.email)+'?subject='+subj+'&body='+body;a.click();
+      }
+      // Force-refresh — belt-and-suspenders in case the backend eviction race loses.
+      await load({refresh:true});setCompleteModal(null);
+    }catch(e){console.error(e);}
+    setCompleting(false);
+  }
+
+  // Don't block the whole App on the submissions fetch — the Analytics tab
+  // should still render if a viewer switches tabs while data is loading.
+
+  return <div style={{maxWidth:1200,margin:'0 auto',padding:'0 28px',animation:'fadeIn 0.3s ease'}}>
+
+    {/* ── HERO ── */}
+    <div style={{background:'linear-gradient(135deg,#0c1926,#162d44)',borderRadius:'0 0 20px 20px',padding:'32px',marginBottom:28,position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',inset:0,pointerEvents:'none',backgroundImage:'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',backgroundSize:'60px 60px'}}/>
+      <div style={{position:'relative',zIndex:1}}>
+        <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:20}}>
+          <div style={{width:48,height:48,borderRadius:14,background:'linear-gradient(135deg,#ef4444,#dc2626)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 16px rgba(239,68,68,0.3)'}}>
+            <Sv d={ic.video} size={24} color="#fff"/>
+          </div>
+          <div>
+            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:4}}>
+              <h1 style={{fontSize:24,fontWeight:800,color:'#fff',margin:0}}>YouTube Tracker</h1>
+              <span style={{fontSize:10,fontWeight:800,letterSpacing:'.1em',padding:'3px 9px',borderRadius:6,background:'linear-gradient(135deg,#34d399,#059669)',color:'#0c1926'}}>V2 · DIRECT UPLOAD</span>
+            </div>
+            <p style={{fontSize:13,color:'#94a3b8',margin:0,fontWeight:500}}>Testing pathway — video uploads to YouTube straight from your browser. No Drive step.</p>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+          <button onClick={()=>setShowForm(true)} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'linear-gradient(135deg,#ef4444,#dc2626)',color:'#fff',border:'none',fontSize:14,fontWeight:700,boxShadow:'0 4px 16px rgba(239,68,68,0.3)',cursor:'pointer'}}>
+            <Sv d={ic.upload} size={18} color="#fff"/> Submit New Video
+          </button>
+          <a href="youtube-tracker.html" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',color:'#e2e8f0',textDecoration:'none',fontSize:14,fontWeight:600}}>
+            ← Back to v1
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* ── TABS ── */}
+    <div style={{display:'flex',gap:6,padding:'4px',background:'#0e1c2a',borderRadius:12,marginBottom:20,width:'fit-content'}}>
+      {[
+        {id:'submissions',label:'Submissions',icon:ic.upload},
+        {id:'analytics',label:'Library & Stats',icon:["M3 3v18h18","M18 17V9","M13 17V5","M8 17v-3"]},
+      ].map(t=>{
+        const active=tab===t.id;
+        return <button key={t.id} onClick={()=>{setTab(t.id); if(t.id==='analytics'&&!ytStats&&!ytStatsLoading) loadYtStats();}}
+          style={{display:'inline-flex',alignItems:'center',gap:8,padding:'8px 18px',borderRadius:9,border:'none',cursor:'pointer',
+            background:active?'linear-gradient(135deg,#ef4444,#dc2626)':'transparent',
+            color:active?'#fff':'#94a3b8',
+            fontSize:13,fontWeight:active?800:600,letterSpacing:'.01em',fontFamily:'inherit',
+            boxShadow:active?'0 4px 12px rgba(239,68,68,0.35)':'none',transition:'all .15s'}}>
+          <Sv d={t.icon} size={14} color={active?'#fff':'#94a3b8'}/>
+          {t.label}
+        </button>;
+      })}
+    </div>
+
+    {tab==='submissions'&&<>
+    {loading&&<div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:10,padding:'12px 18px',background:'#0e1c2a',borderRadius:10,marginBottom:16,color:'#94a3b8',fontSize:13,fontWeight:600}}>
+      <Sv d={ic.spin} size={16} color="#42c3f7" style={{animation:'spin 1s linear infinite'}}/>
+      Loading submissions...
+    </div>}
+    {err&&!loading&&<div style={{padding:'12px 16px',background:'#8a2e1310',border:'1.5px solid #8a2e1340',borderLeft:'4px solid #8a2e13',borderRadius:8,marginBottom:16,fontSize:13,color:'#182b3c',fontWeight:500,lineHeight:1.55}}>
+      <strong style={{color:'#8a2e13'}}>Couldn't load submissions:</strong> {err} <button onClick={load} style={{marginLeft:8,padding:'4px 10px',borderRadius:6,border:'none',background:'#8a2e13',color:'#fff',fontSize:11.5,fontWeight:700,cursor:'pointer'}}>Retry</button>
+    </div>}
+    {/* ── SUBMISSION TIPS ── */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,borderLeft:`4px solid ${B.teal}`,padding:'14px 18px',marginBottom:20,display:'flex',alignItems:'flex-start',gap:14}}>
+      <div style={{width:32,height:32,borderRadius:8,background:`${B.teal}12`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+        <Sv d={["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 16v-4","M12 8h.01"]} size={16} color={B.teal}/>
+      </div>
+      <div style={{flex:1}}>
+        <div style={{fontSize:11,fontWeight:700,color:'#2da8d8',letterSpacing:'.05em',textTransform:'uppercase',marginBottom:4}}>Before you submit</div>
+        <div style={{fontSize:13,color:B.txtSec,lineHeight:1.65,fontWeight:500}}>
+          Ask: <strong>"Does this provide value to the field and/or to the public?"</strong> YouTube is not a holding space for videos — it's a means of sharing content that promotes our mission. <strong style={{color:'#991b1b'}}>Do not use copyrighted material.</strong> Every team relies on this channel; strikes could result in losing it. Review privacy settings — "Private" is rarely appropriate here, and "Unlisted" is only for specific circumstances (like a targeted school administrative unit). Make sure your office director knows what content you're sharing.
+        </div>
+      </div>
+    </div>
+
+    {/* ── STATS ── */}
+    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
+      {[{l:'Total',v:stats.total,c:B.teal,f:''},{l:'Received',v:stats.received,c:'#3b82f6',f:'Received'},{l:'Processing',v:stats.processing,c:'#f59e0b',f:'Processing'},{l:'Complete',v:stats.complete,c:'#16a34a',f:'Complete'}].map((m,i)=>(
+        <div key={i} onClick={()=>setFilter(filter===m.f?'':m.f)} style={{background:B.wh,borderRadius:14,padding:'16px 18px',border:`2px solid ${filter===m.f||(m.f===''&&!filter)?m.c+'50':B.border+'30'}`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)',cursor:'pointer',transition:'all 0.15s'}}>
+          <div style={{fontSize:10,color:B.txtMute,textTransform:'uppercase',fontWeight:700,letterSpacing:.4,marginBottom:4,display:'flex',alignItems:'center',gap:5}}>
+            <span style={{width:8,height:8,borderRadius:'50%',background:m.c}}/>{m.l}
+          </div>
+          <div style={{fontSize:28,fontWeight:800,color:B.navy,lineHeight:1}}>{m.v}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* ── SEARCH ── */}
+    <div style={{display:'flex',gap:8,marginBottom:14}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 16px',background:B.wh,borderRadius:10,border:`2px solid ${B.border}30`,flex:1}}>
+        <Sv d={ic.search} size={16} color={B.txtMute}/>
+        <input type="text" placeholder="Search by title, requestor, or team..." value={search} onChange={e=>setSearch(e.target.value)} style={{border:'none',outline:'none',flex:1,fontSize:14,color:B.txt,fontWeight:500,background:'transparent'}}/>
+        {search&&<span onClick={()=>setSearch('')} style={{cursor:'pointer'}}><Sv d={ic.x} size={14} color={B.txtMute}/></span>}
+      </div>
+    </div>
+
+    <div style={{fontSize:13,color:B.txtSec,fontWeight:600,marginBottom:10}}>{filtered.length} submission{filtered.length!==1?'s':''}{filter&&` — ${filter}`}</div>
+
+    {/* ── TABLE ── */}
+    <div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)',marginBottom:40}}>
+      <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+        <thead><tr style={{background:B.navy,color:'#fff'}}>
+          {['Date','Video Title','Requestor','Team','Status',''].map((h,i)=>(
+            <th key={i} style={{padding:'12px 16px',fontWeight:700,textAlign:i===4?'center':'left',fontSize:12}}>{h}</th>
+          ))}
+        </tr></thead>
+        <tbody>
+          {filtered.map((s,i)=>{
+            const st=ST[s.status]||ST.Received;
+            const isExp=expanded===i;
+            return <React.Fragment key={i}>
+              <tr style={{borderBottom:isExp?'none':`1px solid ${B.border}20`,cursor:'pointer'}} onClick={()=>setExpanded(isExp?null:i)}
+                onMouseEnter={e=>e.currentTarget.style.background=`${B.teal}06`} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={{padding:'14px 16px',fontSize:12,color:B.txtMute,whiteSpace:'nowrap',fontWeight:500}}>{s.date}</td>
+                <td style={{padding:'14px 16px',fontWeight:600,color:B.txt}}>
+                  {s.title}
+                  {s.engine&&<span style={{marginLeft:8,fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'#dbeafe',color:'#1e40af',border:'1px solid #93c5fd'}}>EnGiNE</span>}
+                </td>
+                <td style={{padding:'14px 16px',color:B.txtSec,fontWeight:500}}>{s.requestor}</td>
+                <td style={{padding:'14px 16px',color:B.txtSec,fontWeight:500,fontSize:12}}>{s.team}</td>
+                <td style={{padding:'14px 16px',textAlign:'center'}}>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'4px 14px',borderRadius:20,fontSize:11,fontWeight:700,background:st.bg,color:st.color,border:`1.5px solid ${st.border}`}}>
+                    {s.status==='Complete'&&<Sv d={ic.check} size={12} color={st.color}/>}
+                    {s.status==='Processing'&&<Sv d={ic.clock} size={12} color={st.color}/>}
+                    {s.status}
+                  </span>
+                </td>
+                <td style={{padding:'14px 16px',textAlign:'center'}}>
+                  {s.url?<a href={s.url} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()}
+                    style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:`2px solid ${B.border}30`,background:B.wh,color:B.teal,textDecoration:'none',fontSize:11,fontWeight:700}}>
+                    <Sv d={ic.play} size={12} color={B.teal}/> Watch
+                  </a>:s.status!=='Complete'?<button onClick={e=>{e.stopPropagation();setCompleteModal({title:s.title,requestor:s.requestor,url:''});}}
+                    style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:`2px solid ${B.green}40`,background:`${B.green}08`,color:B.green,fontSize:11,fontWeight:700,cursor:'pointer'}}>
+                    <Sv d={ic.check} size={12} color={B.green}/> Complete
+                  </button>:<span style={{color:B.txtMute,fontSize:11}}>—</span>}
+                </td>
+              </tr>
+              {isExp&&<tr style={{borderBottom:`1px solid ${B.border}20`}}>
+                <td colSpan={6} style={{padding:0}}>
+                  <div style={{padding:'16px 20px 16px 48px',background:`${B.navy}03`,display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+                    <div>
+                      <div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:8}}>Details</div>
+                      {s.description&&<div style={{fontSize:13,color:B.txtSec,lineHeight:1.6,marginBottom:10,fontWeight:500}}>{s.description}</div>}
+                      {s.mediaType&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Type:</strong> {s.mediaType}</div>}
+                      {s.playlist&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Playlist:</strong> {s.playlist}</div>}
+                      {s.privacy&&<div style={{fontSize:12,color:B.txtSec,marginBottom:4}}><strong>Privacy:</strong> {s.privacy}</div>}
+                    </div>
+                    <div>
+                      {s.engine&&<div style={{marginBottom:8}}>
+                        <div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:6}}>EnGiNE</div>
+                        <div style={{fontSize:12,color:B.txtSec}}><strong>Course:</strong> {s.engineCourse||'—'}</div>
+                      </div>}
+                      {s.notes&&<div>
+                        <div style={{fontSize:11,fontWeight:700,color:B.txtMute,textTransform:'uppercase',letterSpacing:.4,marginBottom:6}}>Special Notes</div>
+                        <div style={{fontSize:12,color:B.txtSec,lineHeight:1.5}}>{s.notes}</div>
+                      </div>}
+                    </div>
+                  </div>
+                </td>
+              </tr>}
+            </React.Fragment>;
+          })}
+          {filtered.length===0&&<tr><td colSpan={6} style={{padding:40,textAlign:'center',color:B.txtMute}}>No submissions found.</td></tr>}
+        </tbody>
+      </table>
+    </div>
+
+    {/* ── SUBMIT FORM MODAL ── */}
+    {showForm&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(6px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
+      onClick={e=>{if(e.target===e.currentTarget)tryCloseForm();}}>
+      <div style={{background:B.wh,borderRadius:20,width:'100%',maxWidth:640,maxHeight:'90vh',overflow:'auto',boxShadow:'0 24px 80px rgba(0,0,0,0.2)',animation:'fadeIn 0.2s ease'}}>
+        <div style={{padding:'24px 28px 16px',borderBottom:`2px solid ${B.border}30`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <div style={{width:40,height:40,borderRadius:12,background:'linear-gradient(135deg,#ef4444,#dc2626)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <Sv d={ic.video} size={20} color="#fff"/>
+            </div>
+            <div>
+              <h2 style={{fontSize:18,fontWeight:800,color:B.navy,margin:0}}>Submit a Video</h2>
+              <p style={{fontSize:12,color:B.txtMute,margin:0}}>Fill this in, pick your video file, and it uploads straight to YouTube — no Drive step.</p>
+            </div>
+          </div>
+          <button onClick={tryCloseForm} style={{background:'none',border:'none',cursor:'pointer',padding:4}}><Sv d={ic.x} size={20} color={B.txtMute}/></button>
+        </div>
+        <div style={{padding:'20px 28px 28px'}}>
+          {/* Copyright warning */}
+          <div style={{padding:'12px 16px',borderRadius:10,background:'#fee2e2',border:'1.5px solid #fca5a5',borderLeft:'4px solid #ef4444',marginBottom:20,fontSize:13,color:'#991b1b',fontWeight:500,lineHeight:1.6}}>
+            <strong>IMPORTANT:</strong> Your video cannot contain copyrighted images/audio that you do not have permission to use. This can result in a copyright strike and the department losing our YouTube channel permanently.
+          </div>
+
+          <Input label="Your Name" required><Field value={form.requestor} onChange={v=>uf('requestor',v)} placeholder="First Last"/></Input>
+          <Input label="Your Email" required><Field value={form.email} onChange={v=>uf('email',v)} placeholder="name@maine.gov" type="email"/></Input>
+          <Input label="What DOE Team Represents this Video Content" required><Field value={form.team} onChange={v=>uf('team',v)} placeholder="e.g., Communications, Assessment"/></Input>
+
+          <Input label="Title of Video" required>
+            <Field value={form.title} onChange={v=>uf('title',v)} placeholder="60-70 characters recommended"/>
+            <div style={{fontSize:11,color:form.title.length>70?'#ef4444':B.txtMute,marginTop:4,fontWeight:500}}>{form.title.length}/70 characters</div>
+          </Input>
+
+          <Input label="Is your video intended for EnGiNE?">
+            <div style={{display:'flex',gap:8}}>
+              {['Yes','No'].map(o=><button key={o} onClick={()=>uf('engine',o)} style={{padding:'8px 20px',borderRadius:10,fontSize:14,fontWeight:600,cursor:'pointer',border:`2px solid ${form.engine===o?B.teal:B.border+'30'}`,background:form.engine===o?`${B.teal}10`:B.wh,color:form.engine===o?B.navy:B.txtMute}}>{o}</button>)}
+            </div>
+          </Input>
+
+          {form.engine==='Yes'&&<Input label="EnGiNE Course Name"><Field value={form.engineCourse} onChange={v=>uf('engineCourse',v)} placeholder="Course name"/></Input>}
+
+          <Input label="Description" required>
+            <Field value={form.description} onChange={v=>uf('description',v)} type="textarea" placeholder="Give a complete understanding of the video content. If PD, include learning objectives."/>
+            <div style={{fontSize:11,color:B.txtMute,marginTop:4,fontWeight:500}}>Should be longer than a single sentence.</div>
+          </Input>
+
+          <Input label="What type of media are you sharing" required>
+            <select value={form.mediaType} onChange={e=>uf('mediaType',e.target.value)} style={{width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:form.mediaType?B.txt:B.txtMute,background:B.wh,cursor:'pointer',outline:'none'}}>
+              <option value="">Select Type...</option>
+              {['Webinar','Training','Information Session','Promotional Media','Office Hours','Good News'].map(o=><option key={o} value={o}>{o}</option>)}
+            </select>
+          </Input>
+
+          <Input label="Playlists to add to">
+            <Field value={form.playlist} onChange={v=>uf('playlist',v)} placeholder="List all playlists"/>
+            <div style={{fontSize:11,color:B.txtMute,marginTop:4}}><a href="https://www.youtube.com/@MaineDOEComm/playlists" target="_blank" rel="noopener noreferrer" style={{color:B.teal,fontWeight:600}}>View current playlists →</a></div>
+          </Input>
+
+          <Input label="Privacy Setting">
+            <div style={{display:'flex',flexDirection:'column',gap:6}}>
+              {[{v:'Public',l:'Public — Most Common / For Everyone'},{v:'Unlisted',l:"Unlisted — Doesn't show in search, need direct link"},{v:'Private',l:'Private — Only accessible through sharing (rare)'}].map(o=>(
+                <button key={o.v} onClick={()=>uf('privacy',o.v)} style={{padding:'10px 16px',borderRadius:10,fontSize:13,fontWeight:500,cursor:'pointer',textAlign:'left',border:`2px solid ${form.privacy===o.v?B.teal:B.border+'30'}`,background:form.privacy===o.v?`${B.teal}10`:B.wh,color:form.privacy===o.v?B.navy:B.txtSec}}>{o.l}</button>
+              ))}
+            </div>
+          </Input>
+
+          <Input label="Any special notes?"><Field value={form.notes} onChange={v=>uf('notes',v)} type="textarea" placeholder="Anything else we should know?"/></Input>
+
+          {/* Direct upload picker + progress */}
+          <div style={{padding:'18px 20px',borderRadius:12,background:'linear-gradient(135deg,#0c192608,#162d4408)',border:`2px solid ${B.teal}20`,marginBottom:20}}>
+            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
+              <Sv d={ic.upload} size={18} color={B.teal}/>
+              <div style={{fontSize:14,fontWeight:700,color:B.navy}}>Pick your video file</div>
+              <span style={{fontSize:10,fontWeight:800,letterSpacing:'.08em',padding:'2px 8px',borderRadius:5,background:'#dcfce7',color:'#166534'}}>UPLOADS TO {form.engine==='Yes'?'ENGINE':'MAIN'} CHANNEL</span>
+            </div>
+            <p style={{fontSize:12,color:B.txtMute,lineHeight:1.55,fontWeight:500,marginBottom:12}}>
+              Uploads directly to YouTube (Private, review in Studio before publishing). No Drive folder needed. <strong style={{color:'#8a3900'}}>Keep this tab open until the progress bar shows 100%.</strong>
+            </p>
+            {!videoFile ? (
+              <label style={{display:'flex',alignItems:'center',gap:12,padding:'16px 20px',borderRadius:10,border:`2px dashed ${B.border}`,background:B.wh,cursor:submitting?'not-allowed':'pointer',color:B.txtSec,fontSize:13,fontWeight:600}}>
+                <Sv d={ic.upload} size={20} color={B.teal}/>
+                <span>Choose a video file… <span style={{color:B.txtMute,fontWeight:500}}>(mp4, mov, mkv, webm, etc.)</span></span>
+                <input type="file" accept="video/*" disabled={submitting} onChange={e=>{const f=e.target.files&&e.target.files[0]; if(f) setVideoFile(f);}} style={{display:'none'}}/>
+              </label>
+            ) : (
+              <div style={{padding:'12px 16px',borderRadius:10,background:B.wh,border:`2px solid ${B.border}30`}}>
+                <div style={{display:'flex',alignItems:'center',gap:10}}>
+                  <Sv d={ic.video} size={18} color={B.teal}/>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:13,fontWeight:700,color:B.navy,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{videoFile.name}</div>
+                    <div style={{fontSize:11,color:B.txtMute,fontWeight:500,marginTop:2}}>{(videoFile.size/1048576).toFixed(1)} MB · {videoFile.type||'video'}</div>
+                  </div>
+                  {!submitting && <button onClick={()=>setVideoFile(null)} style={{background:'none',border:'none',cursor:'pointer',color:B.txtMute,padding:4}}>
+                    <Sv d={ic.x} size={16} color={B.txtMute}/>
+                  </button>}
+                </div>
+                {uploadPhase && (
+                  <div style={{marginTop:12}}>
+                    <div style={{display:'flex',justifyContent:'space-between',fontSize:11,fontWeight:700,color:B.txtSec,marginBottom:5,textTransform:'uppercase',letterSpacing:'.06em'}}>
+                      <span>
+                        {uploadPhase==='init'&&'Opening upload session…'}
+                        {uploadPhase==='uploading'&&`Uploading to YouTube (${form.engine==='Yes'?'EnGiNE':'Main'})`}
+                        {uploadPhase==='finalizing'&&'Finalizing…'}
+                        {uploadPhase==='done'&&'Done'}
+                      </span>
+                      <span>{Math.round(uploadPct*100)}% · {(uploadedBytes/1048576).toFixed(1)} / {(videoFile.size/1048576).toFixed(1)} MB</span>
+                    </div>
+                    <div style={{width:'100%',height:8,borderRadius:4,background:B.border+'30',overflow:'hidden'}}>
+                      <div style={{width:(uploadPct*100).toFixed(1)+'%',height:'100%',background:uploadPhase==='done'?'linear-gradient(90deg,#34d399,#059669)':'linear-gradient(90deg,#42c3f7,#0d7ba0)',transition:'width 0.25s ease'}}/>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Proofread checkbox */}
+          <div style={{padding:'14px 16px',borderRadius:10,background:'#f8fafc',border:`2px solid ${form.proofread?B.teal:B.border+'30'}`,marginBottom:20,cursor:'pointer',display:'flex',alignItems:'flex-start',gap:12}} onClick={()=>uf('proofread',!form.proofread)}>
+            <div style={{width:22,height:22,borderRadius:6,border:`2px solid ${form.proofread?B.teal:B.border}`,background:form.proofread?B.teal:'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
+              {form.proofread&&<Sv d={ic.tick} size={14} color="#fff"/>}
+            </div>
+            <div style={{fontSize:13,color:B.navy,fontWeight:600,lineHeight:1.5}}>I have proofread all content and there are no spelling or grammatical errors.</div>
+          </div>
+
+          {submitMsg&&<div style={{padding:'10px 16px',borderRadius:10,marginBottom:14,fontSize:13,fontWeight:600,background:submitMsg.ok?'#d1fae5':'#fee2e2',color:submitMsg.ok?'#065f46':'#991b1b',border:`1.5px solid ${submitMsg.ok?'#6ee7b7':'#fca5a5'}`}}>{submitMsg.t}</div>}
+
+          <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+            <button onClick={tryCloseForm} style={{padding:'12px 24px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:14,fontWeight:600,cursor:'pointer'}}>Cancel</button>
+            <button onClick={handleSubmit} disabled={submitting||!videoFile} style={{padding:'12px 28px',borderRadius:10,border:'none',background:(submitting||!videoFile)?'#94a3b8':'linear-gradient(135deg,#ef4444,#dc2626)',color:'#fff',fontSize:14,fontWeight:700,cursor:(submitting||!videoFile)?'default':'pointer',display:'flex',alignItems:'center',gap:8}}>
+              {submitting?<><Sv d={ic.spin} size={16} color="#fff" style={{animation:'spin 1s linear infinite'}}/> {uploadPhase==='uploading'?`Uploading ${Math.round(uploadPct*100)}%…`:uploadPhase==='finalizing'?'Finalizing…':uploadPhase==='done'?'Done!':'Starting…'}</>:<><Sv d={ic.upload} size={16} color="#fff"/> Upload to YouTube</>}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>}
+
+    {/* ── COMPLETE MODAL ── */}
+    {completeModal&&<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',backdropFilter:'blur(6px)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
+      onClick={e=>{if(e.target===e.currentTarget)setCompleteModal(null);}}>
+      <div style={{background:B.wh,borderRadius:20,width:'100%',maxWidth:480,boxShadow:'0 24px 80px rgba(0,0,0,0.2)',animation:'fadeIn 0.2s ease',padding:28}}>
+        <h2 style={{fontSize:18,fontWeight:800,color:B.navy,marginBottom:4}}>Mark as Complete</h2>
+        <p style={{fontSize:13,color:B.txtMute,marginBottom:20}}><strong>{completeModal.title}</strong> by {completeModal.requestor}</p>
+        <Input label="YouTube URL" required><Field value={completeModal.url} onChange={v=>setCompleteModal(p=>({...p,url:v}))} placeholder="https://youtu.be/..."/></Input>
+        <div style={{padding:'12px 16px',borderRadius:10,background:'#f0fdf4',border:'1.5px solid #bbf7d0',marginBottom:20,fontSize:13,color:'#065f46',fontWeight:500,lineHeight:1.6}}>
+          This will update the status to <strong>Complete</strong>, notify the team in Teams, and open a pre-filled email to the requestor in Outlook.
+        </div>
+        <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+          <button onClick={()=>setCompleteModal(null)} style={{padding:'10px 20px',borderRadius:10,border:`2px solid ${B.border}30`,background:B.wh,color:B.txtSec,fontSize:14,fontWeight:600,cursor:'pointer'}}>Cancel</button>
+          <button onClick={handleComplete} disabled={completing||!completeModal.url} style={{padding:'10px 24px',borderRadius:10,border:'none',background:completing||!completeModal.url?'#94a3b8':'linear-gradient(135deg,#16a34a,#15803d)',color:'#fff',fontSize:14,fontWeight:700,cursor:completing?'default':'pointer',display:'flex',alignItems:'center',gap:6}}>
+            {completing?<><Sv d={ic.spin} size={14} color="#fff" style={{animation:'spin 1s linear infinite'}}/> Sending...</>:<><Sv d={ic.check} size={14} color="#fff"/> Complete & Notify</>}
+          </button>
+        </div>
+      </div>
+    </div>}
+
+    </>}
+
+    {tab==='analytics'&&<YouTubeAnalytics stats={ytStats} loading={ytStatsLoading} error={ytStatsError} onReload={()=>loadYtStats(true)}/>}
+
+    <div style={{textAlign:'center',padding:'0 0 40px',fontSize:12,color:B.txtMute,fontWeight:500}}>Maine Department of Education · Communications Portal</div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>if(window.self!==window.top)document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("portal-bar");if(b)b.style.display="none";});</script>
+</body>
+</html>

@@ -924,6 +924,136 @@ function doPost(e) {
         if (!found) { result = { error: 'Submission not found in sheet' }; }
       }
 
+    } else if (body.action === 'youtube_init_upload') {
+      // v2 direct-upload flow, step 1: server opens a YouTube resumable
+      // upload session using the OAuth token stored for the chosen channel,
+      // then hands the Location URL back so the BROWSER can stream chunks
+      // directly to YouTube (bypasses Drive, bypasses Apps Script's payload
+      // ceilings entirely). Also inserts a Received-status row into the
+      // YouTubeSubmissions sheet so the tracker table shows the upload
+      // in-flight — that row flips to Uploaded in youtube_finalize_upload.
+      var channel = String(body.channel || 'main').toLowerCase();
+      var tokenForChannel = _getYtUploadToken(channel);
+      if (!tokenForChannel.ok) {
+        result = { error: tokenForChannel.error };
+      } else {
+        var initSize = parseInt(body.size, 10) || 0;
+        var initMime = String(body.mimeType || 'video/mp4');
+        var initTitle = String(body.title || 'Untitled').substring(0, 100);
+        var initDesc = String(body.description || 'Uploaded via Maine DOE Communications Portal').substring(0, 5000);
+        var initResource = {
+          snippet: {
+            title: initTitle,
+            description: initDesc,
+            categoryId: '27'
+          },
+          status: {
+            privacyStatus: 'private',
+            selfDeclaredMadeForKids: false
+          }
+        };
+        var initR = UrlFetchApp.fetch(
+          'https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status',
+          {
+            method: 'post',
+            contentType: 'application/json',
+            headers: {
+              'Authorization': 'Bearer ' + tokenForChannel.token,
+              'X-Upload-Content-Length': initSize,
+              'X-Upload-Content-Type': initMime
+            },
+            payload: JSON.stringify(initResource),
+            muteHttpExceptions: true
+          }
+        );
+        if (initR.getResponseCode() !== 200) {
+          result = { error: 'YouTube init failed: HTTP ' + initR.getResponseCode() + ' ' + initR.getContentText().substring(0, 400) };
+        } else {
+          var newUploadUrl = initR.getHeaders()['Location'] || initR.getHeaders()['location'];
+          if (!newUploadUrl) {
+            result = { error: 'No upload URL returned from YouTube' };
+          } else {
+            // Append a row to YouTubeSubmissions so it shows in the tracker.
+            var initConfig = getConfig();
+            var initSs = SpreadsheetApp.openById(initConfig.sheetId);
+            var initSheet = initSs.getSheetByName('YouTubeSubmissions');
+            var newRowIndex = 0;
+            if (initSheet) {
+              var initNow = new Date();
+              var initDateStr = (initNow.getMonth() + 1) + '/' + initNow.getDate() + '/' + initNow.getFullYear();
+              initSheet.appendRow([
+                initDateStr,
+                body.requestor || '',
+                body.email || '',
+                body.team || '',
+                initTitle,
+                initDesc,
+                body.mediaType || '',
+                body.playlist || '',
+                body.privacy || 'Private',
+                body.engine || '',
+                body.engineCourse || '',
+                body.notes || '',
+                'Uploading',
+                ''
+              ]);
+              newRowIndex = initSheet.getLastRow();
+            }
+            try { CacheService.getScriptCache().remove('portal_youtube_30'); } catch(_) {}
+            result = { success: true, uploadUrl: newUploadUrl, rowIndex: newRowIndex, channel: channel };
+          }
+        }
+      }
+
+    } else if (body.action === 'youtube_finalize_upload') {
+      // v2 direct-upload flow, step 2 (called after browser finishes the PUT
+      // chain): flip the sheet row to Uploaded, save the YT URL, ping Teams.
+      var finalConfig = getConfig();
+      var finalSs = SpreadsheetApp.openById(finalConfig.sheetId);
+      var finalSheet = finalSs.getSheetByName('YouTubeSubmissions');
+      var finalRow = parseInt(body.rowIndex, 10) || 0;
+      var finalVid = String(body.videoId || '');
+      if (finalSheet && finalRow > 0 && finalVid) {
+        try {
+          finalSheet.getRange(finalRow, 13).setValue('Uploaded');
+          finalSheet.getRange(finalRow, 14).setValue('YT: https://youtu.be/' + finalVid);
+        } catch (finalErr) {
+          Logger.log('Finalize sheet write failed: ' + finalErr.message);
+        }
+      }
+      try { CacheService.getScriptCache().remove('portal_youtube_30'); } catch(_) {}
+      // Teams notification
+      try {
+        var finalWebhook = PropertiesService.getScriptProperties().getProperty('TEAMS_WEBHOOK');
+        if (finalWebhook) {
+          UrlFetchApp.fetch(finalWebhook, {
+            method: 'post',
+            contentType: 'application/json',
+            muteHttpExceptions: true,
+            payload: JSON.stringify({
+              type: 'message',
+              attachments: [{
+                contentType: 'application/vnd.microsoft.card.adaptive',
+                content: {
+                  type: 'AdaptiveCard',
+                  version: '1.4',
+                  body: [
+                    { type: 'TextBlock', size: 'Medium', weight: 'Bolder', text: '🎬 Direct upload complete' },
+                    { type: 'FactSet', facts: [
+                      { title: 'Title', value: String(body.title || '') },
+                      { title: 'Channel', value: (String(body.channel || 'main').toLowerCase() === 'engine') ? 'EnGiNE' : 'Main' },
+                      { title: 'Video', value: 'https://youtu.be/' + finalVid },
+                      { title: 'Requestor', value: String(body.requestor || '') }
+                    ]}
+                  ]
+                }
+              }]
+            })
+          });
+        }
+      } catch (finalTeamsErr) { Logger.log('Teams notify failed: ' + finalTeamsErr.message); }
+      result = { success: true, videoId: finalVid };
+
     } else if (body.action === 'event_submit') {
       // New schema submission — hands off to submitNewEvent in Calendar.gs
       var submitRes = submitNewEvent(body.fields || {});
@@ -2534,6 +2664,60 @@ function processYouTubeUploads() {
   }
 
   _notifyYtUploads(uploaded);
+}
+
+/**
+ * Return an OAuth token that can upload to a specific YouTube channel.
+ *
+ * v1 (this commit): always returns ScriptApp.getOAuthToken(). That token
+ * uploads to whichever channel Matt consented to when the auto-uploader was
+ * first granted. Fine for testing the direct-upload path end-to-end, but
+ * NOT ready for real per-channel routing — both `main` and `engine` requests
+ * go to the same channel.
+ *
+ * v2 (next commit, requires Matt to add the OAuth2 library + register a
+ * GCP OAuth client): store two per-channel refresh tokens in Script
+ * Properties (YT_REFRESH_MAIN, YT_REFRESH_ENGINE) and exchange them for
+ * fresh access tokens on demand. That's the only way to target a specific
+ * Brand Account channel from a single Apps Script project.
+ *
+ * Returns { ok: true, token, channel } on success or { ok: false, error }.
+ */
+function _getYtUploadToken(channel) {
+  var props = PropertiesService.getScriptProperties();
+  var refreshKey = channel === 'engine' ? 'YT_REFRESH_ENGINE' : 'YT_REFRESH_MAIN';
+  var storedRefresh = props.getProperty(refreshKey);
+  var clientId = props.getProperty('YT_OAUTH_CLIENT_ID');
+  var clientSecret = props.getProperty('YT_OAUTH_CLIENT_SECRET');
+
+  if (storedRefresh && clientId && clientSecret) {
+    // Per-channel token exchange — the "real" path once Matt has run the
+    // one-time OAuth consent for both channels.
+    try {
+      var resp = UrlFetchApp.fetch('https://oauth2.googleapis.com/token', {
+        method: 'post',
+        payload: {
+          client_id: clientId,
+          client_secret: clientSecret,
+          refresh_token: storedRefresh,
+          grant_type: 'refresh_token'
+        },
+        muteHttpExceptions: true
+      });
+      if (resp.getResponseCode() === 200) {
+        var tokenData = JSON.parse(resp.getContentText());
+        return { ok: true, token: tokenData.access_token, channel: channel };
+      }
+      return { ok: false, error: 'Token exchange failed for ' + channel + ': HTTP ' + resp.getResponseCode() + ' ' + resp.getContentText().substring(0, 200) };
+    } catch (e) {
+      return { ok: false, error: 'Token exchange error for ' + channel + ': ' + e.message };
+    }
+  }
+
+  // Fallback — no per-channel token configured yet. Use the script's own
+  // OAuth. This is fine for testing v2 with one channel; per-channel routing
+  // requires the properties above.
+  return { ok: true, token: ScriptApp.getOAuthToken(), channel: 'default' };
 }
 
 function _notifyYtUploads(uploaded) {
