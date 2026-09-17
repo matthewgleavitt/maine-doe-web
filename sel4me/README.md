@@ -38,6 +38,17 @@ with no build step. That is what `mirror_storyline.py` does.
 | `extract_lessons.py`, `organize_media.py`, `download_posters.py` | Earlier capture helpers, kept for reference. |
 | `data/` | Large JSON exports (gitignored). Download from the public BULK folder: `SEL4ME_all_lesson_data.json`, `sel4me_full_catalog.json`, `SEL4ME_all_answer_keys.json`. |
 
+## Setup
+
+You need Python 3. If `python` says "command not found", use `py` (Windows
+launcher) or `python3` (macOS) instead, in every command below. If neither
+exists, install it from https://www.python.org/downloads/ (on Windows, tick
+"Add python.exe to PATH"). The converter needs one extra package:
+
+```
+py -m pip install beautifulsoup4
+```
+
 ## Workflow
 
 1. **Where the modules live.** The platform's lesson markup links each module
