@@ -26,7 +26,7 @@ def safe_module_folder(module_id):
     return re.sub(r'[^A-Za-z0-9._-]', '', module_id.replace(' ', '_'))
 
 
-MODULE_ENTRY_CANDIDATES = ['story.html', 'story_html5.html', 'index.html']
+MODULE_ENTRY_CANDIDATES = ['story.html', 'story_en.html', 'story_html5.html', 'index.html']
 
 
 def find_module_entry(modules_dir, module_id):

@@ -14,7 +14,7 @@ Slide files are referenced by id inside html5/data/js/data.js rather than by
 path, so those ids are collected and fetched as html5/data/js/<id>.js too.
 
 Usage:
-    # 1. Confirm the address pattern for ONE module (fetches only story.html):
+    # 1. Confirm the address pattern for ONE module (fetches only the launcher page):
     python mirror_storyline.py --check \
         --template "https://example.org/path/{id}/" \
         --module Good_Sportsmanship_6_2023
@@ -66,6 +66,7 @@ DEFAULT_UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
 # exist are fetched first; everything else is discovered by following references.
 SEED_PATHS = [
     'story.html',
+    'story_en.html',
     'story_html5.html',
     'index.html',
     'meta.xml',
@@ -78,10 +79,17 @@ SEED_PATHS = [
     'html5/data/js/frame.js',
     'html5/data/css/output.min.css',
     'html5/lib/scripts/bootstrapper.min.js',
+    'html5/lib/scripts/bootstrapper_en.min.js',
+    'html5/lib/scripts/slides.min.js',
+    'html5/lib/scripts/frame.desktop.min.js',
+    'html5/lib/scripts/frame.mobile.min.js',
+    'html5/lib/scripts/app.min.js',
     'html5/lib/stylesheets/main.min.css',
+    'html5/lib/stylesheets/frame.desktop.min.css',
+    'html5/lib/stylesheets/frame.mobile.min.css',
     'mobile/data.js',
 ]
-ENTRY_CANDIDATES = ['story.html', 'story_html5.html', 'index.html']
+ENTRY_CANDIDATES = ['story.html', 'story_en.html', 'story_html5.html', 'index.html']
 
 TEXT_EXT = {'.html', '.htm', '.js', '.css', '.xml', '.json', '.vtt', '.txt', '.svg'}
 ASSET_EXT = ('js|css|json|xml|html?|png|jpe?g|gif|svg|webp|mp4|m4v|webm|mp3|m4a|ogg|wav|'
@@ -254,6 +262,7 @@ class ModuleMirror:
                     continue
                 self.ids_seen.add(sid)
                 out.add('html5/data/js/%s.js' % sid)
+                out.add('html5/data/js/%s_transcripts.js' % sid)
                 out.add('mobile/%s.js' % sid)
         return out
 

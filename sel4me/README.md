@@ -15,7 +15,7 @@ It looks like a video in the lesson, but it is a small static web app:
 
 ```
 Good_Sportsmanship_6_2023/
-├── story.html                 launcher (this is what the platform iframes)
+├── story_en.html              launcher (older builds: story.html)
 ├── html5/data/js/data.js      course structure; slides referenced by 11-char ids
 ├── html5/data/js/<id>.js      one file per slide / layer
 ├── html5/lib/...              player scripts and stylesheets
@@ -51,19 +51,17 @@ py -m pip install beautifulsoup4
 
 ## Workflow
 
-1. **Where the modules live.** The platform's lesson markup links each module
-   as `.../public/articulate/<module id>/story.html` on its static CDN; the
-   "Expected URL" column in *SEL4ME - Missing Articulate Modules.xlsx* lists
-   that address for all 105 lessons. Everything before the module id is the
-   template, e.g. `https://cdn-static.suite360sel.org/public/articulate/{id}/`.
-   If the folder has moved, open a lesson with a module in the platform, open
-   DevTools → Elements, search for `activity_articulate`, and copy the link
-   that points at `story.html`.
+1. **Where the modules live.** The platform loads each module from its own
+   folder on a dedicated host, with `story_en.html` as the launcher (seen in
+   DevTools → Network while a module plays). The template is
+   `https://cdn-articulate.suite360sel.org/{id}/`. If that ever changes, open
+   a lesson with a module, watch the Network tab for the `story_content/`
+   requests, and take everything before the module id.
 
-2. **Confirm the address pattern** (fetches only `story.html`):
+2. **Confirm the address pattern** (fetches only the launcher page):
 
    ```
-   python mirror_storyline.py --check --template "https://cdn-static.suite360sel.org/public/articulate/{id}/" --module Good_Sportsmanship_6_2023
+   python mirror_storyline.py --check --template "https://cdn-articulate.suite360sel.org/{id}/" --module Good_Sportsmanship_6_2023
    ```
 
 3. **Build the inventory** (once):
@@ -75,12 +73,22 @@ py -m pip install beautifulsoup4
 4. **Mirror the modules:**
 
    ```
-   python mirror_storyline.py --template "https://cdn-static.suite360sel.org/public/articulate/{id}/" --modules storyline_modules.json --out modules
+   python mirror_storyline.py --template "https://cdn-articulate.suite360sel.org/{id}/" --modules storyline_modules.json --out modules
    ```
 
    Re-running skips files already on disk. Check `modules/mirror-report.json`
    for anything marked failed or "html-instead-of-file" (that means the
    address is wrong or the folder needs a login).
+
+   To try a mirrored module before uploading, serve the folder locally
+   (opening `story_en.html` straight from Finder will not work, the player
+   loads slides over HTTP):
+
+   ```
+   cd modules && python3 -m http.server 8000
+   ```
+
+   then open http://localhost:8000/Good_Sportsmanship_6_2023/story_en.html
 
 5. **Rebuild the lessons** so they embed the modules:
 
@@ -89,7 +97,7 @@ py -m pip install beautifulsoup4
    ```
 
    The iframe `src` is a relative path from each lesson file to
-   `modules/<safe_folder>/story.html`, so keep `lessons/` and `modules/` side by
+   `modules/<safe_folder>/story_en.html`, so keep `lessons/` and `modules/` side by
    side when uploading. Use `--modules-url https://.../sel4me/modules/` instead
    if the modules end up somewhere else.
 
@@ -98,12 +106,12 @@ py -m pip install beautifulsoup4
 
 ## Hosting notes
 
-- Test **one** module on the BULK folder first and open its `story.html`
+- Test **one** module on the BULK folder first and open its `story_en.html`
   directly. Confirm `.js`, `.css`, `.woff`, `.xml` and `.mp4` files inside it are
   served (not blocked or rewritten) before uploading all 98.
 - Keep the folder structure exactly as mirrored; Storyline uses relative paths.
-- The lesson pages already carry `noindex`; the module `story.html` files do
-  not need to be findable on their own.
+- The lesson pages already carry `noindex`; the module launcher pages do not
+  need to be findable on their own.
 - Folder names: module id with spaces turned into underscores and any other odd
   character dropped. `safe_module_folder()` implements this identically in the
   converter, the inventory builder and the mirror script. Keep them in sync.
