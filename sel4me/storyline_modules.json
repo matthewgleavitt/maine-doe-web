@@ -1,0 +1,1880 @@
+{
+ "generated_from": {
+  "data": "SEL4ME_all_lesson_data.json",
+  "catalog": "sel4me_full_catalog.json"
+ },
+ "module_count": 98,
+ "lesson_count": 105,
+ "modules": [
+  {
+   "id": "A_Conscious_Conscience_G10_2022_Update",
+   "safe_folder": "A_Conscious_Conscience_G10_2022_Update",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3263",
+     "title": "A Conscious Conscience: Using Self-Talk to Manage Anger",
+     "grades": [
+      "Grade 10"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_a_conscious_conscience_using_selftalk_to_manage_anger"
+    }
+   ]
+  },
+  {
+   "id": "A_Matter_of_Perspective_G12_V022124",
+   "safe_folder": "A_Matter_of_Perspective_G12_V022124",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "2978",
+     "title": "A Matter of Perspective",
+     "grades": [
+      "Grade 12"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "rm_a_matter_of_perspective"
+    }
+   ]
+  },
+  {
+   "id": "Am_I_a_Good_Listener_G5_V022224a",
+   "safe_folder": "Am_I_a_Good_Listener_G5_V022224a",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9060",
+     "title": "Am I a Good Listener?",
+     "grades": [
+      "Grade 5"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_am_i_a_good_listener"
+    }
+   ]
+  },
+  {
+   "id": "Am_I_Sharing_or_Bragging_UPDATED_CE",
+   "safe_folder": "Am_I_Sharing_or_Bragging_UPDATED_CE",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8146",
+     "title": "Am I Sharing or Bragging?",
+     "grades": [
+      "Grade 1"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_am_i_sharing_or_bragging"
+    }
+   ]
+  },
+  {
+   "id": "Anger_Management_G10_2023_V022124",
+   "safe_folder": "Anger_Management_G10_2023_V022124",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "6619",
+     "title": "Anger Management",
+     "grades": [
+      "Grade 10"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_anger_management"
+    }
+   ]
+  },
+  {
+   "id": "Are_You_A_Loyal_Friend_G6_2023_V112623a",
+   "safe_folder": "Are_You_A_Loyal_Friend_G6_2023_V112623a",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7655",
+     "title": "Are You A Loyal Friend?",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_are_you_a_loyal_friend"
+    }
+   ]
+  },
+  {
+   "id": "Are_You_Going_to_Play_in_College_G9_2023_V021924",
+   "safe_folder": "Are_You_Going_to_Play_in_College_G9_2023_V021924",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "1595",
+     "title": "Are You Going to Play in College?",
+     "grades": [
+      "Grade 9"
+     ],
+     "competencies": [],
+     "slug": "rm_are_you_going_to_play_in_college"
+    }
+   ]
+  },
+  {
+   "id": "Assertiveness_Finding_Your_Voice_G6_2023_V022124",
+   "safe_folder": "Assertiveness_Finding_Your_Voice_G6_2023_V022124",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7565",
+     "title": "Assertiveness: Finding Your Voice",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_assertiveness_finding_your_voice"
+    }
+   ]
+  },
+  {
+   "id": "Athletic_Recruitment_G10",
+   "safe_folder": "Athletic_Recruitment_G10",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "1356",
+     "title": "Athletic Recruitment",
+     "grades": [
+      "Grade 10"
+     ],
+     "competencies": [],
+     "slug": "rm_athletic_recruitment"
+    }
+   ]
+  },
+  {
+   "id": "Be_A_Learner_For_Life_G1_2023_v022124a",
+   "safe_folder": "Be_A_Learner_For_Life_G1_2023_v022124a",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9238",
+     "title": "Be a Learner For Life!",
+     "grades": [
+      "Grade 1"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_be_a_learner_for_life"
+    }
+   ]
+  },
+  {
+   "id": "Be_Clear_When_Communicating_G10_2022_Update",
+   "safe_folder": "Be_Clear_When_Communicating_G10_2022_Update",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7446",
+     "title": "Be Clear when Communicating",
+     "grades": [
+      "Grade 10"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_be_clear_when_communicating"
+    }
+   ]
+  },
+  {
+   "id": "Beware_What_You_Share_G6_2022_Update",
+   "safe_folder": "Beware_What_You_Share_G6_2022_Update",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "6021",
+     "title": "Beware What You Share: So You Think You Know Social Media?",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "responsible decision making"
+     ],
+     "slug": "rm_beware_what_you_share_so_you_think_you_know_social_media"
+    }
+   ]
+  },
+  {
+   "id": "Bring_Balance_To_Your_Screen_Time_G1_V022124",
+   "safe_folder": "Bring_Balance_To_Your_Screen_Time_G1_V022124",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8863",
+     "title": "Bring Balance To Your Screen Time",
+     "grades": [
+      "Grade 1"
+     ],
+     "competencies": [
+      "responsible decision making"
+     ],
+     "slug": "rm_bring_balance_to_your_screen_time"
+    }
+   ]
+  },
+  {
+   "id": "Can_I_Do_This_Later_G5_2023_V022124",
+   "safe_folder": "Can_I_Do_This_Later_G5_2023_V022124",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "2051",
+     "title": "Can I Do This Later?",
+     "grades": [
+      "Grade 5"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_can_i_do_this_later"
+    }
+   ]
+  },
+  {
+   "id": "Can_I_Play_Too_GK_2022_V022124",
+   "safe_folder": "Can_I_Play_Too_GK_2022_V022124",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8751",
+     "title": "Can I Play Too? How to Join a Group",
+     "grades": [
+      "Grade K"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_can_i_play_too_how_to_join_a_group"
+    }
+   ]
+  },
+  {
+   "id": "Can_We_Talk_Respectful_Communication_Among_Friends_G11",
+   "safe_folder": "Can_We_Talk_Respectful_Communication_Among_Friends_G11",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7238",
+     "title": "Can we Talk? Respectful Communication Among Friends",
+     "grades": [
+      "Grade 11"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_can_we_talk"
+    }
+   ]
+  },
+  {
+   "id": "Career_Options_and_College_G7",
+   "safe_folder": "Career_Options_and_College_G7",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3549",
+     "title": "Career Options and College",
+     "grades": [
+      "Grade 7"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_what_are_the_important_steps_to_getting_into_college"
+    }
+   ]
+  },
+  {
+   "id": "Catching_Some_Zzzs_G9_2022_V022124",
+   "safe_folder": "Catching_Some_Zzzs_G9_2022_V022124",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3892",
+     "title": "Catching Some Zzzzz&#039;s",
+     "grades": [
+      "Grade 9"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_catching_some_zzzzzs"
+    }
+   ]
+  },
+  {
+   "id": "College_Words_to_Know_G2_2023 - Storyline output",
+   "safe_folder": "College_Words_to_Know_G2_2023_-_Storyline_output",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "4745",
+     "title": "College Words to Know",
+     "grades": [
+      "Grade 2"
+     ],
+     "competencies": [
+      "responsible decision making"
+     ],
+     "slug": "rm_college_words_to_know"
+    }
+   ]
+  },
+  {
+   "id": "Communicating_Clearly_G4_2023",
+   "safe_folder": "Communicating_Clearly_G4_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9068",
+     "title": "Communicating Clearly",
+     "grades": [
+      "Grade 4"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_communicating_clearly"
+    }
+   ]
+  },
+  {
+   "id": "Completing_My_Work_Lesson_G2_2023_UPDATED",
+   "safe_folder": "Completing_My_Work_Lesson_G2_2023_UPDATED",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8156",
+     "title": "Completing My Work",
+     "grades": [
+      "Grade 2"
+     ],
+     "competencies": [
+      "responsible decision making"
+     ],
+     "slug": "rm_completing_my_work"
+    }
+   ]
+  },
+  {
+   "id": "Conversations_That_Matter_G10_V022224",
+   "safe_folder": "Conversations_That_Matter_G10_V022224",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7801",
+     "title": "Conversations that Matter",
+     "grades": [
+      "Grade 10"
+     ],
+     "competencies": [
+      "responsible decision making"
+     ],
+     "slug": "rm_conversations_with_parents_that_matter"
+    }
+   ]
+  },
+  {
+   "id": "Cyberbullying_What_You_Need_To_Know_G6",
+   "safe_folder": "Cyberbullying_What_You_Need_To_Know_G6",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "4342",
+     "title": "Cyberbullying: What You Need to Know",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_cyberbullying_what_you_need_to_know"
+    }
+   ]
+  },
+  {
+   "id": "Dealing_with_Conflict_Gracefully_G4_2023",
+   "safe_folder": "Dealing_with_Conflict_Gracefully_G4_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9124",
+     "title": "Dealing with Conflict Gracefully",
+     "grades": [
+      "Grade 4"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_dealing_with_conflict_gracefully_"
+    }
+   ]
+  },
+  {
+   "id": "Different_Places_To_Learn_v2",
+   "safe_folder": "Different_Places_To_Learn_v2",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3521",
+     "title": "Different Places to Learn",
+     "grades": [
+      "Grade 7"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_what_is_college"
+    }
+   ]
+  },
+  {
+   "id": "Do_I_Have_to_Like_Everyone_G3_2023",
+   "safe_folder": "Do_I_Have_to_Like_Everyone_G3_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3707",
+     "title": "Do I Have to Like Everyone?",
+     "grades": [
+      "Grade 3"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_do_i_have_to_like_everyone"
+    }
+   ]
+  },
+  {
+   "id": "Do_We_Have_to_Work_Together_G5_2022_Update - Storyline output",
+   "safe_folder": "Do_We_Have_to_Work_Together_G5_2022_Update_-_Storyline_output",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3674",
+     "title": "Do We Have to Work Together?",
+     "grades": [
+      "Grade 5"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_do_we_have_to_work_together"
+    }
+   ]
+  },
+  {
+   "id": "Embracing_Mistakes_Learning_From_Missteps_G7_UPDATED_v2",
+   "safe_folder": "Embracing_Mistakes_Learning_From_Missteps_G7_UPDATED_v2",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8136",
+     "title": "Embracing Mistakes: Learning from missteps",
+     "grades": [
+      "Grade 7"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "rm_embracing_mistakes_learning_from_missteps"
+    }
+   ]
+  },
+  {
+   "id": "Empathy_The_Key_G8_2022_Update",
+   "safe_folder": "Empathy_The_Key_G8_2022_Update",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7625",
+     "title": "Empathy - The Key to Making the World a Better Place",
+     "grades": [
+      "Grade 8"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_empathy__the_key_to_making_the_world_a_better_place"
+    }
+   ]
+  },
+  {
+   "id": "Facts_About_Friendship_G6_2022_Update",
+   "safe_folder": "Facts_About_Friendship_G6_2022_Update",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3609",
+     "title": "Facts About Friendship: Why Are My Friendships Changing?",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_facts_about_friendship_why_are_my_friendships_changing_"
+    }
+   ]
+  },
+  {
+   "id": "Feeling Frustrated_V092523",
+   "safe_folder": "Feeling_Frustrated_V092523",
+   "occurrences": 2,
+   "lessons": [
+    {
+     "lesson_id": "8781",
+     "title": "Feeling Frustrated",
+     "grades": [
+      "Grade K"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "rm_feeling_frustrated"
+    },
+    {
+     "lesson_id": "10131",
+     "title": "Feeling frustrated",
+     "grades": [
+      "Preschool"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "feeling_frustrated_1"
+    }
+   ]
+  },
+  {
+   "id": "Feeling_Mad_Can_Be_Sad_2023",
+   "safe_folder": "Feeling_Mad_Can_Be_Sad_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8092",
+     "title": "Feeling Mad Can Be Sad! Don&#039;t Let Your Actions Make It Worse",
+     "grades": [
+      "Grade 1"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_feeling_mad_can_be_sad_dont_let_your_actions_make_it_worse_"
+    }
+   ]
+  },
+  {
+   "id": "Feelings_Feelings_Too_Many_Feelings_G3_2023",
+   "safe_folder": "Feelings_Feelings_Too_Many_Feelings_G3_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3454",
+     "title": "Feelings, Feelings, Too Many Feelings!",
+     "grades": [
+      "Grade 3"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "rm_feelings_feelings_too_many_feelings"
+    }
+   ]
+  },
+  {
+   "id": "Finding_And_Being_A_Good_Friend_G7_2022_Update - Storyline output",
+   "safe_folder": "Finding_And_Being_A_Good_Friend_G7_2022_Update_-_Storyline_output",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8282",
+     "title": "Finding and Being a Good Friend",
+     "grades": [
+      "Grade 7"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_finding_and_being_a_good_friend"
+    }
+   ]
+  },
+  {
+   "id": "Finding_Success_With_Goals_G4_v2",
+   "safe_folder": "Finding_Success_With_Goals_G4_v2",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3378",
+     "title": "Finding Success with Goals",
+     "grades": [
+      "Grade 4"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_finding_success_with_goals"
+    }
+   ]
+  },
+  {
+   "id": "Finding_Ways_To_Get_Along_UPDATED_v2",
+   "safe_folder": "Finding_Ways_To_Get_Along_UPDATED_v2",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9365",
+     "title": "Finding Ways to Get Along With Everyone",
+     "grades": [
+      "Grade 3"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_finding_ways_to_get_along_with_everyone"
+    }
+   ]
+  },
+  {
+   "id": "Friends_Can_Be_Different_GK_2023",
+   "safe_folder": "Friends_Can_Be_Different_GK_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3594",
+     "title": "Friends Can Be Different",
+     "grades": [
+      "Grade K"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_friends_can_be_different"
+    }
+   ]
+  },
+  {
+   "id": "Friendship_is_a_Two_Way_Street_G2",
+   "safe_folder": "Friendship_is_a_Two_Way_Street_G2",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3605",
+     "title": "Friendship is a Two-Way Street",
+     "grades": [
+      "Grade 2"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_friendship_is_a_twoway_street"
+    }
+   ]
+  },
+  {
+   "id": "Friendships_Can_Be_Tough_G4_2023_V2",
+   "safe_folder": "Friendships_Can_Be_Tough_G4_2023_V2",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3348",
+     "title": "Friendships Can Be Tough",
+     "grades": [
+      "Grade 4"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_friendships_can_be_tough"
+    }
+   ]
+  },
+  {
+   "id": "Friendships_Can_Change_V092523",
+   "safe_folder": "Friendships_Can_Change_V092523",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3493",
+     "title": "Friendships Can Change",
+     "grades": [
+      "Grade 5"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_friendships_can_change"
+    }
+   ]
+  },
+  {
+   "id": "Get_It_All_Together_G3_2023",
+   "safe_folder": "Get_It_All_Together_G3_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7988",
+     "title": "Get It All Together!",
+     "grades": [
+      "Grade 3"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_get_it_all_together"
+    }
+   ]
+  },
+  {
+   "id": "Get_Outside_and_Play_G3_2023",
+   "safe_folder": "Get_Outside_and_Play_G3_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "5946",
+     "title": "Get Outside and Play!",
+     "grades": [
+      "Grade 3"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_get_outside_and_play"
+    }
+   ]
+  },
+  {
+   "id": "Give_Me_a_Break_G3_2023",
+   "safe_folder": "Give_Me_a_Break_G3_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7751",
+     "title": "Give Me a Break!",
+     "grades": [
+      "Grade 3"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_give_me_a_break_"
+    }
+   ]
+  },
+  {
+   "id": "Go_the_Extra_Mile_and_Make_Your_Teacher_Smile_G1_2023",
+   "safe_folder": "Go_the_Extra_Mile_and_Make_Your_Teacher_Smile_G1_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9247",
+     "title": "Go the Extra Mile and Make Your Teacher Smile! Be Kind!",
+     "grades": [
+      "Grade 1"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_go_the_extra_mile_and_make_your_teacher_smile_be_kind"
+    }
+   ]
+  },
+  {
+   "id": "Going_Full_Throttle_G7_2023",
+   "safe_folder": "Going_Full_Throttle_G7_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "2010",
+     "title": "Going Full Throttle: Recognizing How Emotions Fill Up or Empty Our Fuel Tanks",
+     "grades": [
+      "Grade 7"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "rm_going_full_throttle_recognizing_how_emotions_fill_up_or_empty_our_fuel_tanks"
+    }
+   ]
+  },
+  {
+   "id": "Good_Sportsmanship_6_2023",
+   "safe_folder": "Good_Sportsmanship_6_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "1834",
+     "title": "Good Sportsmanship",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_good_sportsmanship"
+    }
+   ]
+  },
+  {
+   "id": "GOOOAAALLS_G1_2023_V2",
+   "safe_folder": "GOOOAAALLS_G1_2023_V2",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "25874",
+     "title": "GOOOAAALLS!",
+     "grades": [
+      "Grade 1"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "goooaaalls_1_1"
+    }
+   ]
+  },
+  {
+   "id": "Handle_Your_Anger_2023",
+   "safe_folder": "Handle_Your_Anger_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "5242",
+     "title": "Handle Your Anger",
+     "grades": [
+      "Grade 3"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_handle_your_anger"
+    }
+   ]
+  },
+  {
+   "id": "Handling_Compromise_2023",
+   "safe_folder": "Handling_Compromise_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9028",
+     "title": "Handling Compromise - Finding a Win-Win Solution",
+     "grades": [
+      "Grade 5"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_handling_compromise_finding_a_winwin_solution"
+    }
+   ]
+  },
+  {
+   "id": "Helping_Out_at_Home_2023",
+   "safe_folder": "Helping_Out_at_Home_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "5268",
+     "title": "Helping Out at Home &amp; Listening to Your Parents",
+     "grades": [
+      "Grade 8"
+     ],
+     "competencies": [
+      "responsible decision making"
+     ],
+     "slug": "rm_helping_out_at_home"
+    }
+   ]
+  },
+  {
+   "id": "High_School_is_Coming_G8_2023_v092523",
+   "safe_folder": "High_School_is_Coming_G8_2023_v092523",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "6419",
+     "title": "High School is Coming!",
+     "grades": [
+      "Grade 8"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_high_school_is_coming"
+    }
+   ]
+  },
+  {
+   "id": "How_Can_I_Help_My_Friend_G4_2023",
+   "safe_folder": "How_Can_I_Help_My_Friend_G4_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "6385",
+     "title": "How Can I Help My Friend?",
+     "grades": [
+      "Grade 4"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_how_can_i_help_my_friend"
+    }
+   ]
+  },
+  {
+   "id": "How_Can_I_Help_My_School_CommunityG2_2023",
+   "safe_folder": "How_Can_I_Help_My_School_CommunityG2_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9273",
+     "title": "How Can I Help My School Community",
+     "grades": [
+      "Grade 2"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_how_can_i_help_my_school_community"
+    }
+   ]
+  },
+  {
+   "id": "How_Can_I_Keep_My_Classroom_Peaceful_G2_2023",
+   "safe_folder": "How_Can_I_Keep_My_Classroom_Peaceful_G2_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9327",
+     "title": "How Can I Keep My Classroom Peaceful",
+     "grades": [
+      "Grade 2"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_how_can_i_keep_my_classroom_peaceful"
+    }
+   ]
+  },
+  {
+   "id": "How_Can_I_Safely_Express_My_Strong_Feelings_GK_2023",
+   "safe_folder": "How_Can_I_Safely_Express_My_Strong_Feelings_GK_2023",
+   "occurrences": 2,
+   "lessons": [
+    {
+     "lesson_id": "8763",
+     "title": "How Can I Safely Express my Strong Feelings?",
+     "grades": [
+      "Grade K"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_how_can_i_safely_express_my_strong_feelings"
+    },
+    {
+     "lesson_id": "10127",
+     "title": "How can I safely express my strong feelings?",
+     "grades": [
+      "Preschool"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "how_can_i_safely_express_my_strong_feelings_1"
+    }
+   ]
+  },
+  {
+   "id": "How_Much_Should_I_Trust_My_Friend_2023",
+   "safe_folder": "How_Much_Should_I_Trust_My_Friend_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3788",
+     "title": "How Much Should I Trust My Friend?",
+     "grades": [
+      "Grade 8"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_how_much_should_i_trust_my_friend"
+    }
+   ]
+  },
+  {
+   "id": "How_My_Body_Tells_Me_When_I_Am_Mad_GK_2023",
+   "safe_folder": "How_My_Body_Tells_Me_When_I_Am_Mad_GK_2023",
+   "occurrences": 2,
+   "lessons": [
+    {
+     "lesson_id": "8787",
+     "title": "How My Body Tells Me When I Am Mad",
+     "grades": [
+      "Grade K"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "rm_how_my_body_tells_me_when_i_am_mad"
+    },
+    {
+     "lesson_id": "10132",
+     "title": "How my body tells me when I am mad",
+     "grades": [
+      "Preschool"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "how_my_body_tells_me_when_i_am_mad_1"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Apologize_2023",
+   "safe_folder": "How_to_Apologize_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8769",
+     "title": "How to Apologize: Be an &#039;I&#039;m Sorry&#039; Superstar",
+     "grades": [
+      "Grade K"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_how_to_apologize_be_an_im_sorry_superstar"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Be_a_True_Friend_2023",
+   "safe_folder": "How_to_Be_a_True_Friend_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9048",
+     "title": "How to Be a True Friend",
+     "grades": [
+      "Grade 5"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_how_to_be_a_true_friend"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Be_aGood_Friend_2023_V103023",
+   "safe_folder": "How_to_Be_aGood_Friend_2023_V103023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8722",
+     "title": "How to Be a Good Friend",
+     "grades": [
+      "Grade K"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_how_to_be_a_good_friend"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Be_Responsible_Student_G2_2023",
+   "safe_folder": "How_to_Be_Responsible_Student_G2_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7972",
+     "title": "How to Be a Responsible Student",
+     "grades": [
+      "Grade 2"
+     ],
+     "competencies": [
+      "responsible decision making"
+     ],
+     "slug": "rm_how_to_be_a_responsible_student"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Become_Mindful_2023",
+   "safe_folder": "How_to_Become_Mindful_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7285",
+     "title": "How to Become Mindful When Your Mind is Full",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "rm_how_to_become_mindful_when_your_mind_is_full"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Break_Down_Large_Tasks_2023",
+   "safe_folder": "How_to_Break_Down_Large_Tasks_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7556",
+     "title": "How to Break Down Large Tasks",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_executive_functions_how_to_break_down_large_tasks"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Handle_Bullying_G6_2023",
+   "safe_folder": "How_to_Handle_Bullying_G6_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "2611",
+     "title": "How to Handle Bullying",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_how_to_handle_a_bully"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Have_Positive_Family_Relationships_G5_V030124",
+   "safe_folder": "How_to_Have_Positive_Family_Relationships_G5_V030124",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "6566",
+     "title": "Harmony at Home: How to Have Positive Family Relationships",
+     "grades": [
+      "Grade 5"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_cant_live_with_them_cant_live_without_them"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Reach_Your_Goals_G6_2023",
+   "safe_folder": "How_to_Reach_Your_Goals_G6_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "4971",
+     "title": "How to Reach Your Goals",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_how_to_reach_your_goals"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Resolve_Conflict_G3_2023",
+   "safe_folder": "How_to_Resolve_Conflict_G3_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9374",
+     "title": "How to Resolve a Conflict",
+     "grades": [
+      "Grade 3"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_how_to_resolve_a_conflict"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Unwind_Busy_Mind_G9_2023",
+   "safe_folder": "How_to_Unwind_Busy_Mind_G9_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7546",
+     "title": "How to Unwind a Busy Mind",
+     "grades": [
+      "Grade 9"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "rm_practicing_mindfulness"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Work_on_Teams_Effectively_2023",
+   "safe_folder": "How_to_Work_on_Teams_Effectively_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "6912",
+     "title": "How to Work on Teams Effectively",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_how_to_work_on_teams_effectively"
+    }
+   ]
+  },
+  {
+   "id": "How_to_Work_Well_in_Groups_G2_2023",
+   "safe_folder": "How_to_Work_Well_in_Groups_G2_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "6936",
+     "title": "How to Work Well in Groups",
+     "grades": [
+      "Grade 6"
+     ],
+     "competencies": [],
+     "slug": "rm_how_to_work_well_in_groups"
+    }
+   ]
+  },
+  {
+   "id": "How_Tolerant_Am_I_V022124",
+   "safe_folder": "How_Tolerant_Am_I_V022124",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "6509",
+     "title": "How Tolerant Am I?",
+     "grades": [
+      "Grade 8"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_how_tolerant_am_i"
+    }
+   ]
+  },
+  {
+   "id": "How_We_Feel_and_Why_GK_2023",
+   "safe_folder": "How_We_Feel_and_Why_GK_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "10128",
+     "title": "How We Feel and Why",
+     "grades": [
+      "Preschool"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "how_we_feel_and_why_1"
+    }
+   ]
+  },
+  {
+   "id": "Hula_Hooping_My_Own_Personal_Space_2023",
+   "safe_folder": "Hula_Hooping_My_Own_Personal_Space_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8895",
+     "title": "Hula Hooping in My Own Personal Space",
+     "grades": [
+      "Grade 1"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_hula_hooping_in_my_own_personal_space"
+    }
+   ]
+  },
+  {
+   "id": "I_Can_Be_a_Good_Friend_2023",
+   "safe_folder": "I_Can_Be_a_Good_Friend_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9380",
+     "title": "I Can Be A Good Friend",
+     "grades": [
+      "Grade 2"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_how_to_be_a_good_friend_11"
+    }
+   ]
+  },
+  {
+   "id": "I_Can_Do_Well_GK_2023",
+   "safe_folder": "I_Can_Do_Well_GK_2023",
+   "occurrences": 2,
+   "lessons": [
+    {
+     "lesson_id": "7976",
+     "title": "I Can Do Well",
+     "grades": [
+      "Grade K"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_i_can_do_well_1_1"
+    },
+    {
+     "lesson_id": "10121",
+     "title": "I Can Do Well",
+     "grades": [
+      "Preschool"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "i_can_do_well_1_1_1"
+    }
+   ]
+  },
+  {
+   "id": "I_Control_My_Words_G2_2023",
+   "safe_folder": "I_Control_My_Words_G2_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8152",
+     "title": "I Control My Words and Actions: Driving My Behavior Car",
+     "grades": [
+      "Grade 2"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_i_control_my_words_and_actions_driving_my_behavior_car"
+    }
+   ]
+  },
+  {
+   "id": "I_Didnt_Reach_My_Goal_2023",
+   "safe_folder": "I_Didnt_Reach_My_Goal_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "4907",
+     "title": "I Didn&#039;t Reach My Goal! What Now?",
+     "grades": [
+      "Grade 7"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_i_didnt_reach_my_goal_what_now"
+    }
+   ]
+  },
+  {
+   "id": "I_Just_Have_to_Say_It_2023",
+   "safe_folder": "I_Just_Have_to_Say_It_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "4876",
+     "title": "I Just Have to Say It!",
+     "grades": [
+      "Grade 3"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_i_just_have_to_say_it"
+    }
+   ]
+  },
+  {
+   "id": "If_You_Cant_Say_Something_Nice_2023",
+   "safe_folder": "If_You_Cant_Say_Something_Nice_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "6074",
+     "title": "If You Can&#039;t Say Something Nice To Yourself",
+     "grades": [
+      "Grade 3"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "rm_if_you_cant_say_something_nice_to_yourself"
+    }
+   ]
+  },
+  {
+   "id": "Im_Responsible_for_What_IDo_and_Say_2023",
+   "safe_folder": "Im_Responsible_for_What_IDo_and_Say_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "4985",
+     "title": "I&#039;m Responsible for What I Do and Say",
+     "grades": [
+      "Grade 7"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_im_responsible_for_what_i_do_and_say"
+    }
+   ]
+  },
+  {
+   "id": "Importance_of_a_Reputation_G7_2023",
+   "safe_folder": "Importance_of_a_Reputation_G7_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "3824",
+     "title": "Importance of a Reputation: Building Your Brand",
+     "grades": [
+      "Grade 7"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_importance_of_a_reputation_building_your_brand"
+    }
+   ]
+  },
+  {
+   "id": "Improving_Frustration_Tolerance_G5_2023",
+   "safe_folder": "Improving_Frustration_Tolerance_G5_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8981",
+     "title": "Improving Frustration Tolerance - How to Persevere",
+     "grades": [
+      "Grade 5"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_improving_frustration_tolerance_how_to_persevere"
+    }
+   ]
+  },
+  {
+   "id": "Is_Fair_Always_Equal_2023",
+   "safe_folder": "Is_Fair_Always_Equal_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "9319",
+     "title": "Is Fair Always Equal?",
+     "grades": [
+      "Grade 2"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_is_fair_always_equal"
+    }
+   ]
+  },
+  {
+   "id": "Is_My_Anger_Getting_the_Best_of_Me_G2_2023",
+   "safe_folder": "Is_My_Anger_Getting_the_Best_of_Me_G2_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "4870",
+     "title": "Is My Anger Getting the Best of Me?",
+     "grades": [
+      "Grade 7"
+     ],
+     "competencies": [
+      "self management"
+     ],
+     "slug": "rm_is_my_anger_getting_the_best_of_me"
+    }
+   ]
+  },
+  {
+   "id": "It_Takes_Your_WHOLE_Body_to_Listen_Well_G1_2023",
+   "safe_folder": "It_Takes_Your_WHOLE_Body_to_Listen_Well_G1_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8081",
+     "title": "It Takes Your WHOLE Body to Listen Well!",
+     "grades": [
+      "Grade 1"
+     ],
+     "competencies": [
+      "relationship skills"
+     ],
+     "slug": "rm_it_takes_your_whole_body_to_listen_well"
+    }
+   ]
+  },
+  {
+   "id": "School_Pride_G3_5_2022_V032724",
+   "safe_folder": "School_Pride_G3_5_2022_V032724",
+   "occurrences": 2,
+   "lessons": [
+    {
+     "lesson_id": "19502",
+     "title": "School Pride Grades 3-5",
+     "grades": [
+      "Grade 3",
+      "Grade 4",
+      "Grade 5"
+     ],
+     "competencies": [],
+     "slug": "school_pride_3_5"
+    },
+    {
+     "lesson_id": "24971",
+     "title": "School Pride Grades 3-5",
+     "grades": [
+      "Grade 3",
+      "Grade 4",
+      "Grade 5"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "school_pride_3_5_1"
+    }
+   ]
+  },
+  {
+   "id": "School_Pride_G68_2022_V022924",
+   "safe_folder": "School_Pride_G68_2022_V022924",
+   "occurrences": 2,
+   "lessons": [
+    {
+     "lesson_id": "19484",
+     "title": "School Pride:  Contributing to the Common Good at School",
+     "grades": [
+      "Grade 6",
+      "Grade 7",
+      "Grade 8"
+     ],
+     "competencies": [],
+     "slug": "school_pride__contributing_to_the_common_good_at_school"
+    },
+    {
+     "lesson_id": "24988",
+     "title": "School Pride:  Contributing to the Common Good at School",
+     "grades": [
+      "Grade 6",
+      "Grade 7",
+      "Grade 8"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "school_pride__contributing_to_the_common_good_at_school_1_1"
+    }
+   ]
+  },
+  {
+   "id": "School_Pride_GK-2_2022",
+   "safe_folder": "School_Pride_GK-2_2022",
+   "occurrences": 2,
+   "lessons": [
+    {
+     "lesson_id": "19493",
+     "title": "School Pride Grades K-2",
+     "grades": [
+      "Grade K",
+      "Grade 1",
+      "Grade 2"
+     ],
+     "competencies": [],
+     "slug": "school_pride"
+    },
+    {
+     "lesson_id": "24980",
+     "title": "School Pride Grades K-2",
+     "grades": [
+      "Grade K",
+      "Grade 1",
+      "Grade 2"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "school_pride_1"
+    }
+   ]
+  },
+  {
+   "id": "SEL_Wrap_Up_3-5_2023_V2",
+   "safe_folder": "SEL_Wrap_Up_3-5_2023_V2",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "15290",
+     "title": "Wrap Up Lesson Grades 3-5",
+     "grades": [
+      "Grade 3",
+      "Grade 4",
+      "Grade 5"
+     ],
+     "competencies": [
+      "relationship skills",
+      "responsible decision making",
+      "self awareness",
+      "self management",
+      "social awareness"
+     ],
+     "slug": "wrap_up_lessonactivity3"
+    }
+   ]
+  },
+  {
+   "id": "SEL_Wrap_Up_K-2_2023_V3",
+   "safe_folder": "SEL_Wrap_Up_K-2_2023_V3",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "14834",
+     "title": "Wrap Up Lesson Grades K-2",
+     "grades": [
+      "Grade K",
+      "Grade 1",
+      "Grade 2"
+     ],
+     "competencies": [
+      "relationship skills",
+      "responsible decision making",
+      "self awareness",
+      "self management",
+      "social awareness"
+     ],
+     "slug": "wrap_up_lessonactivity0"
+    }
+   ]
+  },
+  {
+   "id": "Steg_Starts_School_V3",
+   "safe_folder": "Steg_Starts_School_V3",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "25843",
+     "title": "Starting School",
+     "grades": [
+      "Preschool"
+     ],
+     "competencies": [],
+     "slug": "steg_starts_school_pk"
+    }
+   ]
+  },
+  {
+   "id": "Stereotypes_G5_2022_V031424",
+   "safe_folder": "Stereotypes_G5_2022_V031424",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "17010",
+     "title": "Stereotypes",
+     "grades": [
+      "Grade 5"
+     ],
+     "competencies": [],
+     "slug": "rm_saexamining_bias5"
+    }
+   ]
+  },
+  {
+   "id": "Training_for_a_Career_G1_2022",
+   "safe_folder": "Training_for_a_Career_G1_2022",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "8840",
+     "title": "Training for a Career",
+     "grades": [
+      "Grade 1"
+     ],
+     "competencies": [
+      "social awareness"
+     ],
+     "slug": "rm_from_college_to_career"
+    }
+   ]
+  },
+  {
+   "id": "Using_Design_Thinking_to_Solve_Problems_G2_2023",
+   "safe_folder": "Using_Design_Thinking_to_Solve_Problems_G2_2023",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "7038",
+     "title": "Using Design Thinking to Solve Problems",
+     "grades": [
+      "Grade 5"
+     ],
+     "competencies": [
+      "responsible decision making"
+     ],
+     "slug": "rm_how_to_problem_solve_like_a_penguin"
+    }
+   ]
+  },
+  {
+   "id": "Vote_Doing_Your_Civic_Duty_G12_2023_V040524",
+   "safe_folder": "Vote_Doing_Your_Civic_Duty_G12_2023_V040524",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "19808",
+     "title": "VOTE: Doing Your Civic Duty",
+     "grades": [
+      "Grade 12"
+     ],
+     "competencies": [
+      "self awareness"
+     ],
+     "slug": "vote_doing_your_civic_duty"
+    }
+   ]
+  },
+  {
+   "id": "What_are_Relationship_Skills_G9-12_2022_V061224",
+   "safe_folder": "What_are_Relationship_Skills_G9-12_2022_V061224",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "16155",
+     "title": "What are  Relationships Skills?",
+     "grades": [
+      "Grade 10",
+      "Grade 11",
+      "Grade 12",
+      "Grade 9"
+     ],
+     "competencies": [],
+     "slug": "rm_what_are__relationships_skills_"
+    }
+   ]
+  },
+  {
+   "id": "Wrap Up Lesson 6-8 Final",
+   "safe_folder": "Wrap_Up_Lesson_6-8_Final",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "15717",
+     "title": "Wrap Up Lesson Grades 6-8",
+     "grades": [
+      "Grade 6",
+      "Grade 7",
+      "Grade 8"
+     ],
+     "competencies": [
+      "relationship skills",
+      "responsible decision making",
+      "self awareness",
+      "self management",
+      "social awareness"
+     ],
+     "slug": "wrap_up_lessonactivity6"
+    }
+   ]
+  },
+  {
+   "id": "Wrap Up Lesson 9-12 Final_V3",
+   "safe_folder": "Wrap_Up_Lesson_9-12_Final_V3",
+   "occurrences": 1,
+   "lessons": [
+    {
+     "lesson_id": "16189",
+     "title": "Wrap Up Lesson Grades 9-12",
+     "grades": [
+      "Grade 10",
+      "Grade 11",
+      "Grade 12",
+      "Grade 9"
+     ],
+     "competencies": [
+      "relationship skills",
+      "responsible decision making",
+      "self awareness",
+      "self management",
+      "social awareness"
+     ],
+     "slug": "wrap_up_lessonactivity9"
+    }
+   ]
+  }
+ ],
+ "lessons_with_multiple_modules": [],
+ "modules_named_like_storyline_output": [
+  "College_Words_to_Know_G2_2023 - Storyline output",
+  "Do_We_Have_to_Work_Together_G5_2022_Update - Storyline output",
+  "Finding_And_Being_A_Good_Friend_G7_2022_Update - Storyline output"
+ ],
+ "folder_collisions": {}
+}

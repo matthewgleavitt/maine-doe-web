@@ -1,0 +1,3 @@
+# Large data exports live on the maine.gov bulk folder; keep them out of git.
+*.json
+download_videos.py
