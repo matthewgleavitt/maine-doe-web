@@ -22,3 +22,7 @@ node_modules/
 *.bak
 *~
 backups/
+
+# Python bytecode
+__pycache__/
+*.pyc
