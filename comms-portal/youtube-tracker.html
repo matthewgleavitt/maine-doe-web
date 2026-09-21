@@ -182,7 +182,7 @@ function YouTubeAnalytics({stats,loading,error,onReload}){
 
     {/* Last thirty days — only if Analytics API returned data. When it doesn't
         (Brand Account channel + personal OAuth token → Forbidden), the section
-        just doesn't render. No confusing "not connected" callout. */}
+        just doesn't render. No confusing "not connected" callout */}
     {a&&<div style={{background:B.wh,borderRadius:14,border:`2px solid ${B.border}30`,padding:'18px 22px',marginBottom:20}}>
       <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:14,flexWrap:'wrap',gap:8}}>
         <h3 style={{fontSize:13,fontWeight:800,color:B.navy,margin:0,textTransform:'uppercase',letterSpacing:'.06em'}}>Last 30 days</h3>
