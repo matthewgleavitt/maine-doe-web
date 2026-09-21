@@ -1,0 +1,133 @@
+{
+  "_readme": "Per-page directions, keyed by page path. Survives every rebuild. Every entry shows in the review panel as a decision with both versions.",
+  "/teachingandlearning/engagementseries": {
+    "headings": {
+      "Cohorts Beginning at USM (October 9, 2026), Continuing at UMaine Orono (March 19, 2027)": "Cohorts Beginning at USM (October 9, 2026)",
+      "Cohorts Beginning at UMaine Orono (October 9, 2026), Continuing at USM (March 19, 2027)": "Cohorts Beginning at UMaine Orono (October 9, 2026)"
+    },
+    "notes": {
+      "Cohorts Beginning at USM (October 9, 2026)": "Continues at UMaine Orono on March 19, 2027.",
+      "Cohorts Beginning at UMaine Orono (October 9, 2026)": "Continues at USM on March 19, 2027."
+    },
+    "cta": [
+      {
+        "label": "Register Today!",
+        "href": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=q6g_QX0gYkubzeoajy-GThDr0Mj0slNEgZDprD1YHuVUQ01FSExKWFA3MjdSWVA5MEJQOFBHWVJSRi4u"
+      }
+    ],
+    "sectionCta": {
+      "Cohorts Beginning at USM (October 9, 2026)": {
+        "label": "Register Today!",
+        "href": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=q6g_QX0gYkubzeoajy-GThDr0Mj0slNEgZDprD1YHuVUQ01FSExKWFA3MjdSWVA5MEJQOFBHWVJSRi4u"
+      },
+      "Cohorts Beginning at UMaine Orono (October 9, 2026)": {
+        "label": "Register Today!",
+        "href": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=q6g_QX0gYkubzeoajy-GThDr0Mj0slNEgZDprD1YHuVUQ01FSExKWFA3MjdSWVA5MEJQOFBHWVJSRi4u"
+      }
+    },
+    "_why": "Matt, 2026-09-21: Register button into the banner, and repeated at the foot of each cohort section."
+  },
+  "/meac": {
+    "cta": [
+      {
+        "label": "Share your attendance stories",
+        "href": "https://forms.office.com/Pages/ResponsePage.aspx?id=q6g_QX0gYkubzeoajy-GTsX1QTC1oT1Ih3U6TUR52fFURURPVVFZOENDRUpLVDJKN1A3T0lSUUsxNS4u"
+      },
+      {
+        "label": "Read the Year-in-Review",
+        "href": "/doe/sites/maine.gov.doe/files/inline-files/Student%20Supports%20-%20Maine%20Engagement%20and%20Attendance%20Center%20Year-in-Review%20-%206.3.2026.pdf"
+      }
+    ],
+    "imgClass": {
+      "Pine Tree Present Thumbnail": "doe-img-left",
+      "Toolkit Thumbnail": "doe-img-tall",
+      "MEAC Partnerships": "doe-img-full",
+      "Student Supports - Attendance Practices for a Strong Start - 8.21.2026": "doe-img-full"
+    },
+    "_why": "Matt, 2026-09-21. The Pine Tree fact-sheet cover was written below both paragraphs, so nothing wrapped beside it; it moves above them and floats left. The line telling the reader to click the picture becomes a button that names the download — the link's only accessible name was the image's alt. The office-hours table was laid out in equal thirds, so a column of summaries had the same room as a column holding one short link.",
+    "dropText": [
+      "(Click the image to download the Be Pine Tree Present Attendance Fact Sheet)"
+    ],
+    "figure": [
+      {
+        "alt": "Pine Tree Present Thumbnail",
+        "before": "Chronic absenteeism",
+        "button": "Download the Fact Sheet"
+      }
+    ],
+    "colWidths": {
+      "Month & Topic": [
+        "64%",
+        "18%",
+        "18%"
+      ]
+    },
+    "regrid": [
+      {
+        "section": "Resources",
+        "across": 2
+      }
+    ],
+    "samechip": true
+  },
+  "/learning/earlychildhood/publicpreschool/monitoring": {
+    "unfold": [
+      "About the CLASS™ Interactions and Environments Observation Tool"
+    ]
+  },
+  "/schoolsupports/communityschools/info": {
+    "cta": [
+      {
+        "label": "Submit questions about community schools",
+        "href": "https://forms.office.com/Pages/DesignPageV2.aspx?subpage=design&FormId=q6g_QX0gYkubzeoajy-GTmIXBhVjiCpCrZqTqw8Eu6pUOTQ4WFRWNEFOSkQxWVg0SE85REhKQVBLSi4u&Token=c3ad4f59a0164fd3a9f4c3650373f56e"
+      }
+    ]
+  },
+  "/learning/standards/career": {
+    "dropSection": [
+      "News"
+    ]
+  },
+  "/pathways": {
+    "dropText": [
+      "Please visit this page for additional information and tools, including an Interactive Student Career Discovery Dashboard and workforce resources for schools and students."
+    ]
+  },
+  "/schools/equivalentinstruction": {
+    "_why": "The question's own answer is now the page description in the banner, so the question is left introducing nothing. Matt's call, 2026-09-21.",
+    "dropText": [
+      "What is an equivalent instruction school?"
+    ],
+    "h3": [
+      "Is home instruction the same as equivalent instruction?"
+    ]
+  },
+  "/schools/nutrition/CNDatareports": {
+    "_why": "Matt, 2026-09-21: drop the empty CACFP section and its placeholder line; name the three unlabelled report lists.",
+    "dropText": [
+      "As more reports are available, they will be listed here.",
+      "Child and Adult Care Food Program"
+    ],
+    "labelList": {
+      "FY26 October Survey (ED534 Report)": "October Survey",
+      "FY26 Annual Participation Program Summary": "Annual Participation",
+      "FY25 SNP Free and Reduced Breakfast Report": "SNP Free and Reduced Reports"
+    }
+  },
+  "/schools/safeschools/fostercare": {
+    "_why": "Matt, 2026-09-21. Aubrie Howard has left the role; Daniel Weeks replaces her, with the wording Matt supplied.",
+    "replace": {
+      "Aubrie Howard": "Daniel Weeks",
+      "Student Success and Wellbeing Specialist and SEA Foster Care Point of Contact, Office of School &amp; Student Supports": "Social Emotional Learning Specialist",
+      "Phone:</strong> 207-530-6921": "Phone:</strong> 207-624-6639",
+      "Email:</strong> <a href=\"mailto:Aubrie.Howard@maine.gov\">Aubrie.Howard@maine.gov</a>": "Email:</strong> <a href=\"mailto:Daniel.r.Weeks@maine.gov\">Daniel.r.Weeks@maine.gov</a>"
+    }
+  },
+  "/schoolsupports/climate/alternativeeducation": {
+    "_why": "Matt, 2026-09-21. The name and the visible address were already changed to Daniel Weeks but the mailto: still sent to aubrie.howard@maine.gov, so the link mailed the wrong person. Title set and the phone number added to match the block Matt supplied.",
+    "replace": {
+      "mailto:aubrie.howard@maine.gov": "mailto:Daniel.r.Weeks@maine.gov",
+      "<em>Student Success and Wellbeing Specialist</em><br />": "<em>Social Emotional Learning Specialist</em><br />\n<strong>Phone:</strong> 207-624-6639<br />"
+    }
+  }
+}

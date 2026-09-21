@@ -1,0 +1,6658 @@
+[
+ {
+  "alias": "/learning/II/Lit",
+  "title": "New Literacies",
+  "words": 165,
+  "fixed": 15,
+  "flags": 2,
+  "changed": "2024-05-29T20:46:58+00:00"
+ },
+ {
+  "alias": "/learning/content/health/cancerprevention",
+  "title": "Cancer Prevention, Bone Marrow Registry, and Organ Donation ",
+  "words": 251,
+  "fixed": 21,
+  "flags": 3,
+  "changed": "2026-04-06T22:47:24+00:00"
+ },
+ {
+  "alias": "/learning/cte/contact",
+  "title": "Career & Technical Education (CTE) Contact",
+  "words": 236,
+  "fixed": 48,
+  "flags": 2,
+  "changed": "2026-04-06T22:47:33+00:00"
+ },
+ {
+  "alias": "/learning/cte/cteschools",
+  "title": "Career and Technical Education Schools",
+  "words": 370,
+  "fixed": 16,
+  "flags": 3,
+  "changed": "2026-04-06T22:47:46+00:00"
+ },
+ {
+  "alias": "/learning/II/partnership-landing/careerconnect",
+  "title": "Career Connections",
+  "words": 81,
+  "fixed": 20,
+  "flags": 2,
+  "changed": "2026-04-06T22:47:48+00:00"
+ },
+ {
+  "alias": "/carsonvmakin",
+  "title": "Carson v. Makin",
+  "words": 426,
+  "fixed": 20,
+  "flags": 1,
+  "changed": "2026-04-06T22:47:51+00:00"
+ },
+ {
+  "alias": "/cds/notices",
+  "title": "CDS Annual Notices",
+  "words": 302,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-06T22:47:55+00:00"
+ },
+ {
+  "alias": "/learning/CDS/CDSEmploymentOpportunities",
+  "title": "CDS Employment Opportunities",
+  "words": 62,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T22:48:01+00:00"
+ },
+ {
+  "alias": "/cds/proceduralsafeguards",
+  "title": "CDS Procedural Safeguards",
+  "words": 109,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T22:48:03+00:00"
+ },
+ {
+  "alias": "/cds/providercontentresources",
+  "title": "CDS Provider Content Resources",
+  "words": 285,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-04-06T22:48:10+00:00"
+ },
+ {
+  "alias": "/cert/faq",
+  "title": "Certification Frequently Asked Questions",
+  "words": 1825,
+  "fixed": 19,
+  "flags": 2,
+  "changed": "2026-04-06T22:48:22+00:00"
+ },
+ {
+  "alias": "/cert/requirements",
+  "title": "Certification Requirements",
+  "words": 96,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-04-06T22:48:27+00:00"
+ },
+ {
+  "alias": "/cds/referrals",
+  "title": "Child Development Services (CDS) Referrals",
+  "words": 262,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T22:48:39+00:00"
+ },
+ {
+  "alias": "/cds/childfindform",
+  "title": "Child Development Services - Child Find Intake Form",
+  "words": 396,
+  "fixed": 2,
+  "flags": 3,
+  "changed": "2026-04-06T22:48:42+00:00"
+ },
+ {
+  "alias": "/learning/cds/cos",
+  "title": "Child Outcome Summary",
+  "words": 93,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T22:48:56+00:00"
+ },
+ {
+  "alias": "/data-warehouse/reporting/absenteeism",
+  "title": "Chronic Absenteeism",
+  "words": 42,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T22:48:58+00:00"
+ },
+ {
+  "alias": "/innovation/climateeducation",
+  "title": "Climate Education",
+  "words": 338,
+  "fixed": 36,
+  "flags": 1,
+  "changed": "2026-04-06T22:49:12+00:00"
+ },
+ {
+  "alias": "/schoolsupports/climate",
+  "title": "Climate, Culture, & Resilience",
+  "words": 289,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-04-06T22:49:21+00:00"
+ },
+ {
+  "alias": "/learning/highered/transcripts",
+  "title": "Closed School Transcripts",
+  "words": 500,
+  "fixed": 9,
+  "flags": 3,
+  "changed": "2026-04-06T22:49:23+00:00"
+ },
+ {
+  "alias": "/learning/adulted/collegeandcareers",
+  "title": "College & Careers",
+  "words": 418,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T22:49:28+00:00"
+ },
+ {
+  "alias": "/about/leadership/makin",
+  "title": "Commissioner Pender Makin",
+  "words": 420,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T22:49:31+00:00"
+ },
+ {
+  "alias": "/learning/cte/evaluation/QA",
+  "title": "Common Program Evaluation Tool Questions & Answers",
+  "words": 529,
+  "fixed": 2,
+  "flags": 2,
+  "changed": "2026-04-06T22:49:34+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/publicpreschool/collaboration",
+  "title": "Community Collaboration",
+  "words": 564,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-06T22:49:40+00:00"
+ },
+ {
+  "alias": "/learning/II/ConCEPT/connections",
+  "title": "Community Connections",
+  "words": 99,
+  "fixed": 27,
+  "flags": 2,
+  "changed": "2026-04-06T22:49:43+00:00"
+ },
+ {
+  "alias": "/schoolsupports/communityschools",
+  "title": "Community Schools",
+  "words": 225,
+  "fixed": 30,
+  "flags": 3,
+  "changed": "2026-04-06T22:49:45+00:00"
+ },
+ {
+  "alias": "/schoolsupports/communityschools/info",
+  "title": "Community Schools Information",
+  "words": 2406,
+  "fixed": 56,
+  "flags": 0,
+  "changed": "2026-04-06T22:49:47+00:00"
+ },
+ {
+  "alias": "/learning/II/how/21C",
+  "title": "Competencies for 21st Century Learning",
+  "words": 241,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T22:49:49+00:00"
+ },
+ {
+  "alias": "/learning/cte/review/csr",
+  "title": "Comprehensive School Review",
+  "words": 442,
+  "fixed": 43,
+  "flags": 0,
+  "changed": "2026-04-06T22:49:55+00:00"
+ },
+ {
+  "alias": "/learning/II/ConCEPT/conceptfoundations",
+  "title": "Concepts",
+  "words": 85,
+  "fixed": 19,
+  "flags": 2,
+  "changed": "2026-04-06T22:49:58+00:00"
+ },
+ {
+  "alias": "/learning/II/conceptualunderstandings",
+  "title": "Conceptual Understandings",
+  "words": 166,
+  "fixed": 35,
+  "flags": 1,
+  "changed": "2026-04-06T22:50:02+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/concussion",
+  "title": "Concussion Management",
+  "words": 488,
+  "fixed": 58,
+  "flags": 4,
+  "changed": "2026-04-06T22:50:04+00:00"
+ },
+ {
+  "alias": "/learning/ltt/ConnectKidsNowData",
+  "title": "ConnectKidsNow! Data",
+  "words": 1,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T22:50:08+00:00"
+ },
+ {
+  "alias": "/about/contact/concerns",
+  "title": "Constituent Concerns ",
+  "words": 922,
+  "fixed": 6,
+  "flags": 0,
+  "changed": "2026-04-06T22:50:10+00:00"
+ },
+ {
+  "alias": "/sitepolicies/content",
+  "title": "Content Disclaimer",
+  "words": 480,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T22:50:17+00:00"
+ },
+ {
+  "alias": "/learning/highered/continuinged",
+  "title": "Continuing Your Education",
+  "words": 223,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T22:50:21+00:00"
+ },
+ {
+  "alias": "/fedrelief/crf",
+  "title": "Coronavirus Relief Fund (CRF)",
+  "words": 141,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T22:50:29+00:00"
+ },
+ {
+  "alias": "/funding/fiscalreview/audit/cap",
+  "title": "Creating a Solid Corrective Action Plan",
+  "words": 263,
+  "fixed": 4,
+  "flags": 2,
+  "changed": "2026-04-06T22:50:36+00:00"
+ },
+ {
+  "alias": "/funding/accounting/handbook/uploadfiles",
+  "title": "Creating Upload Files",
+  "words": 203,
+  "fixed": 0,
+  "flags": 4,
+  "changed": "2026-04-06T22:50:38+00:00"
+ },
+ {
+  "alias": "/learning/cte/resources/acronyms",
+  "title": "CTE Acronyms",
+  "words": 697,
+  "fixed": 46,
+  "flags": 3,
+  "changed": "2026-04-06T22:50:40+00:00"
+ },
+ {
+  "alias": "/learning/cte/resources/certification",
+  "title": "CTE Teacher Certification/Endorsement in Maine",
+  "words": 132,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-04-06T22:50:42+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/culinary",
+  "title": "Culinary Classroom",
+  "words": 285,
+  "fixed": 29,
+  "flags": 3,
+  "changed": "2026-04-06T22:50:44+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/culinarydiversity",
+  "title": "Culturally Diverse Culinary Resources",
+  "words": 163,
+  "fixed": 26,
+  "flags": 1,
+  "changed": "2026-04-06T22:50:46+00:00"
+ },
+ {
+  "alias": "/learning/II/how/IC",
+  "title": "Curiosity and Inquiry",
+  "words": 249,
+  "fixed": 17,
+  "flags": 2,
+  "changed": "2026-04-06T22:50:48+00:00"
+ },
+ {
+  "alias": "/learning/technology/cyberdraft",
+  "title": "Cybersecurity & Infrastructure",
+  "words": 1353,
+  "fixed": 235,
+  "flags": 1,
+  "changed": "2026-04-06T22:51:01+00:00"
+ },
+ {
+  "alias": "/schools/transportation/data",
+  "title": "Data & Publications",
+  "words": 232,
+  "fixed": 5,
+  "flags": 2,
+  "changed": "2026-04-06T22:51:05+00:00"
+ },
+ {
+  "alias": "/data-reporting/warehouse/definitions",
+  "title": "Data Definitions ",
+  "words": 1970,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-06T22:51:09+00:00"
+ },
+ {
+  "alias": "/data-reporting/privacy",
+  "title": "Data Privacy",
+  "words": 278,
+  "fixed": 22,
+  "flags": 3,
+  "changed": "2026-04-06T22:51:12+00:00"
+ },
+ {
+  "alias": null,
+  "title": "Data Visualizations",
+  "words": 418,
+  "fixed": 1,
+  "flags": 3,
+  "changed": "2026-04-06T22:51:17+00:00"
+ },
+ {
+  "alias": "/funding/gpa/debtservice",
+  "title": "Debt Service Wire Transfer Information",
+  "words": 188,
+  "fixed": 62,
+  "flags": 2,
+  "changed": "2026-04-06T22:51:23+00:00"
+ },
+ {
+  "alias": "/learning/highered/degrees",
+  "title": "Degree-Granting Institutions",
+  "words": 163,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T22:51:26+00:00"
+ },
+ {
+  "alias": "/about/updates",
+  "title": "Department Updates",
+  "words": 114,
+  "fixed": 11,
+  "flags": 0,
+  "changed": "2026-04-06T22:51:31+00:00"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration/developingquestions",
+  "title": "Developing questions",
+  "words": 55,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T22:51:33+00:00"
+ },
+ {
+  "alias": "/learning/diplomas",
+  "title": "Diploma Pathways",
+  "words": 218,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T22:51:35+00:00"
+ },
+ {
+  "alias": "/learning/II/ConCEPT/menu/dispositions/examples",
+  "title": "Dispositions",
+  "words": 258,
+  "fixed": 12,
+  "flags": 1,
+  "changed": "2026-04-06T22:51:39+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/counseling/highmobility/homelessed/dispute",
+  "title": "Dispute Resolution",
+  "words": 189,
+  "fixed": 30,
+  "flags": 2,
+  "changed": "2026-04-06T22:51:41+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/DLLs",
+  "title": "Dual Language Learners",
+  "words": 1766,
+  "fixed": 21,
+  "flags": 1,
+  "changed": "2026-04-06T22:51:49+00:00"
+ },
+ {
+  "alias": "/cds/dueprocess",
+  "title": "Due Process Complaint Investigation Procedures",
+  "words": 4365,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T22:51:51+00:00"
+ },
+ {
+  "alias": "/learning/specialed/dueprocess/forms",
+  "title": "Due Process Forms",
+  "words": 33,
+  "fixed": 20,
+  "flags": 1,
+  "changed": "2026-04-06T22:51:58+00:00"
+ },
+ {
+  "alias": "/learning/specialed/initiatives/dyslexia",
+  "title": "Dyslexia & Reading Difficulties",
+  "words": 685,
+  "fixed": 5,
+  "flags": 3,
+  "changed": "2026-04-06T22:52:00+00:00"
+ },
+ {
+  "alias": "/earlyinterventionforme",
+  "title": "Early Intervention for ME, Birth to 3 Years",
+  "words": 636,
+  "fixed": 32,
+  "flags": 1,
+  "changed": "2026-04-06T22:52:18+00:00"
+ },
+ {
+  "alias": "/earlyinterventionforme/contact",
+  "title": "Early Intervention for ME: Regional & State Contacts",
+  "words": 276,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-04-06T22:52:20+00:00"
+ },
+ {
+  "alias": "/learning/earlylearning/contact",
+  "title": "Early Learning Contact",
+  "words": 468,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-06T22:52:32+00:00"
+ },
+ {
+  "alias": "/learning/foundational",
+  "title": "Early Learning Foundational Skills",
+  "words": 465,
+  "fixed": 31,
+  "flags": 1,
+  "changed": "2026-04-06T22:52:35+00:00"
+ },
+ {
+  "alias": "/schools/eut",
+  "title": "Education in the Unorganized Territory (EUT)",
+  "words": 258,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-04-06T22:52:53+00:00"
+ },
+ {
+  "alias": "/schools/eut/findschool",
+  "title": "Education in the Unorganized Territory - Find Your School",
+  "words": 7011,
+  "fixed": 28,
+  "flags": 1,
+  "changed": "2026-04-06T22:52:56+00:00"
+ },
+ {
+  "alias": "/schools/eut/contact",
+  "title": "Education in the Unorganized Territory Contact",
+  "words": 71,
+  "fixed": 9,
+  "flags": 2,
+  "changed": "2026-04-06T22:52:59+00:00"
+ },
+ {
+  "alias": "/pathways/educationpathways",
+  "title": "Education Pathways & Early College",
+  "words": 259,
+  "fixed": 13,
+  "flags": 3,
+  "changed": "2026-04-06T22:53:08+00:00"
+ },
+ {
+  "alias": "/schools/embrace/regional-service-center/Q&A",
+  "title": "Education Service Center Questions and Answers",
+  "words": 929,
+  "fixed": 31,
+  "flags": 1,
+  "changed": "2026-04-06T22:53:13+00:00"
+ },
+ {
+  "alias": "/educators/educatoreval/educator",
+  "title": "Educator Effectiveness",
+  "words": 596,
+  "fixed": 37,
+  "flags": 3,
+  "changed": "2026-04-06T22:53:24+00:00"
+ },
+ {
+  "alias": "/educators/educatoreval/educatorperf",
+  "title": "Educator Performance & Development ",
+  "words": 795,
+  "fixed": 20,
+  "flags": 3,
+  "changed": "2026-04-06T22:53:27+00:00"
+ },
+ {
+  "alias": "/educators/edprepprograms/approval",
+  "title": "Educator Preparation Approval Process",
+  "words": 211,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T22:53:29+00:00"
+ },
+ {
+  "alias": "/educators/edprepprograms/approved",
+  "title": "Educator Preparation Program Contacts",
+  "words": 430,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T22:53:31+00:00"
+ },
+ {
+  "alias": "/educators/edprepprograms",
+  "title": "Educator Preparation Programs ",
+  "words": 555,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-06T22:53:33+00:00"
+ },
+ {
+  "alias": "/learning/II/reflection",
+  "title": "Educator-Focused Reflective Practices",
+  "words": 93,
+  "fixed": 15,
+  "flags": 2,
+  "changed": "2026-04-06T22:53:35+00:00"
+ },
+ {
+  "alias": "/learning/specialed/dueprocess",
+  "title": "Effective Dispute Resolution",
+  "words": 699,
+  "fixed": 50,
+  "flags": 2,
+  "changed": "2026-04-06T22:53:37+00:00"
+ },
+ {
+  "alias": "/learning/II/insights",
+  "title": "Elaborating on Elaboration",
+  "words": 361,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T22:53:39+00:00"
+ },
+ {
+  "alias": "/fedrelief/esser",
+  "title": "Elementary and Secondary School Emergency Relief Fund (ESSER)",
+  "words": 455,
+  "fixed": 35,
+  "flags": 1,
+  "changed": "2026-04-06T22:53:41+00:00"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/wellness",
+  "title": "Employee Health Promotion & Wellness",
+  "words": 618,
+  "fixed": 19,
+  "flags": 4,
+  "changed": "2026-04-06T22:53:48+00:00"
+ },
+ {
+  "alias": "/learning/adulted/acquisition",
+  "title": "English Language Acquisition",
+  "words": 121,
+  "fixed": 3,
+  "flags": 2,
+  "changed": "2026-04-06T22:53:56+00:00"
+ },
+ {
+  "alias": "/standards/ela/resources",
+  "title": "English Language Arts/Literacy Standards Review 2020 Resources",
+  "words": 290,
+  "fixed": 14,
+  "flags": 2,
+  "changed": "2026-04-06T22:54:05+00:00"
+ },
+ {
+  "alias": "/schools/enrollment/resources",
+  "title": "Enrollment Resources",
+  "words": 356,
+  "fixed": 109,
+  "flags": 3,
+  "changed": "2026-04-06T22:54:11+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operation/drivers/eldt",
+  "title": "Entry-Level Driver Training (ELDT) – Coming 2/7/2022",
+  "words": 148,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-04-06T22:54:15+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/equipmentassist",
+  "title": "Equipment Information and Resources",
+  "words": 93,
+  "fixed": 26,
+  "flags": 1,
+  "changed": "2026-04-06T22:54:28+00:00"
+ },
+ {
+  "alias": "/schools/equivalentinstruction",
+  "title": "Equivalent Instruction Private Schools",
+  "words": 470,
+  "fixed": 23,
+  "flags": 1,
+  "changed": "2026-04-06T22:54:30+00:00"
+ },
+ {
+  "alias": "/dashboard",
+  "title": "ESSA Dashboard",
+  "words": 153,
+  "fixed": 21,
+  "flags": 4,
+  "changed": "2026-04-06T22:54:52+00:00"
+ },
+ {
+  "alias": "/ESSERdashboard",
+  "title": "ESSER Federal Emergency Relief Funding Dashboard",
+  "words": 574,
+  "fixed": 10,
+  "flags": 2,
+  "changed": "2026-04-06T22:55:06+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/publicpreschool/establishaprogram",
+  "title": "Establishing a Program",
+  "words": 279,
+  "fixed": 22,
+  "flags": 0,
+  "changed": "2026-04-06T22:55:08+00:00"
+ },
+ {
+  "alias": "/schools/eut/policies/families",
+  "title": "EUT Policies for Parents and Students",
+  "words": 488,
+  "fixed": 214,
+  "flags": 0,
+  "changed": "2026-04-06T22:55:12+00:00"
+ },
+ {
+  "alias": "/schools/eut/polices/employees",
+  "title": "EUT Policies for Teachers and Staff",
+  "words": 165,
+  "fixed": 106,
+  "flags": 1,
+  "changed": "2026-04-06T22:55:15+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/ESSA",
+  "title": "Every Student Succeeds Act (ESSA)",
+  "words": 515,
+  "fixed": 14,
+  "flags": 2,
+  "changed": "2026-04-06T22:55:20+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/neuroscience/execfunction",
+  "title": "Executive Function Skills Supporting Literacy & Numeracy",
+  "words": 696,
+  "fixed": 45,
+  "flags": 0,
+  "changed": "2026-04-06T22:55:23+00:00"
+ },
+ {
+  "alias": "/learning/highered/degrees/exemptionprocess",
+  "title": "Exemption Process",
+  "words": 119,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T22:55:26+00:00"
+ },
+ {
+  "alias": "/schools/facilities",
+  "title": "Facilities",
+  "words": 100,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T22:55:37+00:00"
+ },
+ {
+  "alias": "/cds/families",
+  "title": "Families",
+  "words": 294,
+  "fixed": 12,
+  "flags": 2,
+  "changed": "2026-04-06T22:55:40+00:00"
+ },
+ {
+  "alias": "/learning/specialed/fctcmodules",
+  "title": "Family-Centered Transition Curriculum Modules",
+  "words": 356,
+  "fixed": 43,
+  "flags": 1,
+  "changed": "2026-04-06T22:55:46+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/policy",
+  "title": "Federal and State Policy - Multilingual Learners",
+  "words": 263,
+  "fixed": 2,
+  "flags": 2,
+  "changed": "2026-04-06T22:55:55+00:00"
+ },
+ {
+  "alias": "/funding/fiscalreview/audit/fedreq",
+  "title": "Federal Audit Requirements",
+  "words": 214,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T22:55:58+00:00"
+ },
+ {
+  "alias": "/fedrelief",
+  "title": "Federal Emergency Relief Programs",
+  "words": 345,
+  "fixed": 13,
+  "flags": 1,
+  "changed": "2026-04-06T22:56:00+00:00"
+ },
+ {
+  "alias": "/fedrelief/dashboards",
+  "title": "Federal Emergency Relief Programs Dashboards",
+  "words": 121,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-04-06T22:56:03+00:00"
+ },
+ {
+  "alias": "/learning/cte/regulations/federal",
+  "title": "Federal Regulations",
+  "words": 105,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T22:56:12+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/feedback",
+  "title": "Feedback and Revisions ",
+  "words": 715,
+  "fixed": 53,
+  "flags": 3,
+  "changed": "2026-04-06T22:56:15+00:00"
+ },
+ {
+  "alias": "/doe/learning/II/techpblhome/techintegration/finalartifact",
+  "title": "Final Artifact",
+  "words": 39,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T22:56:26+00:00"
+ },
+ {
+  "alias": "/learning/earlylearning/first10/pilot",
+  "title": "First 10 Community Schools Pilot",
+  "words": 1786,
+  "fixed": 34,
+  "flags": 3,
+  "changed": "2026-04-06T22:56:35+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/first10/faq",
+  "title": "First 10 Schools and Communities FAQ's",
+  "words": 942,
+  "fixed": 3,
+  "flags": 2,
+  "changed": "2026-04-06T22:56:37+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/first10",
+  "title": "First 10: Schools and Communities in Maine",
+  "words": 662,
+  "fixed": 25,
+  "flags": 3,
+  "changed": "2026-04-06T22:56:40+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/instructionalprogramming",
+  "title": "For ME Instructional Programming",
+  "words": 311,
+  "fixed": 17,
+  "flags": 1,
+  "changed": "2026-04-06T22:56:56+00:00"
+ },
+ {
+  "alias": "/learning/content/ela/literacyforme/teams/forming",
+  "title": "Forming a Community Literacy Team",
+  "words": 1300,
+  "fixed": 74,
+  "flags": 2,
+  "changed": "2026-04-06T22:57:00+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/first10/forming",
+  "title": "Forming a First 10 School and Community",
+  "words": 94,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-04-06T22:57:02+00:00"
+ },
+ {
+  "alias": "/learning/specialed/fiscal",
+  "title": "Funding & Fiscal Accountability",
+  "words": 261,
+  "fixed": 62,
+  "flags": 0,
+  "changed": "2026-04-06T22:57:25+00:00"
+ },
+ {
+  "alias": "/exploreeducation/workineducation/whyteach/gettingstarted",
+  "title": "Getting Started as an Educator in Maine",
+  "words": 182,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-06T22:57:48+00:00"
+ },
+ {
+  "alias": "/learning/II/techpblhome/samr",
+  "title": "Getting Started with Technology Integration",
+  "words": 294,
+  "fixed": 47,
+  "flags": 3,
+  "changed": "2026-04-06T22:57:55+00:00"
+ },
+ {
+  "alias": "/schools/security/resources/glossary",
+  "title": "Glossary: School Security Emergency Operations",
+  "words": 634,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T22:58:01+00:00"
+ },
+ {
+  "alias": "/schools/facilities/commission-on-school-construction",
+  "title": "Governor’s Commission on School Construction",
+  "words": 790,
+  "fixed": 259,
+  "flags": 2,
+  "changed": "2026-04-06T22:58:03+00:00"
+ },
+ {
+  "alias": "/data-warehouse/reporting/graduation",
+  "title": "Graduation Data",
+  "words": 28,
+  "fixed": 29,
+  "flags": 2,
+  "changed": "2026-04-06T22:58:06+00:00"
+ },
+ {
+  "alias": "/learning/adulted/grants",
+  "title": "Grants & Subsidy",
+  "words": 131,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-06T22:58:09+00:00"
+ },
+ {
+  "alias": "/funding/fiscalreview/compliance",
+  "title": "Grants Management & Compliance",
+  "words": 20,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-04-06T22:58:12+00:00"
+ },
+ {
+  "alias": "/literacy/literacyforme/guidance",
+  "title": "Guidance for Local Plan Development",
+  "words": 102,
+  "fixed": 32,
+  "flags": 1,
+  "changed": "2026-04-06T22:58:24+00:00"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/service/dental",
+  "title": "Guidelines for School Health Services: Oral Health",
+  "words": 157,
+  "fixed": 37,
+  "flags": 1,
+  "changed": "2026-04-06T22:58:33+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/headstart",
+  "title": "Head Start State Collaboration Office",
+  "words": 1128,
+  "fixed": 13,
+  "flags": 0,
+  "changed": "2026-04-06T22:58:43+00:00"
+ },
+ {
+  "alias": "/learning/content/healthphysed/resources/advoacay",
+  "title": "Health Education Advocacy",
+  "words": 152,
+  "fixed": 13,
+  "flags": 1,
+  "changed": "2026-04-06T22:59:01+00:00"
+ },
+ {
+  "alias": "/learning/adulted/hsequivalency",
+  "title": "High School Completion/HiSET™",
+  "words": 228,
+  "fixed": 16,
+  "flags": 1,
+  "changed": "2026-04-06T22:59:07+00:00"
+ },
+ {
+  "alias": "/learning/highered",
+  "title": "Higher Education",
+  "words": 185,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-04-06T22:59:10+00:00"
+ },
+ {
+  "alias": "/literacy/literacyforme/resources/history",
+  "title": "Historical Synopsis of Literacy for ME",
+  "words": 702,
+  "fixed": 29,
+  "flags": 1,
+  "changed": "2026-04-06T22:59:13+00:00"
+ },
+ {
+  "alias": "/schools/schoolops/homeinstruction",
+  "title": "Home Instruction",
+  "words": 193,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-04-06T22:59:16+00:00"
+ },
+ {
+  "alias": "/schools/schoolops/homeinstruction/faq",
+  "title": "Home Instruction Frequently Asked Questions",
+  "words": 1358,
+  "fixed": 29,
+  "flags": 0,
+  "changed": "2026-04-06T22:59:19+00:00"
+ },
+ {
+  "alias": "/schools/schoolops/homeinstruction/requirements",
+  "title": "Home Instruction Requirements, Forms & Laws",
+  "words": 1008,
+  "fixed": 8,
+  "flags": 0,
+  "changed": "2026-04-06T22:59:21+00:00"
+ },
+ {
+  "alias": "/data-reporting/medmssupport/resources/homeless",
+  "title": "Homeless Students",
+  "words": 198,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T22:59:24+00:00"
+ },
+ {
+  "alias": "/learning/adulted/GEDtranscriptrequests",
+  "title": "How to Request GED and HiSET™ Transcripts",
+  "words": 86,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T22:59:32+00:00"
+ },
+ {
+  "alias": "/learning/cds/idea",
+  "title": "Individuals with Disabilities Education Act (IDEA)",
+  "words": 364,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-04-06T22:59:44+00:00"
+ },
+ {
+  "alias": "/innovativeresearch",
+  "title": "Innovative Research and Design",
+  "words": 565,
+  "fixed": 30,
+  "flags": 2,
+  "changed": "2026-04-06T22:59:49+00:00"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration",
+  "title": "Integrating Instructional Technology",
+  "words": 93,
+  "fixed": 36,
+  "flags": 1,
+  "changed": "2026-04-06T22:59:59+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/lit&neur",
+  "title": "Integration of Literacy and Neuroscience Home Page",
+  "words": 217,
+  "fixed": 47,
+  "flags": 3,
+  "changed": "2026-04-06T23:00:02+00:00"
+ },
+ {
+  "alias": "/learning/II",
+  "title": "Interdisciplinary Instruction",
+  "words": 151,
+  "fixed": 20,
+  "flags": 3,
+  "changed": "2026-04-06T23:00:05+00:00"
+ },
+ {
+  "alias": "/learning/II/contact",
+  "title": "Interdisciplinary Instruction Contact",
+  "words": 490,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-06T23:00:07+00:00"
+ },
+ {
+  "alias": "/learning/II/thememonth",
+  "title": "Interdisciplinary Resources for Earth Day and Poetry Month",
+  "words": 706,
+  "fixed": 37,
+  "flags": 2,
+  "changed": "2026-04-06T23:00:14+00:00"
+ },
+ {
+  "alias": "/learning/II/Lit/lit2",
+  "title": "Introduction to New Literacies ",
+  "words": 316,
+  "fixed": 7,
+  "flags": 3,
+  "changed": "2026-04-06T23:00:24+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/investigatePBL",
+  "title": "Investigations and Project-Based Learning",
+  "words": 605,
+  "fixed": 26,
+  "flags": 4,
+  "changed": "2026-04-06T23:00:27+00:00"
+ },
+ {
+  "alias": "/educators/jobs",
+  "title": "Job Opportunities in Maine Schools",
+  "words": 260,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-06T23:00:30+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/K4ME",
+  "title": "K for ME",
+  "words": 583,
+  "fixed": 15,
+  "flags": 1,
+  "changed": "2026-04-06T23:00:33+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/K4ME/unit3",
+  "title": "K for ME - Unit 3 - Construction",
+  "words": 1961,
+  "fixed": 1386,
+  "flags": 3,
+  "changed": "2026-04-06T23:00:54+00:00"
+ },
+ {
+  "alias": "/schools/structure/schoolclosure/lack-of-need-ind-sup",
+  "title": "Lack of Need Report Requirements for Cities or Towns with Individual Supervision",
+  "words": 381,
+  "fixed": 13,
+  "flags": 1,
+  "changed": "2026-04-06T23:01:08+00:00"
+ },
+ {
+  "alias": "/about/languageassistance",
+  "title": "Language Assistance",
+  "words": 395,
+  "fixed": 28,
+  "flags": 3,
+  "changed": "2026-04-06T23:01:14+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/lit&neur/LangComp",
+  "title": "Language Comprehension",
+  "words": 651,
+  "fixed": 54,
+  "flags": 1,
+  "changed": "2026-04-06T23:01:17+00:00"
+ },
+ {
+  "alias": null,
+  "title": "Language Standards and Curriculum",
+  "words": 346,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-04-06T23:01:20+00:00"
+ },
+ {
+  "alias": "/cds/laws",
+  "title": "Laws & Regulations",
+  "words": 672,
+  "fixed": 49,
+  "flags": 0,
+  "changed": "2026-04-06T23:01:23+00:00"
+ },
+ {
+  "alias": "/fedrelief/arpa_statutory_excerpt",
+  "title": "LEA Plan: Appendix A of ARPA and Appendix B of the Interim Final Rule",
+  "words": 656,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-06T23:01:29+00:00"
+ },
+ {
+  "alias": "/learning",
+  "title": "Learning",
+  "words": 638,
+  "fixed": 36,
+  "flags": 3,
+  "changed": "2026-04-06T23:01:34+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/counseling/highmobility/homelessed/Liaisons",
+  "title": "Learning Resources for Local Liaisons",
+  "words": 172,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:01:38+00:00"
+ },
+ {
+  "alias": "/learning/technology/contact",
+  "title": "Learning Through Technology Contact Us",
+  "words": 867,
+  "fixed": 23,
+  "flags": 2,
+  "changed": "2026-04-06T23:01:41+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/legalservicesforfamilies",
+  "title": "Legal Services for Families",
+  "words": 81,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T23:01:50+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/committees/legislative",
+  "title": "Legislative Action Committee",
+  "words": 193,
+  "fixed": 31,
+  "flags": 1,
+  "changed": "2026-04-06T23:01:53+00:00"
+ },
+ {
+  "alias": "/lgbtq/parent",
+  "title": "LGBTQ+ Parent Resources",
+  "words": 1234,
+  "fixed": 36,
+  "flags": 1,
+  "changed": "2026-04-06T23:01:59+00:00"
+ },
+ {
+  "alias": "/lgbtq",
+  "title": "LGBTQ+ Resources",
+  "words": 780,
+  "fixed": 22,
+  "flags": 4,
+  "changed": "2026-04-06T23:02:02+00:00"
+ },
+ {
+  "alias": "/LGBTQ/staff",
+  "title": "LGBTQ+ School Resources",
+  "words": 3067,
+  "fixed": 38,
+  "flags": 2,
+  "changed": "2026-04-06T23:02:06+00:00"
+ },
+ {
+  "alias": "/lgbtq/student",
+  "title": "LGBTQ+ Student Resources",
+  "words": 863,
+  "fixed": 45,
+  "flags": 3,
+  "changed": "2026-04-06T23:02:09+00:00"
+ },
+ {
+  "alias": "/sitepolicies/link",
+  "title": "Link Policy",
+  "words": 579,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:02:14+00:00"
+ },
+ {
+  "alias": "/learning/adulted/basic",
+  "title": "Literacy and Adult Basic Education",
+  "words": 130,
+  "fixed": 4,
+  "flags": 2,
+  "changed": "2026-04-06T23:02:20+00:00"
+ },
+ {
+  "alias": "/learning/II/Lit/lit3",
+  "title": "Literacy and Collaboration",
+  "words": 543,
+  "fixed": 20,
+  "flags": 2,
+  "changed": "2026-04-06T23:02:24+00:00"
+ },
+ {
+  "alias": "/learning/II/Lit/lit4",
+  "title": "Literacy and Complexity",
+  "words": 365,
+  "fixed": 18,
+  "flags": 2,
+  "changed": "2026-04-06T23:02:27+00:00"
+ },
+ {
+  "alias": "/literacy/literacyforme/resources",
+  "title": "Literacy for ME - Resources",
+  "words": 1020,
+  "fixed": 22,
+  "flags": 3,
+  "changed": "2026-04-06T23:02:32+00:00"
+ },
+ {
+  "alias": "/literacy/literacyforme/teams",
+  "title": "Literacy for ME: Community Literacy Teams",
+  "words": 613,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T23:02:38+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/localfoods",
+  "title": "Local Foods in Local Schools",
+  "words": 614,
+  "fixed": 38,
+  "flags": 2,
+  "changed": "2026-04-06T23:02:53+00:00"
+ },
+ {
+  "alias": "/learning/II/techpblhome/logistics",
+  "title": "Logistics of Instruction Technology and Interdisciplinary Instruction",
+  "words": 81,
+  "fixed": 27,
+  "flags": 2,
+  "changed": "2026-04-06T23:02:56+00:00"
+ },
+ {
+  "alias": "/learning/cte/ctefaq",
+  "title": "Maine Career & Technical Education FAQ",
+  "words": 2060,
+  "fixed": 151,
+  "flags": 2,
+  "changed": "2026-04-06T23:03:02+00:00"
+ },
+ {
+  "alias": "/schools/transportation/cleanbus",
+  "title": "Maine Clean School Bus Program",
+  "words": 1007,
+  "fixed": 20,
+  "flags": 2,
+  "changed": "2026-04-06T23:03:09+00:00"
+ },
+ {
+  "alias": "/learning/adulted/transitions",
+  "title": "Maine College and Career Access",
+  "words": 131,
+  "fixed": 3,
+  "flags": 2,
+  "changed": "2026-04-06T23:03:11+00:00"
+ },
+ {
+  "alias": "/learning/highered/degrees/maineinstitutions",
+  "title": "Maine Degree Granting",
+  "words": 163,
+  "fixed": 0,
+  "flags": 3,
+  "changed": "2026-04-06T23:03:17+00:00"
+ },
+ {
+  "alias": "/offices",
+  "title": "Maine Department of Education Offices",
+  "words": 730,
+  "fixed": 44,
+  "flags": 2,
+  "changed": "2026-04-06T23:03:27+00:00"
+ },
+ {
+  "alias": "/data-reporting/privacy/policies",
+  "title": "Maine DOE Data Policies",
+  "words": 123,
+  "fixed": 33,
+  "flags": 1,
+  "changed": "2026-04-06T23:03:29+00:00"
+ },
+ {
+  "alias": "/educators",
+  "title": "Maine Educators",
+  "words": 172,
+  "fixed": 12,
+  "flags": 2,
+  "changed": "2026-04-06T23:03:39+00:00"
+ },
+ {
+  "alias": "/innovation/climateeducation/literacyplan",
+  "title": "Maine Environmental & Climate Literacy Plan",
+  "words": 189,
+  "fixed": 10,
+  "flags": 2,
+  "changed": "2026-04-06T23:03:45+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/harvest",
+  "title": "Maine Harvest Lunch Week ",
+  "words": 544,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T23:03:59+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/harvestofthemonth",
+  "title": "Maine Harvest of the Month",
+  "words": 174,
+  "fixed": 16,
+  "flags": 2,
+  "changed": "2026-04-06T23:04:03+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/headstart/grantees",
+  "title": "Maine Head Start Grantees",
+  "words": 296,
+  "fixed": 18,
+  "flags": 0,
+  "changed": "2026-04-06T23:04:05+00:00"
+ },
+ {
+  "alias": "/jobsandrecovery",
+  "title": "Maine Jobs & Recovery Plan Education Programs",
+  "words": 618,
+  "fixed": 13,
+  "flags": 1,
+  "changed": "2026-04-06T23:04:08+00:00"
+ },
+ {
+  "alias": "/educators/educatoreval/inductionmentoring/modules",
+  "title": "Maine Mentor Resources and Modules  ",
+  "words": 220,
+  "fixed": 41,
+  "flags": 2,
+  "changed": "2026-04-06T23:04:24+00:00"
+ },
+ {
+  "alias": "/innovation/MaineOutdoorLearning",
+  "title": "Maine Outdoor Learning Initiative",
+  "words": 419,
+  "fixed": 4,
+  "flags": 2,
+  "changed": "2026-04-06T23:04:33+00:00"
+ },
+ {
+  "alias": "/innovation/MaineOutdoorLearning/pastprograms",
+  "title": "Maine Outdoor Learning Initiative: Past Programs",
+  "words": 7776,
+  "fixed": 3,
+  "flags": 3,
+  "changed": "2026-04-06T23:04:36+00:00"
+ },
+ {
+  "alias": "/schoolsafety",
+  "title": "Maine School Safety Center",
+  "words": 163,
+  "fixed": 15,
+  "flags": 3,
+  "changed": "2026-04-06T23:04:45+00:00"
+ },
+ {
+  "alias": "/exploreeducation",
+  "title": "Maine Schools - Be a Part of Something Special ",
+  "words": 189,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-04-06T23:04:57+00:00"
+ },
+ {
+  "alias": "/biliteracydashboard",
+  "title": "Maine Seal of Biliteracy Dashboard",
+  "words": 139,
+  "fixed": 5,
+  "flags": 3,
+  "changed": "2026-04-06T23:05:06+00:00"
+ },
+ {
+  "alias": "/learning/content/social/statutes",
+  "title": "Maine Social Studies Statutes",
+  "words": 3431,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:05:09+00:00"
+ },
+ {
+  "alias": "/learning/II/mainesolutionariesproject",
+  "title": "Maine Solutionaries Project ",
+  "words": 104,
+  "fixed": 12,
+  "flags": 0,
+  "changed": "2026-04-06T23:05:12+00:00"
+ },
+ {
+  "alias": "/learning/II/mainesolutionariesproject/info",
+  "title": "Maine Solutionaries Project Information",
+  "words": 1372,
+  "fixed": 13,
+  "flags": 1,
+  "changed": "2026-04-06T23:05:15+00:00"
+ },
+ {
+  "alias": "/assessment/achievement",
+  "title": "Maine Through Year Assessment Summative Achievement Level Summaries",
+  "words": 291,
+  "fixed": 43,
+  "flags": 3,
+  "changed": "2026-04-06T23:05:23+00:00"
+ },
+ {
+  "alias": "/learning/guidingprinciples",
+  "title": "Maine's Guiding Principles for Learning",
+  "words": 177,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:05:35+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/model",
+  "title": "Maine's Model of School Support",
+  "words": 461,
+  "fixed": 3,
+  "flags": 2,
+  "changed": "2026-04-06T23:05:43+00:00"
+ },
+ {
+  "alias": "/federalprograms/fedrelief/pandemic",
+  "title": "Maine's Whole Student Pandemic Response",
+  "words": 340,
+  "fixed": 28,
+  "flags": 1,
+  "changed": "2026-04-06T23:05:45+00:00"
+ },
+ {
+  "alias": "/cds/mainecare",
+  "title": "MaineCare",
+  "words": 160,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:05:48+00:00"
+ },
+ {
+  "alias": "/learning/adulted/stars",
+  "title": "MaineSTARS",
+  "words": 162,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T23:05:55+00:00"
+ },
+ {
+  "alias": "/schools/facilities/maintenance",
+  "title": "Maintenance & Capital Planning",
+  "words": 128,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:05:58+00:00"
+ },
+ {
+  "alias": "/schools/facilities/mcscp",
+  "title": "Major Capital School Construction Programs",
+  "words": 265,
+  "fixed": 36,
+  "flags": 0,
+  "changed": "2026-04-06T23:06:04+00:00"
+ },
+ {
+  "alias": "/learning/content/ela/literacyforme/readtome/materials",
+  "title": "Materials for Challenge Partners",
+  "words": 95,
+  "fixed": 42,
+  "flags": 1,
+  "changed": "2026-04-06T23:06:06+00:00"
+ },
+ {
+  "alias": "/learning/mathpathways",
+  "title": "Math Pathways",
+  "words": 362,
+  "fixed": 12,
+  "flags": 3,
+  "changed": "2026-04-06T23:06:13+00:00"
+ },
+ {
+  "alias": "/learning/mathpathways/contact",
+  "title": "Math Pathways - Contact",
+  "words": 571,
+  "fixed": 12,
+  "flags": 2,
+  "changed": "2026-04-06T23:06:15+00:00"
+ },
+ {
+  "alias": "/learning/mathpathways/implementation",
+  "title": "Math Pathways - Implementation",
+  "words": 358,
+  "fixed": 11,
+  "flags": 1,
+  "changed": "2026-04-06T23:06:19+00:00"
+ },
+ {
+  "alias": "/learning/mathpathways/studentdecisions",
+  "title": "Math Pathways - Supporting Student Decision-Making",
+  "words": 370,
+  "fixed": 5,
+  "flags": 3,
+  "changed": "2026-04-06T23:06:24+00:00"
+ },
+ {
+  "alias": "/learning/mathpathways/maine",
+  "title": "Math Pathways in Maine",
+  "words": 182,
+  "fixed": 14,
+  "flags": 2,
+  "changed": "2026-04-06T23:06:27+00:00"
+ },
+ {
+  "alias": "/learning/cte/professional/mathincte",
+  "title": "Math-in-CTE",
+  "words": 252,
+  "fixed": 255,
+  "flags": 3,
+  "changed": "2026-04-06T23:06:31+00:00"
+ },
+ {
+  "alias": "/specialservices/math4me",
+  "title": "Math4ME",
+  "words": 511,
+  "fixed": 20,
+  "flags": 2,
+  "changed": "2026-04-06T23:06:35+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/highmobility/homelessed/laws",
+  "title": "McKinney- Vento Laws, Rules, and Guidance",
+  "words": 52,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-04-06T23:06:46+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/highmobility/homelessed/higher",
+  "title": "McKinney-Vento and Higher Education",
+  "words": 203,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T23:06:49+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/counseling/highmobility/homelessed",
+  "title": "McKinney-Vento Education in Maine",
+  "words": 718,
+  "fixed": 33,
+  "flags": 3,
+  "changed": "2026-04-06T23:06:55+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/counseling/highmobility/homelessed/recordings",
+  "title": "McKinney-Vento Professional Learning",
+  "words": 74,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T23:06:57+00:00"
+ },
+ {
+  "alias": "/jobsandrecovery/successnavigators",
+  "title": "Meet the MJRP Coordinators",
+  "words": 1092,
+  "fixed": 26,
+  "flags": 2,
+  "changed": "2026-04-06T23:07:14+00:00"
+ },
+ {
+  "alias": "/learning/cte/review/moa",
+  "title": "Methods of Administration",
+  "words": 628,
+  "fixed": 7,
+  "flags": 0,
+  "changed": "2026-04-06T23:07:25+00:00"
+ },
+ {
+  "alias": "/data-warehouse/reporting/military",
+  "title": "Military Affiliation Data",
+  "words": 7,
+  "fixed": 2,
+  "flags": 2,
+  "changed": "2026-04-06T23:07:31+00:00"
+ },
+ {
+  "alias": "/schoolsupports/military",
+  "title": "Military Families",
+  "words": 1081,
+  "fixed": 10,
+  "flags": 1,
+  "changed": "2026-04-06T23:07:35+00:00"
+ },
+ {
+  "alias": "/learning/ltt/ambassadors",
+  "title": "MLTI Ambassadors",
+  "words": 1057,
+  "fixed": 8,
+  "flags": 0,
+  "changed": "2026-04-06T23:07:38+00:00"
+ },
+ {
+  "alias": "/learning/technology/mlti/history",
+  "title": "MLTI History",
+  "words": 618,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T23:07:40+00:00"
+ },
+ {
+  "alias": "/moose/lp/african-diaspora",
+  "title": "MOOSE African Diaspora in Maine Learning Progression",
+  "words": 269,
+  "fixed": 14,
+  "flags": 0,
+  "changed": "2026-04-06T23:07:47+00:00"
+ },
+ {
+  "alias": "/moose/lp/applied-ethics",
+  "title": "MOOSE Applied Ethics Learning Progression",
+  "words": 286,
+  "fixed": 14,
+  "flags": 0,
+  "changed": "2026-04-06T23:07:50+00:00"
+ },
+ {
+  "alias": "/moose/lp/career",
+  "title": "MOOSE Career Readiness Learning Progression",
+  "words": 492,
+  "fixed": 51,
+  "flags": 0,
+  "changed": "2026-04-06T23:07:53+00:00"
+ },
+ {
+  "alias": "/moose/lp/climate",
+  "title": "MOOSE Climate Learning Progression",
+  "words": 440,
+  "fixed": 55,
+  "flags": 0,
+  "changed": "2026-04-06T23:07:56+00:00"
+ },
+ {
+  "alias": "/moose/lp/computer-science",
+  "title": "MOOSE Computer Science Learning Progression",
+  "words": 370,
+  "fixed": 58,
+  "flags": 0,
+  "changed": "2026-04-06T23:07:58+00:00"
+ },
+ {
+  "alias": "/moose/lp/cyber-security",
+  "title": "MOOSE Cyber Security Learning Progression",
+  "words": 260,
+  "fixed": 14,
+  "flags": 0,
+  "changed": "2026-04-06T23:08:04+00:00"
+ },
+ {
+  "alias": "/moose/lp/data-science",
+  "title": "MOOSE Data Science Learning Progression",
+  "words": 477,
+  "fixed": 52,
+  "flags": 1,
+  "changed": "2026-04-06T23:08:08+00:00"
+ },
+ {
+  "alias": "/moose/lp/holocaust",
+  "title": "MOOSE History of Genocide & the Holocaust Learning Progression",
+  "words": 398,
+  "fixed": 51,
+  "flags": 0,
+  "changed": "2026-04-06T23:08:14+00:00"
+ },
+ {
+  "alias": "/moose/lp/numeracy",
+  "title": "MOOSE Numeracy Progression",
+  "words": 387,
+  "fixed": 40,
+  "flags": 0,
+  "changed": "2026-04-06T23:08:22+00:00"
+ },
+ {
+  "alias": "/moose/lp/steam",
+  "title": "MOOSE STEAM Learning Progression",
+  "words": 390,
+  "fixed": 73,
+  "flags": 0,
+  "changed": "2026-04-06T23:08:27+00:00"
+ },
+ {
+  "alias": "/moose/lp/wabanaki",
+  "title": "MOOSE Wabanaki Studies Learning Progression",
+  "words": 734,
+  "fixed": 23,
+  "flags": 1,
+  "changed": "2026-04-06T23:08:30+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/sciencematerials/msaa",
+  "title": "MSAA Science",
+  "words": 248,
+  "fixed": 36,
+  "flags": 1,
+  "changed": "2026-04-06T23:08:33+00:00"
+ },
+ {
+  "alias": "/safety/initiative",
+  "title": "MSSC Maine Safe Schools Initiative",
+  "words": 402,
+  "fixed": 17,
+  "flags": 2,
+  "changed": "2026-04-06T23:08:37+00:00"
+ },
+ {
+  "alias": "/mtss/accelerated",
+  "title": "MTSS - Accelerated Learners",
+  "words": 738,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-04-06T23:08:42+00:00"
+ },
+ {
+  "alias": "/mtss/accelerated/resources",
+  "title": "MTSS - Accelerated Learners Resources",
+  "words": 408,
+  "fixed": 18,
+  "flags": 0,
+  "changed": "2026-04-06T23:08:45+00:00"
+ },
+ {
+  "alias": "/mtss/professionallearning",
+  "title": "MTSS - Professional Learning",
+  "words": 312,
+  "fixed": 19,
+  "flags": 0,
+  "changed": "2026-04-06T23:08:47+00:00"
+ },
+ {
+  "alias": "/mtss/teams",
+  "title": "MTSS - Teams",
+  "words": 4038,
+  "fixed": 18,
+  "flags": 3,
+  "changed": "2026-04-06T23:08:51+00:00"
+ },
+ {
+  "alias": "/mtss/contentcorner",
+  "title": "MTSS Content Corner",
+  "words": 79,
+  "fixed": 3,
+  "flags": 0,
+  "changed": "2026-04-06T23:08:53+00:00"
+ },
+ {
+  "alias": "/mtss/framework",
+  "title": "MTSS Framework",
+  "words": 729,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-04-06T23:08:55+00:00"
+ },
+ {
+  "alias": "/MTSS",
+  "title": "Multi-Tiered Systems of Supports (MTSS)",
+  "words": 537,
+  "fixed": 13,
+  "flags": 1,
+  "changed": "2026-04-06T23:09:02+00:00"
+ },
+ {
+  "alias": "/Multilinguallearnerdatadashboard",
+  "title": "Multilingual Learner (English Learner) Dashboard",
+  "words": 139,
+  "fixed": 8,
+  "flags": 3,
+  "changed": "2026-04-06T23:09:04+00:00"
+ },
+ {
+  "alias": "/data-warehouse/reporting/multilingual",
+  "title": "Multilingual Learners Data",
+  "words": 10,
+  "fixed": 3,
+  "flags": 2,
+  "changed": "2026-04-06T23:09:16+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/highmobility/homelessed/monitoring",
+  "title": "MV Monitoring",
+  "words": 224,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-04-06T23:09:35+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/materials/natint",
+  "title": "National & International Assessments",
+  "words": 1611,
+  "fixed": 139,
+  "flags": 1,
+  "changed": "2026-04-06T23:09:38+00:00"
+ },
+ {
+  "alias": "/learning/highered/degrees/accreditors",
+  "title": "National & Regional Accreditors",
+  "words": 268,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T23:09:40+00:00"
+ },
+ {
+  "alias": "/NAEPdashboard",
+  "title": "National Assessment of Educational Progress (NAEP)",
+  "words": 24,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T23:09:44+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operation/ntsb",
+  "title": "National Transportation Safety Board (NTSB) and School Transportation",
+  "words": 63,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:09:57+00:00"
+ },
+ {
+  "alias": "/data-reporting/neo",
+  "title": "NEO Data System",
+  "words": 727,
+  "fixed": 24,
+  "flags": 1,
+  "changed": "2026-04-06T23:10:00+00:00"
+ },
+ {
+  "alias": "/learning/highered/nonaccredited",
+  "title": "Non-Accredited Colleges & Degree Mills",
+  "words": 226,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:10:11+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/nondiscrimination",
+  "title": "Non-Discriminatory & Civil Rights Information",
+  "words": 1088,
+  "fixed": 10,
+  "flags": 2,
+  "changed": "2026-04-06T23:10:14+00:00"
+ },
+ {
+  "alias": "/numeracy/advisorycouncil",
+  "title": "Numeracy Advisory Council",
+  "words": 336,
+  "fixed": 2,
+  "flags": 2,
+  "changed": "2026-04-06T23:10:17+00:00"
+ },
+ {
+  "alias": "/federalprograms",
+  "title": "Office of Federal Programs",
+  "words": 647,
+  "fixed": 90,
+  "flags": 3,
+  "changed": "2026-04-06T23:10:22+00:00"
+ },
+ {
+  "alias": "/educatorservices",
+  "title": "Office of Higher Education & Educator Support Services",
+  "words": 343,
+  "fixed": 63,
+  "flags": 3,
+  "changed": "2026-04-06T23:10:26+00:00"
+ },
+ {
+  "alias": "/schoolsupports",
+  "title": "Office of School & Student Supports",
+  "words": 297,
+  "fixed": 57,
+  "flags": 3,
+  "changed": "2026-04-06T23:10:31+00:00"
+ },
+ {
+  "alias": "/facilitieshome",
+  "title": "Office of School Facilities",
+  "words": 154,
+  "fixed": 18,
+  "flags": 3,
+  "changed": "2026-04-06T23:10:34+00:00"
+ },
+ {
+  "alias": "/learning/specialed",
+  "title": "Office of Special Services & Inclusive Education",
+  "words": 926,
+  "fixed": 29,
+  "flags": 2,
+  "changed": "2026-04-06T23:10:39+00:00"
+ },
+ {
+  "alias": "/pathways",
+  "title": "Office of Workforce Development & Innovative Pathways",
+  "words": 430,
+  "fixed": 59,
+  "flags": 3,
+  "changed": "2026-04-06T23:10:46+00:00"
+ },
+ {
+  "alias": "/learning/highered/online",
+  "title": "Online Higher Education Approval",
+  "words": 66,
+  "fixed": 10,
+  "flags": 1,
+  "changed": "2026-04-06T23:10:48+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operation",
+  "title": "Operating a Transportation System",
+  "words": 508,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T23:10:50+00:00"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration/org&sharingdata",
+  "title": "Organize and share data",
+  "words": 22,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T23:10:53+00:00"
+ },
+ {
+  "alias": "/data-reporting/reporting/othersystems",
+  "title": "Other Data Reporting Systems",
+  "words": 201,
+  "fixed": 3,
+  "flags": 0,
+  "changed": "2026-04-06T23:10:56+00:00"
+ },
+ {
+  "alias": "/innovation/outdooreducation",
+  "title": "Outdoor Education",
+  "words": 200,
+  "fixed": 11,
+  "flags": 2,
+  "changed": "2026-04-06T23:10:58+00:00"
+ },
+ {
+  "alias": "/funding/reports/budget",
+  "title": "Over/Under EPS Reports",
+  "words": 62,
+  "fixed": 81,
+  "flags": 2,
+  "changed": "2026-04-06T23:11:01+00:00"
+ },
+ {
+  "alias": "/learning/II/ConCEPT/overarchingideas",
+  "title": "Overarching Ideas",
+  "words": 93,
+  "fixed": 57,
+  "flags": 2,
+  "changed": "2026-04-06T23:11:04+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operation/vans",
+  "title": "Passenger Vans",
+  "words": 1066,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:11:07+00:00"
+ },
+ {
+  "alias": "/learning/cte/perkinsv",
+  "title": "Perkins V ",
+  "words": 273,
+  "fixed": 64,
+  "flags": 0,
+  "changed": "2026-04-06T23:11:10+00:00"
+ },
+ {
+  "alias": "/sitepolicies/photos",
+  "title": "Photo Use Policy",
+  "words": 146,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-04-06T23:11:22+00:00"
+ },
+ {
+  "alias": "/learning/II/Place",
+  "title": "Place-Based Learning ",
+  "words": 146,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-06T23:11:35+00:00"
+ },
+ {
+  "alias": "/learning/II/place/deep",
+  "title": "Place-Based Learning: Deeper Dive",
+  "words": 2407,
+  "fixed": 159,
+  "flags": 1,
+  "changed": "2026-04-06T23:11:37+00:00"
+ },
+ {
+  "alias": "/learning/specialed/initiatives/pbis",
+  "title": "Positive Behavioral Intervention and Supports (PBIS)",
+  "words": 251,
+  "fixed": 12,
+  "flags": 1,
+  "changed": "2026-04-06T23:11:43+00:00"
+ },
+ {
+  "alias": "/learning/cte/perkins/poverty",
+  "title": "Poverty Definition",
+  "words": 462,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:11:47+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/pkexpansiongrant/2021",
+  "title": "Pre-Kindergarten Expansion Grants (2021-2026)",
+  "words": 976,
+  "fixed": 58,
+  "flags": 3,
+  "changed": "2026-04-06T23:12:08+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/publicpreschool/assessment",
+  "title": "Preschool Assessment",
+  "words": 92,
+  "fixed": 3,
+  "flags": 2,
+  "changed": "2026-04-06T23:12:17+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/pkexpansiongrant",
+  "title": "Preschool Expansion Grants",
+  "words": 946,
+  "fixed": 10,
+  "flags": 0,
+  "changed": "2026-04-06T23:12:22+00:00"
+ },
+ {
+  "alias": "/sitepolicies/privacy",
+  "title": "Privacy Policy",
+  "words": 654,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:12:26+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/problemBL",
+  "title": "Problem-Based Learning",
+  "words": 572,
+  "fixed": 22,
+  "flags": 3,
+  "changed": "2026-04-06T23:12:34+00:00"
+ },
+ {
+  "alias": "/schools/structure/reapportionment/procedures",
+  "title": "Procedures for Reapportionment ",
+  "words": 964,
+  "fixed": 28,
+  "flags": 2,
+  "changed": "2026-04-06T23:12:38+00:00"
+ },
+ {
+  "alias": "/funding/fiscalreview/audit/procuring-auditor",
+  "title": "Procuring an Auditor",
+  "words": 148,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:12:42+00:00"
+ },
+ {
+  "alias": "/educators/leader",
+  "title": "Professional & Leadership Development",
+  "words": 210,
+  "fixed": 17,
+  "flags": 2,
+  "changed": "2026-04-06T23:12:45+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operation/training",
+  "title": "Professional Development and Training",
+  "words": 714,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:12:48+00:00"
+ },
+ {
+  "alias": "/webinarlibrary",
+  "title": "Professional Learning Webinar Library",
+  "words": 277,
+  "fixed": 2,
+  "flags": 2,
+  "changed": "2026-04-06T23:12:58+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/laws/professionalstandards",
+  "title": "Professional Standards for School Food Service",
+  "words": 321,
+  "fixed": 21,
+  "flags": 2,
+  "changed": "2026-04-06T23:13:02+00:00"
+ },
+ {
+  "alias": "/schools/transportation/programs",
+  "title": "Programs & Funding",
+  "words": 493,
+  "fixed": 22,
+  "flags": 0,
+  "changed": "2026-04-06T23:13:05+00:00"
+ },
+ {
+  "alias": "/learning/II/plbliteracy",
+  "title": "Project-Based Learning & Literacy",
+  "words": 470,
+  "fixed": 90,
+  "flags": 2,
+  "changed": "2026-04-06T23:13:14+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/PBL",
+  "title": "Project-Based Learning Modules",
+  "words": 145,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:13:16+00:00"
+ },
+ {
+  "alias": "/learning/highered/forprofit",
+  "title": "Proprietary & For-Profit Schools",
+  "words": 1130,
+  "fixed": 26,
+  "flags": 1,
+  "changed": "2026-04-06T23:13:22+00:00"
+ },
+ {
+  "alias": "/cds/providers",
+  "title": "Providers",
+  "words": 141,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:13:26+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/publicpreschool/health",
+  "title": "Public Preschool Health",
+  "words": 780,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:13:31+00:00"
+ },
+ {
+  "alias": "/schools/schoolops/publicschoolapproval",
+  "title": "Public School Approval",
+  "words": 244,
+  "fixed": 11,
+  "flags": 1,
+  "changed": "2026-04-06T23:13:35+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/QFTcourse",
+  "title": "Question Formulation Technique Course Information",
+  "words": 182,
+  "fixed": 8,
+  "flags": 3,
+  "changed": "2026-04-06T23:13:41+00:00"
+ },
+ {
+  "alias": "/data-reporting/medmssupport/resources/race-ethnicity",
+  "title": "Race and Ethnicity",
+  "words": 644,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:13:44+00:00"
+ },
+ {
+  "alias": "/learning/content/ela/literacyforme/readtome/tips",
+  "title": "Read Aloud Tips and Resources",
+  "words": 227,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T23:13:47+00:00"
+ },
+ {
+  "alias": "/literacy/readtome",
+  "title": "Read to ME",
+  "words": 366,
+  "fixed": 39,
+  "flags": 0,
+  "changed": "2026-04-06T23:13:49+00:00"
+ },
+ {
+  "alias": "/schools/private",
+  "title": "Recognized Equivalent Instruction Private Schools ",
+  "words": 236,
+  "fixed": 289,
+  "flags": 1,
+  "changed": "2026-04-06T23:14:01+00:00"
+ },
+ {
+  "alias": "/funding/fiscalreview/audit/records",
+  "title": "Records Management",
+  "words": 75,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T23:14:08+00:00"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration/reflectionfeedbackassessment",
+  "title": "Reflection, Feedback, and Assessment",
+  "words": 38,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:14:14+00:00"
+ },
+ {
+  "alias": "/learning/cte/regionalcalendar",
+  "title": "Regional School Calendars",
+  "words": 228,
+  "fixed": 16,
+  "flags": 1,
+  "changed": "2026-04-06T23:14:16+00:00"
+ },
+ {
+  "alias": "/learning/cte/regulations",
+  "title": "Regulations & Funding",
+  "words": 200,
+  "fixed": 21,
+  "flags": 2,
+  "changed": "2026-04-06T23:14:23+00:00"
+ },
+ {
+  "alias": "/learning/highered/transcripts/request",
+  "title": "Request Transcript",
+  "words": 332,
+  "fixed": 3,
+  "flags": 3,
+  "changed": "2026-04-06T23:14:30+00:00"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration/researchrefinedesign",
+  "title": "Research, Refine, Design",
+  "words": 41,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-04-06T23:14:34+00:00"
+ },
+ {
+  "alias": "/schools/facilities/resources",
+  "title": "Resources",
+  "words": 81,
+  "fixed": 10,
+  "flags": 1,
+  "changed": "2026-04-06T23:14:36+00:00"
+ },
+ {
+  "alias": "/learning/cte/resources",
+  "title": "Resources - Career and Technical Education",
+  "words": 372,
+  "fixed": 19,
+  "flags": 1,
+  "changed": "2026-04-06T23:14:38+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/first10/resources",
+  "title": "Resources for First 10 Schools and Communities ",
+  "words": 195,
+  "fixed": 23,
+  "flags": 1,
+  "changed": "2026-04-06T23:14:50+00:00"
+ },
+ {
+  "alias": "/highmobility",
+  "title": "Resources for Highly Mobile Students",
+  "words": 394,
+  "fixed": 31,
+  "flags": 1,
+  "changed": "2026-04-06T23:14:52+00:00"
+ },
+ {
+  "alias": "/safety/restorative",
+  "title": "Restorative Practices",
+  "words": 760,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-04-06T23:15:03+00:00"
+ },
+ {
+  "alias": "/data-warehouse/reporting/restraint",
+  "title": "Restraint and Seclusion Data",
+  "words": 7,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:15:09+00:00"
+ },
+ {
+  "alias": "/rrev/awardedpilots",
+  "title": "RREV Awardee Schools",
+  "words": 107,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-04-06T23:15:12+00:00"
+ },
+ {
+  "alias": "/innovation/rrev/data",
+  "title": "RREV Data & Reporting",
+  "words": 667,
+  "fixed": 381,
+  "flags": 2,
+  "changed": "2026-04-06T23:15:15+00:00"
+ },
+ {
+  "alias": "/innovation/rrev/history",
+  "title": "RREV History",
+  "words": 265,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-04-06T23:15:17+00:00"
+ },
+ {
+  "alias": "/innovation/rrev/research",
+  "title": "RREV Research & Support",
+  "words": 360,
+  "fixed": 80,
+  "flags": 2,
+  "changed": "2026-04-06T23:15:20+00:00"
+ },
+ {
+  "alias": "/fedrelief/sauplans",
+  "title": "SAU Spending and Instruction Plans",
+  "words": 282,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-04-06T23:15:24+00:00"
+ },
+ {
+  "alias": "/learning/cte/resources/schemas",
+  "title": "Schemas",
+  "words": 213,
+  "fixed": 78,
+  "flags": 1,
+  "changed": "2026-04-06T23:15:26+00:00"
+ },
+ {
+  "alias": "/schools/transportation/programs/busbidmodule",
+  "title": "School Bus Bid Module",
+  "words": 767,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-04-06T23:15:38+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operation/drivers",
+  "title": "School Bus Drivers",
+  "words": 553,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-04-06T23:15:41+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operation/bussafety",
+  "title": "School Bus Safety",
+  "words": 568,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:15:44+00:00"
+ },
+ {
+  "alias": "/schools/schoolops/waivers",
+  "title": "School Calendar Waivers",
+  "words": 975,
+  "fixed": 14,
+  "flags": 0,
+  "changed": "2026-04-06T23:15:50+00:00"
+ },
+ {
+  "alias": "/schoolsupports/climate/schoolclimate",
+  "title": "School Climate",
+  "words": 193,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-06T23:15:54+00:00"
+ },
+ {
+  "alias": "/funding/fiscalreview/construction",
+  "title": "School Construction Final Funding Review ",
+  "words": 363,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-04-06T23:16:02+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/counseling/schoolcounseling",
+  "title": "School Counseling",
+  "words": 323,
+  "fixed": 25,
+  "flags": 2,
+  "changed": "2026-04-06T23:16:04+00:00"
+ },
+ {
+  "alias": "/schools/schoolops/enrollment",
+  "title": "School Enrollment, Attendance and Eligibility",
+  "words": 785,
+  "fixed": 5,
+  "flags": 0,
+  "changed": "2026-04-06T23:16:13+00:00"
+ },
+ {
+  "alias": "/schools/facilities/contact",
+  "title": "School Facilities Contact",
+  "words": 98,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:16:16+00:00"
+ },
+ {
+  "alias": "/funding/contact",
+  "title": "School Finance Contact",
+  "words": 289,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-06T23:16:20+00:00"
+ },
+ {
+  "alias": "/funding/gpa",
+  "title": "School Funding - General Purpose Aid (GPA)",
+  "words": 281,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-04-06T23:16:25+00:00"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/sampleforms",
+  "title": "School Health Sample Forms",
+  "words": 509,
+  "fixed": 308,
+  "flags": 3,
+  "changed": "2026-04-06T23:16:32+00:00"
+ },
+ {
+  "alias": "/dashboard/schoolprofiles",
+  "title": "School Profiles - Maine Model of School Supports",
+  "words": 13,
+  "fixed": 5,
+  "flags": 3,
+  "changed": "2026-04-06T23:16:41+00:00"
+ },
+ {
+  "alias": "/learning/cte/review",
+  "title": "School Review",
+  "words": 120,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-06T23:16:43+00:00"
+ },
+ {
+  "alias": "/safety/schoolsafetyspecialist",
+  "title": "School Safety Specialist Program",
+  "words": 409,
+  "fixed": 6,
+  "flags": 3,
+  "changed": "2026-04-06T23:16:52+00:00"
+ },
+ {
+  "alias": "/safety/training",
+  "title": "School Safety Training",
+  "words": 154,
+  "fixed": 9,
+  "flags": 0,
+  "changed": "2026-04-06T23:16:56+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operating/transfinder",
+  "title": "School Transportation Operations Program (Transfinder)",
+  "words": 250,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T23:16:59+00:00"
+ },
+ {
+  "alias": "/schoolsupports/climate/mentalhealth",
+  "title": "School-Based Mental Health Supports",
+  "words": 556,
+  "fixed": 42,
+  "flags": 3,
+  "changed": "2026-04-06T23:17:05+00:00"
+ },
+ {
+  "alias": "/learning/adulted/schoology",
+  "title": "Schoology",
+  "words": 46,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T23:17:07+00:00"
+ },
+ {
+  "alias": "/data-warehouse/reporting/schools",
+  "title": "Schools & SAU Data",
+  "words": 7,
+  "fixed": 4,
+  "flags": 2,
+  "changed": "2026-04-06T23:17:13+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/materials/meascience",
+  "title": "Science Assessment",
+  "words": 183,
+  "fixed": 3,
+  "flags": 2,
+  "changed": "2026-04-06T23:17:19+00:00"
+ },
+ {
+  "alias": "/sel/faq",
+  "title": "SEL FAQ's",
+  "words": 6728,
+  "fixed": 440,
+  "flags": 3,
+  "changed": "2026-04-06T23:17:34+00:00"
+ },
+ {
+  "alias": "/sel/sel4me",
+  "title": "SEL4ME Web-Based Lessons",
+  "words": 219,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:17:37+00:00"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration/showcase",
+  "title": "Showcasing to the public",
+  "words": 39,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:17:39+00:00"
+ },
+ {
+  "alias": "/learning/content/socialstudies/resources/speakingup",
+  "title": "Speaking Up for Social Studies",
+  "words": 187,
+  "fixed": 11,
+  "flags": 0,
+  "changed": "2026-04-06T23:18:06+00:00"
+ },
+ {
+  "alias": "/specialservices/seeds",
+  "title": "Special Educator Engagement, Development & Support (SEEDS) ",
+  "words": 322,
+  "fixed": 15,
+  "flags": 2,
+  "changed": "2026-04-06T23:18:11+00:00"
+ },
+ {
+  "alias": "/specialservices/specialprojects",
+  "title": "Special Projects for Inclusion",
+  "words": 791,
+  "fixed": 20,
+  "flags": 2,
+  "changed": "2026-04-06T23:18:14+00:00"
+ },
+ {
+  "alias": "/safety/specialized",
+  "title": "Specialized Training",
+  "words": 369,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-04-06T23:18:24+00:00"
+ },
+ {
+  "alias": "/data-warehouse/reporting/staff",
+  "title": "Staff Data",
+  "words": 19,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:18:31+00:00"
+ },
+ {
+  "alias": "/learning/cte/standards",
+  "title": "Standards",
+  "words": 129,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T23:18:37+00:00"
+ },
+ {
+  "alias": "/learning/specialed/SAP/info",
+  "title": "State Advisory Panel",
+  "words": 119,
+  "fixed": 28,
+  "flags": 1,
+  "changed": "2026-04-06T23:19:01+00:00"
+ },
+ {
+  "alias": "/learning/specialed/SAP",
+  "title": "State Advisory Panels Part C & B",
+  "words": 155,
+  "fixed": 15,
+  "flags": 2,
+  "changed": "2026-04-06T23:19:04+00:00"
+ },
+ {
+  "alias": "/learning/highered/sara",
+  "title": "State Authorization Reciprocity Agreement (SARA)",
+  "words": 1025,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:19:06+00:00"
+ },
+ {
+  "alias": "/doe/learning/specialed/dueprocess/decisions/CIR/2022",
+  "title": "State Complaint Investigations 2022",
+  "words": 104,
+  "fixed": 40,
+  "flags": 1,
+  "changed": "2026-04-06T23:19:17+00:00"
+ },
+ {
+  "alias": "/learning/cds/stateperformance",
+  "title": "State Performance Plan",
+  "words": 513,
+  "fixed": 133,
+  "flags": 1,
+  "changed": "2026-04-06T23:19:19+00:00"
+ },
+ {
+  "alias": "/learning/content/socialstudies/resources/mainenativestudies/statute",
+  "title": "Statute Pertaining to Maine Native Studies",
+  "words": 183,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-06T23:19:26+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/studentbehavior",
+  "title": "Student Behavior",
+  "words": 488,
+  "fixed": 9,
+  "flags": 3,
+  "changed": "2026-04-06T23:19:44+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/responsibilities",
+  "title": "Student Board Member Responsibilities",
+  "words": 256,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-06T23:19:47+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/student",
+  "title": "Student Board Members",
+  "words": 430,
+  "fixed": 24,
+  "flags": 2,
+  "changed": "2026-04-06T23:19:50+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/background",
+  "title": "Student Board Membership Background",
+  "words": 697,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:19:52+00:00"
+ },
+ {
+  "alias": "/about/leadership/studentleadership/studentcabinet",
+  "title": "Student Cabinet",
+  "words": 177,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T23:19:55+00:00"
+ },
+ {
+  "alias": "/data-reporting/privacy/sdpc",
+  "title": "Student Data Privacy Consortia",
+  "words": 100,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:20:00+00:00"
+ },
+ {
+  "alias": "/about/leadership/studentleadership",
+  "title": "Student Leadership",
+  "words": 126,
+  "fixed": 9,
+  "flags": 2,
+  "changed": "2026-04-06T23:20:08+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/committees/studentmembership",
+  "title": "Student Membership Committee",
+  "words": 78,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-04-06T23:20:10+00:00"
+ },
+ {
+  "alias": "/learning/ii/studentreflection",
+  "title": "Student Reflection",
+  "words": 397,
+  "fixed": 52,
+  "flags": 2,
+  "changed": "2026-04-06T23:20:14+00:00"
+ },
+ {
+  "alias": "/data-reporting/medmssupport/resources/residency",
+  "title": "Student Residency",
+  "words": 252,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:20:17+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/committees/studenttransfers",
+  "title": "Student Transfers Ad Hoc Committee",
+  "words": 87,
+  "fixed": 24,
+  "flags": 1,
+  "changed": "2026-04-06T23:20:20+00:00"
+ },
+ {
+  "alias": "/schoolsupports/climate/suicideprevention",
+  "title": "Suicide Prevention and Intervention",
+  "words": 125,
+  "fixed": 11,
+  "flags": 1,
+  "changed": "2026-04-06T23:20:30+00:00"
+ },
+ {
+  "alias": "/schools/facilities/mcscp/processsummaryrev",
+  "title": "Summary of State-subsidized construction projects process",
+  "words": 237,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:20:32+00:00"
+ },
+ {
+  "alias": "/literacy/literacyforme/summer",
+  "title": "Summer Literacy",
+  "words": 685,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:20:38+00:00"
+ },
+ {
+  "alias": "/schools/schoolops/superintendents",
+  "title": "Superintendents' Agreement Information",
+  "words": 1818,
+  "fixed": 17,
+  "flags": 0,
+  "changed": "2026-04-06T23:20:44+00:00"
+ },
+ {
+  "alias": "/learning/specialed/supervision/monitoring",
+  "title": "Supervision, Monitoring, & Support",
+  "words": 101,
+  "fixed": 11,
+  "flags": 2,
+  "changed": "2026-04-06T23:20:46+00:00"
+ },
+ {
+  "alias": "/learning/specialed/supervision",
+  "title": "Supervision, Monitoring, and Support - SAUs",
+  "words": 169,
+  "fixed": 11,
+  "flags": 2,
+  "changed": "2026-04-06T23:20:58+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/SSQ",
+  "title": "Supporting Students in Questioning",
+  "words": 520,
+  "fixed": 38,
+  "flags": 1,
+  "changed": "2026-04-06T23:21:01+00:00"
+ },
+ {
+  "alias": "/educators/loans",
+  "title": "Teacher Shortage - Loan Forgiveness",
+  "words": 753,
+  "fixed": 24,
+  "flags": 1,
+  "changed": "2026-04-06T23:21:03+00:00"
+ },
+ {
+  "alias": "/exploreeducation/teachmaine",
+  "title": "TeachMaine ",
+  "words": 546,
+  "fixed": 20,
+  "flags": 0,
+  "changed": "2026-04-06T23:21:08+00:00"
+ },
+ {
+  "alias": "/teachmaine/framework",
+  "title": "TeachMaine Framework",
+  "words": 1337,
+  "fixed": 37,
+  "flags": 2,
+  "changed": "2026-04-06T23:21:12+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/publicpreschool/monitoring",
+  "title": "Technical Assistance - Public Preschool",
+  "words": 1509,
+  "fixed": 16,
+  "flags": 2,
+  "changed": "2026-04-06T23:21:17+00:00"
+ },
+ {
+  "alias": "/learning/cte/technical",
+  "title": "Technical Skills Attainment Terminology",
+  "words": 597,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:21:20+00:00"
+ },
+ {
+  "alias": "/learning/technology",
+  "title": "Technology & Learning",
+  "words": 88,
+  "fixed": 10,
+  "flags": 3,
+  "changed": "2026-04-06T23:21:22+00:00"
+ },
+ {
+  "alias": "/learning/technology/professionallearning",
+  "title": "Technology & Learning - Professional Learning",
+  "words": 200,
+  "fixed": 18,
+  "flags": 3,
+  "changed": "2026-04-06T23:21:25+00:00"
+ },
+ {
+  "alias": "/learning/technology/maplebytes",
+  "title": "Technology & Learning: Maple Bytes",
+  "words": 307,
+  "fixed": 26,
+  "flags": 2,
+  "changed": "2026-04-06T23:21:29+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources/terminology",
+  "title": "Terminology & Definitions ",
+  "words": 903,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:21:34+00:00"
+ },
+ {
+  "alias": "/cds/families/referrals/thankyou.html",
+  "title": "Thank You - CDS",
+  "words": 60,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:21:36+00:00"
+ },
+ {
+  "alias": "/literacy/literacyforme/future",
+  "title": "The Future of Literacy",
+  "words": 1308,
+  "fixed": 43,
+  "flags": 1,
+  "changed": "2026-04-06T23:21:39+00:00"
+ },
+ {
+  "alias": "/learning/II/interdisciplinaryprogression",
+  "title": "The Interdisciplinary Progression",
+  "words": 571,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-04-06T23:21:44+00:00"
+ },
+ {
+  "alias": "/cds/icc",
+  "title": "The Maine Interagency Coordinating Council (ICC)",
+  "words": 134,
+  "fixed": 59,
+  "flags": 1,
+  "changed": "2026-04-06T23:21:46+00:00"
+ },
+ {
+  "alias": "/literacy/literacyforme/stateofliteracy",
+  "title": "The State of Literacy in Maine - 2021",
+  "words": 689,
+  "fixed": 37,
+  "flags": 1,
+  "changed": "2026-04-06T23:21:55+00:00"
+ },
+ {
+  "alias": "/learning/II/overview",
+  "title": "The Vision of Interdisciplinary Instruction",
+  "words": 98,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-04-06T23:21:58+00:00"
+ },
+ {
+  "alias": "/learning/II/wholestudent",
+  "title": "The Whole Student Approach",
+  "words": 185,
+  "fixed": 3,
+  "flags": 0,
+  "changed": "2026-04-06T23:22:02+00:00"
+ },
+ {
+  "alias": "/exploreeducation/teachmaine/themefour",
+  "title": "Theme Four: Elevate Educators and the Education Profession",
+  "words": 909,
+  "fixed": 41,
+  "flags": 3,
+  "changed": "2026-04-06T23:22:04+00:00"
+ },
+ {
+  "alias": "/exploreeducation/teachmaine/themethree",
+  "title": "Theme Three: Support Educator Development, Growth, and Leadership",
+  "words": 4081,
+  "fixed": 183,
+  "flags": 3,
+  "changed": "2026-04-06T23:22:09+00:00"
+ },
+ {
+  "alias": "/testing_accountability/model/schoolsupports",
+  "title": "Tiers of Support",
+  "words": 428,
+  "fixed": 3,
+  "flags": 3,
+  "changed": "2026-04-06T23:22:15+00:00"
+ },
+ {
+  "alias": "/doe/learning/esea/titlei/cop",
+  "title": "Title I Committee of Practitioners",
+  "words": 82,
+  "fixed": 5,
+  "flags": 2,
+  "changed": "2026-04-06T23:22:18+00:00"
+ },
+ {
+  "alias": "/learning/esea/comparability",
+  "title": "Title I Comparability ",
+  "words": 217,
+  "fixed": 8,
+  "flags": 2,
+  "changed": "2026-04-06T23:22:20+00:00"
+ },
+ {
+  "alias": "/learning/esea/titleIII/snapshot",
+  "title": "Title III, Part A: Snapshot",
+  "words": 806,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T23:22:32+00:00"
+ },
+ {
+  "alias": "/learning/esea/titleIV/snapshot",
+  "title": "Title IV, Part A: Spending Snapshot",
+  "words": 970,
+  "fixed": 50,
+  "flags": 3,
+  "changed": "2026-04-06T23:22:35+00:00"
+ },
+ {
+  "alias": "/sitepolicies/transaction",
+  "title": "Transaction Security",
+  "words": 197,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:22:38+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition",
+  "title": "Transition",
+  "words": 48,
+  "fixed": 19,
+  "flags": 1,
+  "changed": "2026-04-06T23:22:44+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition/caregiver",
+  "title": "Transition - Caregiver",
+  "words": 70,
+  "fixed": 54,
+  "flags": 3,
+  "changed": "2026-04-06T23:22:46+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition/youngperson/continue",
+  "title": "Transition - Continue Education",
+  "words": 176,
+  "fixed": 72,
+  "flags": 3,
+  "changed": "2026-04-06T23:22:53+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition/youngperson/idontknow",
+  "title": "Transition - Don't Know Yet",
+  "words": 59,
+  "fixed": 39,
+  "flags": 3,
+  "changed": "2026-04-06T23:22:55+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition/educator",
+  "title": "Transition - Educator",
+  "words": 37,
+  "fixed": 40,
+  "flags": 2,
+  "changed": "2026-04-06T23:22:58+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition/educator/resources",
+  "title": "Transition - Educator Resources",
+  "words": 216,
+  "fixed": 104,
+  "flags": 1,
+  "changed": "2026-04-06T23:23:02+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition/employer",
+  "title": "Transition - Employer",
+  "words": 46,
+  "fixed": 42,
+  "flags": 2,
+  "changed": "2026-04-06T23:23:04+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition/youngperson",
+  "title": "Transition - Young Person",
+  "words": 42,
+  "fixed": 44,
+  "flags": 2,
+  "changed": "2026-04-06T23:23:10+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/transitions",
+  "title": "Transitioning into Kindergarten",
+  "words": 69,
+  "fixed": 13,
+  "flags": 1,
+  "changed": "2026-04-06T23:23:16+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/transitions/educators",
+  "title": "Transitioning into Kindergarten - Educators & Providers",
+  "words": 110,
+  "fixed": 18,
+  "flags": 1,
+  "changed": "2026-04-06T23:23:18+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/transitions/families",
+  "title": "Transitioning into Kindergarten - Parents & Caregivers",
+  "words": 167,
+  "fixed": 12,
+  "flags": 1,
+  "changed": "2026-04-06T23:23:22+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/transitions/modules",
+  "title": "Transitioning into Kindergarten - Professional Development Modules",
+  "words": 106,
+  "fixed": 29,
+  "flags": 2,
+  "changed": "2026-04-06T23:23:25+00:00"
+ },
+ {
+  "alias": "/schools/transportation",
+  "title": "Transportation",
+  "words": 730,
+  "fixed": 18,
+  "flags": 2,
+  "changed": "2026-04-06T23:23:28+00:00"
+ },
+ {
+  "alias": "/schools/transportation/laws",
+  "title": "Transportation Laws, Rules & Policies",
+  "words": 604,
+  "fixed": 26,
+  "flags": 1,
+  "changed": "2026-04-06T23:23:30+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operation/preschool",
+  "title": "Transporting Preschool Students ",
+  "words": 423,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-04-06T23:23:37+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operation/specneeds",
+  "title": "Transporting Students with Special Needs ",
+  "words": 306,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:23:39+00:00"
+ },
+ {
+  "alias": "/data-reporting/medmssupport/resources/truancy",
+  "title": "Truancy Reporting Guidance",
+  "words": 1314,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-04-06T23:23:42+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/PreK4ME/unit1",
+  "title": "Unit 1 Family",
+  "words": 38,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-04-06T23:23:50+00:00"
+ },
+ {
+  "alias": "/sitepolicies/security",
+  "title": "User Security Tips",
+  "words": 461,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:24:15+00:00"
+ },
+ {
+  "alias": "/learning/II/ConCEPT/questions",
+  "title": "Using Student Questions in Instruction",
+  "words": 59,
+  "fixed": 13,
+  "flags": 2,
+  "changed": "2026-04-06T23:24:18+00:00"
+ },
+ {
+  "alias": "/schools/transportation/programs/veterans",
+  "title": "Veterans In School Transportation Program",
+  "words": 337,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-06T23:24:20+00:00"
+ },
+ {
+  "alias": "/about/vision",
+  "title": "Vision, Mission, and Strategic Priorities",
+  "words": 174,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:24:22+00:00"
+ },
+ {
+  "alias": "/learning/content/worldlanguages/prolearning/spain",
+  "title": "Visiting Teachers from Spain",
+  "words": 465,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-04-06T23:24:25+00:00"
+ },
+ {
+  "alias": "/sitepolicies",
+  "title": "Web Policies",
+  "words": 55,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-04-06T23:24:47+00:00"
+ },
+ {
+  "alias": "/learning/content/ela/literacylinks/612",
+  "title": "What does NS or No Score really mean?",
+  "words": 773,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-06T23:24:49+00:00"
+ },
+ {
+  "alias": "/learning/content/ela/literacylinks/k5",
+  "title": "What does NS or No Score really mean?",
+  "words": 738,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-04-06T23:24:51+00:00"
+ },
+ {
+  "alias": "/cert/status",
+  "title": "What is My Status",
+  "words": 60,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:24:53+00:00"
+ },
+ {
+  "alias": "/learning/II/overview/why",
+  "title": "Why is Interdisciplinary Instruction Important?",
+  "words": 383,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-06T23:24:59+00:00"
+ },
+ {
+  "alias": "/exploreeducation/liveinmaine",
+  "title": "Why Live in Maine?",
+  "words": 180,
+  "fixed": 9,
+  "flags": 2,
+  "changed": "2026-04-06T23:25:05+00:00"
+ },
+ {
+  "alias": "/exploreeducation/makemove",
+  "title": "Why Make Your Move",
+  "words": 278,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-06T23:25:08+00:00"
+ },
+ {
+  "alias": "/exploreeducation/workineducation/whyteach",
+  "title": "Why Teach?",
+  "words": 211,
+  "fixed": 4,
+  "flags": 0,
+  "changed": "2026-04-06T23:25:13+00:00"
+ },
+ {
+  "alias": "/exploreeducation/workineducation",
+  "title": "Why Work in Education?",
+  "words": 205,
+  "fixed": 4,
+  "flags": 2,
+  "changed": "2026-04-06T23:25:16+00:00"
+ },
+ {
+  "alias": "/schools/structure/withdrawal/list",
+  "title": "Withdrawal List",
+  "words": 474,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-04-06T23:25:19+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/lit&neur/wordrecog",
+  "title": "Word Recognition",
+  "words": 611,
+  "fixed": 94,
+  "flags": 2,
+  "changed": "2026-04-06T23:25:25+00:00"
+ },
+ {
+  "alias": "/pathways/resources",
+  "title": "Workforce Development & Innovative Pathways",
+  "words": 254,
+  "fixed": 13,
+  "flags": 2,
+  "changed": "2026-04-06T23:25:27+00:00"
+ },
+ {
+  "alias": "/learning/adulted/wioa",
+  "title": "Workforce Innovation and Opportunity Act - WIOA",
+  "words": 120,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:25:29+00:00"
+ },
+ {
+  "alias": "/learning/adulted/workready",
+  "title": "WorkReady",
+  "words": 188,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-06T23:25:31+00:00"
+ },
+ {
+  "alias": "/learning/content/worldlanguages/resources/assessments",
+  "title": "World Language Assessment Resources",
+  "words": 87,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-06T23:25:34+00:00"
+ },
+ {
+  "alias": "/learning/content/worldlanguages/prolearning/languagesinmaineschools",
+  "title": "World Languages in Maine Schools",
+  "words": 167,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:25:39+00:00"
+ },
+ {
+  "alias": "/learning/content/worldlanguages/resources/instruction",
+  "title": "World Languages Instruction",
+  "words": 5,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-06T23:25:42+00:00"
+ },
+ {
+  "alias": "/learning/content/worldlanguages/resources/organizations",
+  "title": "World Languages Professional Organizations",
+  "words": 186,
+  "fixed": 5,
+  "flags": 2,
+  "changed": "2026-04-06T23:25:44+00:00"
+ },
+ {
+  "alias": "/learning/content/worldlanguages/resources/statute",
+  "title": "World Languages Statute",
+  "words": 161,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-06T23:25:59+00:00"
+ },
+ {
+  "alias": "/funding/reports/tuition/year-end-private/definitions",
+  "title": "Year End Report of Private Schools (EF-M-240) Expenditure Spreadsheet Definitions",
+  "words": 1376,
+  "fixed": 37,
+  "flags": 1,
+  "changed": "2026-04-06T23:26:02+00:00"
+ },
+ {
+  "alias": "/funding/reports/EML",
+  "title": "Funding Reports - English (Multilingual) Learners",
+  "words": 612,
+  "fixed": 13,
+  "flags": 2,
+  "changed": "2026-04-07T10:34:17+00:00"
+ },
+ {
+  "alias": "/learning/II/overview/definition",
+  "title": " Maine's Interdisciplinary Instruction Definition and Elements",
+  "words": 306,
+  "fixed": 6,
+  "flags": 2,
+  "changed": "2026-04-07T11:03:08+00:00"
+ },
+ {
+  "alias": "/learning/II/inquiry-questioning",
+  "title": " Using Curiosity & Wonder to Guide Inquiry",
+  "words": 141,
+  "fixed": 34,
+  "flags": 2,
+  "changed": "2026-04-07T11:03:11+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/PBLs",
+  "title": "\"X\" -  Based Learning",
+  "words": 278,
+  "fixed": 25,
+  "flags": 3,
+  "changed": "2026-04-07T11:03:13+00:00"
+ },
+ {
+  "alias": "/learning/specialed/assessment",
+  "title": "1% and Maine's Alternate Assessments Based on Alternate Academic Achievement Standards (AA-AAAS)",
+  "words": 576,
+  "fixed": 15,
+  "flags": 3,
+  "changed": "2026-04-07T11:03:17+00:00"
+ },
+ {
+  "alias": "/about",
+  "title": "About",
+  "words": 187,
+  "fixed": 2,
+  "flags": 0,
+  "changed": "2026-04-07T11:03:49+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/model/indicators",
+  "title": "Accountability Indicators",
+  "words": 1316,
+  "fixed": 26,
+  "flags": 3,
+  "changed": "2026-04-07T11:03:58+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/lit&neur/Selfregulation",
+  "title": "Active Self-Regulation",
+  "words": 346,
+  "fixed": 48,
+  "flags": 2,
+  "changed": "2026-04-07T11:04:00+00:00"
+ },
+ {
+  "alias": "/learning/II/avr",
+  "title": "Active View of Reading",
+  "words": 115,
+  "fixed": 16,
+  "flags": 2,
+  "changed": "2026-04-07T11:04:02+00:00"
+ },
+ {
+  "alias": "/adminletter-archive",
+  "title": "Administrative Letters - Archive",
+  "words": 2010,
+  "fixed": 3,
+  "flags": 2,
+  "changed": "2026-04-07T11:04:08+00:00"
+ },
+ {
+  "alias": "/educators/educatoreval/administrator",
+  "title": "Administrator Effectiveness",
+  "words": 396,
+  "fixed": 2,
+  "flags": 2,
+  "changed": "2026-04-07T11:04:11+00:00"
+ },
+ {
+  "alias": "/sel/adultcare",
+  "title": "Adult Care",
+  "words": 13,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-04-07T11:04:13+00:00"
+ },
+ {
+  "alias": "/learning/adulted/contact",
+  "title": "Adult Education Contact",
+  "words": 221,
+  "fixed": 36,
+  "flags": 2,
+  "changed": "2026-04-07T11:04:17+00:00"
+ },
+ {
+  "alias": "/learning/adulted/pd",
+  "title": "Adult Education Professional Learning",
+  "words": 181,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-07T11:04:19+00:00"
+ },
+ {
+  "alias": "/learning/adulted/programs",
+  "title": "Adult Education Program Administration",
+  "words": 151,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-04-07T11:04:21+00:00"
+ },
+ {
+  "alias": "/learning/adulted/providers",
+  "title": "Adult Education Provider Listing",
+  "words": 1283,
+  "fixed": 2,
+  "flags": 2,
+  "changed": "2026-04-07T11:04:23+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/afterschool",
+  "title": "Afterschool Snack Service",
+  "words": 503,
+  "fixed": 18,
+  "flags": 1,
+  "changed": "2026-04-07T11:04:25+00:00"
+ },
+ {
+  "alias": "/funding/accounting/yearend",
+  "title": "Annual Year End Financial Reporting  ",
+  "words": 127,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-04-07T11:04:34+00:00"
+ },
+ {
+  "alias": "/safety/threatassessmentlinks",
+  "title": "Anonymous Threats",
+  "words": 67,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-04-07T11:04:36+00:00"
+ },
+ {
+  "alias": "/cert/application",
+  "title": "Application and Fees",
+  "words": 434,
+  "fixed": 1,
+  "flags": 3,
+  "changed": "2026-04-07T11:04:38+00:00"
+ },
+ {
+  "alias": "/funding/reports/tuition/faqs",
+  "title": "Approval for Receipt of Public Funds by Private Schools",
+  "words": 820,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-07T11:04:40+00:00"
+ },
+ {
+  "alias": "/fedrelief/fedreliefsurvey",
+  "title": "ARP ESSER III Data Collection",
+  "words": 388,
+  "fixed": 7,
+  "flags": 3,
+  "changed": "2026-04-07T11:04:43+00:00"
+ },
+ {
+  "alias": "/learning/cte/schools/articulate",
+  "title": "Articulation Agreements & Programs of Study",
+  "words": 493,
+  "fixed": 13,
+  "flags": 2,
+  "changed": "2026-04-07T11:04:45+00:00"
+ },
+ {
+  "alias": "/learning/highered/earlycollege/eligibility",
+  "title": "Aspirations Program",
+  "words": 1573,
+  "fixed": 34,
+  "flags": 2,
+  "changed": "2026-04-07T11:04:49+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability",
+  "title": "Assessment & Accountability",
+  "words": 109,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-07T11:04:51+00:00"
+ },
+ {
+  "alias": "/assessment/contact",
+  "title": "Assessment Team Contact",
+  "words": 136,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-07T11:05:01+00:00"
+ },
+ {
+  "alias": "/funding/fiscalreview/audit",
+  "title": "Audit Requirements",
+  "words": 96,
+  "fixed": 15,
+  "flags": 1,
+  "changed": "2026-04-07T11:05:08+00:00"
+ },
+ {
+  "alias": "/learning/II/partnership-landing",
+  "title": "Authentic Audience",
+  "words": 150,
+  "fixed": 9,
+  "flags": 2,
+  "changed": "2026-04-07T11:05:10+00:00"
+ },
+ {
+  "alias": "/doe/learning/II/techpblhome/techintegration/authenticproblems",
+  "title": "Authentic Problems",
+  "words": 28,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-07T11:05:13+00:00"
+ },
+ {
+  "alias": "/learning/highered/degrees/authorization",
+  "title": "Authorization",
+  "words": 2188,
+  "fixed": 2,
+  "flags": 2,
+  "changed": "2026-04-07T11:05:15+00:00"
+ },
+ {
+  "alias": "/learning/ffa/winners2022-2023",
+  "title": "Award Winners 2022-2023",
+  "words": 1264,
+  "fixed": 22,
+  "flags": 1,
+  "changed": "2026-04-07T11:05:18+00:00"
+ },
+ {
+  "alias": "/schools/embrace/regional-service-center/new-member",
+  "title": "Becoming a Member of an Existing Education Service Center",
+  "words": 398,
+  "fixed": 18,
+  "flags": 2,
+  "changed": "2026-04-07T11:05:23+00:00"
+ },
+ {
+  "alias": "/learning/content/arts/resources/bloom",
+  "title": "Bloom's Taxonomy",
+  "words": 214,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-07T11:05:29+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/lit&neur/bridging",
+  "title": "Bridging Processes",
+  "words": 739,
+  "fixed": 124,
+  "flags": 2,
+  "changed": "2026-04-07T11:05:31+00:00"
+ },
+ {
+  "alias": "/funding/accounting",
+  "title": "Budgets & Accounting",
+  "words": 74,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-07T11:05:33+00:00"
+ },
+ {
+  "alias": "/learning/technology/studentleadership",
+  "title": "Student Leadership",
+  "words": 120,
+  "fixed": 11,
+  "flags": 2,
+  "changed": "2026-04-07T11:06:01+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs",
+  "title": "Programs - Child Nutrition",
+  "words": 542,
+  "fixed": 1,
+  "flags": 0,
+  "changed": "2026-04-07T13:28:46+00:00"
+ },
+ {
+  "alias": "/pl/math/newmath",
+  "title": "Why New Math and Early Numeracy",
+  "words": 430,
+  "fixed": 11,
+  "flags": 1,
+  "changed": "2026-04-07T15:51:51+00:00"
+ },
+ {
+  "alias": "/pl/math/addition",
+  "title": "Addition Strategies Progression",
+  "words": 1653,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-04-07T15:57:13+00:00"
+ },
+ {
+  "alias": "/pl/math/division",
+  "title": "Division Strategies Progression",
+  "words": 951,
+  "fixed": 7,
+  "flags": 0,
+  "changed": "2026-04-07T16:10:02+00:00"
+ },
+ {
+  "alias": "/pl/math",
+  "title": "Mathematics Professional Learning",
+  "words": 291,
+  "fixed": 1,
+  "flags": 0,
+  "changed": "2026-04-07T16:11:48+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/supports/assessmentliteracy",
+  "title": "Assessment Literacy Basics",
+  "words": 187,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-04-07T16:15:25+00:00"
+ },
+ {
+  "alias": "/schoolsupports/climate/restraintandseclusion/education",
+  "title": "Reducing Restraint and Seclusion In Schools (RR&SS)",
+  "words": 641,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-07T16:19:39+00:00"
+ },
+ {
+  "alias": "/exploreeducation/workineducation/community",
+  "title": "Be a Part of the School Community ",
+  "words": 311,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-07T16:21:47+00:00"
+ },
+ {
+  "alias": "/about/laws/new",
+  "title": "Legislative Summaries",
+  "words": 59,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-07T16:23:28+00:00"
+ },
+ {
+  "alias": "/learning/cte/grants4me",
+  "title": "Grants4ME",
+  "words": 8,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-07T16:27:36+00:00"
+ },
+ {
+  "alias": "/cert/initial",
+  "title": "How to Become a Maine Educator ",
+  "words": 268,
+  "fixed": 0,
+  "flags": 0,
+  "changed": "2026-04-07T16:29:53+00:00"
+ },
+ {
+  "alias": "/sel",
+  "title": "SEL & Emotional Intelligence",
+  "words": 453,
+  "fixed": 11,
+  "flags": 0,
+  "changed": "2026-04-07T17:09:22+00:00"
+ },
+ {
+  "alias": "/fedrelief/eans",
+  "title": "Emergency Assistance for Non-Public Schools (EANS)",
+  "words": 204,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-04-07T17:11:27+00:00"
+ },
+ {
+  "alias": "/exploreeducation/workineducation/whylead",
+  "title": "Why Lead?",
+  "words": 247,
+  "fixed": 1,
+  "flags": 1,
+  "changed": "2026-04-07T17:12:52+00:00"
+ },
+ {
+  "alias": "/cds/reporting",
+  "title": "Reporting",
+  "words": 112,
+  "fixed": 15,
+  "flags": 1,
+  "changed": "2026-04-07T17:15:45+00:00"
+ },
+ {
+  "alias": "/schoolhealthquickguide",
+  "title": "School Health Quick Guide",
+  "words": 16,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-08T11:42:46+00:00"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth",
+  "title": "Coordinated School Health",
+  "words": 371,
+  "fixed": 21,
+  "flags": 3,
+  "changed": "2026-04-08T13:47:14+00:00"
+ },
+ {
+  "alias": "/funding/reports",
+  "title": "Fiscal Reports",
+  "words": 87,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-04-08T13:41:19+00:00"
+ },
+ {
+  "alias": "/safety/sautraining",
+  "title": "Where Have We Trained?",
+  "words": 42,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-04-08T14:10:58+00:00"
+ },
+ {
+  "alias": "/learning/II/integratedliteracy",
+  "title": "Integrated Literacy",
+  "words": 696,
+  "fixed": 13,
+  "flags": 2,
+  "changed": "2026-04-08T14:55:50+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/first10/examples",
+  "title": "The History of First 10 Community Schools in Maine",
+  "words": 992,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-04-08T15:00:41+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/1stgradeforme/unit3",
+  "title": "Unit 3 - Resources In Our Community",
+  "words": 2057,
+  "fixed": 1434,
+  "flags": 3,
+  "changed": "2026-04-08T15:02:18+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/K4ME/unit4",
+  "title": "K for ME - Unit 4 - Our Earth",
+  "words": 1926,
+  "fixed": 1251,
+  "flags": 3,
+  "changed": "2026-04-08T15:02:38+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/PreK4ME/unit2-links",
+  "title": "Pre K for ME - Unit 2 Friends Links",
+  "words": 533,
+  "fixed": 185,
+  "flags": 1,
+  "changed": "2026-04-08T15:03:25+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/PreK4ME/unit5-links",
+  "title": "Pre K for ME - Unit 5 Shadows Links",
+  "words": 505,
+  "fixed": 90,
+  "flags": 1,
+  "changed": "2026-04-08T15:03:28+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/PreK4ME/unit6-links",
+  "title": "PreK for ME - Unit 6 - Things that Grow Links",
+  "words": 528,
+  "fixed": 180,
+  "flags": 2,
+  "changed": "2026-04-08T15:03:30+00:00"
+ },
+ {
+  "alias": "/learning/cte/professional/intersections",
+  "title": "Intersections Workshops",
+  "words": 450,
+  "fixed": 57,
+  "flags": 2,
+  "changed": "2026-04-08T15:07:09+00:00"
+ },
+ {
+  "alias": "/sel/SELImplementation",
+  "title": "Social Emotional Teaching and Learning",
+  "words": 570,
+  "fixed": 43,
+  "flags": 0,
+  "changed": "2026-04-08T15:16:29+00:00"
+ },
+ {
+  "alias": "/fedrelief/equitydata",
+  "title": "Maintenance of Equity Data",
+  "words": 863,
+  "fixed": 45,
+  "flags": 0,
+  "changed": "2026-04-08T15:19:14+00:00"
+ },
+ {
+  "alias": "/schools/transportation/operating/schoolbustypes",
+  "title": "School Bus Types",
+  "words": 215,
+  "fixed": 12,
+  "flags": 2,
+  "changed": "2026-04-08T15:32:26+00:00"
+ },
+ {
+  "alias": "/learning/technology/infrastructure",
+  "title": "Cybersecurity & Infrastructure Support",
+  "words": 1355,
+  "fixed": 232,
+  "flags": 1,
+  "changed": "2026-04-08T15:32:37+00:00"
+ },
+ {
+  "alias": "/exploreeducation/teachmaine/themetwo",
+  "title": "Theme Two: Diversifying the Educator Workforce",
+  "words": 3401,
+  "fixed": 98,
+  "flags": 3,
+  "changed": "2026-04-08T15:51:26+00:00"
+ },
+ {
+  "alias": "/innovation/climateeducation/grantprogram",
+  "title": "Climate Education Professional Development Grant Pilot Program",
+  "words": 463,
+  "fixed": 30,
+  "flags": 1,
+  "changed": "2026-04-08T16:02:06+00:00"
+ },
+ {
+  "alias": "/exploreeducation/teachmaine/themeone",
+  "title": "Theme One: Recruitment and Retention",
+  "words": 2476,
+  "fixed": 30,
+  "flags": 3,
+  "changed": "2026-04-08T16:02:52+00:00"
+ },
+ {
+  "alias": "/schoolsupports/climate/bullyingprevention",
+  "title": "Bullying Prevention",
+  "words": 1411,
+  "fixed": 19,
+  "flags": 0,
+  "changed": "2026-04-08T16:14:51+00:00"
+ },
+ {
+  "alias": "/cert/renewals",
+  "title": "Certification Renewals",
+  "words": 188,
+  "fixed": 4,
+  "flags": 2,
+  "changed": "2026-04-08T16:24:19+00:00"
+ },
+ {
+  "alias": "/literacy/advisorycouncil",
+  "title": "Literacy Advisory Council",
+  "words": 399,
+  "fixed": 0,
+  "flags": 0,
+  "changed": "2026-04-08T16:27:54+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/model/essaplanrevisiondetails",
+  "title": "ESSA Plan Revision Details",
+  "words": 445,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-08T16:29:25+00:00"
+ },
+ {
+  "alias": "/engine",
+  "title": "EnGiNE - Community & Learning Platform",
+  "words": 93,
+  "fixed": 14,
+  "flags": 2,
+  "changed": "2026-04-08T16:50:38+00:00"
+ },
+ {
+  "alias": "/learning/II/transfer",
+  "title": "Teaching for Transfer ",
+  "words": 319,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-04-08T17:05:41+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources/civilrights",
+  "title": "Civil Rights & Lau Plans",
+  "words": 588,
+  "fixed": 12,
+  "flags": 3,
+  "changed": "2026-04-08T17:20:52+00:00"
+ },
+ {
+  "alias": "/schoolsupports/communityschools/current",
+  "title": "Current Community Schools",
+  "words": 1482,
+  "fixed": 15,
+  "flags": 0,
+  "changed": "2026-04-08T17:23:50+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/PreK4ME/unit1-links",
+  "title": "Pre K for ME - Unit 1 Family",
+  "words": 442,
+  "fixed": 185,
+  "flags": 3,
+  "changed": "2026-04-08T17:41:51+00:00"
+ },
+ {
+  "alias": "/funding/gpa/eps",
+  "title": "Essential Programs and Services (EPS) Funding",
+  "words": 317,
+  "fixed": 2,
+  "flags": 0,
+  "changed": "2026-04-08T17:59:09+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources/newcomersSLIFE",
+  "title": "Students with Limited or Interrupted Formal Education (SLIFE)",
+  "words": 550,
+  "fixed": 20,
+  "flags": 1,
+  "changed": "2026-04-08T18:02:46+00:00"
+ },
+ {
+  "alias": "/learning/ffa/officers/past",
+  "title": "Maine FFA Past State Officers",
+  "words": 1692,
+  "fixed": 87,
+  "flags": 2,
+  "changed": "2026-04-08T18:07:14+00:00"
+ },
+ {
+  "alias": "/learning/II/student-voice-choice",
+  "title": "Voice and Choice",
+  "words": 163,
+  "fixed": 28,
+  "flags": 2,
+  "changed": "2026-04-08T18:09:39+00:00"
+ },
+ {
+  "alias": "/learning/II/inquiry-ml",
+  "title": "Inquiry-Based Instruction & Multilingual Learners",
+  "words": 273,
+  "fixed": 51,
+  "flags": 3,
+  "changed": "2026-04-08T18:11:09+00:00"
+ },
+ {
+  "alias": "/farmtoschool/farmvideos",
+  "title": "Maine Farm and Sea to School Videos",
+  "words": 136,
+  "fixed": 10,
+  "flags": 3,
+  "changed": "2026-04-08T18:13:43+00:00"
+ },
+ {
+  "alias": "/learning/II/conceptualquestions",
+  "title": "Conceptual Questions",
+  "words": 256,
+  "fixed": 54,
+  "flags": 1,
+  "changed": "2026-04-08T18:15:11+00:00"
+ },
+ {
+  "alias": "/learning/II/ConCEPT/menu/dispositions",
+  "title": "A Culture of Dispositions",
+  "words": 129,
+  "fixed": 34,
+  "flags": 1,
+  "changed": "2026-04-08T18:17:17+00:00"
+ },
+ {
+  "alias": "/learning/II/ConCEPT/menu/PBLInquiry",
+  "title": "Project Based Learning and Inquiry",
+  "words": 213,
+  "fixed": 53,
+  "flags": 1,
+  "changed": "2026-04-08T18:18:12+00:00"
+ },
+ {
+  "alias": "/learning/II/engagement",
+  "title": "Continuum of Engagement",
+  "words": 188,
+  "fixed": 26,
+  "flags": 2,
+  "changed": "2026-04-08T18:22:04+00:00"
+ },
+ {
+  "alias": "/moose/educators",
+  "title": "MOOSE for Educators",
+  "words": 719,
+  "fixed": 16,
+  "flags": 1,
+  "changed": "2026-04-08T18:38:39+00:00"
+ },
+ {
+  "alias": "/literacy/resources",
+  "title": "Literacy Resources",
+  "words": 458,
+  "fixed": 11,
+  "flags": 1,
+  "changed": "2026-04-08T18:49:57+00:00"
+ },
+ {
+  "alias": "/learning/foundational/mathematics",
+  "title": "Early Learning Foundational Skills: Mathematics",
+  "words": 339,
+  "fixed": 26,
+  "flags": 1,
+  "changed": "2026-04-08T18:54:25+00:00"
+ },
+ {
+  "alias": "/cds/programapproval",
+  "title": "CDS Program Approval",
+  "words": 369,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-04-08T18:56:55+00:00"
+ },
+ {
+  "alias": "/learning/II/udl",
+  "title": "Universal Design for Learning",
+  "words": 169,
+  "fixed": 10,
+  "flags": 2,
+  "changed": "2026-04-08T19:55:41+00:00"
+ },
+ {
+  "alias": "/learning/II/inquiry-land",
+  "title": "Getting Started with Inquiry",
+  "words": 265,
+  "fixed": 35,
+  "flags": 2,
+  "changed": "2026-04-08T19:56:48+00:00"
+ },
+ {
+  "alias": "/measurewhatmatters",
+  "title": "Measure What Matters: The Expanding View of Educational Excellence in Maine ",
+  "words": 271,
+  "fixed": 14,
+  "flags": 0,
+  "changed": "2026-04-08T22:50:37+00:00"
+ },
+ {
+  "alias": "/learning/foundational/approachestolearning",
+  "title": "Early Learning Foundational Skills: Approaches to Learning",
+  "words": 628,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-04-09T13:44:50+00:00"
+ },
+ {
+  "alias": "/learning/mathpathways/educators",
+  "title": "Math Pathways - Supporting Educators",
+  "words": 534,
+  "fixed": 33,
+  "flags": 3,
+  "changed": "2026-04-09T13:48:29+00:00"
+ },
+ {
+  "alias": "/learning/foundational/literacy",
+  "title": "Early Learning Foundational Skills: Literacy",
+  "words": 772,
+  "fixed": 19,
+  "flags": 1,
+  "changed": "2026-04-09T13:52:58+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/PreK4ME/unit4-links",
+  "title": "Pre K for ME - Unit 4 World of Color Links",
+  "words": 614,
+  "fixed": 157,
+  "flags": 0,
+  "changed": "2026-04-09T14:16:07+00:00"
+ },
+ {
+  "alias": "/innovation/MaineOutdoorLearning/stories",
+  "title": "Maine Outdoor Learning Initiative: Stories",
+  "words": 139,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-09T14:19:29+00:00"
+ },
+ {
+  "alias": "/learning/foundational/motordevelopment",
+  "title": "Early Learning Foundational Skills: Motor Development",
+  "words": 240,
+  "fixed": 14,
+  "flags": 1,
+  "changed": "2026-04-09T14:33:31+00:00"
+ },
+ {
+  "alias": "/learning/II/PL",
+  "title": "Interdisciplinary Instruction Professional Learning",
+  "words": 270,
+  "fixed": 131,
+  "flags": 2,
+  "changed": "2026-04-09T14:16:03+00:00"
+ },
+ {
+  "alias": "/learning/II/getting-started-ii",
+  "title": "Getting Started with Interdisciplinary Instruction",
+  "words": 280,
+  "fixed": 32,
+  "flags": 2,
+  "changed": "2026-04-09T14:02:45+00:00"
+ },
+ {
+  "alias": "/learning/II/foundations",
+  "title": "Foundational Skills",
+  "words": 305,
+  "fixed": 25,
+  "flags": 2,
+  "changed": "2026-04-09T12:38:48+00:00"
+ },
+ {
+  "alias": "/funding/gpa/eps/22-23",
+  "title": "FY 2022-23 Funding Details",
+  "words": 503,
+  "fixed": 111,
+  "flags": 3,
+  "changed": "2026-04-09T15:20:22+00:00"
+ },
+ {
+  "alias": "/funding/gpa/eps/23-24",
+  "title": "FY 2023-24 Funding Details",
+  "words": 560,
+  "fixed": 138,
+  "flags": 3,
+  "changed": "2026-04-09T15:21:27+00:00"
+ },
+ {
+  "alias": "/funding/gpa/eps/24-25",
+  "title": "FY 2024-25 Funding Details",
+  "words": 538,
+  "fixed": 120,
+  "flags": 2,
+  "changed": "2026-04-09T15:22:29+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition/youngperson/career",
+  "title": "Transition - Explore Career Opportunities",
+  "words": 45,
+  "fixed": 36,
+  "flags": 3,
+  "changed": "2026-04-09T15:24:01+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition/powerhour",
+  "title": "Transition Maine Power Hour Series",
+  "words": 308,
+  "fixed": 15,
+  "flags": 1,
+  "changed": "2026-04-09T15:25:02+00:00"
+ },
+ {
+  "alias": "/learning/specialed/transition/communitypartner",
+  "title": "Transition - Community Partner",
+  "words": 63,
+  "fixed": 53,
+  "flags": 2,
+  "changed": "2026-04-09T15:26:02+00:00"
+ },
+ {
+  "alias": "/pl/math/multiplication",
+  "title": "Multiplication Strategies Progression",
+  "words": 1201,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-04-09T15:28:00+00:00"
+ },
+ {
+  "alias": "/pl/math/subtraction",
+  "title": "Subtraction Strategies Progression",
+  "words": 1416,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-04-09T11:14:40+00:00"
+ },
+ {
+  "alias": "/schools/embrace",
+  "title": "Regionalized Programs and Services",
+  "words": 137,
+  "fixed": 3,
+  "flags": 0,
+  "changed": "2026-04-09T19:43:53+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/nurseresources/manual/pests",
+  "title": "Pests in Schools",
+  "words": 217,
+  "fixed": 22,
+  "flags": 1,
+  "changed": "2026-04-10T19:05:45+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/CNDatareports",
+  "title": "Child Nutrition Data Reports",
+  "words": 251,
+  "fixed": 139,
+  "flags": 1,
+  "changed": "2026-04-13T13:55:26+00:00"
+ },
+ {
+  "alias": "/funding/reports/essa-guidance",
+  "title": "ESSA Dashboard Per Pupil Expenditure Guidance ",
+  "words": 678,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-04-13T19:04:17+00:00"
+ },
+ {
+  "alias": "/safety/contact",
+  "title": "Maine School Safety Center Contact",
+  "words": 225,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-15T23:37:57+00:00"
+ },
+ {
+  "alias": "/learning/esea",
+  "title": "ESEA Federal Programs",
+  "words": 768,
+  "fixed": 38,
+  "flags": 0,
+  "changed": "2026-04-16T15:31:19+00:00"
+ },
+ {
+  "alias": "/assessment/achievement/reading",
+  "title": "Maine Through Year Assessment Summative Achievement Level Summaries - Reading",
+  "words": 6898,
+  "fixed": 4,
+  "flags": 2,
+  "changed": "2026-04-22T16:07:06+00:00"
+ },
+ {
+  "alias": "/assessment/achievement/math",
+  "title": "Maine Through Year Assessment Summative Achievement Level Summaries - Math",
+  "words": 6771,
+  "fixed": 30,
+  "flags": 2,
+  "changed": "2026-04-22T16:08:18+00:00"
+ },
+ {
+  "alias": "/learning/cds/muser",
+  "title": "Chapter 101: Maine Unified Special Education Regulation Birth to Age Twenty-Two (MUSER)",
+  "words": 293,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-27T16:07:19+00:00"
+ },
+ {
+  "alias": "/learning/specialed/contact",
+  "title": "Special Services Contact",
+  "words": 251,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-04-27T16:21:48+00:00"
+ },
+ {
+  "alias": "/federalprograms/resources",
+  "title": "Federal Programs Resources",
+  "words": 157,
+  "fixed": 71,
+  "flags": 3,
+  "changed": "2026-04-30T14:21:13+00:00"
+ },
+ {
+  "alias": "/schools/eut/schools",
+  "title": "Education in the Unorganized Territory Schools",
+  "words": 83,
+  "fixed": 12,
+  "flags": 3,
+  "changed": "2026-05-01T13:15:04+00:00"
+ },
+ {
+  "alias": "/safety/security",
+  "title": "School Safety & Security",
+  "words": 473,
+  "fixed": 28,
+  "flags": 1,
+  "changed": "2026-05-01T17:52:32+00:00"
+ },
+ {
+  "alias": "/schools/structure/sau-organization-costsharing/facilitator",
+  "title": "Cost-Sharing Facilitators and Third-Party Reviewers",
+  "words": 144,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-05-04T17:29:39+00:00"
+ },
+ {
+  "alias": "/funding/fiscalreview/p100",
+  "title": "Annual Payments of State & Federal Funds (P-100 Report)",
+  "words": 9,
+  "fixed": 1,
+  "flags": 0,
+  "changed": "2026-05-04T18:16:20+00:00"
+ },
+ {
+  "alias": "/learning/specialed/law",
+  "title": "Special Education Laws & Regulations",
+  "words": 571,
+  "fixed": 43,
+  "flags": 2,
+  "changed": "2026-05-04T18:26:04+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/financial/schoolmealpricing",
+  "title": "Student and Adult Pricing and Charging",
+  "words": 368,
+  "fixed": 7,
+  "flags": 0,
+  "changed": "2026-05-06T14:04:28+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources/MLdisabilities",
+  "title": "Multilingual Learners with Disabilities",
+  "words": 813,
+  "fixed": 20,
+  "flags": 1,
+  "changed": "2026-05-06T14:49:19+00:00"
+ },
+ {
+  "alias": "/literacy/literacyforme/components",
+  "title": "Components of  Local Literacy Development",
+  "words": 2670,
+  "fixed": 197,
+  "flags": 3,
+  "changed": "2026-05-07T15:45:22+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/grants",
+  "title": "Early Childhood Grants",
+  "words": 33,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-05-07T15:48:27+00:00"
+ },
+ {
+  "alias": "/learning/esea/grant",
+  "title": "ESEA - Federal Grants Management",
+  "words": 246,
+  "fixed": 6,
+  "flags": 1,
+  "changed": "2026-05-07T17:29:19+00:00"
+ },
+ {
+  "alias": "/specialservices/EarlyChildhoodSpecialEducation/FAPE",
+  "title": "Free Appropriate Public Education (FAPE) in Early Childhood Special Education",
+  "words": 1225,
+  "fixed": 9,
+  "flags": 0,
+  "changed": "2026-05-12T14:56:59+00:00"
+ },
+ {
+  "alias": "/funding/gpa/eps/reports",
+  "title": "EPS Reports and Presentations",
+  "words": 449,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-05-13T12:54:21+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/publicpreschool",
+  "title": "Public Preschool",
+  "words": 314,
+  "fixed": 1,
+  "flags": 0,
+  "changed": "2026-05-14T12:05:01+00:00"
+ },
+ {
+  "alias": "/cds/contactlist",
+  "title": "CDS Contact List",
+  "words": 205,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-05-14T12:13:59+00:00"
+ },
+ {
+  "alias": "/schools/transportation/commission",
+  "title": "Maine School Transportation Safety Commission",
+  "words": 392,
+  "fixed": 12,
+  "flags": 1,
+  "changed": "2026-05-14T14:10:43+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/nslp/specialprovisions",
+  "title": "Special Provisions and CEP",
+  "words": 466,
+  "fixed": 16,
+  "flags": 0,
+  "changed": "2026-05-14T16:42:39+00:00"
+ },
+ {
+  "alias": "/schools/structure/sau-organization-costsharing/rsu",
+  "title": "Regional School Units (RSUs)",
+  "words": 3287,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-05-14T20:55:32+00:00"
+ },
+ {
+  "alias": "/literacy/literacyforme/readtoride",
+  "title": "Read to Ride",
+  "words": 230,
+  "fixed": 11,
+  "flags": 1,
+  "changed": "2026-05-19T00:55:20+00:00"
+ },
+ {
+  "alias": "/funding/fiscalreview",
+  "title": "Fiscal Review, Compliance, and Audit                 ",
+  "words": 133,
+  "fixed": 10,
+  "flags": 1,
+  "changed": "2026-05-19T20:21:38+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/SUNBucks",
+  "title": "SUN Bucks",
+  "words": 167,
+  "fixed": 79,
+  "flags": 2,
+  "changed": "2026-05-19T20:37:11+00:00"
+ },
+ {
+  "alias": "/learning/cte",
+  "title": "Career and Technical Education",
+  "words": 252,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-05-20T13:25:44+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood",
+  "title": "Early Learning",
+  "words": 308,
+  "fixed": 23,
+  "flags": 2,
+  "changed": "2026-05-20T13:27:28+00:00"
+ },
+ {
+  "alias": "/learning/adulted",
+  "title": "Adult Education",
+  "words": 270,
+  "fixed": 2,
+  "flags": 0,
+  "changed": "2026-05-20T13:35:50+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/resources",
+  "title": "Early Learning - Professional Learning & Resources",
+  "words": 979,
+  "fixed": 33,
+  "flags": 2,
+  "changed": "2026-05-22T16:33:57+00:00"
+ },
+ {
+  "alias": "/educators/educatoreval/inductionmentoring",
+  "title": "Mentoring & Induction",
+  "words": 759,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-05-22T16:34:27+00:00"
+ },
+ {
+  "alias": "/about/laws/policy",
+  "title": "Policy and Legislation",
+  "words": 308,
+  "fixed": 32,
+  "flags": 2,
+  "changed": "2026-05-26T20:07:14+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/standards",
+  "title": "Maine's Learning Standards (MELDS)",
+  "words": 1146,
+  "fixed": 628,
+  "flags": 2,
+  "changed": "2026-05-28T14:13:04+00:00"
+ },
+ {
+  "alias": "/about/partnerships/global",
+  "title": "Global Partners Network",
+  "words": 590,
+  "fixed": 4,
+  "flags": 3,
+  "changed": "2026-05-29T13:31:07+00:00"
+ },
+ {
+  "alias": "/learning/specialed/supervision/privatespecialeducation",
+  "title": "Private Schools Special Education Programs",
+  "words": 1231,
+  "fixed": 33,
+  "flags": 2,
+  "changed": "2026-06-01T14:30:50+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/ffvp",
+  "title": "Fresh Fruit and Vegetable Program (FFVP)",
+  "words": 213,
+  "fixed": 71,
+  "flags": 2,
+  "changed": "2026-06-04T16:13:52+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/fostercare",
+  "title": "Title I, Part A - Students in Foster Care",
+  "words": 896,
+  "fixed": 11,
+  "flags": 1,
+  "changed": "2026-06-04T16:17:31+00:00"
+ },
+ {
+  "alias": "/funding/accounting/guidance",
+  "title": "Budgets & Guidance",
+  "words": 217,
+  "fixed": 33,
+  "flags": 2,
+  "changed": "2026-06-04T16:18:42+00:00"
+ },
+ {
+  "alias": "/funding/reports/expenditures",
+  "title": "School Administrative Unit Expenditures by Budget Category",
+  "words": 179,
+  "fixed": 12,
+  "flags": 0,
+  "changed": "2026-06-04T16:24:41+00:00"
+ },
+ {
+  "alias": "/earlychildhoodspecialeducation/onboarding",
+  "title": "FAPE Onboarding",
+  "words": 1837,
+  "fixed": 95,
+  "flags": 0,
+  "changed": "2026-06-04T16:26:51+00:00"
+ },
+ {
+  "alias": "/cds",
+  "title": "Child Development Services (CDS)",
+  "words": 246,
+  "fixed": 1,
+  "flags": 0,
+  "changed": "2026-06-04T17:57:57+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/laws",
+  "title": "Legal References",
+  "words": 2053,
+  "fixed": 169,
+  "flags": 2,
+  "changed": "2026-06-05T17:36:54+00:00"
+ },
+ {
+  "alias": "/learning/II/neuroscience",
+  "title": "Connections to Neuroscience",
+  "words": 389,
+  "fixed": 62,
+  "flags": 1,
+  "changed": "2026-06-05T15:10:22+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/committees/studentvoices",
+  "title": "Student Voices Committee",
+  "words": 102,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-06-09T12:40:07+00:00"
+ },
+ {
+  "alias": "/schoolsupports/highmobility/titleIpartC/resources",
+  "title": "Title I, Part C - Highly Mobile Students Resources",
+  "words": 402,
+  "fixed": 43,
+  "flags": 2,
+  "changed": "2026-06-09T13:13:49+00:00"
+ },
+ {
+  "alias": "/schoolsupports/highmobility/titleIpartC/services",
+  "title": "Title I, Part C - Highly Mobile Students Services",
+  "words": 764,
+  "fixed": 3,
+  "flags": 2,
+  "changed": "2026-06-09T13:14:05+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/PDG",
+  "title": "Preschool Development Grants             ",
+  "words": 934,
+  "fixed": 209,
+  "flags": 0,
+  "changed": "2026-06-10T13:02:16+00:00"
+ },
+ {
+  "alias": "/teachingandlearning/engagementseries",
+  "title": "EngageMEnt: Cultivating Innovative Teaching & Learning",
+  "words": 1549,
+  "fixed": 16,
+  "flags": 1,
+  "changed": "2026-06-10T14:09:02+00:00"
+ },
+ {
+  "alias": "/data-warehouse/reporting/enrollment",
+  "title": "Student Enrollment Data",
+  "words": 38,
+  "fixed": 12,
+  "flags": 2,
+  "changed": "2026-06-10T16:37:15+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/ela_math_materials/msaa",
+  "title": "Multi-State Alternate Assessment (MSAA)",
+  "words": 647,
+  "fixed": 91,
+  "flags": 1,
+  "changed": "2026-06-11T19:08:03+00:00"
+ },
+ {
+  "alias": "/learning/content/health",
+  "title": "Health Education",
+  "words": 245,
+  "fixed": 2,
+  "flags": 0,
+  "changed": "2026-06-11T22:04:36+00:00"
+ },
+ {
+  "alias": "/schoolsupports/highmobility/titleIpartC",
+  "title": "Title I, Part C - Highly Mobile Students",
+  "words": 749,
+  "fixed": 47,
+  "flags": 1,
+  "changed": "2026-06-11T23:44:43+00:00"
+ },
+ {
+  "alias": "/teachingandlearning/resources",
+  "title": "The Office of Teaching & Learning Resources",
+  "words": 344,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-06-12T15:16:36+00:00"
+ },
+ {
+  "alias": "/learning/ffa/chapters",
+  "title": "FFA Chapters",
+  "words": 332,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-06-15T19:32:43+00:00"
+ },
+ {
+  "alias": "/learning/ffa/winners",
+  "title": "Maine FFA Award Winners",
+  "words": 1425,
+  "fixed": 28,
+  "flags": 0,
+  "changed": "2026-06-15T19:34:41+00:00"
+ },
+ {
+  "alias": "/cds/earlychildhoodspecialeducation",
+  "title": "Early Childhood Special Education",
+  "words": 339,
+  "fixed": 13,
+  "flags": 3,
+  "changed": "2026-06-16T19:25:09+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources/instruction",
+  "title": "Strengthening Instruction for Multilingual Learners",
+  "words": 434,
+  "fixed": 41,
+  "flags": 1,
+  "changed": "2026-06-16T20:23:18+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/studenteligibility/mealbenefittoolkit",
+  "title": "Meal Benefit Application Toolkit for Schools",
+  "words": 264,
+  "fixed": 53,
+  "flags": 2,
+  "changed": "2026-06-17T19:25:07+00:00"
+ },
+ {
+  "alias": "/learning/specialed/supervision/process",
+  "title": "Supervision, Monitoring, and Support - Monitoring Process",
+  "words": 226,
+  "fixed": 44,
+  "flags": 3,
+  "changed": "2026-06-17T19:35:28+00:00"
+ },
+ {
+  "alias": "/learning/diplomas/disruption",
+  "title": "Educational Disruption",
+  "words": 798,
+  "fixed": 5,
+  "flags": 0,
+  "changed": "2026-06-22T15:12:57+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/harvestofthemonth/resources",
+  "title": "Harvest of the Month Resources",
+  "words": 639,
+  "fixed": 296,
+  "flags": 0,
+  "changed": "2026-06-18T14:51:18+00:00"
+ },
+ {
+  "alias": "/schools/eut/forms",
+  "title": "Education in the Unorganized Territory Forms",
+  "words": 39,
+  "fixed": 19,
+  "flags": 2,
+  "changed": "2026-06-18T19:50:35+00:00"
+ },
+ {
+  "alias": "/specialservices",
+  "title": "Office of Special Services & Inclusive Education",
+  "words": 536,
+  "fixed": 57,
+  "flags": 3,
+  "changed": "2026-06-23T21:20:52+00:00"
+ },
+ {
+  "alias": "/learning/specialed/ideapublic",
+  "title": "IDEA Data & Public Reporting",
+  "words": 708,
+  "fixed": 61,
+  "flags": 3,
+  "changed": "2026-06-23T21:21:15+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/culinary/recipesandphotos",
+  "title": "Recipes and Videos from the Culinary Classroom",
+  "words": 606,
+  "fixed": 88,
+  "flags": 1,
+  "changed": "2026-06-23T21:24:16+00:00"
+ },
+ {
+  "alias": "/schools/facilities/lsp",
+  "title": "Leased Space Program",
+  "words": 317,
+  "fixed": 14,
+  "flags": 1,
+  "changed": "2026-06-23T21:25:49+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/1stgradeforme/unit4",
+  "title": "1st Grade for ME - Unit 4 - Communicating With Sound and Light",
+  "words": 1939,
+  "fixed": 1332,
+  "flags": 3,
+  "changed": "2026-06-23T21:27:19+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/1stgradeforme/unit2",
+  "title": "Unit 2 - Animals Surviving and Thriving",
+  "words": 2120,
+  "fixed": 1465,
+  "flags": 2,
+  "changed": "2026-06-23T21:29:25+00:00"
+ },
+ {
+  "alias": "/learning/II/PL/sched",
+  "title": "Professional Learning Schedule",
+  "words": 389,
+  "fixed": 7,
+  "flags": 3,
+  "changed": "2026-06-25T10:30:19+00:00"
+ },
+ {
+  "alias": "/learning/content/new",
+  "title": "The Learning Hub",
+  "words": 345,
+  "fixed": 2,
+  "flags": 0,
+  "changed": "2026-06-25T11:03:08+00:00"
+ },
+ {
+  "alias": "/hotlunchsummer",
+  "title": "Summer Food Service Program (SFSP)",
+  "words": 900,
+  "fixed": 129,
+  "flags": 1,
+  "changed": "2026-06-25T20:09:38+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/solutionslab",
+  "title": "Early Learning Solutions Lab",
+  "words": 338,
+  "fixed": 30,
+  "flags": 1,
+  "changed": "2026-06-26T11:46:27+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/counseling/highmobility/homelessed/statepilot",
+  "title": "Preventing Student Homelessness Program",
+  "words": 1171,
+  "fixed": 5,
+  "flags": 0,
+  "changed": "2026-06-26T13:03:27+00:00"
+ },
+ {
+  "alias": "/cert",
+  "title": "Certification & Credentialing",
+  "words": 54,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-06-26T18:26:02+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/math_ELA_Literacy",
+  "title": "Math & ELA/Literacy",
+  "words": 212,
+  "fixed": 3,
+  "flags": 2,
+  "changed": "2026-06-29T16:51:17+00:00"
+ },
+ {
+  "alias": "/learning/technology/MLTI",
+  "title": "Maine Learning Technology Initiative (MLTI)",
+  "words": 258,
+  "fixed": 36,
+  "flags": 3,
+  "changed": "2026-06-30T12:48:53+00:00"
+ },
+ {
+  "alias": "/data-reporting",
+  "title": "Data & Reporting",
+  "words": 443,
+  "fixed": 8,
+  "flags": 0,
+  "changed": "2026-07-01T13:17:52+00:00"
+ },
+ {
+  "alias": "/schoolsupports/climate/alternativeeducation",
+  "title": "Alternative Education",
+  "words": 725,
+  "fixed": 14,
+  "flags": 1,
+  "changed": "2026-07-01T13:20:24+00:00"
+ },
+ {
+  "alias": "/schools/structure/schoolclosure/lack-of-need-RSU/cost-analysis-instructions",
+  "title": "Cost Analysis Report Instructions",
+  "words": 1175,
+  "fixed": 3,
+  "flags": 0,
+  "changed": "2026-07-01T15:38:29+00:00"
+ },
+ {
+  "alias": null,
+  "title": "test",
+  "words": 1842,
+  "fixed": 20,
+  "flags": 1,
+  "changed": "2026-07-01T16:00:21+00:00"
+ },
+ {
+  "alias": "/schools/structure/withdrawal",
+  "title": "Procedures for Withdrawal from a Regional School Unit",
+  "words": 236,
+  "fixed": 28,
+  "flags": 1,
+  "changed": "2026-07-06T17:20:35+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/contact",
+  "title": "Contact Us",
+  "words": 548,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-07-06T17:21:05+00:00"
+ },
+ {
+  "alias": "/learning/mlrtaskforce",
+  "title": "Maine Learning Results Taskforce",
+  "words": 795,
+  "fixed": 64,
+  "flags": 2,
+  "changed": "2026-07-06T17:24:41+00:00"
+ },
+ {
+  "alias": "/schools/structure/schoolclosure/lack-of-need-RSU",
+  "title": "Lack of Need Report Requirements for RSUs, SADs, and CSDs",
+  "words": 963,
+  "fixed": 8,
+  "flags": 0,
+  "changed": "2026-07-06T17:26:47+00:00"
+ },
+ {
+  "alias": "/funding/gpa/eps/26-27",
+  "title": "Fiscal Year 2026-2027 Funding Details",
+  "words": 586,
+  "fixed": 135,
+  "flags": 0,
+  "changed": "2026-07-06T17:48:12+00:00"
+ },
+ {
+  "alias": "/schools/structure/sau-organization-costsharing/aos",
+  "title": "Alternative Organization Structures (AOS) Organization and Cost Sharing",
+  "words": 1553,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-07-07T18:18:32+00:00"
+ },
+ {
+  "alias": "/schools/embrace/contact",
+  "title": "Contact an Education Service Center",
+  "words": 1162,
+  "fixed": 97,
+  "flags": 2,
+  "changed": "2026-07-07T18:18:55+00:00"
+ },
+ {
+  "alias": "/learning/II/steampowered",
+  "title": "STEAM Powered Maine",
+  "words": 124,
+  "fixed": 27,
+  "flags": 2,
+  "changed": "2026-07-07T18:19:18+00:00"
+ },
+ {
+  "alias": "/schools/structure/forming",
+  "title": "Forming a New School Unit or the Addition of a School Administrative Unit to an Existing Regional School Unit",
+  "words": 310,
+  "fixed": 31,
+  "flags": 0,
+  "changed": "2026-07-07T18:30:14+00:00"
+ },
+ {
+  "alias": "/schools/structure",
+  "title": "Structure & Governance",
+  "words": 514,
+  "fixed": 18,
+  "flags": 0,
+  "changed": "2026-07-07T18:43:27+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/K4ME/unit2",
+  "title": "K for ME - Unit 2 - Animals and Habitats",
+  "words": 2335,
+  "fixed": 1467,
+  "flags": 3,
+  "changed": "2026-07-08T12:24:51+00:00"
+ },
+ {
+  "alias": "/innovation",
+  "title": "Office of Innovation",
+  "words": 471,
+  "fixed": 21,
+  "flags": 3,
+  "changed": "2026-07-08T12:57:16+00:00"
+ },
+ {
+  "alias": "/earlylearning/forme",
+  "title": "For ME Instructional Programming",
+  "words": 1,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-07-10T15:37:30+00:00"
+ },
+ {
+  "alias": "/learning/esea/contact",
+  "title": "ESEA Federal Programs Contact",
+  "words": 278,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-07-13T12:41:29+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/cacfp/atrisk",
+  "title": "At-Risk After School Programs",
+  "words": 271,
+  "fixed": 17,
+  "flags": 0,
+  "changed": "2026-07-13T12:43:06+00:00"
+ },
+ {
+  "alias": "/schools/structure/schoolclosure",
+  "title": "School Closure Procedures and Information",
+  "words": 188,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-07-14T11:14:43+00:00"
+ },
+ {
+  "alias": "/funding/accounting/handbook",
+  "title": "Model Chart of Accounts",
+  "words": 221,
+  "fixed": 39,
+  "flags": 1,
+  "changed": "2026-07-14T11:21:13+00:00"
+ },
+ {
+  "alias": "/schools/schoolops/privatechoolapproval",
+  "title": "Private School Approval",
+  "words": 1801,
+  "fixed": 30,
+  "flags": 3,
+  "changed": "2026-07-15T12:53:13+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/harvestofthemonth/pledges",
+  "title": "Harvest of the Month Pledges",
+  "words": 354,
+  "fixed": 11,
+  "flags": 1,
+  "changed": "2026-07-15T12:58:05+00:00"
+ },
+ {
+  "alias": "/funding/calendar",
+  "title": "Funding Calendar",
+  "words": 209,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-07-15T18:20:07+00:00"
+ },
+ {
+  "alias": "/schools/structure/sau-organization-costsharing",
+  "title": "School Unit Organization and Cost-sharing",
+  "words": 355,
+  "fixed": 15,
+  "flags": 0,
+  "changed": "2026-07-15T19:23:19+00:00"
+ },
+ {
+  "alias": "/funding/reports/propertytaxbill",
+  "title": "Education Subsidy Information for Property Tax Bill",
+  "words": 204,
+  "fixed": 7,
+  "flags": 1,
+  "changed": "2026-07-17T11:20:51+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/cacfplanding",
+  "title": "Child and Adult Care Food Program (CACFP)",
+  "words": 982,
+  "fixed": 3,
+  "flags": 0,
+  "changed": "2026-07-17T16:10:33+00:00"
+ },
+ {
+  "alias": "/funding",
+  "title": "Funding",
+  "words": 546,
+  "fixed": 21,
+  "flags": 0,
+  "changed": "2026-07-17T16:26:47+00:00"
+ },
+ {
+  "alias": "/data-reporting/warehouse",
+  "title": "Data Warehouse",
+  "words": 805,
+  "fixed": 63,
+  "flags": 3,
+  "changed": "2026-07-22T12:56:12+00:00"
+ },
+ {
+  "alias": "/moose/about",
+  "title": "About MOOSE",
+  "words": 326,
+  "fixed": 0,
+  "flags": 0,
+  "changed": "2026-07-22T13:21:54+00:00"
+ },
+ {
+  "alias": "/moose/lp",
+  "title": "MOOSE Learning Progressions",
+  "words": 504,
+  "fixed": 0,
+  "flags": 0,
+  "changed": "2026-07-22T13:22:13+00:00"
+ },
+ {
+  "alias": "/BARRschools",
+  "title": "Building Assets, Reducing Risks (BARR) Schools",
+  "words": 508,
+  "fixed": 9,
+  "flags": 0,
+  "changed": "2026-07-22T13:59:43+00:00"
+ },
+ {
+  "alias": "/data-reporting/SchoolsSAU",
+  "title": "Schools and SAUs",
+  "words": 186,
+  "fixed": 22,
+  "flags": 1,
+  "changed": "2026-07-22T16:14:51+00:00"
+ },
+ {
+  "alias": "/pathways/healthcareexplorations",
+  "title": "Maine Healthcare Careers Exploration Program",
+  "words": 231,
+  "fixed": 5,
+  "flags": 1,
+  "changed": "2026-07-27T16:00:02+00:00"
+ },
+ {
+  "alias": "/schools/structure/reapportionment",
+  "title": "School Board Reapportionment",
+  "words": 135,
+  "fixed": 13,
+  "flags": 0,
+  "changed": "2026-07-27T16:04:35+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/ESSA/cnatemplate",
+  "title": "Comprehensive Needs Assessment and School-Level Plans",
+  "words": 208,
+  "fixed": 26,
+  "flags": 2,
+  "changed": "2026-07-27T16:05:23+00:00"
+ },
+ {
+  "alias": "/moose",
+  "title": "The MOOSE Project",
+  "words": 365,
+  "fixed": 39,
+  "flags": 1,
+  "changed": "2026-07-27T20:15:11+00:00"
+ },
+ {
+  "alias": "/learning/earlylearning/instructionalprogramming/2ndgradeforme/unit1",
+  "title": "2nd Grade for ME - Unit 1 - How We Learn in our Communities",
+  "words": 2765,
+  "fixed": 1434,
+  "flags": 3,
+  "changed": "2026-07-28T14:30:08+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/1stgradeforme/unit1",
+  "title": "1st Grade for ME - Unit 1: Building Strong Communities",
+  "words": 1618,
+  "fixed": 995,
+  "flags": 3,
+  "changed": "2026-07-28T14:59:31+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/cacfp/claims",
+  "title": "Claims & Rates",
+  "words": 426,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-07-28T15:00:15+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/K4ME/supportingdocs",
+  "title": "K for ME - Supporting Documents",
+  "words": 82,
+  "fixed": 64,
+  "flags": 2,
+  "changed": "2026-07-28T15:03:38+00:00"
+ },
+ {
+  "alias": "/educators/leader/tln",
+  "title": "Transformational Leaders’ Network",
+  "words": 1484,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-07-28T15:14:14+00:00"
+ },
+ {
+  "alias": "/learning/esea/grants4me",
+  "title": "Grants4ME",
+  "words": 61,
+  "fixed": 11,
+  "flags": 1,
+  "changed": "2026-07-28T15:25:07+00:00"
+ },
+ {
+  "alias": "/learning/earlylearning/instructionalprogramming/2ndgradeforme/unit4",
+  "title": "2nd Grade for ME - Unit 4 - The Power of Pollinators",
+  "words": 2549,
+  "fixed": 780,
+  "flags": 4,
+  "changed": "2026-07-28T15:26:49+00:00"
+ },
+ {
+  "alias": "/learning/earlylearning/instructionalprogramming/2ndgradeforme/unit2",
+  "title": "2nd Grade for ME - Unit 2 - The Forces of Wind & Water",
+  "words": 2416,
+  "fixed": 1514,
+  "flags": 3,
+  "changed": "2026-07-28T15:29:12+00:00"
+ },
+ {
+  "alias": "/learning/earlylearning/instructionalprogramming/2ndgradeforme/unit3",
+  "title": "2nd Grade for ME - Unit 3",
+  "words": 2487,
+  "fixed": 1460,
+  "flags": 3,
+  "changed": "2026-07-28T15:32:58+00:00"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/guidelines/emergencycare",
+  "title": "Emergency Care",
+  "words": 622,
+  "fixed": 76,
+  "flags": 3,
+  "changed": "2026-07-29T01:02:22+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/council",
+  "title": "Multilingual Learner Advisory Council",
+  "words": 703,
+  "fixed": 2,
+  "flags": 4,
+  "changed": "2026-07-29T01:03:44+00:00"
+ },
+ {
+  "alias": "/about/laws/legprocess",
+  "title": "Getting Involved in the Legislative Process",
+  "words": 212,
+  "fixed": 8,
+  "flags": 2,
+  "changed": "2026-07-29T14:00:08+00:00"
+ },
+ {
+  "alias": "/about/laws/mainelaws",
+  "title": "About Maine Education Laws",
+  "words": 272,
+  "fixed": 10,
+  "flags": 3,
+  "changed": "2026-07-29T14:00:33+00:00"
+ },
+ {
+  "alias": "/about/laws/legteam",
+  "title": "About the Legislative Team",
+  "words": 267,
+  "fixed": 3,
+  "flags": 0,
+  "changed": "2026-07-29T14:05:12+00:00"
+ },
+ {
+  "alias": "/earlyinterventionforme/reporting",
+  "title": "Early Intervention for ME: Reporting",
+  "words": 210,
+  "fixed": 13,
+  "flags": 2,
+  "changed": "2026-07-29T17:51:15+00:00"
+ },
+ {
+  "alias": "/innovation/greenschools",
+  "title": "Green Schools Program",
+  "words": 1321,
+  "fixed": 43,
+  "flags": 2,
+  "changed": "2026-07-29T18:04:37+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/calendar",
+  "title": "Maine Assessment Calendar",
+  "words": 319,
+  "fixed": 10,
+  "flags": 1,
+  "changed": "2026-07-31T13:59:29+00:00"
+ },
+ {
+  "alias": "/funding/gpa/eps/resources",
+  "title": "Essential Programs & Services (EPS) Resources",
+  "words": 476,
+  "fixed": 11,
+  "flags": 1,
+  "changed": "2026-07-31T15:02:43+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/counseling/highmobility/homelessed/liaisonlookup",
+  "title": "McKinney-Vento Contact Lookup",
+  "words": 70,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-08-03T12:54:14+00:00"
+ },
+ {
+  "alias": "/funding/gpa/eps/msmv",
+  "title": "Maine State Municipal Valuations",
+  "words": 295,
+  "fixed": 49,
+  "flags": 1,
+  "changed": "2026-08-03T18:03:07+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/PreK4ME",
+  "title": "Pre K For ME",
+  "words": 779,
+  "fixed": 60,
+  "flags": 3,
+  "changed": "2026-08-03T18:03:46+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/1stgradeforme",
+  "title": "1st Grade for ME",
+  "words": 545,
+  "fixed": 40,
+  "flags": 2,
+  "changed": "2026-08-03T18:04:16+00:00"
+ },
+ {
+  "alias": "/learning/earlylearning/instructionalprogramming/2ndgradeforme",
+  "title": "2nd Grade for ME",
+  "words": 460,
+  "fixed": 46,
+  "flags": 2,
+  "changed": "2026-08-03T18:05:21+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources/MLstandardsinstruction",
+  "title": "Multilingual Learners Standards & Instruction",
+  "words": 559,
+  "fixed": 15,
+  "flags": 1,
+  "changed": "2026-08-04T12:41:37+00:00"
+ },
+ {
+  "alias": "/learning/standardsreview",
+  "title": "Standards Review",
+  "words": 815,
+  "fixed": 18,
+  "flags": 1,
+  "changed": "2026-08-04T13:18:46+00:00"
+ },
+ {
+  "alias": "/learning/standards/career",
+  "title": "Career & Education Development Standards",
+  "words": 505,
+  "fixed": 2,
+  "flags": 0,
+  "changed": "2026-08-04T13:27:36+00:00"
+ },
+ {
+  "alias": "/learning/standardsreview/career",
+  "title": "Career & Education Development Standards Review",
+  "words": 4710,
+  "fixed": 13,
+  "flags": 1,
+  "changed": "2026-08-04T13:29:16+00:00"
+ },
+ {
+  "alias": "/learning/standardsreview/ela",
+  "title": "English Language Arts/Literacy Standards Review",
+  "words": 3844,
+  "fixed": 48,
+  "flags": 1,
+  "changed": "2026-08-04T13:33:24+00:00"
+ },
+ {
+  "alias": "/learning/standards/mathematics",
+  "title": "Mathematics Standards",
+  "words": 229,
+  "fixed": 60,
+  "flags": 2,
+  "changed": "2026-08-04T13:35:35+00:00"
+ },
+ {
+  "alias": "/learning/standardsreview/mathematics",
+  "title": "Mathematics Standards & Review",
+  "words": 5069,
+  "fixed": 241,
+  "flags": 1,
+  "changed": "2026-08-04T13:36:18+00:00"
+ },
+ {
+  "alias": "/learning/standardsreview/science",
+  "title": "Science, Technology, & Engineering Standards Review",
+  "words": 5779,
+  "fixed": 160,
+  "flags": 1,
+  "changed": "2026-08-04T13:36:45+00:00"
+ },
+ {
+  "alias": "/learning/standards/visualarts",
+  "title": "Visual & Performing Arts Resources & Standards",
+  "words": 909,
+  "fixed": 14,
+  "flags": 0,
+  "changed": "2026-08-04T13:37:14+00:00"
+ },
+ {
+  "alias": "/learning/standardsreview/worldlanguages",
+  "title": "World Languages Standards Review",
+  "words": 1711,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-08-04T13:37:33+00:00"
+ },
+ {
+  "alias": "/learning/standards/socialstudies",
+  "title": "Social Studies Standards",
+  "words": 2040,
+  "fixed": 22,
+  "flags": 1,
+  "changed": "2026-08-04T14:05:36+00:00"
+ },
+ {
+  "alias": "/learning/standardsreview/socialstudies",
+  "title": "Social Studies Standards Review",
+  "words": 7902,
+  "fixed": 28,
+  "flags": 1,
+  "changed": "2026-08-04T14:46:48+00:00"
+ },
+ {
+  "alias": "/schools/transportation/resources",
+  "title": "Transportation Resources",
+  "words": 226,
+  "fixed": 12,
+  "flags": 1,
+  "changed": "2026-08-05T17:19:54+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/noi",
+  "title": "Net-Off Invoice (NOI) Program",
+  "words": 299,
+  "fixed": 13,
+  "flags": 0,
+  "changed": "2026-08-05T17:23:31+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS",
+  "title": "Maine Comprehensive Assessment System (MECAS)",
+  "words": 269,
+  "fixed": 5,
+  "flags": 0,
+  "changed": "2026-08-05T17:24:49+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources/interpretationtranslation",
+  "title": "Interpretation & Translation",
+  "words": 1002,
+  "fixed": 10,
+  "flags": 1,
+  "changed": "2026-08-05T17:29:45+00:00"
+ },
+ {
+  "alias": "/learning/diplomas/MaineLearningResults",
+  "title": "Maine Learning Results",
+  "words": 292,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-08-05T17:34:47+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/financial/guidelines",
+  "title": "Reimbursement Rates and Eligibility Guidelines",
+  "words": 121,
+  "fixed": 2,
+  "flags": 0,
+  "changed": "2026-08-05T18:40:49+00:00"
+ },
+ {
+  "alias": "/educators/educatorrecognition",
+  "title": "Educator & School Staff Recognition",
+  "words": 534,
+  "fixed": 4,
+  "flags": 0,
+  "changed": "2026-08-06T14:16:14+00:00"
+ },
+ {
+  "alias": "/learning/elo/maine",
+  "title": "Extended Learning in Maine",
+  "words": 83,
+  "fixed": 22,
+  "flags": 0,
+  "changed": "2026-08-06T18:28:31+00:00"
+ },
+ {
+  "alias": "/learning/healtheducationandphysicaleducation/professionaldevelopment",
+  "title": "Health Education & Physical Education Professional Development",
+  "words": 356,
+  "fixed": 3,
+  "flags": 0,
+  "changed": "2026-08-07T19:52:09+00:00"
+ },
+ {
+  "alias": "/learning/standards/healthphysicaleducation",
+  "title": "Health Education & Physical Education Resources & Standards",
+  "words": 1039,
+  "fixed": 45,
+  "flags": 0,
+  "changed": "2026-08-07T20:11:17+00:00"
+ },
+ {
+  "alias": "/innovation/climateeducation/climateseal",
+  "title": "Maine Seal of Climate Literacy",
+  "words": 762,
+  "fixed": 35,
+  "flags": 1,
+  "changed": "2026-08-11T14:26:50+00:00"
+ },
+ {
+  "alias": "/learning/content/world-language/biliteracy",
+  "title": "Maine Seal of Biliteracy",
+  "words": 745,
+  "fixed": 156,
+  "flags": 3,
+  "changed": "2026-08-13T12:45:05+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/bilingual",
+  "title": "Bilingual Education",
+  "words": 412,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-08-13T12:46:29+00:00"
+ },
+ {
+  "alias": "/learning/worldlanguages",
+  "title": "World Languages",
+  "words": 1351,
+  "fixed": 27,
+  "flags": 2,
+  "changed": "2026-08-13T12:46:53+00:00"
+ },
+ {
+  "alias": "/pineproject",
+  "title": "Pine Project",
+  "words": 652,
+  "fixed": 8,
+  "flags": 2,
+  "changed": "2026-08-13T12:47:19+00:00"
+ },
+ {
+  "alias": "/pineproject/professionallearning",
+  "title": "Pine Project - Professional Learning",
+  "words": 810,
+  "fixed": 25,
+  "flags": 4,
+  "changed": "2026-08-13T12:47:52+00:00"
+ },
+ {
+  "alias": "/schools/facilities/srrf",
+  "title": "School Revolving Renovation Fund (SRRF)",
+  "words": 351,
+  "fixed": 8,
+  "flags": 0,
+  "changed": "2026-08-13T13:21:45+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/claims",
+  "title": "CNPWeb/NEO",
+  "words": 272,
+  "fixed": 11,
+  "flags": 0,
+  "changed": "2026-08-13T13:25:07+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/publicpreschool/prekdata",
+  "title": "Maine Statewide Public Pre-K Data",
+  "words": 290,
+  "fixed": 25,
+  "flags": 2,
+  "changed": "2026-08-13T13:25:56+00:00"
+ },
+ {
+  "alias": "/learning/financialliteracy",
+  "title": "Financial Literacy",
+  "words": 521,
+  "fixed": 4,
+  "flags": 0,
+  "changed": "2026-08-13T13:36:19+00:00"
+ },
+ {
+  "alias": "/learning/specialed/supervision/resources",
+  "title": "Supervision, Monitoring, and Support - Resources",
+  "words": 174,
+  "fixed": 89,
+  "flags": 3,
+  "changed": "2026-08-13T16:51:53+00:00"
+ },
+ {
+  "alias": "/funding/reports/mainecareseed",
+  "title": "MaineCare Seed Reports",
+  "words": 317,
+  "fixed": 39,
+  "flags": 1,
+  "changed": "2026-08-14T11:46:17+00:00"
+ },
+ {
+  "alias": "/educators/nationalstandards",
+  "title": "National Board for Professional Teaching Standards",
+  "words": 1553,
+  "fixed": 50,
+  "flags": 3,
+  "changed": "2026-08-17T14:03:18+00:00"
+ },
+ {
+  "alias": "/cds/contact",
+  "title": "CDS Regional Site Contact Info",
+  "words": 222,
+  "fixed": 5,
+  "flags": 0,
+  "changed": "2026-08-17T14:13:53+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/breakfast",
+  "title": "School Breakfast Program (SBP)",
+  "words": 316,
+  "fixed": 44,
+  "flags": 2,
+  "changed": "2026-08-17T20:31:43+00:00"
+ },
+ {
+  "alias": "/innovation/wabanakistudies",
+  "title": "Wabanaki Studies",
+  "words": 650,
+  "fixed": 42,
+  "flags": 2,
+  "changed": "2026-08-17T20:32:37+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources",
+  "title": "Multilingual Programming Resources",
+  "words": 248,
+  "fixed": 5,
+  "flags": 0,
+  "changed": "2026-08-18T12:56:49+00:00"
+ },
+ {
+  "alias": "/literacy/modules",
+  "title": "Literacy Learning Modules",
+  "words": 242,
+  "fixed": 12,
+  "flags": 2,
+  "changed": "2026-08-18T13:00:35+00:00"
+ },
+ {
+  "alias": "/specialservices/EarlyChildhoodSpecialEducation/personnel",
+  "title": "Early Childhood Special Education Resources and Tools",
+  "words": 1477,
+  "fixed": 50,
+  "flags": 0,
+  "changed": "2026-08-18T19:02:02+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/nurseresources/medication",
+  "title": "Medication Administration",
+  "words": 370,
+  "fixed": 60,
+  "flags": 2,
+  "changed": "2026-08-18T19:04:01+00:00"
+ },
+ {
+  "alias": "/learning/standardsreview/visualarts",
+  "title": "Visual & Performing Arts Standards Review",
+  "words": 1727,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-08-19T14:04:15+00:00"
+ },
+ {
+  "alias": "/learning/standardsreview/healthandphysicaleducation",
+  "title": "Health Education and Physical Education Standards Review",
+  "words": 2891,
+  "fixed": 51,
+  "flags": 1,
+  "changed": "2026-08-19T14:04:48+00:00"
+ },
+ {
+  "alias": "/learning/hub",
+  "title": "The Learning Hub",
+  "words": 345,
+  "fixed": 2,
+  "flags": 0,
+  "changed": "2026-08-19T14:11:54+00:00"
+ },
+ {
+  "alias": "/learning/ffa/officers",
+  "title": "FFA State Officers",
+  "words": 273,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-08-21T10:25:29+00:00"
+ },
+ {
+  "alias": "/learning/ffa",
+  "title": "Maine FFA Association",
+  "words": 537,
+  "fixed": 12,
+  "flags": 1,
+  "changed": "2026-08-20T17:27:36+00:00"
+ },
+ {
+  "alias": "/schools/embrace/regional-service-center",
+  "title": "Education Service Center",
+  "words": 606,
+  "fixed": 20,
+  "flags": 2,
+  "changed": "2026-08-21T10:26:49+00:00"
+ },
+ {
+  "alias": "/safety/emergencymanagement",
+  "title": "School Emergency Management",
+  "words": 383,
+  "fixed": 33,
+  "flags": 0,
+  "changed": "2026-08-21T10:33:22+00:00"
+ },
+ {
+  "alias": "/cert/fingerprinting",
+  "title": "Fingerprinting & Background Checks",
+  "words": 123,
+  "fixed": 9,
+  "flags": 3,
+  "changed": "2026-08-21T11:44:36+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/nslp",
+  "title": "National School Lunch Program (NSLP)",
+  "words": 731,
+  "fixed": 196,
+  "flags": 2,
+  "changed": "2026-08-21T20:30:39+00:00"
+ },
+ {
+  "alias": "/learning/healtheducation/laws",
+  "title": "Health Education - Laws and Policies ",
+  "words": 420,
+  "fixed": 8,
+  "flags": 0,
+  "changed": "2026-08-24T13:02:51+00:00"
+ },
+ {
+  "alias": "/specialservices/resources",
+  "title": "Resources for Families & Schools",
+  "words": 724,
+  "fixed": 118,
+  "flags": 2,
+  "changed": "2026-08-24T15:39:01+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/materials/security",
+  "title": "Assessment Security",
+  "words": 149,
+  "fixed": 19,
+  "flags": 3,
+  "changed": "2026-08-24T16:40:13+00:00"
+ },
+ {
+  "alias": "/funding/gpa/eps/25-26",
+  "title": "FY 2025-26 Funding Details",
+  "words": 548,
+  "fixed": 138,
+  "flags": 2,
+  "changed": "2026-08-24T16:48:20+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/nurseresources/manual/immunization",
+  "title": "Immunizations",
+  "words": 422,
+  "fixed": 43,
+  "flags": 3,
+  "changed": "2026-08-24T16:51:07+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/cacfp/resources/applicanttraining",
+  "title": "CACFP Resources",
+  "words": 969,
+  "fixed": 432,
+  "flags": 3,
+  "changed": "2026-08-24T16:53:50+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard",
+  "title": "State Board of Education",
+  "words": 554,
+  "fixed": 70,
+  "flags": 0,
+  "changed": "2026-08-24T16:59:20+00:00"
+ },
+ {
+  "alias": "/learning/content/physed",
+  "title": "Physical Education Resources & Standards",
+  "words": 313,
+  "fixed": 33,
+  "flags": 3,
+  "changed": "2026-08-24T17:00:35+00:00"
+ },
+ {
+  "alias": "/data-reporting/ReportingCalendars",
+  "title": "Student and Staff Data Reporting Calendars",
+  "words": 739,
+  "fixed": 20,
+  "flags": 1,
+  "changed": "2026-08-25T12:13:17+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/records",
+  "title": "Records & Reports",
+  "words": 523,
+  "fixed": 9,
+  "flags": 0,
+  "changed": "2026-08-25T17:22:19+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/nurseresources/guidelines",
+  "title": "School Health Service",
+  "words": 246,
+  "fixed": 70,
+  "flags": 2,
+  "changed": "2026-08-25T17:38:58+00:00"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/service/acutecare",
+  "title": "Communicable Disease",
+  "words": 287,
+  "fixed": 10,
+  "flags": 0,
+  "changed": "2026-08-25T17:39:42+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/training",
+  "title": "Child Nutrition Training",
+  "words": 792,
+  "fixed": 260,
+  "flags": 0,
+  "changed": "2026-08-25T17:43:36+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/services",
+  "title": "Multilingual Programming Requirements & Guidance",
+  "words": 2690,
+  "fixed": 19,
+  "flags": 0,
+  "changed": "2026-08-26T12:16:28+00:00"
+ },
+ {
+  "alias": "/pathways/mainecareerpathways",
+  "title": "Maine Career Pathways",
+  "words": 446,
+  "fixed": 13,
+  "flags": 2,
+  "changed": "2026-08-26T12:27:26+00:00"
+ },
+ {
+  "alias": "/learning/ffa/resources",
+  "title": "FFA Forms & Resources",
+  "words": 706,
+  "fixed": 35,
+  "flags": 0,
+  "changed": "2026-08-28T12:41:08+00:00"
+ },
+ {
+  "alias": "/learning/cte/schools/ctso",
+  "title": "Career & Technical Student Organizations (CTSOs)",
+  "words": 178,
+  "fixed": 3,
+  "flags": 1,
+  "changed": "2026-08-28T12:41:27+00:00"
+ },
+ {
+  "alias": "/learning/cte/schools",
+  "title": "Schools & Programs",
+  "words": 295,
+  "fixed": 9,
+  "flags": 0,
+  "changed": "2026-08-28T12:41:46+00:00"
+ },
+ {
+  "alias": "/learning/cte/perkinsv/stateplan",
+  "title": "Perkins V Grant - State Plan",
+  "words": 59,
+  "fixed": 10,
+  "flags": 0,
+  "changed": "2026-08-28T12:44:50+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/laws/policymemos",
+  "title": "USDA Policy Memos",
+  "words": 2330,
+  "fixed": 246,
+  "flags": 1,
+  "changed": "2026-08-28T12:47:49+00:00"
+ },
+ {
+  "alias": "/learning/cte/accountability",
+  "title": "Perkins V Grant - Accountability                                      ",
+  "words": 215,
+  "fixed": 47,
+  "flags": 2,
+  "changed": "2026-08-31T13:44:35+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/committees/certification",
+  "title": "Certification and Higher Education Committee",
+  "words": 343,
+  "fixed": 39,
+  "flags": 1,
+  "changed": "2026-08-31T14:12:49+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/highmobility/homelessed/MVliaisons",
+  "title": "Resources for McKinney-Vento Liaisons",
+  "words": 472,
+  "fixed": 74,
+  "flags": 1,
+  "changed": "2026-08-31T14:15:19+00:00"
+ },
+ {
+  "alias": "/learning/elo/resources",
+  "title": "Extended Learning Resources",
+  "words": 1454,
+  "fixed": 0,
+  "flags": 0,
+  "changed": "2026-08-31T15:04:47+00:00"
+ },
+ {
+  "alias": "/learning/esea/allocations",
+  "title": "Fiscal Allocations",
+  "words": 214,
+  "fixed": 35,
+  "flags": 1,
+  "changed": "2026-09-01T12:42:28+00:00"
+ },
+ {
+  "alias": "/learning/esea/eseaupdate",
+  "title": "ESEA Monthly Updates",
+  "words": 1715,
+  "fixed": 39,
+  "flags": 1,
+  "changed": "2026-09-01T14:02:14+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/members",
+  "title": "Members",
+  "words": 2463,
+  "fixed": 22,
+  "flags": 1,
+  "changed": "2026-09-01T19:45:40+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/K4ME/unit1",
+  "title": "K for ME - Unit 1 - Our Community",
+  "words": 1636,
+  "fixed": 926,
+  "flags": 3,
+  "changed": "2026-09-02T12:01:46+00:00"
+ },
+ {
+  "alias": "/learning/earlychildhood/PreK4ME/unit3-links",
+  "title": "Pre K for ME - Unit 3 Wind & Water Links",
+  "words": 552,
+  "fixed": 127,
+  "flags": 1,
+  "changed": "2026-09-02T12:02:20+00:00"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/contact",
+  "title": "Coordinated School Health Contact",
+  "words": 433,
+  "fixed": 0,
+  "flags": 2,
+  "changed": "2026-09-01T12:55:19+00:00"
+ },
+ {
+  "alias": "/learning/elo",
+  "title": "Extended Learning Opportunities",
+  "words": 434,
+  "fixed": 13,
+  "flags": 0,
+  "changed": "2026-09-02T12:56:56+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/cacfpmonthlyupdates",
+  "title": "CACFP Monthly Updates",
+  "words": 908,
+  "fixed": 12,
+  "flags": 1,
+  "changed": "2026-09-02T21:01:15+00:00"
+ },
+ {
+  "alias": "/learning/highered/earlycollege",
+  "title": "Early College Opportunities",
+  "words": 140,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-09-02T21:02:19+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/nslp/ar",
+  "title": "Administrative and Procurement Reviews",
+  "words": 316,
+  "fixed": 13,
+  "flags": 0,
+  "changed": "2026-09-02T21:04:02+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/localfoods/producefund",
+  "title": "Local Foods Fund ",
+  "words": 1163,
+  "fixed": 19,
+  "flags": 1,
+  "changed": "2026-09-02T21:07:03+00:00"
+ },
+ {
+  "alias": "/about/laws/rulechanges",
+  "title": "Proposed Rules and the Rulemaking Process",
+  "words": 791,
+  "fixed": 28,
+  "flags": 0,
+  "changed": "2026-09-02T21:07:21+00:00"
+ },
+ {
+  "alias": "/cert/authority",
+  "title": "Certification - Forms & Resources ",
+  "words": 194,
+  "fixed": 35,
+  "flags": 0,
+  "changed": "2026-09-02T22:19:30+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/attendance",
+  "title": "Attendance & Dropout Prevention",
+  "words": 551,
+  "fixed": 20,
+  "flags": 0,
+  "changed": "2026-09-03T12:27:17+00:00"
+ },
+ {
+  "alias": "/learning/technology/guidance",
+  "title": "Technology Guidance for Maine SAUs",
+  "words": 926,
+  "fixed": 28,
+  "flags": 3,
+  "changed": "2026-09-03T12:52:16+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner",
+  "title": "Multilingual Learners",
+  "words": 1076,
+  "fixed": 8,
+  "flags": 1,
+  "changed": "2026-09-03T15:48:49+00:00"
+ },
+ {
+  "alias": "/learning/cte/schools/middleschool",
+  "title": "Middle School Career and Technical Education ",
+  "words": 1192,
+  "fixed": 32,
+  "flags": 0,
+  "changed": "2026-09-03T19:20:13+00:00"
+ },
+ {
+  "alias": "/schools/transportation/forms",
+  "title": "Forms & Reporting - Transportation",
+  "words": 230,
+  "fixed": 21,
+  "flags": 2,
+  "changed": "2026-09-04T14:18:07+00:00"
+ },
+ {
+  "alias": "/adminbackpack",
+  "title": "Back to School Backpack for Administrators",
+  "words": 2840,
+  "fixed": 232,
+  "flags": 0,
+  "changed": "2026-09-08T01:18:48+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/nurseresources/manual/oversight",
+  "title": "Delegation, Coordination & Oversight",
+  "words": 717,
+  "fixed": 10,
+  "flags": 1,
+  "changed": "2026-09-08T12:26:48+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/materials/access",
+  "title": "English Language Proficiency Assessments",
+  "words": 1032,
+  "fixed": 19,
+  "flags": 2,
+  "changed": "2026-09-08T12:29:21+00:00"
+ },
+ {
+  "alias": "/annualsummit",
+  "title": "Maine Department of Education Annual Summit",
+  "words": 587,
+  "fixed": 9,
+  "flags": 1,
+  "changed": "2026-09-08T12:32:48+00:00"
+ },
+ {
+  "alias": "/about/contact",
+  "title": "Maine Department of Education",
+  "words": 810,
+  "fixed": 104,
+  "flags": 4,
+  "changed": "2026-09-08T18:10:27+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/nslp/review",
+  "title": "National School Lunch Program Administrative Review",
+  "words": 463,
+  "fixed": 487,
+  "flags": 1,
+  "changed": "2026-09-08T19:19:25+00:00"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/data",
+  "title": "School Health Services: Data",
+  "words": 712,
+  "fixed": 40,
+  "flags": 1,
+  "changed": "2026-09-08T19:23:30+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/meetings/upcomingmeeting",
+  "title": "State Board of Education Meetings",
+  "words": 343,
+  "fixed": 54,
+  "flags": 1,
+  "changed": "2026-09-08T19:43:54+00:00"
+ },
+ {
+  "alias": "/schools/nutrition",
+  "title": "Child Nutrition",
+  "words": 164,
+  "fixed": 17,
+  "flags": 1,
+  "changed": "2026-09-09T17:11:19+00:00"
+ },
+ {
+  "alias": "/specialservices/professionallearning",
+  "title": "Special Services Professional Learning",
+  "words": 631,
+  "fixed": 84,
+  "flags": 2,
+  "changed": "2026-09-10T01:50:35+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/supports",
+  "title": "Resources from the Assessment Team",
+  "words": 470,
+  "fixed": 26,
+  "flags": 1,
+  "changed": "2026-09-10T01:51:31+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/NWEA",
+  "title": "Maine Through Year Assessment: Math & Reading",
+  "words": 1590,
+  "fixed": 545,
+  "flags": 1,
+  "changed": "2026-09-10T01:52:00+00:00"
+ },
+ {
+  "alias": "/data-reporting/Student",
+  "title": "Student Data Entry and Reporting",
+  "words": 350,
+  "fixed": 209,
+  "flags": 1,
+  "changed": "2026-09-10T01:53:59+00:00"
+ },
+ {
+  "alias": "/safety/officehours",
+  "title": "MSSC Virtual Office Hours",
+  "words": 86,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-09-10T01:57:32+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/fd",
+  "title": "Food Distribution Program",
+  "words": 2466,
+  "fixed": 68,
+  "flags": 4,
+  "changed": "2026-09-10T02:00:37+00:00"
+ },
+ {
+  "alias": "/data-reporting/medmssupport",
+  "title": "MEDMS Data Systems Support",
+  "words": 444,
+  "fixed": 1,
+  "flags": 0,
+  "changed": "2026-09-10T11:12:26+00:00"
+ },
+ {
+  "alias": "/dirigoschools",
+  "title": "Dirigo Schools of Distinction ",
+  "words": 941,
+  "fixed": 2,
+  "flags": 1,
+  "changed": "2026-09-10T13:53:41+00:00"
+ },
+ {
+  "alias": "/funding/training-materials",
+  "title": "School Finance Professional Development",
+  "words": 286,
+  "fixed": 107,
+  "flags": 3,
+  "changed": "2026-09-10T18:22:51+00:00"
+ },
+ {
+  "alias": "/mtss/funding/gpa/gt/laws",
+  "title": "Laws & Rules - Gifted & Talented",
+  "words": 149,
+  "fixed": 0,
+  "flags": 1,
+  "changed": "2026-09-10T20:10:33+00:00"
+ },
+ {
+  "alias": "/innovation/wabanakistudies/resources",
+  "title": "Wabanaki Studies - Resources",
+  "words": 946,
+  "fixed": 32,
+  "flags": 0,
+  "changed": "2026-09-10T20:29:00+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/materials/TechnicalAssistancePlan",
+  "title": "Technical Assistance",
+  "words": 312,
+  "fixed": 17,
+  "flags": 0,
+  "changed": "2026-09-10T20:29:26+00:00"
+ },
+ {
+  "alias": "/schoolsupports/climate/familyengagement",
+  "title": "Family Engagement and Cultural Responsiveness ",
+  "words": 555,
+  "fixed": 10,
+  "flags": 1,
+  "changed": "2026-09-11T12:47:47+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/nurseresources/carecoordination",
+  "title": "Guidelines for School Health Services: Health Screenings",
+  "words": 149,
+  "fixed": 42,
+  "flags": 3,
+  "changed": "2026-09-11T15:11:39+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/studenteligibility",
+  "title": "Student Eligibility & Applications",
+  "words": 514,
+  "fixed": 138,
+  "flags": 1,
+  "changed": "2026-09-11T15:12:22+00:00"
+ },
+ {
+  "alias": "/learning/esea/resources",
+  "title": "ESEA State Resources",
+  "words": 531,
+  "fixed": 37,
+  "flags": 1,
+  "changed": "2026-09-11T15:12:47+00:00"
+ },
+ {
+  "alias": "/literacy/literacyforme",
+  "title": "Literacy for ME",
+  "words": 266,
+  "fixed": 13,
+  "flags": 0,
+  "changed": "2026-09-11T16:48:38+00:00"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/professionaldevelopment",
+  "title": "Professional Learning for School Nurses",
+  "words": 541,
+  "fixed": 19,
+  "flags": 1,
+  "changed": "2026-09-11T16:48:53+00:00"
+ },
+ {
+  "alias": "/learning/civics/studentsenate",
+  "title": "U.S. Senate Youth Program",
+  "words": 451,
+  "fixed": 22,
+  "flags": 0,
+  "changed": "2026-09-11T17:05:32+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/programs/farmtoschool",
+  "title": "Farm and Sea to School",
+  "words": 130,
+  "fixed": 19,
+  "flags": 1,
+  "changed": "2026-09-11T17:09:07+00:00"
+ },
+ {
+  "alias": "/learning/esea/guidance",
+  "title": "ESEA Guidance",
+  "words": 437,
+  "fixed": 126,
+  "flags": 1,
+  "changed": "2026-09-11T17:11:22+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/committees/career",
+  "title": "Career & Technical Education Committee",
+  "words": 310,
+  "fixed": 24,
+  "flags": 1,
+  "changed": "2026-09-11T18:05:43+00:00"
+ },
+ {
+  "alias": "/about/leadership",
+  "title": "Leadership",
+  "words": 191,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-09-14T14:59:21+00:00"
+ },
+ {
+  "alias": "/calendar",
+  "title": "Event Calendar",
+  "words": 1,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-09-14T15:08:23+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/financial",
+  "title": "Financial Information",
+  "words": 964,
+  "fixed": 49,
+  "flags": 0,
+  "changed": "2026-09-14T16:55:49+00:00"
+ },
+ {
+  "alias": "/data-reporting/Staff",
+  "title": "Staff Data Entry and Reporting",
+  "words": 7372,
+  "fixed": 449,
+  "flags": 1,
+  "changed": "2026-09-14T16:56:51+00:00"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/Generalscience",
+  "title": "Maine Science Assessment",
+  "words": 925,
+  "fixed": 34,
+  "flags": 1,
+  "changed": "2026-09-14T17:01:30+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources/toolkit",
+  "title": "ESOL Programs Toolkit",
+  "words": 592,
+  "fixed": 88,
+  "flags": 0,
+  "changed": "2026-09-15T14:57:10+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/pl",
+  "title": "Multilingual Programs Professional Learning",
+  "words": 485,
+  "fixed": 7,
+  "flags": 2,
+  "changed": "2026-09-15T14:59:03+00:00"
+ },
+ {
+  "alias": "/safety/restorative/resourcecenter",
+  "title": "Culture of Care Resource Center",
+  "words": 372,
+  "fixed": 87,
+  "flags": 1,
+  "changed": "2026-09-15T15:51:48+00:00"
+ },
+ {
+  "alias": "/safety/threatassessment",
+  "title": "Behavioral Threat Assessment and Management",
+  "words": 975,
+  "fixed": 22,
+  "flags": 1,
+  "changed": "2026-09-15T16:03:57+00:00"
+ },
+ {
+  "alias": "/earlychildhoodspecialeducation/cohortmeetings",
+  "title": "Early Childhood Special Education Cohort Meetings",
+  "words": 2586,
+  "fixed": 347,
+  "flags": 3,
+  "changed": "2026-09-15T16:09:03+00:00"
+ },
+ {
+  "alias": "/safety",
+  "title": "Maine School Safety Center Services",
+  "words": 231,
+  "fixed": 52,
+  "flags": 3,
+  "changed": "2026-09-15T20:13:10+00:00"
+ },
+ {
+  "alias": "/teachingandlearning",
+  "title": "Office of Teaching & Learning",
+  "words": 577,
+  "fixed": 64,
+  "flags": 3,
+  "changed": "2026-09-16T13:45:11+00:00"
+ },
+ {
+  "alias": "/learning/specialed/specialpurpose/SPPSmonitoringresources",
+  "title": "Special Purpose Private Schools (SPPS) Monitoring Resources",
+  "words": 92,
+  "fixed": 43,
+  "flags": 1,
+  "changed": "2026-09-16T14:21:25+00:00"
+ },
+ {
+  "alias": "/learning/specialed/specialpurposeprivateschools",
+  "title": "Supervision, Monitoring, & Support - Special Purpose Private Schools",
+  "words": 138,
+  "fixed": 19,
+  "flags": 1,
+  "changed": "2026-09-16T14:25:44+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/identification",
+  "title": "Multilingual Learner Identification",
+  "words": 2193,
+  "fixed": 20,
+  "flags": 0,
+  "changed": "2026-09-16T15:33:26+00:00"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/nurseresources/manual/chronic",
+  "title": "Guidelines for School Health Services: Chronic Conditions Management",
+  "words": 452,
+  "fixed": 102,
+  "flags": 2,
+  "changed": "2026-09-16T15:38:34+00:00"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/mentalhealth",
+  "title": "Mental Health & Substance Use Prevention",
+  "words": 338,
+  "fixed": 42,
+  "flags": 2,
+  "changed": "2026-09-16T15:38:54+00:00"
+ },
+ {
+  "alias": "/learning/esea/monitoring",
+  "title": "ESEA Monitoring",
+  "words": 629,
+  "fixed": 50,
+  "flags": 1,
+  "changed": "2026-09-16T15:40:45+00:00"
+ },
+ {
+  "alias": "/meac",
+  "title": "Maine Engagement and Attendance Center",
+  "words": 983,
+  "fixed": 48,
+  "flags": 1,
+  "changed": "2026-09-16T16:50:50+00:00"
+ },
+ {
+  "alias": "/schools/nutrition/ThursdayUpdate",
+  "title": "Child Nutrition Thursday Update",
+  "words": 2557,
+  "fixed": 57,
+  "flags": 2,
+  "changed": "2026-09-16T20:42:28+00:00"
+ },
+ {
+  "alias": "/learning/civics",
+  "title": "Civics",
+  "words": 1219,
+  "fixed": 4,
+  "flags": 1,
+  "changed": "2026-09-16T20:45:53+00:00"
+ },
+ {
+  "alias": "/schoolsupports/climate/restraintandseclusion",
+  "title": "Restraint and Seclusion",
+  "words": 820,
+  "fixed": 33,
+  "flags": 0,
+  "changed": "2026-09-16T20:48:36+00:00"
+ },
+ {
+  "alias": "/learning/specialed/dueprocess/decisions",
+  "title": "Due Process Decisions",
+  "words": 1039,
+  "fixed": 203,
+  "flags": 2,
+  "changed": "2026-09-16T19:24:36+00:00"
+ },
+ {
+  "alias": "/about/leadership/stateboard/committees/construction",
+  "title": "School Construction Committee",
+  "words": 364,
+  "fixed": 48,
+  "flags": 1,
+  "changed": "2026-09-17T12:32:54+00:00"
+ },
+ {
+  "alias": "/schools/schoolops/equivalentinstruction/entry",
+  "title": "Current Equivalent Instruction Private Schools - Entry Form",
+  "words": 1351,
+  "fixed": 1,
+  "flags": 2,
+  "changed": "2026-09-17T21:20:26+00:00"
+ },
+ {
+  "alias": "/learning/multilinguallearner/services/sandbox/ml",
+  "title": "Multilingual Guidance Sandbox",
+  "words": 2811,
+  "fixed": 21,
+  "flags": 1,
+  "changed": "2026-09-18T14:14:07+00:00"
+ },
+ {
+  "alias": "/steam",
+  "title": "STEAM Hub",
+  "words": 946,
+  "fixed": 94,
+  "flags": 2,
+  "changed": "2026-09-18T14:20:54+00:00"
+ },
+ {
+  "alias": "/numeracy",
+  "title": "Numeracy Hub",
+  "words": 1400,
+  "fixed": 76,
+  "flags": 2,
+  "changed": "2026-09-18T14:21:13+00:00"
+ },
+ {
+  "alias": "/artsandhumanities",
+  "title": "Arts & Humanities Hub",
+  "words": 753,
+  "fixed": 97,
+  "flags": 2,
+  "changed": "2026-09-18T14:21:33+00:00"
+ },
+ {
+  "alias": "/literacy",
+  "title": "Literacy Hub",
+  "words": 922,
+  "fixed": 11,
+  "flags": 0,
+  "changed": "2026-09-17T16:37:53+00:00"
+ },
+ {
+  "alias": "/funding/reports/tuition",
+  "title": "Tuition Rates",
+  "words": 502,
+  "fixed": 36,
+  "flags": 1,
+  "changed": "2026-09-18T14:23:04+00:00"
+ }
+]

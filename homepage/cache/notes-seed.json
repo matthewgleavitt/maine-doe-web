@@ -1,0 +1,1238 @@
+[
+ {
+  "alias": "/learning/cte/contact",
+  "kind": "wrong",
+  "text": "The page shows \"Shawn.Lagasse@maine.gov\" but the link sends to shawn.legasse@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/cert/faq",
+  "kind": "accessibility",
+  "text": "3 links say only \"click here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "click here · here · click here"
+ },
+ {
+  "alias": "/data-warehouse/reporting/absenteeism",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2023–2024. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2024"
+ },
+ {
+  "alias": "/learning/highered/transcripts",
+  "kind": "accessibility",
+  "text": "2 links are labelled with the web address instead of what it leads to.",
+  "detail": "https://diplomasender.com/ · https://neo.maine.gov/DOE/neo/Supersearch/ContactSearc"
+ },
+ {
+  "alias": "/about/leadership/makin",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2013–2014. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2014"
+ },
+ {
+  "alias": "/schoolsupports/communityschools",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://www.communityschools.org/"
+ },
+ {
+  "alias": "/schoolsupports/communityschools/info",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2022–2023. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2023"
+ },
+ {
+  "alias": "/learning/II/how/21C",
+  "kind": "accessibility",
+  "text": "1 link says only \"click here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "click here"
+ },
+ {
+  "alias": "/data-reporting/warehouse/definitions",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2018–2019. Is there a newer version?",
+  "detail": "2 year ranges on the page, newest 2019"
+ },
+ {
+  "alias": "/data-reporting/privacy",
+  "kind": "accessibility",
+  "text": "3 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration/developingquestions",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/specialed/initiatives/dyslexia",
+  "kind": "accessibility",
+  "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/earlyinterventionforme",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Photo of child stepping in water"
+ },
+ {
+  "alias": "/earlyinterventionforme",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://mainestate.zoom.us/j/86970961961"
+ },
+ {
+  "alias": "/educators/educatoreval/educatorperf",
+  "kind": "wrong",
+  "text": "The page shows \"Christina.l.Oneal@maine.gov\" but the link sends to michael.t.perry@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/educators/edprepprograms",
+  "kind": "unfinished",
+  "text": "The page still says \"coming soon\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/educators/edprepprograms",
+  "kind": "accessibility",
+  "text": "2 links are labelled with the web address instead of what it leads to.",
+  "detail": "https://forms.office.com/g/68GEWYDk6G · https://forms.office.com/g/68GEWYDk6G"
+ },
+ {
+  "alias": "/fedrelief/esser",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://oese.ed.gov/offices/education-stabilization-fu"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/wellness",
+  "kind": "unfinished",
+  "text": "The page still says \"coming soon\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/wellness",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/schools/transportation/operation/drivers/eldt",
+  "kind": "accessibility",
+  "text": "2 links say only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here · here"
+ },
+ {
+  "alias": "/ESSERdashboard",
+  "kind": "accessibility",
+  "text": "4 links are labelled with the web address instead of what it leads to.",
+  "detail": "https://www.maine.gov/doe/fedrelief/sauplans · https://www.maine.gov/doe/fedrelief/fedreliefsurvey"
+ },
+ {
+  "alias": "/doe/learning/II/techpblhome/techintegration/finalartifact",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/earlychildhood/first10/faq",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/earlychildhood/instructionalprogramming",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/learning/earlychildhood/first10/forming",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/learning/earlychildhood/headstart",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/learning/earlychildhood/headstart",
+  "kind": "accessibility",
+  "text": "2 links say only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here · here"
+ },
+ {
+  "alias": "/learning/highered",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Image of university campus with buildings and river"
+ },
+ {
+  "alias": "/schools/schoolops/homeinstruction/faq",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2019–2020. Is there a newer version?",
+  "detail": "16 year ranges on the page, newest 2020"
+ },
+ {
+  "alias": "/schools/schoolops/homeinstruction/faq",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://neo.maine.gov/DOE/NEO/Dashboard"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/II/PL/lit&neur",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://ila.onlinelibrary.wiley.com/doi/full/10.1002/r"
+ },
+ {
+  "alias": "/learning/II/PL/investigatePBL",
+  "kind": "unfinished",
+  "text": "The page still says \"COMING SOON\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/educators/jobs",
+  "kind": "accessibility",
+  "text": "2 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap"
+ },
+ {
+  "alias": "/learning/II/PL/lit&neur/LangComp",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Image of Language Comprehension button"
+ },
+ {
+  "alias": "/lgbtq/parent",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://www.outmaine.org/resources/books"
+ },
+ {
+  "alias": "/literacy/literacyforme/resources",
+  "kind": "accessibility",
+  "text": "1 link says only \"link\". Out of context that tells a screen-reader user nothing.",
+  "detail": "link"
+ },
+ {
+  "alias": "/literacy/literacyforme/teams",
+  "kind": "accessibility",
+  "text": "1 link says only \"link\". Out of context that tells a screen-reader user nothing.",
+  "detail": "link"
+ },
+ {
+  "alias": "/learning/II/techpblhome/logistics",
+  "kind": "accessibility",
+  "text": "2 links say only \"link\". Out of context that tells a screen-reader user nothing.",
+  "detail": "link · link"
+ },
+ {
+  "alias": "/offices",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/schoolsafety",
+  "kind": "accessibility",
+  "text": "2 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap"
+ },
+ {
+  "alias": "/learning/content/social/statutes",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2024–2025. Is there a newer version?",
+  "detail": "20 year ranges on the page, newest 2025"
+ },
+ {
+  "alias": "/federalprograms/fedrelief/pandemic",
+  "kind": "wrong",
+  "text": "The page shows \"Janette.Kirk@maine.gov\" but the link sends to april.perkins@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/schools/facilities/mcscp",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2024–2025. Is there a newer version?",
+  "detail": "9 year ranges on the page, newest 2025"
+ },
+ {
+  "alias": "/learning/mathpathways",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card Image Caption"
+ },
+ {
+  "alias": "/learning/mathpathways/implementation",
+  "kind": "accessibility",
+  "text": "2 links say only \"Read More\". Out of context that tells a screen-reader user nothing.",
+  "detail": "Read More · Read More"
+ },
+ {
+  "alias": "/learning/mathpathways/studentdecisions",
+  "kind": "accessibility",
+  "text": "2 links say only \"Read More\". Out of context that tells a screen-reader user nothing.",
+  "detail": "Read More · Read More"
+ },
+ {
+  "alias": "/specialservices/math4me",
+  "kind": "wrong",
+  "text": "The page shows \"Usan.Hogan@maine.gov\" but the link sends to susan.hogan@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/schools/safeschools/counseling/highmobility/homelessed",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/schools/safeschools/counseling/highmobility/homelessed/recordings",
+  "kind": "wrong",
+  "text": "The page shows \"Sige.Lynch@maine.gov\" but the link sends to signe.lynch@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/schoolsupports/military",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Image of outline of Maine made up of family and the text: MIC3= Military Interstate Children’s  Compact Commission. Supporting Maine Veteran &amp; Military Families..."
+ },
+ {
+  "alias": "/learning/ltt/ambassadors",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2023–2024. Is there a newer version?",
+  "detail": "2 year ranges on the page, newest 2024"
+ },
+ {
+  "alias": "/moose/lp/cyber-security",
+  "kind": "unfinished",
+  "text": "The page still says \"Coming soon\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/moose/lp/numeracy",
+  "kind": "unfinished",
+  "text": "The page still says \"Coming Soon\". Has it arrived, or should the line come out?",
+  "detail": "3 places"
+ },
+ {
+  "alias": "/mtss/teams",
+  "kind": "unfinished",
+  "text": "The page still says \"Coming Soon\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/schools/safeschools/highmobility/homelessed/monitoring",
+  "kind": "wrong",
+  "text": "The page shows \"Hannah.s.Ryde@maine.gov\" but the link sends to amelia.lyons@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/learning/highered/nonaccredited",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://ope.ed.gov/accreditation/agencies.aspx"
+ },
+ {
+  "alias": "/schools/nutrition/nondiscrimination",
+  "kind": "accessibility",
+  "text": "3 links are labelled with the web address instead of what it leads to.",
+  "detail": "https://www.usda.gov/sites/default/files/documents/USD · https://www.usda.gov/sites/default/files/documents/ad-"
+ },
+ {
+  "alias": "/federalprograms",
+  "kind": "accessibility",
+  "text": "6 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/educatorservices",
+  "kind": "accessibility",
+  "text": "2 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap"
+ },
+ {
+  "alias": "/schoolsupports",
+  "kind": "accessibility",
+  "text": "2 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap"
+ },
+ {
+  "alias": "/learning/cte/perkinsv",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2022–2023. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2023"
+ },
+ {
+  "alias": "/schools/transportation/programs",
+  "kind": "unfinished",
+  "text": "The page still says \"TBD\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/schools/schoolops/publicschoolapproval",
+  "kind": "wrong",
+  "text": "The page shows \"Sierra.Wood@maine.gov\" but the link sends to schoolquestions.doe@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/data-reporting/medmssupport/resources/race-ethnicity",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2010–2011. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2011"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration/reflectionfeedbackassessment",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/highered/transcripts/request",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://diplomasender.com/"
+ },
+ {
+  "alias": "/learning/highered/transcripts/request",
+  "kind": "accessibility",
+  "text": "1 link says only \"link\". Out of context that tells a screen-reader user nothing.",
+  "detail": "link"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration/researchrefinedesign",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/schools/facilities/resources",
+  "kind": "accessibility",
+  "text": "3 links are labelled with the web address instead of what it leads to.",
+  "detail": "https://www.maine.gov/labor/labor_stats/publications/w · https://www.dol.gov/agencies/whd/government-contracts/"
+ },
+ {
+  "alias": "/safety/restorative",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/rrev/awardedpilots",
+  "kind": "unfinished",
+  "text": "The page still says \"check back\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/innovation/rrev/data",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2023–2024. Is there a newer version?",
+  "detail": "3 year ranges on the page, newest 2024"
+ },
+ {
+  "alias": "/innovation/rrev/history",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/innovation/rrev/research",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/fedrelief/sauplans",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://www.federalregister.gov/documents/2021/04/22/2"
+ },
+ {
+  "alias": "/schools/transportation/programs/busbidmodule",
+  "kind": "unfinished",
+  "text": "The page still says \"coming soon\". Has it arrived, or should the line come out?",
+  "detail": "2 places"
+ },
+ {
+  "alias": "/schools/transportation/operation/drivers",
+  "kind": "accessibility",
+  "text": "2 links are labelled with the web address instead of what it leads to.",
+  "detail": "http://www.maine.gov/sos/bmv/licenses/commercialexam.h · http://www.maine.gov/sos/bmv/forms/index.html"
+ },
+ {
+  "alias": "/schoolsupports/climate/schoolclimate",
+  "kind": "unfinished",
+  "text": "The page still says \"Check back\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/schools/schoolops/enrollment",
+  "kind": "accessibility",
+  "text": "1 link says only \"click here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "click here"
+ },
+ {
+  "alias": "/safety/schoolsafetyspecialist",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://legislature.maine.gov/legis/statutes/20-A"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/materials/meascience",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/sel/faq",
+  "kind": "accessibility",
+  "text": "25 links are labelled with the web address instead of what it leads to.",
+  "detail": "https://casel.org/what-is-sel/ · https://casel.org/core-competencies/"
+ },
+ {
+  "alias": "/learning/II/techpblhome/techintegration/showcase",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/specialed/SAP/info",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://mainestate.zoom.us/j/81254012192?pwd=O5UOs5G3x"
+ },
+ {
+  "alias": "/learning/highered/sara",
+  "kind": "accessibility",
+  "text": "2 links are labelled with the web address instead of what it leads to.",
+  "detail": "http://nc-sara.org/content/sara-applications · https://www.mainelegislature.org/legis/statutes/20-A/t"
+ },
+ {
+  "alias": "/about/leadership/studentleadership",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/learning/specialed/supervision",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card Image Caption"
+ },
+ {
+  "alias": "/educators/loans",
+  "kind": "wrong",
+  "text": "The page shows \"Shelly.Chassejohndro@maine.gov\" but the link sends to daniel.r.weeks@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/exploreeducation/teachmaine",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://www.liveandworkinmaine.com/teach"
+ },
+ {
+  "alias": "/teachmaine/framework",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2017–2018. Is there a newer version?",
+  "detail": "2 year ranges on the page, newest 2018"
+ },
+ {
+  "alias": "/teachmaine/framework",
+  "kind": "unfinished",
+  "text": "The page still says \"Check back\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/literacy/literacyforme/future",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2018–2019. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2019"
+ },
+ {
+  "alias": "/learning/earlychildhood/transitions/modules",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/learning/earlychildhood/PreK4ME/unit1",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/sitepolicies/security",
+  "kind": "accessibility",
+  "text": "2 links are labelled with the web address instead of what it leads to.",
+  "detail": "http://www.maine.gov/portal/policies/index.html · http://www.maine.gov/informe/subscriber/account-manage"
+ },
+ {
+  "alias": "/schools/transportation/programs/veterans",
+  "kind": "accessibility",
+  "text": "3 links are labelled with the web address instead of what it leads to.",
+  "detail": "https://neo.maine.gov/doe/neo/superSearch/Home/Index · http://www.maine.gov/sos/bmv/licenses/cdlmanual.pdf"
+ },
+ {
+  "alias": "/learning/II/PL/lit&neur/wordrecog",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Image of Word Recognition button"
+ },
+ {
+  "alias": "/learning/content/worldlanguages/prolearning/languagesinmaineschools",
+  "kind": "unfinished",
+  "text": "The page still says \"check back\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/learning/II/PL/lit&neur/Selfregulation",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Image of Active Self-Regulation button"
+ },
+ {
+  "alias": "/learning/II/avr",
+  "kind": "wrong",
+  "text": "The page shows \"Kathy.Bertini@maine.gov\" but the link sends to emily.poland@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/adminletter-archive",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2010–2011. Is there a newer version?",
+  "detail": "15 year ranges on the page, newest 2011"
+ },
+ {
+  "alias": "/cert/application",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/funding/reports/tuition/faqs",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://neo.maine.gov/doe/neo/SuperSearch/Home/Index"
+ },
+ {
+  "alias": "/doe/learning/II/techpblhome/techintegration/authenticproblems",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/ffa/winners2022-2023",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2022–2023. Is there a newer version?",
+  "detail": "2 year ranges on the page, newest 2023"
+ },
+ {
+  "alias": "/learning/II/PL/lit&neur/bridging",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Image of Bridging Processes button"
+ },
+ {
+  "alias": "/funding/accounting",
+  "kind": "accessibility",
+  "text": "3 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/learning/technology/studentleadership",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/learning/II/integratedliteracy",
+  "kind": "accessibility",
+  "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/learning/earlychildhood/first10/examples",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/fedrelief/equitydata",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2022–2023. Is there a newer version?",
+  "detail": "4 year ranges on the page, newest 2023"
+ },
+ {
+  "alias": "/exploreeducation/teachmaine/themetwo",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/exploreeducation/teachmaine/themeone",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2021–2022. Is there a newer version?",
+  "detail": "2 year ranges on the page, newest 2022"
+ },
+ {
+  "alias": "/exploreeducation/teachmaine/themeone",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "http://nces.ed.gov/pubs2015/2015026.pdf"
+ },
+ {
+  "alias": "/cert/renewals",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources/civilrights",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://www2.ed.gov/about/offices/list/ocr/complaintin"
+ },
+ {
+  "alias": "/learning/multilinguallearner/resources/newcomersSLIFE",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://padlet.com/diane30/maine-department-of-educati"
+ },
+ {
+  "alias": "/learning/ffa/officers/past",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2022–2023. Is there a newer version?",
+  "detail": "31 year ranges on the page, newest 2023"
+ },
+ {
+  "alias": "/learning/ffa/officers/past",
+  "kind": "accessibility",
+  "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Photo of 2020-2021 Maine FFA State President Izabelle Higgins · Photo of Maine FFA State Vice President Kerigan Guerrette · Photo of Maine FFA State Secretary Emily Ward"
+ },
+ {
+  "alias": "/moose/educators",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2020–2021. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2021"
+ },
+ {
+  "alias": "/learning/mathpathways/educators",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/II/PL",
+  "kind": "accessibility",
+  "text": "2 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap"
+ },
+ {
+  "alias": "/funding/gpa/eps/22-23",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2022–2023. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2023"
+ },
+ {
+  "alias": "/funding/gpa/eps/23-24",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2023–2024. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2024"
+ },
+ {
+  "alias": "/funding/gpa/eps/24-25",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2024–2025. Is there a newer version?",
+  "detail": "5 year ranges on the page, newest 2025"
+ },
+ {
+  "alias": "/schools/eut/schools",
+  "kind": "wrong",
+  "text": "The page shows \"Alison.Hinson@maine.gov\" but the link sends to tona.m.lenhart@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/schools/eut/schools",
+  "kind": "wrong",
+  "text": "The page shows \"Sara.Thompson@maine.gov\" but the link sends to cathy.g.severance@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/cds/contactlist",
+  "kind": "wrong",
+  "text": "The page shows \"Heather.Henderson@maine.gov\" but the link sends to jacquelyn.n.hersom@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/cds/contactlist",
+  "kind": "wrong",
+  "text": "The page shows \"Erin.Frazier@maine.gov\" but the link sends to trisha.kurt@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/cds/contactlist",
+  "kind": "wrong",
+  "text": "The page shows \"J.Sandy.Flacke@maine.gov\" but the link sends to jennifer.l.hopkins@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/cds/contactlist",
+  "kind": "wrong",
+  "text": "The page shows \"Katelyn.m.Turner@maine.gov\" but the link sends to holly.a.green@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/cds/contactlist",
+  "kind": "wrong",
+  "text": "The page shows \"Jacquelyn.n.Hersom@maine.gov\" but the link sends to ariana.whiting@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/cds/contactlist",
+  "kind": "wrong",
+  "text": "The page shows \"Holly.a.Green@maine.gov\" but the link sends to mariah.conley@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/schools/structure/sau-organization-costsharing/rsu",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2019–2020. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2020"
+ },
+ {
+  "alias": "/literacy/literacyforme/readtoride",
+  "kind": "accessibility",
+  "text": "1 link says only \"HERE\". Out of context that tells a screen-reader user nothing.",
+  "detail": "HERE"
+ },
+ {
+  "alias": "/learning/earlychildhood",
+  "kind": "accessibility",
+  "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/learning/specialed/supervision/privatespecialeducation",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/funding/accounting/guidance",
+  "kind": "accessibility",
+  "text": "3 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/funding/reports/expenditures",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2024–2025. Is there a newer version?",
+  "detail": "3 year ranges on the page, newest 2025"
+ },
+ {
+  "alias": "/schools/nutrition/laws",
+  "kind": "accessibility",
+  "text": "2 links say only \"link\". Out of context that tells a screen-reader user nothing.",
+  "detail": "link · link"
+ },
+ {
+  "alias": "/learning/earlychildhood/PDG",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2024–2025. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2025"
+ },
+ {
+  "alias": "/cds/earlychildhoodspecialeducation",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/specialservices",
+  "kind": "accessibility",
+  "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/learning/specialed/ideapublic",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2024–2025. Is there a newer version?",
+  "detail": "4 year ranges on the page, newest 2025"
+ },
+ {
+  "alias": "/learning/specialed/ideapublic",
+  "kind": "accessibility",
+  "text": "4 links are labelled with the web address instead of what it leads to.",
+  "detail": "https://data.ed.gov/organization/osep · https://www.maine.gov/doe/Testing_Accountability/MECAS"
+ },
+ {
+  "alias": "/learning/II/PL/sched",
+  "kind": "accessibility",
+  "text": "2 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/math_ELA_Literacy",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/learning/technology/MLTI",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": null,
+  "kind": "unfinished",
+  "text": "The page still says \"check back\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": null,
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://www.maine.gov/doe/learning/esea/contact"
+ },
+ {
+  "alias": "/schools/nutrition/contact",
+  "kind": "wrong",
+  "text": "The page shows \"Sarah.d.Platt@maine.gov\" but the link sends to sarah.platt@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/schools/embrace/contact",
+  "kind": "wrong",
+  "text": "The page shows \"joe.fagnant@rsu29.org\" but the link sends to joe.fagnant.",
+  "detail": ""
+ },
+ {
+  "alias": "/learning/esea/contact",
+  "kind": "wrong",
+  "text": "The page shows \"Jessica.s.Caron@maine.gov\" but the link sends to jessica.caron@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/schools/schoolops/privatechoolapproval",
+  "kind": "accessibility",
+  "text": "4 links say only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here · here · here"
+ },
+ {
+  "alias": "/schools/schoolops/privatechoolapproval",
+  "kind": "wrong",
+  "text": "The page shows \"Sierra.Wood@maine.gov\" but the link sends to schoolquestions.doe@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/funding",
+  "kind": "accessibility",
+  "text": "7 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/BARRschools",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2024–2025. Is there a newer version?",
+  "detail": "2 year ranges on the page, newest 2025"
+ },
+ {
+  "alias": "/pathways/healthcareexplorations",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/schools/nutrition/cacfp/claims",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/educators/leader/tln",
+  "kind": "unfinished",
+  "text": "The page still says \"TBD\". Has it arrived, or should the line come out?",
+  "detail": "2 places"
+ },
+ {
+  "alias": "/educators/leader/tln",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://events.bizzabo.com/947076"
+ },
+ {
+  "alias": "/schoolsupports/schoolhealth/guidelines/emergencycare",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/earlyinterventionforme/reporting",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://sites.ed.gov/idea/spp-apr/"
+ },
+ {
+  "alias": "/innovation/greenschools",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/innovation/greenschools",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://www.efficiencymaine.com/school-lighting-retrof"
+ },
+ {
+  "alias": "/Testing_Accountability/MECAS/calendar",
+  "kind": "unfinished",
+  "text": "The page still says \"TBD\". Has it arrived, or should the line come out?",
+  "detail": "2 places"
+ },
+ {
+  "alias": "/learning/earlychildhood/PreK4ME",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/learning/earlychildhood/1stgradeforme",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/learning/earlylearning/instructionalprogramming/2ndgradeforme",
+  "kind": "accessibility",
+  "text": "2 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap"
+ },
+ {
+  "alias": "/learning/standardsreview/ela",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2015–2016. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2016"
+ },
+ {
+  "alias": "/learning/standardsreview/ela",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://owl.purdue.edu/"
+ },
+ {
+  "alias": "/learning/standardsreview/mathematics",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2007–2008. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2008"
+ },
+ {
+  "alias": "/learning/standardsreview/mathematics",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/standards/socialstudies",
+  "kind": "unfinished",
+  "text": "The page still says \"coming soon\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/learning/content/world-language/biliteracy",
+  "kind": "wrong",
+  "text": "The page shows \"Rebecca.Carey@maine.gov\" but the link sends to melanie.junkins@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/learning/multilinguallearner/bilingual",
+  "kind": "wrong",
+  "text": "The page shows \"Rebecca.Carey@maine.gov\" but the link sends to melanie.junkins@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/learning/worldlanguages",
+  "kind": "wrong",
+  "text": "The page shows \"Rebecca.Carey@maine.gov\" but the link sends to melanie.junkins@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/pineproject",
+  "kind": "wrong",
+  "text": "The page shows \"Rebecca.Carey@maine.gov\" but the link sends to melanie.junkins@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/pineproject/professionallearning",
+  "kind": "wrong",
+  "text": "The page shows \"Rebecca.Carey@maine.gov\" but the link sends to melanie.junkins@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/literacy/modules",
+  "kind": "accessibility",
+  "text": "2 links say only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here · here"
+ },
+ {
+  "alias": "/safety/emergencymanagement",
+  "kind": "unfinished",
+  "text": "The page still says \"coming soon\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/cert/fingerprinting",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/specialservices/resources",
+  "kind": "wrong",
+  "text": "The page shows \"Tracy.w.Whitlock@maine.gov\" but the link sends to tracy.w.whitlock.@maine.gov.",
+  "detail": ""
+ },
+ {
+  "alias": "/schools/nutrition/cacfp/resources/applicanttraining",
+  "kind": "accessibility",
+  "text": "1 link says only \"link\". Out of context that tells a screen-reader user nothing.",
+  "detail": "link"
+ },
+ {
+  "alias": "/pathways/mainecareerpathways",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2023–2024. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2024"
+ },
+ {
+  "alias": "/pathways/mainecareerpathways",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/elo/resources",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2023–2024. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2024"
+ },
+ {
+  "alias": "/about/laws/rulechanges",
+  "kind": "unfinished",
+  "text": "The page still says \"TBD\". Has it arrived, or should the line come out?",
+  "detail": "2 places"
+ },
+ {
+  "alias": "/about/laws/rulechanges",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/learning/technology/guidance",
+  "kind": "accessibility",
+  "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/data-reporting/Student",
+  "kind": "accessibility",
+  "text": "8 links say only \"Link\". Out of context that tells a screen-reader user nothing.",
+  "detail": "Link · Link · Link"
+ },
+ {
+  "alias": "/schools/nutrition/programs/fd",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2024–2025. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2025"
+ },
+ {
+  "alias": "/schools/nutrition/programs/fd",
+  "kind": "accessibility",
+  "text": "1 link is labelled with the web address instead of what it leads to.",
+  "detail": "https://me.cnpus.com/cnp/Login"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/nurseresources/carecoordination",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/data-reporting/Staff",
+  "kind": "accessibility",
+  "text": "2 links are labelled with the web address instead of what it leads to.",
+  "detail": "https://neo.maine.gov/DOE/NEO/Accounts/Account/Login · http://www.maine.gov/doe/cert"
+ },
+ {
+  "alias": "/safety/threatassessment",
+  "kind": "accessibility",
+  "text": "1 link says only \"here\". Out of context that tells a screen-reader user nothing.",
+  "detail": "here"
+ },
+ {
+  "alias": "/earlychildhoodspecialeducation/cohortmeetings",
+  "kind": "out of date",
+  "text": "The most recent school year named anywhere on this page is 2023–2024. Is there a newer version?",
+  "detail": "1 year range on the page, newest 2024"
+ },
+ {
+  "alias": "/safety",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/teachingandlearning",
+  "kind": "accessibility",
+  "text": "3 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/schools/safeschools/healthed/nurseresources/manual/chronic",
+  "kind": "accessibility",
+  "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap"
+ },
+ {
+  "alias": "/schoolsupports/climate/restraintandseclusion",
+  "kind": "unfinished",
+  "text": "The page still says \"Coming Soon\". Has it arrived, or should the line come out?",
+  "detail": "1 place"
+ },
+ {
+  "alias": "/steam",
+  "kind": "accessibility",
+  "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/numeracy",
+  "kind": "accessibility",
+  "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/artsandhumanities",
+  "kind": "accessibility",
+  "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
+  "detail": "Card image cap · Card image cap · Card image cap"
+ }
+]

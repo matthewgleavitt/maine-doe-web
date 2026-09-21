@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8">
+<!-- Maine DOE — searchable-table test harness
+     Version: 2026-09-21-a  ·  Last edited: 2026-09-20
+     The review panel cannot show this: its frames link the production
+     stylesheets but do not run the theme's JavaScript, so no
+     DataTable ever initialises in them. This loads the same library
+     versions the theme loads, plus the deploy stylesheet, so the
+     search box, the length menu, the sort arrows and the pager can
+     actually be looked at.  Open /dt-harness.html on the review
+     server. -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700&family=Inter:wght@400;600&display=swap">
+<link rel="stylesheet" href="/interior-css-injector.deploy.css">
+<style>body{font-family:"Helvetica Neue",Arial,sans-serif;margin:0;background:#fff}
+#block-doe-content{max-width:988px;margin:24px auto;padding:0 20px}</style>
+</head><body class="page-node-type-multi-column-page">
+<div id="maincontent2"><div id="block-doe-content">
+<table class="tables table-striped table-bordered" width="100%" data-page-length="25">
+<thead><tr><th scope="col">Topic</th><th scope="col">Areas of Focus</th></tr></thead>
+<tbody>
+<tr><td class="doe-action"><a href="#">Adult Education</a></td><td>AEFLA, CASAS, HiSET, MaineSTARS</td></tr>
+<tr><td class="doe-action"><a href="#">Assessment</a></td><td>Maine Through Year, NAEP, NWEA, WIDA ACCESS</td></tr>
+<tr><td class="doe-action"><a href="#">Attendance &amp; Truancy</a></td><td>Chronic Absenteeism, Regulated Classroom</td></tr>
+<tr><td class="doe-action"><a href="#">Career &amp; Technical Education</a></td><td>CTE approvals, Perkins V funding</td></tr>
+<tr><td class="doe-action"><a href="#">Child Nutrition</a></td><td>NSLP, SBP, CACFP, Summer Food Service</td></tr>
+</tbody></table>
+</div></div>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script>$(function(){ $('table.tables').DataTable(); });</script>
+</body></html>
