@@ -1,0 +1,76 @@
+<article about="x">
+  
+      <article about="/doe/schoolsupports/communityschools">
+
+  
+    
+
+  
+  <div>
+        <div class="layout layout--onecol">
+    <div  class="layout__region layout__region--content">
+      
+<div >
+  
+        	<img alt="Community Schools Banner" height="100%" src="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-images/Community.png" width="100%" class="align-center" loading="lazy" />
+
+<table class="table table-bordered" width="100%"><tbody><tr><td><div class="doe-video"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" frameborder="0" src="https://www.youtube.com/embed/9hmmfBku3Hs?si=GabhQDHcK3MRek1e" title="YouTube video player"></iframe></div></td>
+			<td>The Community Schools Team provides support, guidance, and resources to schools across Maine looking to advance community school strategies to improve student outcomes. The Community Schools initiative is grounded in the vision and mission of the Maine Department of Education by providing learning environments that are trusted centers of the community and help all Maine students reach their full potential and leave school prepared for work, life, and post-secondary education opportunities. Community Schools are committed to forming strong partnerships with families and organizations to provide well-rounded educational opportunities and wrap-around support to meet the whole child's needs.</td>
+		</tr></tbody></table>
+
+<hr />
+
+<div class="row justify-content-left">
+<div class="col-sm-8">
+<div class="card"><img alt="teacher reading to children" height="100%" src="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-images/Untitled%20design%20%283%29_1.png" width="100%" loading="lazy" /><div class="card-body">
+<h5 class="card-title">Maine DOE Resources</h5>
+
+<ul class="list-group list-group-flush"><li class="doe-action list-group-item"><a href="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-files/Community%20Schools%20Presentation%20for%20website.pptx" aria-label="Community Schools Presentation Overview, PowerPoint">Community Schools Presentation Overview</a><span class="doe-chip">PowerPoint</span></li>
+	<li class="doe-action list-group-item"><a href="https://www.youtube.com/watch?v=YYIXcgeRqv0" aria-label="Community Schools Information Session, YouTube">Community Schools Information Session</a><span class="doe-chip">YouTube</span></li>
+</ul><h5 class="card-title">Resources for Community Schools</h5>
+
+<ul class="list-group list-group-flush"><li class="doe-action list-group-item"><a href="https://www.communityschools.org/">Coalition for Community Schools</a></li>
+	<li class="doe-action list-group-item"><a href="https://www.nccs.org/publications/">National Center for Community School Resources</a></li>
+	<li class="doe-action list-group-item"><a href="https://learningpolicyinstitute.org/project/community-schools-forward">Learning Policy Institute</a></li>
+	<li class="doe-action list-group-item"><a href="https://learningpolicyinstitute.org/product/community-schools-playbook">LPI - Community Schools Playbook</a></li>
+	<li class="doe-action list-group-item"><a href="https://www.nea.org/build-community-schools">NEA - 5 Steps to Kickstarting Community Schools in Your District</a></li>
+</ul></div>
+</div>
+</div>
+
+<div class="col-sm-4">
+<div class="card"><img alt="person at computer" height="100%" src="https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-images/pexels-yan-krukau-8613089_0.jpg" width="100%" loading="lazy" /><div class="card-body">
+<p>According to the Coalition for Community Schools: "Community schools strategy transforms a school into a place where educators, local community members, families, and students work together to strengthen conditions for student learning and healthy development. As partners, they organize in- and out-of-school resources, supports, and opportunities so that young people thrive."</p>
+
+<p class="doe-action"><a data-auth="Verified" data-linkindex="1" href="https://www.communityschools.org/" title="Original URL: https://www.communityschools.org/. Click or tap if you trust this link.">https://www.communityschools.org/</a></p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contact-cube" id="contact">
+<h3>Contact</h3>
+
+<div class="contact-cube__person" style="display: flex; gap: 2rem; align-items: flex-start;">
+<div class="contact-cube__contact" style="flex: 1;">
+<p><strong>Ann Hanna</strong><br /><em>Community School Specialist (Consultant)</em><br /><strong>Phone</strong>: 207-446-8127<br /><strong>Email</strong>: <a href="mailto:Ann.C.Hanna@maine.gov">Ann.C.Hanna@maine.gov</a></p>
+</div>
+
+<div class="contact-cube__supports" style="flex: 1;">
+<p><strong>Supports the following areas:</strong></p>
+
+<ul><li>The Community School model.</li>
+	<li>Guidance and support for existing or new community schools.</li>
+</ul></div>
+</div>
+</div>
+
+  </div>
+
+    </div>
+  </div>
+
+      <!-- The right column content is empty woohoo-->
+  </div>
+</div>
+</article>

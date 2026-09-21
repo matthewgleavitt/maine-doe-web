@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-21-x  ·  Last edited: 2026-09-21
+ * Version: 2026-09-21-aa  ·  Last edited: 2026-09-21
  *
  * ============================================================
  * SCOPE
@@ -3187,6 +3187,26 @@ body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion >
    The component guide says a card gets one header and a second group
    should be its own card, so this is holding the line until the
    markup is corrected on those 18 pages. */
+/* h3 AND h4 TOO, NOT JUST h5.
+   The bar below was keyed to h5 because that is what the pages it was
+   written for happened to use. Matt, looking at the same device on
+   /specialservices/specialprojects: "that creates real segmentation
+   ... should be a rule inside cards for separating sections /
+   different link groupings." It should, and the level an author
+   reached for is not the point — a heading inside a card that is not
+   the card's own title IS a section divider, whatever it is numbered.
+   /funding/reports/tuition writes "2025-2026 Tuition Rates" as an h3
+   and the foster care card writes "2025-2026 Training" as an h4, and
+   both were falling through to ordinary heading type.
+   h6 IS DELIBERATELY LEFT OUT. Seventeen of them across the site are
+   whole sentences marked up as headings — "Child Trend offers a
+   Toolkit for Schools" on /schoolsupports/schoolhealth/wellness — and
+   a navy bar across a sentence is shouting, not segmenting. h2 is out
+   for the opposite reason: inside a card it is a section header that
+   escaped its section, which is a markup fault to fix rather than to
+   dress. 124 headings on 40 pages gain the bar. */
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h3:not(:first-child),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h4:not(:first-child),
 body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h5:not(:first-child),
 body.page-node-type-multi-column-page #block-doe-content .card > .card-body > .card-title:not(:first-child) {
   margin: 26px -20px 16px !important;
@@ -5073,4 +5093,48 @@ body.page-node-type-multi-column-page #block-doe-content table:not(:has(th)) td 
 body.page-node-type-multi-column-page #block-doe-content table:not(:has(th)) td > p > iframe {
   width: 100%;
   max-width: 100%;
+}
+
+
+/* ── THE BUTTON LABEL NOBODY COULD READ ──────────────────────────
+   This file has said from the start that .btn-info is UNCHANGED —
+   the theme owns it, it is already navy with a teal keyline, leave
+   it be. That was right about the button and wrong about its label.
+
+   Measured across all 831 proposals: 576 of 616 buttons draw their
+   text in --i-midblue #274f73 on the theme's navy #182b3c. That is
+   1.69:1, against the 4.5:1 WCAG 1.4.3 asks for, and 3:1 for the
+   large type most of them are set in. Ninety-four per cent of every
+   button on the site.
+   IT IS NOT OURS. Rendered with this stylesheet disabled the colour
+   is identical, so it is on maine.gov/doe today and has been all
+   along. A reader sees a navy slab with something faintly darker
+   written on it. On /funding/reports/tuition it is the only way to
+   reach the private school approval FAQ.
+   Nothing else about the button moves: same navy, same teal keyline,
+   same size. Only the ink, which goes to the white the component
+   guide specified for it in the first place. 21:1. */
+body.page-node-type-multi-column-page #block-doe-content .btn-info,
+body.page-node-type-multi-column-page #block-doe-content a.btn-info,
+body.page-node-type-multi-column-page #block-doe-content .btn-info:hover,
+body.page-node-type-multi-column-page #block-doe-content .btn-info:focus,
+body.page-node-type-multi-column-page #block-doe-content a.btn-info:hover,
+body.page-node-type-multi-column-page #block-doe-content a.btn-info:focus {
+  color: #fff !important;
+}
+
+/* AND THE LABEL SITS CENTRED IN THE NAVY, NOT IN THE WHOLE BUTTON.
+   Matt: "the text doesn't seem fully centered to the button." It is
+   not. The theme pads a .btn-info 16px on both sides; something in
+   this stylesheet takes the right side to 22px, which makes the
+   OUTER box symmetric once the 5px teal keyline is counted (21 left
+   against 22 right) and the INNER area lopsided (16 against 22).
+   The eye reads the inner one, because a keyline is a frame rather
+   than fill — it is an edge, so the measurement starts inside it.
+   Back to 16 and 16. The keyline then sits outside a label that is
+   centred in the navy it is written on, which is what it looks like
+   it should be doing. */
+body.page-node-type-multi-column-page #block-doe-content .btn-info {
+  padding-left: 16px;
+  padding-right: 16px;
 }

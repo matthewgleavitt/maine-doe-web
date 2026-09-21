@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-21-n  ·  Last edited: 2026-09-21
+ * Version: 2026-09-21-o  ·  Last edited: 2026-09-21
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -147,8 +147,25 @@ const FIXES = [
        and copy by hand.
        The domain must have a dot and a real top level for this to
        fire, so an @handle in running text is not mistaken for one. */
-    h = h.replace(/(^|[\s>(])([A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,})(?![^<]*<\/a>)(?!")/g,
-      (m, pre, addr) => { n++; return `${pre}<a href="mailto:${addr}">${addr}</a>`; });
+    /* INSIDE AN ANCHOR IS MEASURED, NOT GUESSED AT.
+       The guard used to be the lookahead (?![^<]*<\/a>), which reads
+       "there is no </a> between here and the next tag". That only
+       holds when the address is the anchor's ONLY content. Word paste
+       leaves it wrapped — <a ...><span><span>name@x.org</span></span></a>
+       — so the next tag is </span>, the lookahead finds no </a>, and
+       the rule fires INSIDE the link and wraps the address in a
+       second <a>. A browser cannot nest anchors, so it closes the
+       first one early and the row renders as two links: an empty one
+       and the real one, each drawing its own envelope.
+       That is Matt's "two envelope icons". The fix is to know where
+       the anchors actually are and leave their insides alone. */
+    const aSpans = [];
+    for (const m of h.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/gi)) aSpans.push([m.index, m.index + m[0].length]);
+    h = h.replace(/(^|[\s>(])([A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,})(?!")/g,
+      (m, pre, addr, at) => {
+        if (aSpans.some(([a, b]) => at >= a && at < b)) return m;
+        n++; return `${pre}<a href="mailto:${addr}">${addr}</a>`;
+      });
     return [h, n];
   }],
 
