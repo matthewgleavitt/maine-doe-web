@@ -103,12 +103,14 @@
   /* Trim card internals so the whole card fits comfortably in a ~460px iframe */
   html.carousel-mode .card .card-inner { padding: 14px 16px 14px !important; }
   html.carousel-mode .card .card-title { font-size: 15px !important; line-height: 1.25 !important; margin: 6px 0 8px !important; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
-  html.carousel-mode .card .card-desc { font-size: 12px !important; line-height: 1.45 !important; -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin: 6px 0 !important; }
+  html.carousel-mode .card .card-desc { font-size: 13.5px !important; line-height: 1.5 !important; -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin: 6px 0 !important; }
   html.carousel-mode .card .card-hr { margin: 6px 0 !important; }
   html.carousel-mode .card .card-chips { gap: 6px !important; }
   html.carousel-mode .card .card-banner { padding: 10px 14px !important; }
   html.carousel-mode .card .focus-strip { padding: 5px 14px !important; font-size: 10.5px !important; }
-  html.carousel-mode .card .card-foot { margin-top: 8px !important; }
+  /* Anchor card-foot (location + Register button) to bottom so all cards align even when descriptions differ in length. */
+  html.carousel-mode .card .card-inner { display: flex !important; flex-direction: column !important; }
+  html.carousel-mode .card .card-foot { margin-top: auto !important; padding-top: 12px !important; }
   /* Prev/next arrow buttons — injected by JS when in embed mode */
   html.carousel-mode .carousel-arrow {
     position: absolute;
@@ -129,9 +131,11 @@
     transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
   }
   html.carousel-mode .carousel-arrow:hover {
-    background: var(--warm-white, #eee6df);
+    background: var(--teal, #42c3f7);
+    border-color: var(--navy, #182b3c);
     transform: translateY(-50%) scale(1.06);
   }
+  html.carousel-mode .carousel-arrow:hover svg { stroke: var(--navy, #182b3c) !important; }
   html.carousel-mode .carousel-arrow:disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -396,7 +400,7 @@
     gap: 12px;
     padding: 12px 20px;
     background: var(--navy);
-    color: var(--warm-white);
+    color: #ffffff;
     font-family: var(--font-display);
     transition: all 0.18s;
     flex-wrap: wrap;
@@ -407,7 +411,7 @@
     font-size: 18px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--warm-white);
+    color: #ffffff;
   }
   .card-banner .b-date .pipe {
     display: inline-block;
@@ -432,7 +436,7 @@
     font-size: 12px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--warm-white);
+    color: #ffffff;
     line-height: 1;
   }
   .card-banner .b-time svg {
@@ -470,9 +474,9 @@
     transition: color 0.15s;
   }
   .card-desc {
-    font-size: 14px;
+    font-size: 15px;
     color: #1e2f42;
-    line-height: 1.5;
+    line-height: 1.55;
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -531,7 +535,7 @@
     padding: 10px 16px;
     border-radius: 6px;
     background: var(--navy);
-    color: var(--warm-white);
+    color: #ffffff;
     text-decoration: none;
     font-family: var(--font-display);
     font-weight: 700;
@@ -546,7 +550,7 @@
   }
   .btn-cta:hover { background: var(--cat-color, var(--teal-ink)); transform: translateX(2px); }
   .btn-cta svg { width: 12px; height: 12px; stroke: var(--teal); stroke-width: 2.4; fill: none; transition: stroke 0.15s; }
-  .btn-cta:hover svg { stroke: var(--warm-white); }
+  .btn-cta:hover svg { stroke: #ffffff; }
   .btn-cta.lg { padding: 14px 22px; font-size: 13px; letter-spacing: 0.1em; }
   .btn-cta.lg svg { width: 14px; height: 14px; }
 
