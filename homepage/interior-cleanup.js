@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-22-o  ·  Last edited: 2026-09-22 20:45
+ * Version: 2026-09-22-s  ·  Last edited: 2026-09-22 22:35
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -532,6 +532,58 @@ const FIXES = [
     return [h, n];
   }],
 
+  /* HARD SPACES USED AS A TAB KEY.
+     36 runs of three or more &nbsp; open a line on 8 pages, every one
+     of them somebody reaching for an indent the editor does not
+     offer. They are not spaces between words — they are layout, and
+     layout typed into the text does not move when the column does: on
+     a phone the eleven that indent the USDA address push the first
+     line into a wrap of its own while the lines under it stay put.
+     Whitespace only; no word moves. */
+  ['hard spaces used as an indent removed', (h) => {
+    let n = 0;
+    h = h.replace(/(<p\b[^>]*>|<br\s*\/?>)(\s*(?:&nbsp;\s*){3,})/gi,
+      (m, open) => { n++; return open + '\n'; });
+    /* And the same run inside the bold label itself — "(1)&nbsp; x6
+       mail:" is a number, a tab and a word. */
+    h = h.replace(/(<strong>\s*\(\d\))(?:&nbsp;|\s){2,}/gi, (m, lead) => { n++; return lead + ' '; });
+    /* A <strong> holding nothing but hard spaces is a tab with no
+       word after it — but it is still a gap between two words, and
+       deleting it outright closed one. /data-reporting/warehouse
+       writes "…Dashboard</strong>-<strong>&nbsp;</strong>Participating
+       schools…", and with the element gone the dash ran into the next
+       word. The bold comes off; one plain space stays. */
+    h = h.replace(/<strong>(?:&nbsp;|\s)+<\/strong>/gi, (m) => { n++; return ' '; });
+    return [h, n];
+  }],
+
+  /* A HAND-NUMBERED LABEL SPLIT FROM WHAT IT LABELS.
+     Matt, on /schools/nutrition/nondiscrimination: "can we format the
+     (1) mail, etc. / fax, etc. differently, just position it better."
+     The federal statement lists three ways to file, and the first two
+     are written as a bold label alone in a paragraph with the address
+     or the fax numbers in the next paragraph — so each way to file is
+     two blocks with a paragraph gap through the middle of it, and the
+     third is one block, because that one was typed differently.
+     THE PAGE ALREADY SHOWS THE ANSWER. The Spanish copy of the same
+     statement, further down the same page, writes all three as
+     "(1) correo:<br>" and the address under it. That shape is what
+     the English becomes: the number and the label stay exactly as
+     written, and the thing they label joins them.
+     The statement cannot be modified, and it is not — every
+     character of it survives, including the numbering. What changes
+     is which paragraph it sits in. */
+  ['numbered label joined to what it labels', (h) => {
+    let n = 0;
+    h = h.replace(/<p\b([^>]*)>\s*<strong>(\s*\(\d\)[^<]{1,40}?)\s*<\/strong>\s*<\/p>\s*<p\b[^>]*>([\s\S]*?)<\/p>/gi,
+      (m, attrs, label, body) => {
+        if (/<(?:div|ul|ol|table|h[1-6])\b/i.test(body)) return m;
+        n++;
+        return `<p${attrs}><strong>${label.trim()}</strong><br>\n${body.trim()}</p>`;
+      });
+    return [h, n];
+  }],
+
   /* A HARD SPACE LOOSE BETWEEN TWO BLOCKS.
      Matt, on /educators/nationalstandards: "after the bulleted list
      under eligibility there's a big gap." Measured: 58px where every
@@ -1019,6 +1071,103 @@ const FIXES = [
       const rebuilt = `<table class="${out}" width="100%"${rest.trimEnd() ? ' ' + rest.trim() : ''}>`;
       if (rebuilt === m) return m;
       n++; return rebuilt;
+    });
+    return [h, n];
+  }],
+
+  /* ZERO-WIDTH SPACES.
+     166 of them across 6 pages, all from Excel and Word, and every
+     one invisible. They do nothing on screen and a great deal to
+     anything matching on text: "Model\u200b" is not "Model", so a
+     rename by name misses, a column-width measurement counts a
+     character that is not there, and a search for the word fails.
+     There is no case where one is wanted. */
+  ['zero-width spaces removed', (h) => {
+    const n = (h.match(/[\u200B\u200C\u200D\uFEFF]/g) || []).length;
+    return [n ? h.replace(/[\u200B\u200C\u200D\uFEFF]/g, '') : h, n];
+  }],
+
+  /* A SPAN OF ONE IS NOT A SPAN.
+     241 cells across 14 pages carry colspan="1" or rowspan="1",
+     which is what Excel writes for every cell it did not merge. They
+     change nothing on screen and a great deal to anything reading
+     the table's shape: the column-width rule refuses any table with a
+     colspan in it, because a merged cell breaks the count — so four
+     no-op attributes in one body were enough to stop
+     /learning/earlychildhood/pkexpansiongrant/2021 sizing its columns
+     while the table beside it sized them fine. Matt: "make consistent
+     across the page." */
+  ['spans of one removed', (h) => {
+    const n = (h.match(/\s(?:col|row)span="?1"?/gi) || []).length;
+    return [n ? h.replace(/\s(?:col|row)span="?1"?/gi, '') : h, n];
+  }],
+
+  /* EXCEL'S COLUMN WIDTHS.
+     A <colgroup> of <col width="129"> is the spreadsheet's own layout
+     travelling with the paste. These tables are width="100%" and the
+     stylesheet sizes their columns from what is in them, so the
+     colgroup is a second opinion in pixels that wins: three tables on
+     the pre-K grants page came out 811, 937 and 670 wide in a column
+     that is 778, so two of them overflowed and none of them lined up
+     with each other.
+     5 of these on 3 pages. Nothing but the widths is in a colgroup,
+     so it comes out whole. */
+  ['excel column widths removed', (h) => {
+    let n = 0;
+    h = h.replace(/<colgroup\b[\s\S]*?<\/colgroup>/gi, () => { n++; return ''; });
+    return [h, n];
+  }],
+
+  /* AND THE ROW HEIGHTS IT PASTED WITH THEM.
+     134 table cells on 3 pages carry an inline height — height:58px
+     on a header cell, height:46px on the rows — which is the height
+     that cell had in the spreadsheet at the spreadsheet's font size.
+     Here it makes a header row three lines tall holding one line of
+     words. The stylesheet sets cell padding; the cell does not get to
+     set its own. */
+  ['table cells released from pasted heights', (h) => {
+    let n = 0;
+    h = h.replace(/(<t[dhr]\b[^>]*\sstyle=")([^"]*)"/gi, (m, open, style) => {
+      if (!/(?:^|;)\s*height\s*:/i.test(style)) return m;
+      n++;
+      const kept = style.replace(/(?:^|;)\s*height\s*:[^;]*/gi, '').replace(/^;+|;+$/g, '').trim();
+      return open + kept + '"';
+    });
+    return [h, n];
+  }],
+
+  /* A TITLE ROW IS A TITLE, NOT A ROW.
+     Matt, on /learning/earlychildhood/pkexpansiongrant/2021: "Round 1
+     looks good, but then the subsequent accordions look different."
+     Round 1's table is written the way the site writes tables — a
+     line above it saying which years it covers, then a header row.
+     Rounds 2 to 4 came out of Excel, and there the same line is the
+     first ROW of the table, spanning every column, with the real
+     header row beneath it.
+     Three things follow from that and all three are visible. The
+     table has no header row at all as far as a screen reader is
+     concerned, so every column is unlabelled. The row striping counts
+     the title as row one, so the stripes land one row out. And the
+     colspan stops the column-width rule working, which is why those
+     tables set their own widths and the first one does not.
+     The title moves above the table, in the shape Round 1 already
+     uses, and the rule below then finds the real header row where it
+     expects it. 4 of these, on 2 pages. */
+  ['title row lifted out of a table', (h) => {
+    let n = 0;
+    h = h.replace(/<table\b([^>]*)>([\s\S]*?)<\/table>/gi, (m, attrs, body) => {
+      if (/<th[\s>]/i.test(body)) return m;
+      const rows = [...body.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)];
+      if (rows.length < 3) return m;
+      const c1 = [...rows[0][1].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)];
+      const c2 = [...rows[1][1].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)];
+      if (!c1.length || c1.length >= c2.length) return m;
+      const words = c1.map(c => c[1].replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/\s+/g, ' ').trim())
+        .filter(Boolean);
+      if (words.length !== 1 || words[0].length > 90) return m;
+      n++;
+      const rest = body.replace(rows[0][0], '');
+      return `<p class="text-align-center"><strong>${words[0]}</strong></p>\n<table${attrs}>${rest}</table>`;
     });
     return [h, n];
   }],
@@ -3252,7 +3401,11 @@ function contentDiff(before, after) {
      Word tables stayed, the Word list bookkeeping stayed, the <h3>
      stayed locked in a table cell, and a page nobody had been able to
      improve looked exactly like a page nobody had tried to. */
-  const noPlaceholder = x => noBrackets(x).replace(/\uFFFC/g, '');
+  /* AND THE ZERO-WIDTH CHARACTERS GO WITH IT. U+200B and its
+     neighbours are invisible, do nothing on screen, and are read out
+     by nothing — but \s does not match them, so bare() leaves them in
+     and a page that only lost those reported a loss. */
+  const noPlaceholder = x => noBrackets(x).replace(/[\uFFFC\u200B\u200C\u200D\uFEFF]/g, '');
   if (noPlaceholder(a) === noPlaceholder(b)) return { spacingOnly: true };
   /* A PUNCTUATION MARK STANDING ON ITS OWN IS NOT A WORD.
      /LGBTQ/staff has <li><p>.</p></li> under PowerSchool — a bullet

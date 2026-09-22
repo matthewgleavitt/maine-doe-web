@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-ab  ·  Last edited: 2026-09-22 20:55
+ * Version: 2026-09-22-ad  ·  Last edited: 2026-09-22 22:20
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -3242,6 +3242,89 @@ function propose(node, audit, index, opts = {}) {
     }
   }
 
+  /* ── 3b-3. A COLUMN HEADING RENAMED BY HAND ──────────────────
+     { "thead": { "Funding FY 1": "Funding SY1" } }
+     Matt, on /learning/earlychildhood/pkexpansiongrant/2021: "in the
+     columns Funding SY1 Funding SY2… and then just make consistent
+     across the page." Four tables on that page label the same two
+     columns four different ways — Funding FY 1, Funding FY 2,
+     Funding FY2023-24, Funding FY2024-25, Funding 2025-26 — and two
+     of those name a fiscal year for a table whose own title says
+     school year. Matt: "This is using FY and School year, which are
+     two different rotations."
+     Matched on what the cell says and applied to every table on the
+     page, because a column that means the same thing in four tables
+     should be called the same thing in four tables. The words it
+     drops are declared, the same as any rename. */
+  if (opts.thead) {
+    for (const [from, to] of Object.entries(opts.thead)) {
+      const needle = String(from).replace(/\s+/g, ' ').trim().toLowerCase();
+      let n = 0;
+      html = html.replace(/<th\b([^>]*)>([\s\S]*?)<\/th>/gi, (m, attrs, inner) => {
+        if (strip(inner).replace(/\s+/g, ' ').trim().toLowerCase() !== needle) return m;
+        n++;
+        return `<th${attrs}>${to}</th>`;
+      });
+      if (!n) { notes.push(`Column heading skipped — none reads "${from}".`); continue; }
+      removedOnPurpose.push(String(from));
+      decisions.push({ id: 'thead:' + slug(String(from)).slice(0, 22), on: true,
+        label: 'Rename a column heading',
+        why: `"${from}" → "${to}", on ${n} table${n > 1 ? 's' : ''}. Named in overrides.json for this page.`,
+        value: to });
+    }
+  }
+
+  /* ── 3b-2. A BOLD LINE MADE A HEADING BY HAND ────────────────
+     { "boldhead": { "Eligible Position Titles:": "Eligible Position
+       Titles", "Salary Supplement Application Procedure": true } }
+
+     The rules that find these on their own only look inside cards.
+     Inside an accordion panel the same shape is left alone, because
+     out there a bold line on its own is as often a person's name or a
+     form label as it is a heading, and a panel is where the contact
+     blocks live. /educators/nationalstandards is a panel that really
+     is sectioned: eligibility, then who qualifies, then how to apply,
+     then how each kind of employer is paid — five labels set in bold
+     because bold is what the editor makes easy.
+     true keeps the words. A string renames as it promotes, which is
+     how "Eligibility requirements are as follows:" becomes
+     "Eligibility" — a heading names a section and does not introduce
+     it in a sentence, and the colon goes with the sentence. Every
+     rename is listed with both versions and the words it drops are
+     declared, the same as a heading rename.
+     EVERY OCCURRENCE, not the first. The two panels here open with
+     the same line, and naming it once should fix both. */
+  if (opts.boldhead) {
+    let n = 0;
+    for (const [from, to] of Object.entries(opts.boldhead)) {
+      const needle = String(from).replace(/\s+/g, ' ').trim().toLowerCase();
+      const before = html;
+      /* MATCHED ON THE WORDS, NOT ON THE MARKUP. Written as
+         <p><strong>…</strong></p> this missed "Method of Payment to a
+         Qualifying School Administrative Unit", because that one
+         arrives from Word as a <b> inside five nested spans and one
+         of them survives the strip — so the paragraph ends
+         </strong></span></p> and the pattern's own </p> never lands.
+         The test is what the line says and that it is set bold; what
+         it is wrapped in is exactly the thing being replaced. */
+      html = html.replace(/<p\b[^>]*>([\s\S]*?)<\/p>/gi, (m, inner) => {
+        const text = strip(inner).replace(/\s+/g, ' ').trim();
+        if (text.toLowerCase() !== needle) return m;
+        if (!/<(?:strong|b)\b/i.test(inner)) return m;
+        n++;
+        return `<h3>${to === true ? text : to}</h3>`;
+      });
+      if (html === before) { notes.push(`Heading skipped — no bold line reads "${from}".`); continue; }
+      if (to !== true) removedOnPurpose.push(String(from));
+      decisions.push({ id: 'boldhead:' + slug(String(from)).slice(0, 24), on: true,
+        label: 'Make a bold line a heading',
+        why: to === true
+          ? `"${from}" is a paragraph in bold type with the section it names underneath. Named in overrides.json for this page: it becomes an h3, so it is announced as a heading and takes the same treatment as the panel's other headings.`
+          : `"${from}" → "${to}", and a heading rather than a bold paragraph. A heading names a section; it does not introduce one in a sentence, so the sentence and its colon come off.`,
+        value: 'h3' });
+    }
+  }
+
   /* ── 3c. TEXT CHANGED BY HAND ───────────────────────────────── */
   /* The general form of the rename above: { "old": "new" } for any
      text on the page, applied literally and once each. This is the
@@ -5216,7 +5299,11 @@ function propose(node, audit, index, opts = {}) {
        used to be. The cleanup removes it and the cleanup's own check
        knows that is not a loss; this one has to know it too, or the
        block it sat in reads as a different block. */
-    .replace(/\uFFFC/g, '')
+    /* AND THE ZERO-WIDTH CHARACTERS, for the same reason. Excel and
+       Word leave U+200B inside cells and headings; \s does not match
+       it, so a block that lost nothing but those hashed differently
+       and six pages reported a loss. */
+    .replace(/[\uFFFC\u200B\u200C\u200D\uFEFF]/g, '')
     /* A FILE SIZE IS DELETED OUTRIGHT, not moved — see the rule of
        the same name in interior-cleanup.js. Both sides of this
        comparison have to forget it, or every block that carried a

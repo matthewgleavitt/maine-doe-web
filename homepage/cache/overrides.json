@@ -365,12 +365,48 @@
    "Salary Supplement",
    "Scholarship Fund"
   ],
-  "_why": "Matt, 22 Sep: each panel opens with a heading the panel title already gives, and another heading straight under it."
+  "_why": "Matt, 22 Sep: each panel opens with a heading the panel title already gives; the bold lines that section the salary and scholarship panels become h3.",
+  "boldhead": {
+   "Eligibility requirements are as follows:": "Eligibility",
+   "Eligible Position Titles:": "Eligible Position Titles",
+   "Salary Supplement Application Procedure": true,
+   "Method of Payment to a Qualifying School Administrative Unit": true,
+   "Method of Payment to Eligible National Board for Professional Teaching Standards Certified Teachers": true
+  }
  },
  "/learning/highered/forprofit": {
   "useDeck": false,
   "fullbtn": true,
   "_why": "Matt, 22 Sep: the 2026 update is a notice rather than a description, so it stays in the body with the renewal button under it, and every button runs the full width.",
   "liftbtn": true
+ },
+ "/schools/nutrition/nondiscrimination": {
+  "useDeck": false,
+  "_why": "Matt, 22 Sep: the intro belongs under Civil Rights Statements and Information, and the three ways to file are set the way the Spanish copy of the same statement already sets them."
+ },
+ "/learning/earlychildhood/pkexpansiongrant/2021": {
+  "boldhead": {
+   "FY 2022-24 School Year": "2022-2024 School Year",
+   "FY 2023-24 and 2024-25 School Years": "2023-2024 & 2024-2025 School Year",
+   "FY 2025-26 School Year": "2025-2026 School Year"
+  },
+  "thead": {
+   "Funding FY 1": "Funding SY1",
+   "Funding FY 2": "Funding SY2",
+   "Funding FY2023-24": "Funding SY1",
+   "Funding FY2024-25": "Funding SY2",
+   "Funding 2025-26": "Funding SY1"
+  },
+  "_why": "Matt, 22 Sep: the grant rounds are school years, not fiscal years; each table is titled by its years as an h3 and the funding columns are named the same way in all four."
+ },
+ "/lgbtq/student": {
+  "art": "/doe/sites/maine.gov.doe/files/inline-images/iStock-683554208.jpg",
+  "dropImage": [
+   "iStock-683554208"
+  ],
+  "replace": {
+   "Your Maine Department of Education Actively Supports LGBTQ+ Student Success!": "The Maine Department of Education actively supports LGBTQ+ student success!"
+  },
+  "_why": "Matt, 22 Sep: the collage becomes the banner photograph, and the callout reads as a sentence rather than a title."
  }
 }

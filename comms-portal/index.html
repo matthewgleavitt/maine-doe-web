@@ -321,43 +321,48 @@ function Portal(){
       }
     })();
 
-    // Moderation queue (Drupal proxied via Apps Script) — CDN-first
+    // Moderation queue (Drupal proxied via Apps Script) — CDN paint, then
+    // live revalidate so a page you just sent for review shows up.
     (async()=>{
-      const j=await fetchCdnOrLive('moderation');
-      if(!j) return;
-      const items=j.rows||(Array.isArray(j)?j:[]);
-      const parsed=items.map(item=>{
-        const titleMatch=(item.title||'').match(/>([^<]+)</);
-        const hrefMatch=(item.title||'').match(/href="([^"]+)"/);
-        const nameMatch=(item.name||'').match(/content="([^"]+)"/)||(item.name||'').match(/>([^<…]+)/);
-        const dateMatch=(item.changed||'').match(/title="([^"]+)"/);
-        return{
-          title:titleMatch?titleMatch[1].replace(/&amp;/g,'&'):item.title||'',
-          href:hrefMatch?'https://www.maine.gov'+hrefMatch[1].replace(/\/revisions\/\d+\/view/,'/edit'):'',
-          author:nameMatch?nameMatch[1]:'',
-          date:dateMatch?dateMatch[1]:'',
-          state:item.moderation_state||'',
-        };
-      });
-      setModQueue(parsed);
-      setQueueStatus(prev=>{
-        const next={...prev,website:{pending:parsed.length,total:parsed.length}};
-        try{sessionStorage.setItem('doe_portal_queue_status',JSON.stringify(next));}catch(e){}
-        return next;
-      });
+      const applyModeration=(j)=>{
+        if(!j) return;
+        const items=j.rows||(Array.isArray(j)?j:[]);
+        const parsed=items.map(item=>{
+          const titleMatch=(item.title||'').match(/>([^<]+)</);
+          const hrefMatch=(item.title||'').match(/href="([^"]+)"/);
+          const nameMatch=(item.name||'').match(/content="([^"]+)"/)||(item.name||'').match(/>([^<…]+)/);
+          const dateMatch=(item.changed||'').match(/title="([^"]+)"/);
+          return{
+            title:titleMatch?titleMatch[1].replace(/&amp;/g,'&'):item.title||'',
+            href:hrefMatch?'https://www.maine.gov'+hrefMatch[1].replace(/\/revisions\/\d+\/view/,'/edit'):'',
+            author:nameMatch?nameMatch[1]:'',
+            date:dateMatch?dateMatch[1]:'',
+            state:item.moderation_state||'',
+          };
+        });
+        setModQueue(parsed);
+        setQueueStatus(prev=>{
+          const next={...prev,website:{pending:parsed.length,total:parsed.length}};
+          try{sessionStorage.setItem('doe_portal_queue_status',JSON.stringify(next));}catch(e){}
+          return next;
+        });
+      };
+      applyModeration(await fetchCdnOrLive('moderation', applyModeration));
     })();
 
     // Web stats (page views, total pages, total files) — independent of the above
     (async()=>{
-      const j=await fetchCdnOrLive('web_stats');
-      if(!j) return;
-      const next={
-        pageViews:j.pageViews||'—',
-        totalPages:j.totalPages||'—',
-        totalFiles:j.totalFiles||'—',
+      const applyWebStats=(j)=>{
+        if(!j) return;
+        const next={
+          pageViews:j.pageViews||'—',
+          totalPages:j.totalPages||'—',
+          totalFiles:j.totalFiles||'—',
+        };
+        setWebStats(next);
+        try{sessionStorage.setItem('doe_portal_web_stats',JSON.stringify(next));}catch(e){}
       };
-      setWebStats(next);
-      try{sessionStorage.setItem('doe_portal_web_stats',JSON.stringify(next));}catch(e){}
+      applyWebStats(await fetchCdnOrLive('web_stats', applyWebStats));
     })();
   },[]);
 
