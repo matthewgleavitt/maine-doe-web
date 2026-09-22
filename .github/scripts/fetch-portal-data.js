@@ -30,6 +30,7 @@ const ENDPOINTS = [
   { type: 'youtube_stats',  ttl: 3600, desc: 'YouTube analytics' },
   { type: 'commons',        ttl: 900,  desc: 'Maine DOE Commons posts' },
   { type: 'store',          ttl: 900,  desc: 'Maine DOE Store catalog' },
+  { type: 'announcements',  ttl: 900,  desc: 'Portal notifications' },
 ];
 
 const DATA_DIR = path.join(process.cwd(), 'data');

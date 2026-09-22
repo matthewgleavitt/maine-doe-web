@@ -55,6 +55,26 @@ const ic={
 
 const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0',green:'#16a34a'};
 const API='https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA432dtGEN-UzmSDtzlaL7SEVxChnMOfl0Lgr2BEhg/exec';
+// Static CDN mirror — refreshed every 15 min by refresh-portal-data.yml.
+// Fetches in ~100ms vs 2-30s from Apps Script. Falls back to live if the
+// CDN payload is unreachable or older than CDN_STALE_MINUTES.
+const CDN_BASE='https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/';
+const CDN_STALE_MINUTES=30;
+async function fetchCdnOrLive(type){
+  try{
+    const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);
+    const r=await fetch(CDN_BASE+type+'.json',{signal:c.signal});
+    clearTimeout(t);
+    if(r.ok){
+      const d=await r.json();
+      const age=(Date.now()-new Date(d._fetched||0).getTime())/60000;
+      if(age<CDN_STALE_MINUTES){ console.log('['+type+'] CDN, age '+Math.round(age)+' min'); return d; }
+      console.warn('['+type+'] CDN stale ('+Math.round(age)+' min), falling back to live');
+    }
+  }catch(e){ console.warn('['+type+'] CDN failed, falling back to live:',e.message); }
+  const rr=await fetch(API+'?type='+type,{cache:'no-store'});
+  return rr.json();
+}
 const DRIVE_MAIN='https://drive.google.com/drive/folders/1i5Hp9HSxyya3sgVA4HSMmMosIYRCLlv1';
 const DRIVE_ENGINE='https://drive.google.com/drive/folders/1tVV6XLt33yNhfrgqqfxaW1bzH0Q9s6Dc';
 
@@ -449,7 +469,12 @@ function App(){
   async function loadYtStats(force){
     setYtStatsLoading(true); setYtStatsError(null);
     try{
-      const j=await fetchJson(API+'?type=youtube_stats'+(force?'&refresh=1':''));
+      // force=true (user clicked Refresh) → skip CDN, go live so freshly-
+      // computed analytics show. Otherwise CDN-first (100ms vs several
+      // seconds for the 610KB live payload).
+      const j = force
+        ? await fetchJson(API+'?type=youtube_stats&refresh=1')
+        : await fetchCdnOrLive('youtube_stats');
       if(j.error) setYtStatsError(j.error);
       else setYtStats(j);
     }catch(e){setYtStatsError('Could not reach the analytics endpoint.');}

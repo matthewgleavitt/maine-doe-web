@@ -64,6 +64,26 @@ const ic={
 
 const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0'};
 const API='https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA432dtGEN-UzmSDtzlaL7SEVxChnMOfl0Lgr2BEhg/exec';
+// Static CDN mirror — refreshed every 15 min by refresh-portal-data.yml.
+// Fetches in ~100ms vs 2-30s from Apps Script. Falls back to live if the
+// CDN payload is unreachable or older than CDN_STALE_MINUTES.
+const CDN_BASE='https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/';
+const CDN_STALE_MINUTES=30;
+async function fetchCdnOrLive(type){
+  try{
+    const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);
+    const r=await fetch(CDN_BASE+type+'.json',{signal:c.signal});
+    clearTimeout(t);
+    if(r.ok){
+      const d=await r.json();
+      const age=(Date.now()-new Date(d._fetched||0).getTime())/60000;
+      if(age<CDN_STALE_MINUTES){ console.log('['+type+'] CDN, age '+Math.round(age)+' min'); return d; }
+      console.warn('['+type+'] CDN stale ('+Math.round(age)+' min), falling back to live');
+    }
+  }catch(e){ console.warn('['+type+'] CDN failed, falling back to live:',e.message); }
+  const rr=await fetch(API+'?type='+type,{cache:'no-store'});
+  return rr.json();
+}
 
 const tabs=[
   {id:'about',label:'About',icon:ic.book},
@@ -127,21 +147,11 @@ function App(){
   const [storeError,setStoreError]=useState(null);
 
   useEffect(()=>{
-    // Retry-once + 25s AbortController — same shape as index.html so a cold
-    // Apps Script call doesn't leave Notifications empty when it eventually errors.
-    const attempt=async()=>{
-      const c=new AbortController();
-      const t=setTimeout(()=>c.abort(),25000);
-      try{ const r=await fetch(API+'?type=announcements',{signal:c.signal}); return await r.json(); }
-      finally{ clearTimeout(t); }
-    };
+    // CDN-first with live fallback (fetchCdnOrLive covers both paths).
     (async()=>{
       let j=null;
-      try{ j=await attempt(); }
-      catch(e){
-        await new Promise(r=>setTimeout(r,1200));
-        try{ j=await attempt(); }catch(e2){ console.warn('[welcome] announcements fetch failed:',e2.message); }
-      }
+      try{ j=await fetchCdnOrLive('announcements'); }
+      catch(e){ console.warn('[welcome] announcements fetch failed:',e.message); }
       if(j&&j.rows){
         setAnnouncements(j.rows);
         try{ sessionStorage.setItem('doe_welcome_announcements',JSON.stringify(j.rows)); }catch(e){}
@@ -155,23 +165,11 @@ function App(){
   // Script edge occasionally 404s cold; the second try + sessionStorage
   // rehydration keep the tab useful across those blips.
   useEffect(()=>{
-    const attempt=async()=>{
-      const c=new AbortController();
-      const t=setTimeout(()=>c.abort(),30000);
-      try{
-        const r=await fetch(API+'?type=store',{signal:c.signal,cache:'no-store'});
-        const text=await r.text();
-        if(text.trim().charAt(0)!=='{') throw new Error('non-JSON response');
-        return JSON.parse(text);
-      } finally { clearTimeout(t); }
-    };
+    // CDN-first with live fallback.
     (async()=>{
       let j=null;
-      try{ j=await attempt(); }
-      catch(e){
-        await new Promise(r=>setTimeout(r,1400));
-        try{ j=await attempt(); }catch(e2){ console.warn('[welcome] store fetch failed:',e2.message); setStoreError(e2.message||'fetch failed'); }
-      }
+      try{ j=await fetchCdnOrLive('store'); }
+      catch(e){ console.warn('[welcome] store fetch failed:',e.message); setStoreError(e.message||'fetch failed'); }
       if(j&&Array.isArray(j.categories)){
         setStoreData(j);
         setStoreError(j.error||null);
