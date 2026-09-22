@@ -3297,10 +3297,28 @@ function _nthWeekdayOfMonth(year, monthIdx, targetDow, ordinal) {
 function _parseSkips(exceptions) {
   var set = {};
   if (!exceptions) return set;
+  // Sheets auto-converts YYYY-MM-DD text into Date objects, so the cell can
+  // arrive as a Date, a comma-separated string of ISO dates, an ISO datetime
+  // (from JSON round-trips) or a locale-specific date toString like
+  // "Thu Sep 25 2026 00:00:00 GMT-0400". Normalize all of them to YYYY-MM-DD.
+  if (exceptions instanceof Date) {
+    set[_isoDate(exceptions)] = true;
+    return set;
+  }
   var items = String(exceptions).split(/[,\n]/);
   for (var i = 0; i < items.length; i++) {
-    var s = items[i].trim();
-    if (s) set[_isoDate(s)] = true;
+    var raw = items[i].trim();
+    if (!raw) continue;
+    var iso = _isoDate(raw);
+    if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+      set[iso] = true;
+      continue;
+    }
+    // Locale toString ("Thu Sep 25 2026…") — fall back to native Date parse.
+    var d = new Date(raw);
+    if (!isNaN(d.getTime())) {
+      set[_isoDate(d)] = true;
+    }
   }
   return set;
 }

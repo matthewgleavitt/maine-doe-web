@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-h  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-n  ·  Last edited: 2026-09-22
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -282,6 +282,153 @@ function propose(node, audit, index, opts = {}) {
   if (c.lost) return { html: node.body, notes: ['BLOCKED: cleanup would change text — not safe to propose'], decisions, blocked: true };
   html = c.html;
   const mechanical = c.log;
+
+  /* ── 1a-00. A LIST THAT WORD DREW INSTEAD OF MARKED UP ───────
+     Matt, on /data-reporting/Staff: the bulleted list under Staff
+     Certification wraps its second lines "BEFORE/Under the bullet,
+     vs in line with the text above it", and the one under Fields
+     From The Staff Assignment Screen has "in-progress with different
+     spacing than the rest". Both are the same defect, and neither is
+     a list.
+     The first is ONE paragraph with <br> between the items and a
+     literal • at the start of each. A <br> does not create a block,
+     so there is no indent to hang from: line two of an item returns
+     to the paragraph's own left edge, under the bullet, while the
+     numbered list directly beneath it — a real <ol> — hangs
+     correctly. That contrast is what Matt is pointing at.
+     The second is a RUN of separate paragraphs, each opening with
+     Word's <!--[if !supportLists]-->• and six non-breaking spaces —
+     except In-Progress, which Word wrote as "*" with three. The
+     bullets are characters, so the gap after them is whatever
+     whitespace the author happened to type, and it differs item by
+     item. There is no spacing rule to correct because there is no
+     list to apply one to.
+     So the list becomes a list. Nothing is reworded: the bullet
+     glyph, the padding spaces and Word's conditional comments are
+     the drawing, not the text, and what is left is what the author
+     typed. A screen reader announces five items where it announced
+     one paragraph, the indent hangs because <li> is a block, and the
+     spacing comes from the stylesheet for every item equally.
+     A STRAY "*" IS ONLY A BULLET IN COMPANY. An asterisk opening a
+     paragraph is as often a footnote, so it counts only inside a run
+     that already holds an unmistakable bullet — which is exactly how
+     In-Progress earns its place in this one. */
+  if (opts.fakelist !== false) {
+    const GLYPH = '[\\u2022\\u25aa\\u25e6\\u00b7\\u2023\\u2043]';
+    const LEAD  = new RegExp('^(?:\\s|&nbsp;)*(' + GLYPH + '|\\*|o)(?:\\s|&nbsp;)+', 'i');
+    const strong = new RegExp(GLYPH);
+    /* WORD'S CONDITIONAL COMMENTS GO FIRST, and the order is the
+       reason. Word writes the bullet as
+       <!--[if !supportLists]-->•&nbsp;&nbsp;… <!--[endif]-->text —
+       the closing comment sits AFTER the padding spaces, not around
+       the glyph — so any pattern that reads the comment as part of
+       the bullet misses every one of them. They are markup for a
+       browser that has not shipped since 2011; taking them out
+       leaves the character and the spaces, which is all the rest of
+       this rule needs to see. */
+    html = html.replace(/<!--\[(?:if !supportLists|endif)\]-->/gi, '');
+    const item = s => s.replace(LEAD, '').trim();
+    let runs = 0, items = 0;
+
+    /* (i) one paragraph, <br> between the items */
+    html = html.replace(/<p\b([^>]*)>([\s\S]*?)<\/p>/gi, (m, attrs, inner) => {
+      const parts = inner.split(/<br\s*\/?>/i);
+      const hit = parts.map(s => LEAD.test(s));
+      const firstHit = hit.indexOf(true);
+      if (firstHit < 0 || hit.slice(firstHit).filter(Boolean).length < 2) return m;
+      if (!hit.some((h, i) => h && strong.test(parts[i]))) return m;
+      if (hit.slice(firstHit).some(h => !h)) return m;          // the bullets must run to the end
+      const head = parts.slice(0, firstHit).join('<br />').trim();
+      const lis = parts.slice(firstHit).map(item).filter(Boolean);
+      if (lis.length < 2) return m;
+      runs++; items += lis.length;
+      return (head ? `<p${attrs}>${head}</p>\n` : '')
+        + '<ul>\n' + lis.map(t => `<li>${t}</li>`).join('\n') + '\n</ul>';
+    });
+
+    /* (ii) a run of sibling paragraphs, one bullet each.
+       THE RUN IS BUILT INTO THE PATTERN rather than tested after it.
+       Matching "two or more consecutive paragraphs" and then checking
+       that all of them are bullets finds the longest run of
+       paragraphs on the page — nearly always one that starts in
+       ordinary prose — so the test fails and nothing ever fires. The
+       bullet has to be part of what the regex is looking for. */
+    const PB = '<p\\b[^>]*>(?:\\s|&nbsp;)*(?:' + GLYPH + '|\\*|o)(?:\\s|&nbsp;)+[\\s\\S]*?<\\/p>[ \\t\\r\\n]*';
+    html = html.replace(new RegExp('(?:' + PB + '){2,}', 'gi'), (block) => {
+      const ps = [...block.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)];
+      if (!ps.some(p => strong.test(p[1]))) return block;
+      const lis = ps.map(p => item(p[1])).filter(Boolean);
+      if (lis.length < 2) return block;
+      runs++; items += lis.length;
+      return '<ul>\n' + lis.map(t => `<li>${t}</li>`).join('\n') + '\n</ul>\n';
+    });
+
+    if (runs) decisions.push({ id: 'fakelist', on: true, label: 'Let a drawn list be a real one',
+      why: `${items} bullet${items > 1 ? 's are' : ' is'} typed as characters rather than marked up as a list — a • or a * at the start of a line, with the indent made of non-breaking spaces. Nothing holds them together, so a screen reader reads them as running text, the gap after each bullet is whatever was typed and differs item to item, and a line that wraps returns to the far left instead of hanging under the text above it. They become ${runs > 1 ? runs + ' lists' : 'a list'}. The bullet characters and the padding spaces were the drawing; every word the author wrote is kept.`,
+      value: items + ' bullet' + (items > 1 ? 's' : '') });
+  }
+
+  /* ── 1a-01. A BOLD LINE DOING A HEADING'S JOB IN A PANEL ─────
+     Matt, on /schoolsupports/communityschools/info: "under What are
+     the Requirements, can those bolded semi-headers be H3's like we
+     just used in the staff data page."
+     They are headings. "Establishment of a community school",
+     "Audit", "Plan", "Evaluation" each name a part of the panel and
+     each is followed by the paragraph it introduces — written as
+     <strong> and a line break because that is what the editor makes
+     easy. Set that way they are announced as nothing, they take no
+     level, and the panel reads as one long run of prose with some
+     bold in it.
+     As h3 they take the panel sub-heading treatment, which is the
+     teal edge and the rule running off to the right, and they sit at
+     the level the panel's other headings sit at. Nothing else about
+     them changes and not one word moves.
+     NAMED PAGE BY PAGE, NEVER INFERRED. Matt: "this is JUST for
+     this page, no rules." He is right to hold it there. The shape is
+     common — 363 paragraphs on 269 pages open with a bold line and a
+     break — and out on the page almost every one is a contact block:
+     "Susan Berry", then a title, a phone number and an address.
+     Inside panels it is 19, and 6 of those are the ESEA team written
+     the same way. A test can separate them today; what it cannot do
+     is tell a section from a person on a page nobody has looked at,
+     and the cost of being wrong is six staff turned into six
+     sections.
+     So this does nothing unless overrides.json asks for it. The two
+     guards below stay anyway, because they are cheap and because the
+     page naming it may still hold a contact block: it runs only
+     inside an accordion panel, and it refuses any paragraph whose
+     body carries an email or a phone number.
+     THE BLANK LINE IS A PARAGRAPH BREAK, taken first. The author
+     separated these with <br>&nbsp;<br> rather than by closing the
+     paragraph, so "Establishment of a community school" and
+     "Community school plan goals" arrive as one block with the
+     second label stranded in the middle of it. Splitting on the
+     blank line is what the author drew; it costs nothing where there
+     is no blank line to find. */
+  if (opts.panelhead) {
+    let n = 0, first = null;
+    html = html.replace(/<dd\b[^>]*>[\s\S]*?<\/dd>/gi, (panel) => {
+      let out = panel.replace(/<p\b([^>]*)>([\s\S]*?)<\/p>/gi, (m, attrs, inner) => {
+        const parts = inner.split(/<br\s*\/?>(?:\s|&nbsp;)*<br\s*\/?>/i)
+          .map(t => t.replace(/^(?:\s|&nbsp;)+|(?:\s|&nbsp;)+$/g, '')).filter(t => strip(t));
+        if (parts.length < 2) return m;
+        return parts.map(t => `<p${attrs}>${t}</p>`).join('\n');
+      });
+      out = out.replace(/<p\b([^>]*)>\s*<strong>([^<>]{3,70})<\/strong>\s*<br\s*\/?>([\s\S]*?)<\/p>/gi,
+        (m, attrs, label, rest) => {
+          const L = strip(label), R = strip(rest);
+          if (!L || R.length < 40) return m;
+          if (/mailto:|@/.test(rest)) return m;              /* a person */
+          if (/\(?\d{3}\)?[-. ]\s*\d{3}[-. ]\d{4}/.test(R)) return m;
+          n++; if (!first) first = L.slice(0, 44);
+          return `<h3>${label.trim()}</h3>\n<p${attrs}>${rest.replace(/^\s+/, '')}</p>`;
+        });
+      return out;
+    });
+    if (n) decisions.push({ id: 'panelhead', on: true, label: 'Let a bold line inside a panel be the heading it is',
+      why: `${n} line${n > 1 ? 's inside the accordion panels are' : ' inside an accordion panel is'} set in bold with a line break under it and the paragraph it introduces below that — "${first}" is one. That is a heading written the way an editor makes easy, and set that way it carries no level, so a screen reader announces a wall of prose with some bold in it and the panel offers nothing to scan by. Each becomes an h3 and takes the same sub-heading treatment as the other headings in the panel. A paragraph whose body holds an email or a phone number is left alone, because that is a person's contact details rather than a section. Not a word changes.`,
+      value: n + ' heading' + (n > 1 ? 's' : '') });
+  }
 
   /* ── 1a-0. A SECTION THE PAGE'S OWNER HAS ASKED TO REMOVE ────
      The only step here that deletes words, and the only one that can
@@ -1333,6 +1480,24 @@ function propose(node, audit, index, opts = {}) {
           let label = BY_EXT[ext.toLowerCase()] || '';
           if (!label && /(?:\/\/|\.)(?:youtube\.com|youtu\.be)\b/i.test(href)) label = 'Video';
           if (!label) return am;
+          /* PDF IS THE DEFAULT, AND A MARK ON THE DEFAULT MARKS
+             NOTHING. 9,125 of the 10,844 tags on the site read PDF —
+             84% of them — so on most pages the tag appeared beside
+             almost every link and told a reader only that this was a
+             list of documents, which the list had already told them.
+             /learning/earlychildhood/1stgradeforme/unit2 is the
+             extreme: 419 tags on 432 links.
+             Matt: "PDF is the standard... only when it's not a PDF."
+             That is the right way round. Marking the exception is
+             what a mark is for. What survives — Word, Excel,
+             PowerPoint, Video — now means something specific: this
+             one will not open the way the others do. About 1,700 tags
+             remain of 10,844.
+             PLACED BEFORE THE TEXT IS TOUCHED, because the branch
+             below MOVES an author's own trailing "(PDF)" into the tag
+             rather than inventing one. Skipping late would take the
+             word out of the title and then decline to put it back. */
+          if (label === 'PDF') return am;
           const t = text.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
           if (!t) return am;                            // an image link has no name to tag
 
@@ -1367,6 +1532,20 @@ function propose(node, audit, index, opts = {}) {
              to "YouTube" is a link with no name, so it keeps both. */
           let inner = text, chipped = false;
           for (const w of FORMAT_WORDS) {
+            /* "YOUTUBE" AT THE END OF A TITLE IS PART OF THE TITLE.
+               Matt: "the YouTube thing is only for the chips, the
+               word YouTube in general should not be replaced."
+               The branch below lifts a trailing format word out of
+               a link and makes it the tag — right for "Equitable
+               Services Training Video", wrong for "Computer Science
+               on YouTube", which came out reading "Computer Science
+               on" with a Video tag after it. A platform name is a
+               place, and a place can be the subject of a sentence;
+               a format cannot. So it converts only where the author
+               bracketed it — "Recording (YouTube)" still becomes a
+               Video tag — and never where it is simply the last
+               word of what the link is called. */
+            if (/^youtube$/i.test(w)) continue;
             if (canonKey(w) !== canonKey(label)) continue;
             const tail = new RegExp('(?:\\s|&nbsp;)+' + w.replace(/ /g, '(?:\\s|&nbsp;)+') + '(?:\\s|&nbsp;)*$', 'i');
             if (!tail.test(inner)) continue;
@@ -1837,6 +2016,52 @@ function propose(node, audit, index, opts = {}) {
       value: n + ' item' + (n > 1 ? 's' : '') });
   }
 
+  /* (d1) THE SAME SHAPE WRITTEN AS A PARAGRAPH.
+     Two sibling panels on /data-reporting/Staff. One holds a
+     paragraph that is only a link, so it came out a standing link
+     with a chevron. The next holds "Designating and Editing District
+     Roles - Updating Contact Information for Staff" — the same
+     object, a link and what it covers — and because of the trailing
+     text it failed the "the link is the point of this" test and got
+     nothing at all. A chevroned link above a bare one, and the bare
+     one is the row that still has a dash in it.
+     That is .doe-item exactly: a link that leads and a description
+     that follows. It was only ever applied to <li>, so the identical
+     sentence got the treatment in a list and nothing in a paragraph.
+     46 paragraphs on 25 pages.
+     TIGHTER THAN THE LIST RULE, because a paragraph is where prose
+     lives and a list item is not. Three things are required, all
+     three: exactly one link, the paragraph opens with it, and a
+     separator follows it. The list rule also takes an unseparated
+     item on length alone — 30 characters after the link — and that
+     test cannot tell a description from a sentence that happens to
+     start with a link, which in a paragraph is the common case. No
+     separator, no mark. */
+  if (opts.pitems !== false) {
+    let n = 0;
+    html = html.replace(/<p(?![^>]*class=)([^>]*)>((?:(?!<\/p>)[\s\S])*?)<\/p>/gi, (m, attrs, inner) => {
+      if ((inner.match(/<a\b/gi) || []).length !== 1) return m;
+      const lead = inner.match(/^\s*(?:<strong>\s*)?(<a\b[^>]*>[\s\S]*?<\/a>)/i);
+      if (!lead) return m;
+      if (/\bbtn\b/.test(lead[1])) return m;
+      const at = inner.indexOf(lead[1]) + lead[1].length;
+      const after = inner.slice(at);
+      const CHIP = /<span class="doe-chip"[^>]*>[^<]*<\/span>/gi;
+      const bare = after.replace(CHIP, '');
+      const sep = bare.match(/^((?:<\/strong>)?)(?:\s|&nbsp;)*([-–—]+)(?:\s|&nbsp;)+/i);
+      if (!sep) return m;
+      if (strip(bare).length < 8) return m;
+      inner = inner.slice(0, at) + after.replace(
+        /^((?:<\/strong>)?)((?:\s|&nbsp;)*(?:<span class="doe-chip"[^>]*>[^<]*<\/span>)?)(?:\s|&nbsp;)*[-–—]+(?:\s|&nbsp;)+/i,
+        '$1$2 ');
+      n++;
+      return `<p class="doe-item"${attrs}>${inner}</p>`;
+    });
+    if (n) decisions.push({ id: 'pitems', on: true, label: 'Set a link apart from its description in a paragraph',
+      why: `${n} paragraph${n > 1 ? 's open' : ' opens'} with a link and then describe it, separated by a dash — the same shape the list items above use, written as a paragraph, and until now it was the one place that got no treatment at all. The link takes the display face and a chevron, the description sits under it at body size, and the dash goes because the treatment has taken over its job. No word changes.`,
+      value: n + ' paragraph' + (n > 1 ? 's' : '') });
+  }
+
   /* (d2) THE ONE ROW IN THE LIST THAT IS NOT A LINK.
      On /learning/mathpathways four resources are links with a
      description and the fifth — "The Case for Math Pathways (White
@@ -1906,7 +2131,7 @@ function propose(node, audit, index, opts = {}) {
      list can be found by scanning. Bold including the colon, which
      is how the contact block already sets a label. */
   if (opts.leadcolon !== false) {
-    let bolded = 0, quiet = 0, moved = 0;
+    let bolded = 0, quiet = 0, moved = 0, evenedOut = 0;
     html = html.replace(/<li\b([^>]*)>((?:(?!<\/li>)[\s\S])*)<\/li>/gi, (m, attrs, inner) => {
       let s = inner, changed = false;
 
@@ -1948,13 +2173,79 @@ function propose(node, audit, index, opts = {}) {
       return changed ? `<li${attrs}>${s}</li>` : m;
     });
 
+    /* AND THEN THE LIST IS MADE TO AGREE WITH ITSELF.
+       The floor above is right on its own terms — a row with three
+       words after the colon is a label, not a definition — but it is
+       measured one row at a time, and a reader sees the list. Under
+       Fields From The Staff Assignment Screen on /data-reporting/Staff
+       the five status values run Active, Inactive, In-Progress,
+       Pending, Ended. Four are bold. "Ended: The assignment has been
+       ended" is 29 characters past its colon, six short of the floor,
+       so it alone is set in body weight — and which row that happens
+       to be is decided by how long the author's sentence ran.
+       That is the same fault the item rule records against itself:
+       three sibling rows measured 27, 36 and 25, and only the middle
+       one was marked. A threshold applied row by row inside a set of
+       rows produces an inconsistency the reader reads as a mistake,
+       because it is one.
+       So the floor decides whether a LIST is a list of terms, and the
+       list then carries every row. A clear majority has to qualify on
+       its own before the rest follow — three of five is not a list of
+       terms with two exceptions, it is a mixed list and it is left
+       alone. The shape is still required of every row that gets the
+       weight: the same colon, the same word count, the same refusal
+       of a leading digit. Only the length floor is lifted, and only
+       for rows sitting among rows that cleared it. */
+    {
+      const directLis = (body) => {
+        const out = []; let d = 0, start = -1;
+        const re = /<(\/?)(ul|ol|li)\b[^>]*>/gi; let m;
+        while ((m = re.exec(body))) {
+          const close = m[1] === '/', tag = m[2].toLowerCase();
+          if (tag === 'li' && !close && d === 0) { if (start < 0) start = m.index; }
+          else if (tag === 'li' && close && d === 0) { if (start >= 0) { out.push([start, m.index + m[0].length]); start = -1; } }
+          else if (tag !== 'li') { d += close ? -1 : 1; }
+        }
+        return out;
+      };
+      const BOLDED = /^<li\b[^>]*>(?:\s|&nbsp;)*<strong>[^<>]{2,60}:<\/strong>/i;
+      let evened = 0;
+      html = html.replace(/<(ul|ol)\b[^>]*>([\s\S]*?)<\/\1>/gi, (list) => {
+        const inner = list.replace(/^<(?:ul|ol)\b[^>]*>/i, '');
+        const off = list.length - inner.length;
+        const spans = directLis(inner);
+        if (spans.length < 3) return list;
+        const rows = spans.map(([a, b]) => inner.slice(a, b));
+        const done = rows.filter(r => BOLDED.test(r)).length;
+        if (!done || done === rows.length) return list;
+        if (done < rows.length * 0.6) return list;
+        let out = list, delta = 0;
+        for (let i = 0; i < rows.length; i++) {
+          if (BOLDED.test(rows[i])) continue;
+          const r = rows[i];
+          const head = r.match(/^(<li\b[^>]*>)((?:\s|&nbsp;)*)([^<>:]{2,60}):((?:\s|&nbsp;)+)(?=\S)/);
+          if (!head) continue;
+          const t = head[3].trim();
+          if (/\d$/.test(t) || t.split(/\s+/).length > 8) continue;
+          const rebuilt = head[1] + head[2] + '<strong>' + t + ':</strong>' + head[4] + r.slice(head[0].length);
+          const at = off + spans[i][0] + delta;
+          out = out.slice(0, at) + rebuilt + out.slice(at + r.length);
+          delta += rebuilt.length - r.length;
+          evened++; bolded++;
+        }
+        return out;
+      });
+      if (evened) evenedOut = evened;
+    }
+
     const bits = [];
-    if (bolded) bits.push(bolded + ' leader' + (bolded > 1 ? 's' : '') + ' bolded');
+    if (bolded) bits.push(bolded + ' leader' + (bolded > 1 ? 's' : '') + ' bolded'
+      + (evenedOut ? ' (' + evenedOut + ' to match ' + (evenedOut > 1 ? 'their lists' : 'its list') + ')' : ''));
     if (quiet) bits.push(quiet + ' chevron' + (quiet > 1 ? 's' : '') + ' dropped');
     if (moved) bits.push(moved + ' tag' + (moved > 1 ? 's' : '') + ' moved');
     if (bits.length) {
       decisions.push({ id: 'leadcolon', on: true, label: 'Let a colon do its own work',
-        why: `A colon marks the words before it as a term and the words after it as what the term means. ${bolded ? `Here ${bolded} list item${bolded > 1 ? 's open' : ' opens'} with a term set in the same weight as its own explanation, so the list cannot be scanned. ` : ''}${quiet ? `${quiet} link${quiet > 1 ? 's sit' : ' sits'} immediately in front of a colon, where the chevron lands between the term and the punctuation that belongs to it. ` : ''}${moved ? `${moved} format tag${moved > 1 ? 's stand' : ' stands'} between a title and its description and move${moved > 1 ? '' : 's'} to the end of the row. ` : ''}No word changes and nothing is removed.`,
+        why: `A colon marks the words before it as a term and the words after it as what the term means. ${bolded ? `Here ${bolded} list item${bolded > 1 ? 's open' : ' opens'} with a term set in the same weight as its own explanation, so the list cannot be scanned. ` : ''}${evenedOut ? `${evenedOut} of them clear the shape but not the length floor, and sit in lists where the other rows do — a row left in body weight because the sentence after its colon ran short reads as a mistake in the list, so a list that is mostly terms carries all of its rows. ` : ''}${quiet ? `${quiet} link${quiet > 1 ? 's sit' : ' sits'} immediately in front of a colon, where the chevron lands between the term and the punctuation that belongs to it. ` : ''}${moved ? `${moved} format tag${moved > 1 ? 's stand' : ' stands'} between a title and its description and move${moved > 1 ? '' : 's'} to the end of the row. ` : ''}No word changes and nothing is removed.`,
         value: bits.join(', ') });
     }
   }
@@ -2232,9 +2523,27 @@ function propose(node, audit, index, opts = {}) {
   if (opts.notice !== false) {
     let n = 0;
     const NOTICE = /^(please\s+note|note|important|important\s+note|attention|notice|please\s+read|reminder)[:!.]?$/i;
+    /* AND A SECTION MATT HAS NAMED AS A NOTE, page by page.
+       The test above catches a heading that says "please note" in so
+       many words. It cannot catch one that IS a note without saying
+       so: /data-reporting/Staff opens with "All Webinars are
+       presented on Tuesdays/Thursdays at Noon", which names no part
+       of the page — it is a standing fact about when the webinars
+       run, written as a heading because a heading is the biggest
+       thing in the editor. Set as a section it took a full navy bar,
+       a number, and a place in the contents list, with nothing under
+       it, because the paragraph that belonged to it had been lifted
+       into the banner.
+       Matt: "that's not a title, it's just a note."
+       Judging that from the words alone is not something a pattern
+       can do, so it is not attempted. The page's owner names the
+       heading in overrides.json and it takes the same path the
+       explicit notices take, paragraphs and all. */
+    const named = [].concat(opts.noteSection || []).map(s => String(s).toLowerCase());
     html = html.replace(/<div[^>]*class="(?:[^"]*\s)?blockhead(?:\s[^"]*)?"[^>]*>\s*<h2([^>]*)>([\s\S]*?)<\/h2>\s*<\/div>([\s\S]*?)(?=<div[^>]*class="(?:[^"]*\s)?(?:blockhead|doe-sub|contact-cube)|<table|$)/gi,
       (m, hAttrs, head, rest) => {
-        if (!NOTICE.test(strip(head))) return m;
+        const ht = strip(head).toLowerCase();
+        if (!NOTICE.test(strip(head)) && !named.some(k => ht.startsWith(k))) return m;
         /* WHERE THE NOTICE ENDS IS THE AUTHOR'S OWN MARK.
            On /learning/highered/transcripts the two paragraphs of the
            notice are centred and the page's body text that follows is
@@ -3197,14 +3506,40 @@ function propose(node, audit, index, opts = {}) {
      drop out of the contents list, which was numbering tab panels as
      though a reader could scroll to them. */
   if (opts.paneldepth !== false) {
-    let n = 0, first = null;
+    let n = 0, first = null, acc = 0;
     html = html.replace(/<div[^>]*class="(?:[^"]*\s)?tab-content(?:\s[^"]*)?"[^>]*>[\s\S]*?(?=<div[^>]*class="(?:[^"]*\s)?tab-content|$)/gi,
       (panel) => panel.replace(/<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi, (m, attrs, inner) => {
         n++; if (!first) first = strip(inner).slice(0, 44);
         return `<h3${attrs}>${inner}</h3>`;
       }));
-    if (n) decisions.push({ id: 'paneldepth', on: true, label: 'Hold a tab panel\'s headings below the tabs',
-      why: `${n} heading${n > 1 ? 's inside the tab panels are' : ' inside a tab panel is'} set at h2, the level this page uses for its own sections — so "${first}" was drawn as a full section bar and counted into the contents list, while the sub-headings beneath it took the quiet rule. Pressing a tab is how a reader chooses a section, so what is inside one belongs to that section rather than sitting beside it. Not a word changes.`,
+    /* AN ACCORDION PANEL IS THE SAME ARGUMENT AS A TAB PANEL.
+       Matt: "An H2 should never be in an accordion — Fields from the
+       staff personal screen should be an h3."
+       The reasoning that holds for tabs holds here without a word
+       changed: opening a panel is how a reader chooses a section, so
+       what is inside one is a part of that section rather than a peer
+       of it. On /data-reporting/Staff the effect was worse than a
+       wrong size. Both of these h2 were wrapped as full section bars
+       INSIDE the collapsed "NEO Staff Field Definitions" panel, and
+       the contents list — built further down from exactly those
+       wrappers — offered them as two of the page's six places to go.
+       Clicking either jumped to a heading nobody could see, because
+       the panel holding it was shut.
+       The bar goes with the level. A blockhead is the page's own
+       section mark, and a section of the page cannot be inside a
+       panel; what is left is the heading itself, which the panel
+       rules then set like every other heading in a panel. That is
+       also what drops it out of the contents list, since the list is
+       read from the blockheads that survive to the end.
+       7 headings on 3 pages. */
+    html = html.replace(/<dd\b[^>]*>[\s\S]*?<\/dd>/gi, (panel) =>
+      panel
+        .replace(/<div[^>]*class="(?:[^"]*\s)?blockhead(?:\s[^"]*)?"[^>]*>\s*<h2\b[^>]*>([\s\S]*?)<\/h2>\s*<\/div>/gi,
+          (m, inner) => { n++; acc++; if (!first) first = strip(inner).slice(0, 44); return `<h3>${inner}</h3>`; })
+        .replace(/<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi,
+          (m, attrs, inner) => { n++; acc++; if (!first) first = strip(inner).slice(0, 44); return `<h3${attrs}>${inner}</h3>`; }));
+    if (n) decisions.push({ id: 'paneldepth', on: true, label: acc && acc === n ? 'Hold an accordion panel\'s headings below the panel' : 'Hold a panel\'s headings below the control that opens it',
+      why: `${n} heading${n > 1 ? 's inside the panels are' : ' inside a panel is'} set at h2, the level this page uses for its own sections — so "${first}" was drawn as a full section bar and counted into the contents list, while the sub-headings beneath it took the quiet rule.${acc ? ' A section offered in the contents list but sealed inside a closed panel is somewhere a reader cannot get to.' : ''} Choosing a panel is how a reader reaches a section, so what is inside one belongs to that section rather than sitting beside it. Not a word changes.`,
       value: n + ' heading' + (n > 1 ? 's' : '') });
   }
 
@@ -4210,6 +4545,20 @@ function propose(node, audit, index, opts = {}) {
      stands alone. A hyphen inside K-12 and an unspaced em dash in
      prose both still have to survive. */
   const normKey = t => t
+    /* A BULLET GLYPH AT THE FRONT OF A BLOCK IS A DRAWING, NOT A
+       WORD, and the same argument as the dash below applies with no
+       change: when a list is typed rather than marked up, the • or
+       the * is the author reaching for the look of a list, and the
+       rule that turns it into a real <li> takes the glyph out along
+       with the non-breaking spaces padding it. The words are
+       untouched, but the key was not — "*in-progress: the assignment
+       has been set to…" and "in-progress: the assignment has been
+       set to…" are the same sentence and hashed differently, so all
+       eight bullets on /data-reporting/Staff read as lost and the
+       page was refused whole.
+       Leading only. A * in the middle of a line is a footnote mark
+       and belongs to the text. */
+    .replace(/^(?:\s|&nbsp;)*[•▪◦·‣⁃*](?:\s|&nbsp;)+/, ' ')
     /* A DASH AT THE EDGE OF A BLOCK IS PUNCTUATION TOO. The rule
        below needs air on both sides, which is right in the middle of
        a line — "K-12" must survive — but a block that opens or closes
@@ -4240,6 +4589,24 @@ function propose(node, audit, index, opts = {}) {
     /* A CHIP IS SET IN ONE CASE — "pdf" and "PDF" become the same
        chip — so a format word is compared without its capitals. */
     .replace(new RegExp('(?:' + FORMAT_ALT + ')(?![a-z])', 'gi'), (m) => canonKey(m))
+    /* AND A PDF LABEL IS GONE, NOT MOVED. The mirror of the rule of
+       the same name in interior-cleanup.js: a hand-typed "(PDF)" is
+       deleted rather than turned into a tag, so both sides of this
+       comparison have to forget it or 42 pages report losing a word
+       that was removed on purpose.
+       After the canonical pass above, so every spelling is already
+       the one token "pdf", and bounded so "webpdf" and "printpdf"
+       survive — an author used those to tell two versions of one
+       document apart and they are still tagged. */
+    /* THE SEPARATOR IS NOT PART OF IT. An earlier version also ate
+       a comma or a dash in front of the label, which made this side
+       of the comparison lose punctuation the page keeps:
+       "…Guide,</a> PDF, 375KB" leaves the comma inside the link text
+       and only " PDF" is removed, so eating it here reported a loss
+       that had not happened. A dash before a format word is already
+       taken off both sides by the rule above; nothing removes a
+       comma, so nothing here may pretend it did. */
+    .replace(/(?:\s|&nbsp;)*\bpdf\b/g, '')
     .replace(/\s/g, '').replace(/[[\]]/g, '')
     /* THE LAST TWO NORMALISATIONS LIVE HERE TOO, and leaving them
        outside was the same fault this function was created to fix.

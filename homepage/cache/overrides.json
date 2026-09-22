@@ -81,7 +81,9 @@
         "label": "Submit questions about community schools",
         "href": "https://forms.office.com/Pages/DesignPageV2.aspx?subpage=design&FormId=q6g_QX0gYkubzeoajy-GTmIXBhVjiCpCrZqTqw8Eu6pUOTQ4WFRWNEFOSkQxWVg0SE85REhKQVBLSi4u&Token=c3ad4f59a0164fd3a9f4c3650373f56e"
       }
-    ]
+    ],
+    "panelhead": true,
+    "_why": "Matt, 22 Sep: the bolded semi-headers under What are the Requirements become h3 — this page only."
   },
   "/learning/standards/career": {
     "dropSection": [
@@ -140,5 +142,14 @@
       "Middle",
       "High"
     ]
+  },
+  "/data-reporting/Staff": {
+    "_why": "Matt, 22 Sep: the webinar line in the banner and the \"All Webinars\" heading are one note, not a section; a lone lowercase bullet under Appendix C.",
+    "noteSection": [
+      "All Webinars are presented"
+    ],
+    "replace": {
+      "staff assignments with this selected as the highest degree earned": "Staff assignments with this selected as the highest degree earned"
+    }
   }
 }

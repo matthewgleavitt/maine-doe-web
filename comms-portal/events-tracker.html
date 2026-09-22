@@ -667,7 +667,13 @@ function ManageMine({email,events,loading,showPast,setShowPast,onEdit,onCancel,o
     </div>
     :<div style={{display:'flex',flexDirection:'column',gap:10}}>
       {list.map(ev=>{
-        const isPast=(ev.endDate||ev.startDate||'').substring(0,10) < todayISO;
+        // For recurring events, use the recurrence end date (whichever key the
+        // backend supplies — the my_events endpoint returns sheet-column-name
+        // keys, so "Recurrence End" is the canonical one). Otherwise a
+        // recurring series that started in the past is wrongly hidden under
+        // "Show past events" even though it's still active weekly.
+        const seriesEnd = ev['Recurrence End'] || ev.recurrenceEnd || ev.endDate || ev.startDate || '';
+        const isPast = seriesEnd.substring(0,10) < todayISO;
         const isCancelled=ev.status==='Cancelled';
         return <div key={ev.id+'_'+ev.startDate} style={{...cardSty,opacity:isCancelled?.6:1}}>
           <div style={{minWidth:0}}>

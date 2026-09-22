@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-l  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-v  ·  Last edited: 2026-09-22
  *
  * ============================================================
  * SCOPE
@@ -91,6 +91,12 @@
 body.page-node-type-multi-column-page {
   --i-navy: #182b3c;
   --i-midblue: #274f73;
+  /* THE SECTION BAR INSIDE A HEADED CARD. Matt picked it against
+     #274f73 and #21425f: nearly navy, one shade off the header it
+     sits under. That is close enough that colour alone can no longer
+     carry the hierarchy, which is why the card title takes a size up
+     in the rule further down. White on it is 13.9:1. */
+  --i-cardbar: #1c3950;
   --i-steel: #4a6478;        /* text-safe: 6.20 on white, 5.03 on warm */
   --i-steel-deco: #6d8ba6;   /* NON-TEXT ONLY — fails AA as text */
   --i-teal: #42c3f7;
@@ -1020,17 +1026,27 @@ body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-con
   scroll-margin-top: 24px;
 }
 
-/* The accordion module paints its titles white for a dark header it
-   no longer has. Measured on the multilingual page: white on the
-   #f6f8fa bar is 1.06:1 — the titles were invisible except where the
-   theme happened to put navy behind them, which is the "white then
-   dark blue" Matt saw. A class selector could not reach it however
-   many !importants it carried; the rule doing it has an id. */
+/* THE TITLE BAR IS DARK AGAIN, SO THE TITLES GO BACK TO WHITE.
+   This rule is older than the bar it sits on. It was written when the
+   bar was #f6f8fa: the module painted its titles white for a dark
+   header it no longer had, white on light grey measured 1.06:1, and
+   navy was the correction — the "13.61:1 on the bar" the old comment
+   recorded. The extra :link/:visited were there to out-specify the
+   module's own rule, which carries an id.
+   Then the bar became the navy-to-midblue gradient further up, with
+   color:#fff on it. That rule is a plain class selector, so this one
+   still won on specificity and went on painting navy — 1.00:1 at the
+   navy end of the gradient, 1.69:1 at the midblue end. 665 accordion
+   titles on 104 pages, invisible. dl.styled was never named here, so
+   ITS titles stayed white, which is why some accordions read and
+   others did not.
+   Same selector, because it is still what beats the module. Only the
+   colour changes: 14.49:1 and 8.56:1 across the gradient. */
 body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dt > a,
 body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dt > a:link,
 body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dt > a:visited,
 body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dt > a:hover {
-  color: var(--i-navy) !important;   /* 13.61:1 on the bar */
+  color: #fff !important;
 }
 body.page-node-type-multi-column-page dl.ckeditor-accordion > dd {
   margin: 0; padding: 16px 18px 20px;
@@ -1167,11 +1183,21 @@ body.page-node-type-multi-column-page #block-doe-content .contact-cube--photo .c
    rgb(24,43,60) — #182b3c, the brand navy, exactly as specified. */
 body.page-node-type-multi-column-page #block-doe-content .card {
   border: 2px solid var(--i-navy);
+  /* THINNER ON TOP, so the teal above it reads as the accent rather
+     than as the second of two stacked lines. Matt: "there def needs
+     to be a dark border, but what if the top border was thinner." */
+  border-top-width: 1px;
   border-radius: 10px;
   overflow: hidden;
-  /* White, because the COLUMN is the tinted one now. A card tinted on
-     a tinted ground is the problem it was meant to solve. */
-  background: #fff;
+  /* A SHADE OF THE BRAND BLUE, NOT WHITE. The old comment here said
+     white "because the COLUMN is the tinted one now" — there is no
+     column tint any more, so the objection had outlived the thing it
+     was objecting to and the card sat white on a white page with
+     nothing but its frame to separate them.
+     #f3f7fa is about 5% of the brand mid blue over white. Live uses
+     3%; Matt picked this against 4% and 8%. Body text on it is
+     15.9:1. */
+  background: #f3f7fa;
 }
 /* THE THEME'S TEAL RULE UNDER A CARD PICTURE STAYS — it was taken
    out and should not have been. The reasoning was that the 2px navy
@@ -1188,8 +1214,23 @@ body.page-node-type-multi-column-page #block-doe-content .card .card-img-top {
 }
 body.page-node-type-multi-column-page #block-doe-content .card > .card-header {
   border-radius: 0; border-bottom: 0;
-  font-family: var(--i-display); font-size: 16px;
-  padding: 13px 18px;
+  font-family: var(--i-display);
+  /* 18, NOT 16. The section bars inside the card are now one shade
+     off this bar, so the two no longer separate on colour. Matt:
+     "the font size for Required Actions could be 2px bigger or so to
+     give it a little more weight." That is the hierarchy moving from
+     colour to type, which is the more robust of the two anyway — it
+     survives being printed, and it survives a reader who cannot tell
+     the two blues apart. */
+  font-size: 18px; font-weight: 700;
+  letter-spacing: .01em;
+  padding: 14px 18px;
+  /* THE ACCENT LIVE ALREADY HAS, PUT BACK. The theme draws a 4px
+     teal rule across the top of a card header; replacing the frame
+     dropped it, and without it the card is a plain navy block. It
+     belongs to the HEADER, not the card, which is why it survives
+     whatever the frame does. */
+  border-top: 4px solid var(--i-teal);
 }
 /* The card grid gets a little more air between cards now that each
    one has a hard edge. */
@@ -2817,6 +2858,30 @@ body.page-node-type-multi-column-page #block-doe-content p.doe-action > a {
 body.page-node-type-multi-column-page #block-doe-content p.doe-action {
   margin-top: 18px;
 }
+/* EXCEPT INSIDE AN ACCORDION PANEL, WHERE THE PANEL IS THE STANDING
+   THING AND THE LINK IS ONLY WHAT IS IN IT.
+   The weight above is for a link standing alone on the page, where
+   17px display bold says "this is a destination". A panel titled
+   "Creating a Long-Term Substitute and how to return original
+   teacher" holding one link reading "Creating a Long-Term Substitute
+   and how to return original teacher" does not need saying twice —
+   the bar above it is already 16px display bold on navy, and the link
+   under it came out the same size and weight in midblue. Matt's rule,
+   and it is the same one that settled the bulleted lists: a singular
+   link like that does not need to be bold.
+   So it unifies the same way a list does — 16px display at ordinary
+   weight, midblue, chevron. The chevron stays; it is the part that
+   says the row goes somewhere. 147 of these on 27 pages.
+   The top margin goes with it when the link opens the panel: the
+   panel already pads 20px, and 18px more on top of that was most of
+   the gap between the bar and its one line of content. */
+body.page-node-type-multi-column-page #block-doe-content dd p.doe-action > a {
+  font-size: 16px; font-weight: 500;
+}
+body.page-node-type-multi-column-page #block-doe-content dd > p.doe-action:first-child,
+body.page-node-type-multi-column-page #block-doe-content dd > p.doe-item:first-child {
+  margin-top: 0;
+}
 /* A LINK IN A LIST IS NOT BOLD, AND THE TWO KINDS MATCH.
    The unifying was right and the direction was wrong. A list holding
    both a plain link and a link-with-description showed one row in
@@ -2880,7 +2945,19 @@ body.page-node-type-multi-column-page #block-doe-content .doe-action > a {
 body.page-node-type-multi-column-page #block-doe-content .doe-action > a::after {
   content: none;
 }
-body.page-node-type-multi-column-page #block-doe-content .doe-action > a:hover {
+/* AND A LINK THAT CARRIES A DESCRIPTION HOVERS THE SAME WAY.
+   .doe-item had no hover rule at all, so in a list holding both
+   kinds one row answered the pointer and the next did not — Matt:
+   "when I hover over the second link it is not bolded like most of
+   the other links." The thickened underline is what reads as the
+   weight change; nothing actually re-weights, which is deliberate,
+   because a font-weight change on hover reflows the line.
+   Same argument that unified their resting state: the two are the
+   same object and a reader cannot see why one responds. */
+body.page-node-type-multi-column-page #block-doe-content .doe-action > a:hover,
+body.page-node-type-multi-column-page #block-doe-content li.doe-item > a:first-child:hover,
+body.page-node-type-multi-column-page #block-doe-content p.doe-item > a:first-child:hover,
+body.page-node-type-multi-column-page #block-doe-content li.doe-item > strong:first-child > a:hover {
   color: var(--i-navy);
   text-decoration: underline; text-decoration-thickness: 2px;
 }
@@ -3154,8 +3231,120 @@ body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion >
   font-family: var(--i-display);
   font-size: 16px; font-weight: 700; line-height: 1.35;
   color: var(--i-navy);
-  background: none; padding: 0;
+  background: none;
+  /* THE LINE BELONGS TO THE HEADING, NOT TO THE PANEL.
+     <h3>Staff</h3> opens the first panel on /data-reporting/Staff:
+     35px of text, and the hairline under it ran 772px — the full
+     width of the panel, 737px of it past the end of the word. Out on
+     the page a full-width rule is right, because there the heading
+     divides the page and the rule is the division. Inside a panel the
+     panel is already the boundary, so the same rule reads as a line
+     that missed its mark.
+     The fix is below, and it is a change of shape rather than of
+     width: a panel heading is built the way .doe-sub is, with the
+     line starting where the words stop. See the note on that block.
+     PANELS ONLY, WHICHEVER FIX IS IN FORCE. This selector covers card
+     sub-headings too, and those are the navy section bars — they
+     carry margin: 26px -20px to reach the card's own edges, which is
+     the whole point of them. Narrowing the box cancelled that and
+     left 53 shrink-wrapped chips down
+     /earlychildhoodspecialeducation/onboarding. A bar spans; a
+     heading rule does not. Only the accordion selectors take it. */
 }
+/* THE RULE RUNS FROM THE END OF THE TEXT, NOT UNDER IT.
+   Matt: "its underlined vs a line coming from the middle of the
+   text to the end, so these H3s are behaving differently."
+   He is right, and fit-content only narrowed the wrong shape. Out
+   on the page .doe-sub is a flex row: the heading, then an ::after
+   that is flex:1 1 0 and 1px tall, so the line begins where the
+   words stop and carries to the edge. Inside a panel the heading
+   had border-bottom instead, which is an underline — a different
+   component wearing the same colours.
+   Same construction now, same ink (rgba(24,43,60,.275), the value
+   .doe-sub settled on), scaled to the panel: a 3px teal edge rather
+   than 4 and 16px type rather than 19 uppercase, because a panel is
+   a step down from a page section. The shape is what makes them the
+   same family; the size is what keeps them a level apart. */
+/* THE SAME SHAPE WHEREVER A COMPONENT HOLDS A HEADING.
+   Matt: "anywhere H3 is, it should have the same properties."
+   Three components held one and each drew it differently. A card
+   sub-heading had its rule as a border-bottom, so the line sat
+   UNDER the words. An accordion panel heading had it as an ::after
+   filling the rest of the row, so the line ran off to the RIGHT. A
+   heading in a dc-note matched nothing at all and fell back to the
+   theme — 17.55px Helvetica with no mark on it, which is why "Watch
+   For" and "Budget development" read as not being headings.
+   One shape now, the .doe-sub shape: the heading, then a rule that
+   begins where the words stop. It is what a section header does out
+   on the page, so a component sub-heading is plainly the same thing
+   one level down rather than a different device that happens to
+   share a colour. */
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h2,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h3,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h4,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h5,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h6,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h2,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h3,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h4,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h5,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h6,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h2,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h3,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h4,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h5,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h6,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h2,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h3,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h4,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h5,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h6 {
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 0 !important;
+  padding: 0 0 0 11px !important;
+  line-height: 21px;            /* odd on purpose — see the rhythm note below */
+}
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h2::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h3::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h4::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h5::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h6::after,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h2::after,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h3::after,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h4::after,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h5::after,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h6::after,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h2::after,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h3::after,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h4::after,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h5::after,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h6::after,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h2::after,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h3::after,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h4::after,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h5::after,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h6::after {
+  content: ''; flex: 1 1 0; min-width: 0; height: 1px;
+  background: rgba(24, 43, 60, .275);
+}
+/* A NOTE ALREADY CARRIES A TEAL EDGE, so its heading does not take a
+   second one — the 5px down the side of the note is the mark, and a
+   3px repeat 11px inside it just reads as a mistake. Everything else
+   is the same: the display face, the navy, the rule to the right. */
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h2,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h3,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h4,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h5,
+body.page-node-type-multi-column-page #block-doe-content .dc-note > h6 {
+  font-family: var(--i-display);
+  font-size: 16px; font-weight: 700;
+  color: var(--i-navy);
+  border-left: 0 !important;
+  padding-left: 0 !important;
+  margin: 0 0 12px !important;
+}
+
+
 body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h2:not(:first-child),
 body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h3:not(:first-child),
 body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h4:not(:first-child),
@@ -3172,7 +3361,24 @@ body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion >
 body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h5:not(:first-child),
 body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h6:not(:first-child) {
   margin-top: 18px !important;        /* a later one needs air above it */
-}/* A SECOND TITLE PART-WAY DOWN A CARD.
+}/* ONLY IN A CARD THAT HAS NO HEADER OF ITS OWN.
+   Matt, on the FAPE onboarding page: "the H3's in the cards are
+   messed up, why are these h3's behaving differently, anywhere H3 is
+   it should have the same properties."
+   Measured there: 53 headings inside card bodies, 44 drawn as full
+   navy bars and 9 quiet. The 9 are the first in each card, which
+   this rule excludes; every one after it became a bar. So a card
+   headed "Required Actions" holding seven tasks came out as one
+   quiet task and six that each looked like the header of a card of
+   their own, stacked inside a card that already had one.
+   The bar exists to FAKE a header a card never had — that is what
+   the negative side margins below are for, reaching the card's own
+   edges. Where the card has a real header the job is already done,
+   and what is inside is a sub-part of it. 131 headings on 27 pages
+   sit in a headed card; they take the quiet treatment above, all of
+   them, first or not. The 1,062 in header-less cards are unchanged.
+
+   A SECOND TITLE PART-WAY DOWN A CARD.
    The site's own rule gives every h5.card-title margin -20px -20px
    20px — negative margins that reach the card's edges to fake a
    header it never had. On the FIRST one that is right. On a second,
@@ -3202,11 +3408,11 @@ body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion >
    for the opposite reason: inside a card it is a section header that
    escaped its section, which is a markup fault to fix rather than to
    dress. 124 headings on 40 pages gain the bar. */
-body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h3:not(:first-child),
-body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h4:not(:first-child),
-body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h5:not(:first-child),
-body.page-node-type-multi-column-page #block-doe-content .card > .card-body > .card-title:not(:first-child),
-body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h3:not(:first-child) {
+body.page-node-type-multi-column-page #block-doe-content .card:not(:has(> .card-header)) > .card-body > h3:not(:first-child),
+body.page-node-type-multi-column-page #block-doe-content .card:not(:has(> .card-header)) > .card-body > h4:not(:first-child),
+body.page-node-type-multi-column-page #block-doe-content .card:not(:has(> .card-header)) > .card-body > h5:not(:first-child),
+body.page-node-type-multi-column-page #block-doe-content .card:not(:has(> .card-header)) > .card-body > .card-title:not(:first-child),
+body.page-node-type-multi-column-page #block-doe-content .card:not(:has(> .card-header)) > .card-body > h3:not(:first-child) {
   margin: 26px -20px 16px !important;
   padding: 13px 18px;
   background: var(--i-navy); color: #fff;
@@ -3355,7 +3561,15 @@ body.page-node-type-multi-column-page #block-doe-content .doe-chip {
   font-family: var(--i-display);
   font-size: 11.5px; font-weight: 700;
   letter-spacing: .07em; text-transform: uppercase;
-  line-height: 1.6;
+  /* 17px, NOT 1.6 (which was 18.4). The tag is inline-block, so its
+     box sets the height of the line it sits in: at 21.4px against a
+     19px link it was pushing every row it appeared on 2.4px taller
+     than the rows without one, which is what Matt saw as the tag
+     standing proud of the link beside it. 17 plus the 3px of padding
+     is 20 — still a shade above the text, which keeps it reading as
+     a tag rather than as part of the sentence, but close enough that
+     the line no longer grows around it. */
+  line-height: 17px;
   text-decoration: none;
   vertical-align: 1px;
   white-space: nowrap;
@@ -3401,7 +3615,24 @@ body.page-node-type-multi-column-page #block-doe-content a.doe-email {
      two agree rather than one silently overriding the other. */
   display: inline-flex !important;
   align-items: center;
-  padding: 2px 10px 3px;
+  /* IT HAS TO FIT THE LINE IT SITS IN. Matt: "the chips for email
+     need to be slightly smaller, they don't match the wording just
+     before it very well and also change the line height for a
+     sentence." Both halves measured in a 16px/24px paragraph: the
+     chip came out 29.56px tall — 22.56 of inherited line-height, 5
+     of padding, 2 of border — so the line holding it opened to 29.6
+     against 17 to 18 for every line around it, and the paragraph
+     visibly limped where the address was.
+     16 plus 4 plus 2 is 22, which sits inside the 24px line and
+     leaves the leading alone. */
+  /* THE HEIGHT IS RIGHT, THE ROOM INSIDE IT WAS NOT. Squeezing the
+     box from 29.5 to 22 took it all out of the line-height and left
+     2px of padding, so the glyphs sat against the pill edges — Matt:
+     "it looks like there is no breathing room now." The box stays
+     22 and the type gives the room back instead: 14 of line-height,
+     3 of padding top and bottom, 2 of border. */
+  padding: 3px 9px;
+  line-height: 14px;
   border-radius: 6px;
   /* NAVY GROUND, TEAL INK — the same pair the format chip uses, so
      the two kinds of tag on a page are plainly the same kind of
@@ -3412,7 +3643,22 @@ body.page-node-type-multi-column-page #block-doe-content a.doe-email {
   color: var(--i-teal) !important;
   text-decoration: none !important;
   font-family: var(--i-display);
-  font-size: .94em; font-weight: 600;
+  /* .9, NOT .94. The other half of Matt's note: set in the display
+     face at 600 it read heavier than the sentence it interrupts
+     even though it was already a shade smaller. .9 of 16 is 14.4,
+     which reads as a tag beside the text rather than as a louder
+     piece of it, and is still well above the 12px an address has to
+     clear to stay comfortably readable. */
+  /* 10pt. It was .94em (15.04px, 11.3pt), then .9em (14.4px,
+     10.8pt), and Matt asked for about a point off that. .83em of 16
+     is 13.28px, which is 9.96pt — 10 to the eye.
+     STILL COMFORTABLY READABLE, which is the thing not to trade
+     away: it is a bold display face at 7.56:1 on navy, and it is an
+     address someone has to be able to read and type. WCAG sets no
+     minimum size, so the test is legibility rather than a number,
+     and 13px bold is a step ABOVE the 11.5px the format tags have
+     been carrying all along. */
+  font-size: .83em; font-weight: 600;
   /* IT WRAPS RATHER THAN OVERFLOWS, and that is a reversal worth
      stating. nowrap was chosen so a chip never broke across two
      lines and stopped looking like one object — which is true, and
@@ -4684,7 +4930,9 @@ body.page-node-type-multi-column-page #block-doe-content li.doe-item.list-group-
   margin-bottom: -1px;
 }
 body.page-node-type-multi-column-page #block-doe-content li.doe-item > a:first-child,
-body.page-node-type-multi-column-page #block-doe-content li.doe-item > strong:first-child > a {
+body.page-node-type-multi-column-page #block-doe-content li.doe-item > strong:first-child > a,
+body.page-node-type-multi-column-page #block-doe-content p.doe-item > a:first-child,
+body.page-node-type-multi-column-page #block-doe-content p.doe-item > strong:first-child > a {
   /* INLINE, FOR THE SAME REASON .doe-action IS.
      An inline-block is an atomic box: it brings its own line height
      into the line, so the taller link stretched line one by itself,
@@ -4721,11 +4969,13 @@ body.page-node-type-multi-column-page #block-doe-content li.doe-item > .doe-item
 /* The description, which is every text node after that link. It
    cannot be selected, so the item carries the smaller size and the
    link above overrides it back up. */
-body.page-node-type-multi-column-page #block-doe-content li.doe-item {
+body.page-node-type-multi-column-page #block-doe-content li.doe-item,
+body.page-node-type-multi-column-page #block-doe-content p.doe-item {
   font-size: 15px;
   color: #40505e;
 }
-body.page-node-type-multi-column-page #block-doe-content li.doe-item > a:first-child {
+body.page-node-type-multi-column-page #block-doe-content li.doe-item > a:first-child,
+body.page-node-type-multi-column-page #block-doe-content p.doe-item > a:first-child {
   font-size: 16px;
 }
 
@@ -4761,7 +5011,9 @@ body.page-node-type-multi-column-page #block-doe-content a.doe-noarrow {
   background-image: none !important;
 }
 body.page-node-type-multi-column-page #block-doe-content li.doe-item > a:first-child,
-body.page-node-type-multi-column-page #block-doe-content li.doe-item > strong:first-child > a {
+body.page-node-type-multi-column-page #block-doe-content li.doe-item > strong:first-child > a,
+body.page-node-type-multi-column-page #block-doe-content p.doe-item > a:first-child,
+body.page-node-type-multi-column-page #block-doe-content p.doe-item > strong:first-child > a {
   padding-right: 17px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http%3A//www.w3.org/2000/svg' width='10' height='14'%3E%3Cpath d='M2 2l5 5-5 5' fill='none' stroke='%2342c3f7' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -5534,4 +5786,166 @@ body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody th 
 body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody td[rowspan]:not([rowspan="1"]),
 body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody th[rowspan]:not([rowspan="1"]) {
   vertical-align: middle;
+}
+
+/* ── A SECTION INSIDE A CARD THAT ALREADY HAS A HEADER ──────────
+   Matt: "I liked it when they were segmented before with the navy
+   bg... the only issue is Complete and submit will look weird with a
+   navy bg since the Required Actions are already there."
+   Both halves of that are right, and the second one is the whole
+   design problem. Drawn and compared on the January card:
+   · Every section navy, the first flush under the header — the two
+     navy blocks fuse into one title with a white seam through it.
+   · Every section navy, the first with air above it — no better. A
+     gap does not separate two blocks of the same colour; it reads as
+     a header that got split.
+   · Sections one step down in tone — the navy header is plainly the
+     parent, the midblue bars are plainly its parts, and the FIRST
+     section can look exactly like every other one, which was the
+     thing that could not be had any other way.
+   The eye groups by tone before it groups by space, so the tone has
+   to carry the hierarchy. #274f73 is the brand's own mid blue and is
+   already the far end of the header's gradient, so this is a step
+   along a ramp the card is drawing anyway rather than a new colour.
+   White on it is 8.56:1.
+   THE LEVEL DOES NOT CHANGE. Matt asked whether these should be h4 so
+   they can have a class of their own. They do not need one: the
+   position IS the hook, which is how the bar was drawn before, and
+   the pipeline pulls every h4 and deeper up to h3 anyway. Nothing
+   here is styled by its number.
+   This overrides the component sub-heading shape above, which stays
+   the rule for accordion panels and notes — those have no header of
+   their own to sit under. */
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h2,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h3,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h4,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h5,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h6 {
+  display: block !important;
+  background: var(--i-cardbar) !important;
+  color: #fff !important;
+  /* The side margins reach the card's own edges, which is 20px of
+     body padding either side — the same reach the header has. */
+  margin: 18px -20px 16px !important;
+  padding: 13px 18px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  font-family: var(--i-display);
+  font-size: 16px !important; font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: .01em;
+  width: auto !important;
+}
+/* The first one still needs a little air, or it touches the header's
+   bottom edge and the seam reappears even in two tones. */
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h2:first-child,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h3:first-child,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h4:first-child,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h5:first-child,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h6:first-child {
+  margin-top: 4px !important;
+}
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h2::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h3::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h4::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h5::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > h6::after {
+  content: none !important;
+}
+
+/* ── A PANEL'S VERTICAL RHYTHM IN WHOLE PIXELS ──────────────────
+   Matt: "the thickness of the line is still different on Staff."
+   It is, and nothing in the rules differs. All five headings in that
+   panel compute the same ::after: 1px, the same ink, the same box,
+   with nothing else painting at that line. What differs is where each
+   one lands on the screen.
+   The panel is set in 15.3px with ratio line-heights and em margins,
+   so every vertical measure in it is fractional: 15.3 x 1.65 = 25.245
+   a line, 15.3 a paragraph margin, 22.95 a list line, 7.65 and 17.595
+   around a list, 16 x 1.35 = 21.6 a heading, and 13 + 21.6 + 13 =
+   47.6 for the title bar above the panel. Those fractions accumulate,
+   so each heading starts at a different fraction of a pixel — on
+   /data-reporting/Staff the five rules landed at .891, .719, .953,
+   .953 and .703.
+   ON A 1x DISPLAY THIS IS INVISIBLE, which is what made it hard to
+   find. A 1 CSS px line is 1 device pixel there and the browser snaps
+   it to the grid; eight test lines from .000 to .875, drawn both as a
+   background and as a border, came out identical. It looks like a
+   design question about line length and it is not.
+   On a 2x display a 1 CSS px line is TWO device pixels, so a
+   half-device offset is reachable: the line falls across three device
+   rows instead of two — a faint row, a solid row, a strong row — and
+   reads as thicker and softer than the same line landing square on
+   two. That is the difference in Matt's screenshot, and "Staff" shows
+   it worst because its heading is one word, so its rule is the
+   longest on the page at 691px against 420px for the longest heading.
+   More line to notice it on.
+   So the rhythm goes into whole pixels. Every value below is the
+   fractional one rounded: 25.245 to 25, 15.3 to 15, 22.95 to 23,
+   17.595 to 18, 7.65 to 8, 21.6 to 21, and the bar's 21.6 to 22 so
+   the bar is exactly 48px rather than 47.6. The largest single change
+   is a third of a pixel; none of it is visible as spacing. What it
+   buys is that every box in a panel starts on a whole pixel, so every
+   rule is drawn on one. Measured again at 2x, all five land square
+   and are identical.
+   21px FOR THE HEADING IS ODD ON PURPOSE: the rule is centred in the
+   box by the flex line, and (21 - 1) / 2 is exactly 10, so the line
+   sits a whole number of pixels from the top of a box that itself
+   starts on a whole pixel. An even height would put it back on a
+   half.
+   THE 13px AFTER A HEADING IS PUT BACK, because these selectors are
+   more specific than the site-wide `h3 + *` rule that sets it and
+   would otherwise take it to 15. It is a deliberate value, not one of
+   the fractions this is here to remove. */
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd {
+  line-height: 25px;                   /* was 15.3 x 1.65 = 25.245 */
+}
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd p,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd p {
+  margin-top: 15px; margin-bottom: 15px;          /* was 15.3 */
+}
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h2 + *,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h3 + *,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h4 + *,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h5 + *,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd > h6 + *,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h2 + *,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h3 + *,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h4 + *,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h5 + *,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd > h6 + * {
+  margin-top: 13px;
+}
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd li,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd li {
+  line-height: 23px;                   /* was 15.3 x 1.5 = 22.95 */
+  margin-bottom: 8px;                  /* was 7.65 */
+}
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd ul,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd ol,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd ul,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd ol {
+  margin-top: 8px;                     /* was 7.65 */
+  margin-bottom: 18px;                 /* was 17.595 */
+}
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dt > a,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl.styled > dt > a {
+  line-height: 22px;                   /* was 16 x 1.35 = 21.6, a 47.6px bar */
+}
+/* The two things left inside a panel that still carried a fraction,
+   found by walking every element in every panel on the six pages with
+   the most of them: a table cell at 24.8 and a format chip at 18.4.
+   A chip is inline-block, so its line-height sets the height of the
+   line box it sits in — which is why one on a list row moved the
+   heading below it off the grid. */
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd td,
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd th,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd td,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd th {
+  line-height: 25px;                   /* was 24.8 */
+}
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd .doe-chip,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd .doe-chip {
+  line-height: 18px;                   /* was 18.4 */
 }

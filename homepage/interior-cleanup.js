@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-21-o  ·  Last edited: 2026-09-21
+ * Version: 2026-09-22-c  ·  Last edited: 2026-09-22
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -67,7 +67,12 @@ const FORMAT_CANON = {
   'spreadsheet': 'Excel', 'xls': 'Excel', 'xlsx': 'Excel', 'csv': 'CSV',
   'powerpoint': 'PowerPoint', 'power point': 'PowerPoint', 'ppt': 'PowerPoint', 'pptx': 'PowerPoint',
   'zip': 'ZIP', 'rtf': 'RTF',
-  'youtube': 'YouTube', 'video': 'Video', 'recording': 'Recording', 'audio': 'Audio',
+  /* YOUTUBE IS WHERE IT LIVES, NOT WHAT IT IS. Matt: "YouTube
+     labels should just be Video." A tag says what the thing is so a
+     reader knows what will happen when they click; the host is not
+     that. The five that read YouTube say it twice over anyway, since
+     the link they sit on goes to youtube.com. */
+  'youtube': 'Video', 'video': 'Video', 'recording': 'Recording', 'audio': 'Audio',
   'podcast': 'Podcast', 'webinar': 'Webinar', 'slides': 'Slides',
   'presentation': 'Presentation', 'transcript': 'Transcript', 'infographic': 'Infographic',
   'google doc': 'Google Doc', 'google docs': 'Google Doc', 'google slides': 'Google Slides',
@@ -97,6 +102,15 @@ const chipLabel = (raw) => FORMAT_CANON[normFmt(raw)] || String(raw).trim();
    that turning "Word Document" into a Word chip does not read as a
    page that lost the word "Document". */
 const canonKey = (raw) => (FORMAT_CANON[normFmt(raw)] || String(raw)).toLowerCase().replace(/\s+/g, '');
+/* PDF IS THE DEFAULT AND DOES NOT GET A TAG. propose.js declines to
+   INVENT one from a file extension; this declines to MOVE one the
+   author typed. The difference matters: there is nothing to invent
+   here, only a "(PDF)" somebody wrote at the end of a link, and the
+   right thing to do with it is leave it exactly where they put it.
+   Moving it into a tag and then suppressing the tag would delete
+   their word; not moving it costs nothing. 301 of these across 50
+   pages, 110 on /learning/standardsreview/science alone. */
+const isPdfLabel = (raw) => canonKey(raw) === 'pdf';
 
 /* ── transforms ──────────────────────────────────────────────────
    Each returns [html, countOfChanges]. Order matters: unwrap
@@ -1702,7 +1716,7 @@ const FIXES = [
      middle of a sentence is a word; "Video" sitting on its own right
      after a link is a label. */
   ['format named in words chipped', (h) => {
-    let n = 0;
+    let n = 0; let dropped = 0;
     /* A DASH IN FRONT OF IT IS PART OF THE LABEL, not part of the
        sentence. "…Tips from a Maine Teacher — Video" is a link, a
        separator and a format, and once the format is a chip the
@@ -1714,6 +1728,7 @@ const FIXES = [
         const key = word.trim().toLowerCase().replace(/\s+/g, ' ');
         if (!FORMAT_WORDS.includes(key)) return m;
         n++;
+        if (isPdfLabel(word)) { dropped++; return close; }
         return `${close} <span class="doe-chip">${chipLabel(word)}</span>`;
       });
     return [h, n];
@@ -2181,12 +2196,13 @@ const FIXES = [
      take the format off the link's accessible name, which is the
      thing that makes "PDF" meaningful to a screen reader. */
   ['format labels chipped', (h) => {
-    let n = 0;
+    let n = 0; let dropped = 0;
     const FORMATS = FORMAT_WORDS;
     h = h.replace(/\[([^\][<>]{1,18})\]/g, (m, label) => {
       const key = label.trim().toLowerCase().replace(/\s+/g, ' ');
       if (!FORMATS.includes(key)) return m;
       n++;
+      if (isPdfLabel(label)) { dropped++; return ''; }
       return `<span class="doe-chip">${chipLabel(label)}</span>`;
     });
     /* AND THE FORM THE SITE ACTUALLY USES, WHICH IS PARENTHESES.
@@ -2222,8 +2238,17 @@ const FIXES = [
         const key = label.trim().toLowerCase().replace(/\s+/g, ' ');
         if (!FORMATS.includes(key)) return mm;
         n++;
+        if (isPdfLabel(label)) { dropped++; return tail || ''; }
         return `<span class="doe-chip">${chipLabel(label)}</span>${tail || ''}`;
       });
+      /* AND NEVER TO NOTHING. On the standards-review pages the
+         label IS the link — <li>Prescott, Melissa – <a>(PDF)</a></li>
+         — so taking it out leaves an anchor with no name at all,
+         which is unclickable and silent to a screen reader. Left
+         whole here and handled by the rule that pulls the name into
+         the link further down, which is the shape that was wanted
+         anyway. */
+      if (!out.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()) return m;
       return out === inner ? m : `<a${attrs}>${out}</a>`;
     });
     /* AND THE ONES THE AUTHOR PUT JUST OUTSIDE THE LINK.
@@ -2256,6 +2281,7 @@ const FIXES = [
       const key = label.trim().replace(/\s+/g, ' ');
       if (!sized.test(key)) return m;
       n++;
+      if (isPdfLabel(key)) { dropped++; return `${anchor}</a>`; }
       return `${anchor}</a>${gap}<span class="doe-chip">${chipLabel(key)}</span>`;
     });
     /* And the same label inside the link text, sized or not. */
@@ -2265,8 +2291,17 @@ const FIXES = [
         const key = label.trim().replace(/\s+/g, ' ');
         if (!sized.test(key)) return mm;
         n++;
+        if (isPdfLabel(key)) { dropped++; return tail || ''; }
         return `<span class="doe-chip">${chipLabel(key)}</span>${tail || ''}`;
       });
+      /* AND NEVER TO NOTHING. On the standards-review pages the
+         label IS the link — <li>Prescott, Melissa – <a>(PDF)</a></li>
+         — so taking it out leaves an anchor with no name at all,
+         which is unclickable and silent to a screen reader. Left
+         whole here and handled by the rule that pulls the name into
+         the link further down, which is the shape that was wanted
+         anyway. */
+      if (!out.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()) return m;
       return out === inner ? m : `<a${attrs}>${out}</a>`;
     });
     /* AND THE FORM WITH NO BRACKET AT ALL: a space, a dash, then the
@@ -2292,8 +2327,17 @@ const FIXES = [
              with none. */
           if (!/[A-Za-z0-9]/.test(inner.slice(0, off))) return mm;
           n++;
-          return `<span class="doe-chip">${chipLabel(label)}</span>${tail || ''}`;
+          if (isPdfLabel(label)) { dropped++; return tail || ''; }
+        return `<span class="doe-chip">${chipLabel(label)}</span>${tail || ''}`;
         });
+      /* AND NEVER TO NOTHING. On the standards-review pages the
+         label IS the link — <li>Prescott, Melissa – <a>(PDF)</a></li>
+         — so taking it out leaves an anchor with no name at all,
+         which is unclickable and silent to a screen reader. Left
+         whole here and handled by the rule that pulls the name into
+         the link further down, which is the shape that was wanted
+         anyway. */
+      if (!out.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()) return m;
       return out === inner ? m : `<a${attrs}>${out}</a>`;
     });
     return [h, n];
@@ -2362,8 +2406,38 @@ const FIXES = [
   ['name pulled into a link that was only a format chip', (h) => {
     let n = 0;
     h = h.replace(/<li\b([^>]*)>((?:(?!<\/li>)[\s\S])*)<\/li>/gi, (m, attrs, inner) => {
-      const shape = inner.trim().match(
-        /^((?:[^<>]|<\/?(?:strong|em|b|i)>){1,80}?)(?:\s|&nbsp;)*[-–—](?:\s|&nbsp;)*<a\b([^>]*)>(<span class="doe-chip">([^<]*)<\/span>)<\/a>(?:\s|&nbsp;)*$/i);
+      /* THE BARE LABEL COUNTS TOO, NOT ONLY A CHIP. This rule was
+         written when every format label became a chip, so it looks
+         for one. PDF labels are deleted now rather than chipped,
+         which left the very shape this rule exists for matching
+         nothing: <li>Prescott, Melissa – <a>(PDF)</a></li>, where the
+         label IS the link's whole name. 110 of them on
+         /learning/standardsreview/science alone, and they would have
+         stayed as links called "(PDF)".
+         Either form now — a chip, or the label still written as text
+         inside the anchor. The name becomes the link, the format goes
+         into the accessible name so the link still announces which
+         file it is, and where the label was a bare PDF nothing is
+         left behind it. */
+      const t = inner.trim();
+      const LEAD = '((?:[^<>]|<\\/?(?:strong|em|b|i)>){1,80}?)(?:\\s|&nbsp;)*[-\u2013\u2014](?:\\s|&nbsp;)*<a\\b([^>]*)>';
+      let shape = t.match(new RegExp('^' + LEAD + '(<span class="doe-chip">([^<]*)<\\/span>)<\\/a>(?:\\s|&nbsp;)*$', 'i'));
+      if (!shape) {
+        const bare = t.match(new RegExp('^' + LEAD + '(?:\\s|&nbsp;)*[(\\[]?(?:\\s|&nbsp;)*([A-Za-z][A-Za-z ]{1,18}?)(?:\\s|&nbsp;)*[)\\]]?(?:\\s|&nbsp;)*<\\/a>(?:\\s|&nbsp;)*$', 'i'));
+        const key = bare && bare[3].trim().toLowerCase().replace(/\s+/g, ' ');
+        /* THE TAG SURVIVES UNLESS IT IS A PDF. Passing an empty chip
+           for every label deleted the word outright — "Sustainability
+           Through School Communities — <a>Presentation</a>" came out
+           as the name alone and "Presentation" was gone from the page.
+           Only PDF is the one we are removing; every other format
+           still gets its tag, exactly as when the chip arrived here
+           already made. */
+        if (bare && FORMAT_WORDS.includes(key)) {
+          const lbl = chipLabel(bare[3]);
+          shape = [bare[0], bare[1], bare[2],
+                   isPdfLabel(bare[3]) ? '' : `<span class="doe-chip">${lbl}</span>`, lbl];
+        }
+      }
       if (!shape) return m;
       const [, lead, aAttrs, chip, label] = shape;
       const text = lead.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
@@ -2655,6 +2729,30 @@ function contentDiff(before, after) {
     /* A CHIP IS SET IN ONE CASE — "pdf" and "PDF" become the same
        chip — so a format word is compared without its capitals. */
     .replace(new RegExp('(?:' + FORMAT_ALT + ')(?![a-z])', 'gi'), (m) => canonKey(m))
+    /* A HAND-TYPED "PDF" IS REMOVED OUTRIGHT, and this is the only
+       place in this file where a word the author wrote is deleted
+       rather than moved. Matt asked for it in those words: "we do't
+       need PDF labels, even if they were hand typed." The reasoning
+       is the one that stopped the tool inventing them — PDF is what
+       a document link is unless it says otherwise, so the label is
+       the page saying the expected thing out loud, 301 times across
+       50 pages.
+       AFTER the canonical pass above, so every spelling has already
+       become the single token "pdf", and bounded so that "webpdf"
+       and "printpdf" — which an author used to tell two versions of
+       one document apart — are left whole.
+       Every other word still has to survive, so a rule that ever
+       reached past the label it is meant to take would refuse the
+       page exactly as before. */
+    /* THE SEPARATOR IS NOT PART OF IT. An earlier version also ate
+       a comma or a dash in front of the label, which made this side
+       of the comparison lose punctuation the page keeps:
+       "…Guide,</a> PDF, 375KB" leaves the comma inside the link text
+       and only " PDF" is removed, so eating it here reported a loss
+       that had not happened. A dash before a format word is already
+       taken off both sides by the rule above; nothing removes a
+       comma, so nothing here may pretend it did. */
+    .replace(/(?:\s|&nbsp;)*\bpdf\b/g, '')
     .replace(/[[\]]/g, '')
     .replace(/\s/g, '');
   if (all(a) === all(b)) return { spacingOnly: true };
