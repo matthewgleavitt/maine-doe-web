@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-k  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-l  ·  Last edited: 2026-09-22
  *
  * ============================================================
  * SCOPE
@@ -5508,4 +5508,30 @@ body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody tr:
 body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody tr:hover > th[rowspan]:not([rowspan="1"]),
 body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody tr:hover > th[scope="row"][rowspan]:not([rowspan="1"]) {
   background: transparent !important;
+}
+
+
+/* ── WHERE A LABEL SITS IN A TALL CELL ───────────────────────────
+   Matt: "that text is anchored all the way at the bottom, I would
+   think top or middle makes most sense."
+   The header rule sets vertical-align: bottom, and it is right to:
+   a column header of one line and a column header of three should
+   share a baseline just above the data. But the rule reaches every
+   th, including the ones that label a row from inside the body — so
+   on /mtss/teams "What it looks like" sits at the foot of a 583px
+   cell, a third of a screen below the row it names.
+
+   BODY LABELS GO TOP, like every td beside them, so a label and the
+   first line of what it labels start together.
+   A CELL THAT SPANS ROWS GOES MIDDLE, because it names a group
+   rather than a row: pinned to the top of an eleven-row span on
+   /Testing_Accountability/model/indicators it drifts away from most
+   of what it applies to, and centred it stays with the group.
+   The header row is untouched. */
+body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody th {
+  vertical-align: top;
+}
+body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody td[rowspan]:not([rowspan="1"]),
+body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody th[rowspan]:not([rowspan="1"]) {
+  vertical-align: middle;
 }
