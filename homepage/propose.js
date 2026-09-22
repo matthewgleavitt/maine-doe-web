@@ -110,6 +110,14 @@ const componentSpans = (src) => {
      keeps its level, gets no wrapper and never reaches the list.
      A span rather than a div, and closed by counting spans. */
   {
+    /* The heading itself carries the class — which is the shape the
+       cleanup leaves, because a heading inside a <span> inside a <p>
+       is not valid markup and the browser takes the heading out of
+       both. Measured on this page before the fix: the span rendered
+       1x1 and the heading rendered 818px wide, in full view. */
+    const hh = /<h([1-6])[^>]*\sclass="[^"]*\b(?:visually-hidden|sr-only)\b[^"]*"[^>]*>[\s\S]*?<\/h\1>/gi;
+    let x;
+    while ((x = hh.exec(src))) spans.push([x.index, x.index + x[0].length]);
     const vh = /<span[^>]*class="[^"]*\b(?:visually-hidden|sr-only)\b[^"]*"[^>]*>/gi;
     let v;
     while ((v = vh.exec(src))) {

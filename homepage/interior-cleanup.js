@@ -1969,6 +1969,46 @@ const FIXES = [
      Demoting to a blockhead h2 also makes the section countable: the
      contents list is generated from .blockhead h2, so a page whose
      sections were h1s could never have one. */
+  /* A HEADING WEARS ITS OWN HIDDEN CLASS.
+     /schoolsupports/highmobility/titleIpartC ends with
+       <p><span class="visually-hidden"><h1>Title I, Part C is
+       formerly known as Maine Migrant Education (MEP)</h1></span></p>
+     — a former name kept for people who search for it. Matt: "that is
+     supposed to be hidden text just for SEO." It is not hidden. A
+     <p> cannot contain a heading, so the parser closes the paragraph
+     and the span at the heading and puts the heading out on its own:
+     the page ships an empty <span class="visually-hidden"></span> and
+     a full-width line of text at the bottom of the page, visible to
+     everyone. Measured in the browser: the span renders 1x1 and the
+     heading renders 818px wide.
+     The class belongs on the heading, which is valid markup, needs no
+     wrapper, and hides the line the way it was meant to be hidden
+     while a screen reader and a crawler still read it. Not a word
+     changes. */
+  ['hidden heading unwrapped', (h) => {
+    let n = 0;
+    const one = new RegExp(
+      '<(p|div)(?:\\s[^>]*)?>\\s*' +
+      '<(span|div)[^>]*\\sclass="([^"]*\\b(?:visually-hidden|sr-only)\\b[^"]*)"[^>]*>\\s*' +
+      '<h([1-6])([^>]*)>([\\s\\S]*?)<\\/h\\4>\\s*' +
+      '<\\/\\2>\\s*<\\/\\1>', 'gi');
+    h = h.replace(one, (m, outer, inner, cls, lv, attrs, text) => {
+      n++;
+      const keep = attrs.replace(/\sclass="[^"]*"/i, '');
+      return `<h${lv}${keep} class="${cls.replace(/\s+/g, ' ').trim()}">${text.trim()}</h${lv}>`;
+    });
+    /* The same shape without the paragraph around it. */
+    const bare = new RegExp(
+      '<(span)[^>]*\\sclass="([^"]*\\b(?:visually-hidden|sr-only)\\b[^"]*)"[^>]*>\\s*' +
+      '<h([1-6])([^>]*)>([\\s\\S]*?)<\\/h\\3>\\s*<\\/\\1>', 'gi');
+    h = h.replace(bare, (m, tag, cls, lv, attrs, text) => {
+      n++;
+      const keep = attrs.replace(/\sclass="[^"]*"/i, '');
+      return `<h${lv}${keep} class="${cls.replace(/\s+/g, ' ').trim()}">${text.trim()}</h${lv}>`;
+    });
+    return [h, n];
+  }],
+
   /* EXCEPT WHEN IT IS DELIBERATELY HIDDEN.
      /schoolsupports/highmobility/titleIpartC ends with
      <span class="visually-hidden"><h1>Title I, Part C is formerly
@@ -1986,10 +2026,11 @@ const FIXES = [
      becomes a plain h2 and stays hidden, which is what it was for. */
   ['body h1 to blockhead h2', (h) => {
     let n = 0;
-    h = h.replace(/<h1[^>]*>\s*(?:<strong>)?([\s\S]*?)(?:<\/strong>)?\s*<\/h1>/gi,
-      (m, text, off) => {
+    h = h.replace(/<h1([^>]*)>\s*(?:<strong>)?([\s\S]*?)(?:<\/strong>)?\s*<\/h1>/gi,
+      (m, attrs, text, off) => {
         n++;
-        if (inHidden(h, off)) return `<h2>${text.trim()}</h2>`;
+        const own = /class="[^"]*\b(?:visually-hidden|sr-only)\b/i.test(attrs);
+        if (own || inHidden(h, off)) return `<h2${own ? attrs : ''}>${text.trim()}</h2>`;
         return `<div class="blockhead">\n<h2>${text.trim()}</h2>\n</div>`;
       });
     return [h, n];

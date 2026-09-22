@@ -3234,8 +3234,8 @@ body.page-node-type-multi-column-page #block-doe-content a.btn-cta {
    it already was: the two ends of one row. The 40px of left room
    existed only to balance the mark's 40px on the right, which a
    centred label needs and a left-aligned one does not.
-   410 buttons on 137 pages are btn-block. Buttons that size to their
-   label are untouched and stay centred. */
+   401 buttons on 132 pages are btn-block. The other 350 size to their
+   label, are untouched, and stay centred. */
 body.page-node-type-multi-column-page #block-doe-content a.btn.btn-block {
   text-align: left;
   padding-left: 20px;
