@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-f  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-h  ·  Last edited: 2026-09-22
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -1414,6 +1414,70 @@ function propose(node, audit, index, opts = {}) {
      Only the page's own sub-headings. A heading inside a card, a
      contact block, an accordion panel, a list or a table cell is that
      thing's label and keeps its own treatment. */
+  /* A HEADING WRAPPER THAT SWALLOWED THE PAGE.
+     /mtss/teams is written with <div class="blockhead"> opened
+     around the heading AND the row beneath it, closed once at the
+     end — so the component holds a heading and an entire two-column
+     grid. That survives the rename to .doe-sub, and .doe-sub is a
+     flex row: the h3 and the grid become siblings laid side by side,
+     630px and 864px inside an 864px column. It is why that panel
+     looks like it has a stray rule across it.
+     Two pages do this. The repair is to close the wrapper where the
+     heading ends and let everything else follow as the siblings they
+     were always meant to be. Nothing moves on the page except the
+     tag boundary; not a word changes. */
+  /* A HEADING THAT IS ONLY A LABEL.
+     { "unhead": ["Elementary", "Middle", "High"] }
+     Matt: "I don't like the elementary middle high being headings, I
+     guess maybe those could just be bolded text above those videos?"
+     He is right about what they are. Three one-word captions sitting
+     above three videos in a row are labelling the players, not
+     opening sections of the page — they are the video's name, the
+     way a caption is. As headings they are announced as structure, go
+     into the outline, and each take the sub-heading's teal rule, so
+     three captions are drawn with the same weight as "Theory into
+     Action" above a whole grid of cards.
+     Named page by page, because nothing in the markup distinguishes
+     a caption from a short section title; a person reading the page
+     does. The words stay exactly as they are and stay bold. */
+  if (opts.unhead) {
+    let n = 0;
+    for (const want of [].concat(opts.unhead)) {
+      const needle = String(want).replace(/\s+/g, ' ').trim().toLowerCase();
+      const before = html;
+      html = html.replace(/<h([1-6])\b([^>]*)>([\s\S]*?)<\/h\1>/gi, (m, lv, attrs, inner) => {
+        if (strip(inner).replace(/\s+/g, ' ').trim().toLowerCase() !== needle) return m;
+        n++;
+        const cls = (attrs.match(/\sclass="([^"]*)"/i) || [, ''])[1];
+        return `<p${cls ? ` class="${cls}"` : ''}><strong>${inner}</strong></p>`;
+      });
+      if (html === before) notes.push(`Unhead skipped — no heading reads "${want}".`);
+    }
+    if (n) decisions.push({ id: 'unhead', on: true, label: 'Set a caption back as text',
+      why: `${n} heading${n > 1 ? 's are' : ' is'} a label on the thing underneath rather than a section of the page — named in overrides.json for this page. Set as headings they are announced as structure, counted into the outline, and drawn with the same rule as a heading that opens a whole grid. They stay bold and keep their place; only the tag changes.`,
+      value: n + ' heading' + (n > 1 ? 's' : '') });
+  }
+
+  if (opts.unwrapheads !== false) {
+    let fixed = 0, first = null;
+    const OPEN = /<div[^>]*class="(?:[^"]*\s)?(?:blockhead|doe-sub)(?:\s[^"]*)?"[^>]*>/gi;
+    for (const m of [...html.matchAll(OPEN)].reverse()) {
+      let d = 1, i = m.index + m[0].length;
+      const t = /<div\b[^>]*>|<\/div>/gi; t.lastIndex = i; let z;
+      while (d > 0 && (z = t.exec(html))) { d += z[0][1] === '/' ? -1 : 1; i = z.index + z[0].length; }
+      const inner = html.slice(m.index + m[0].length, i - 6);
+      const h = inner.match(/^\s*<h([1-6])\b[^>]*>[\s\S]*?<\/h\1>/i);
+      if (!h) continue;
+      const rest = inner.slice(h[0].length);
+      if (!/<(?:div|table|ul|ol|p)\b/i.test(rest)) continue;   /* only a heading — nothing to do */
+      fixed++; if (!first) first = strip(h[0]).slice(0, 44);
+      html = html.slice(0, m.index) + m[0] + h[0] + '</div>\n' + rest + html.slice(i);
+    }
+    if (fixed) decisions.push({ id: 'unwrapheads', on: true, label: 'Close a heading wrapper at the heading',
+      why: `The wrapper around "${first}" was opened before the heading and closed after everything that follows it, so a whole grid ended up inside a component meant to hold a title. That component lays its children out in a row, which put the heading and the grid side by side in a space only wide enough for one. It now closes where the heading ends and the rest follows after it. Not a word changes.`,
+      value: fixed + ' wrapper' + (fixed > 1 ? 's' : '') });
+  }
+
   if (opts.subheads !== false) {
     const maskInner = html.replace(/<(li|td|th|blockquote|figure)\b[\s\S]*?<\/\1>/gi, m => ' '.repeat(m.length));
     const spansNow = componentSpans(html);

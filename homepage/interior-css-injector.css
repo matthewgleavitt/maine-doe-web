@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-g  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-i  ·  Last edited: 2026-09-22
  *
  * ============================================================
  * SCOPE
@@ -5409,4 +5409,65 @@ body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-label
 }
 body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-content {
   margin-top: 6px !important;
+}
+
+
+/* ── A VIDEO BESIDE TEXT TAKES THE LARGER HALF ───────────────────
+   Matt: "The quote and video just make the video larger and have the
+   quote be less of that space."
+   Not a new proportion — the one the site already uses. Of the 32
+   pages with a two-column row holding a video, about twenty are
+   written col-sm-7 for the video against col-sm-5 for the text.
+   /mtss/teams gives the video col-sm-3 against a col-sm-9 pull
+   quote, so a 16:9 player comes out 198px, smaller than the
+   thumbnail YouTube would show for it.
+
+   GROW RATIOS, NOT PERCENTAGES, AND THAT IS WHAT MAKES IT SAFE.
+   The first attempt set 58.333% and 41.666% and guarded the
+   two-videos-side-by-side case with
+   :has(> col:not(:has(.doe-video))) — which is :has() nested inside
+   :has(), is invalid CSS, and silently took the whole rule with it.
+   7 and 5 against a zero basis needs no guard: a video beside text
+   divides 7:5, two videos beside each other divide 7:7 and stay the
+   half-and-half they already were, and nothing can add up to more
+   than the row because grow shares out what is there rather than
+   claiming a width.
+   Two columns only, in a row that has a video, above the stacking
+   width. */
+@media (min-width: 700px) {
+  body.page-node-type-multi-column-page #block-doe-content .row:has(.doe-video) > [class*="col-"]:nth-child(2):last-child,
+  body.page-node-type-multi-column-page #block-doe-content .row:has(.doe-video) > [class*="col-"]:first-child:nth-last-child(2) {
+    flex: 5 1 0;
+    max-width: none;
+  }
+  body.page-node-type-multi-column-page #block-doe-content .row:has(.doe-video) > [class*="col-"]:nth-child(2):last-child:has(.doe-video),
+  body.page-node-type-multi-column-page #block-doe-content .row:has(.doe-video) > [class*="col-"]:first-child:nth-last-child(2):has(.doe-video) {
+    flex: 7 1 0;
+  }
+}
+
+
+/* ── THE SELECTED TAB, OWNED HERE ────────────────────────────────
+   Matt: "is there a way we could make it so that the tab that is
+   current is highlighted, maybe just the inverse (teal with dark
+   blue lettering)?"
+   That is what it already does — but not from anywhere this file
+   controls. The rule doing it is
+   `.tab-button.active { background-color:#42c3f7; color:#182b3c }`,
+   and it is sitting inside the ECSE onboarding page's own stylesheet,
+   which Drupal has aggregated into a site-wide file. So a rule
+   written for one page is what gives all 25 tabbed pages their
+   selected state, and I have just told Matt that most of that
+   stylesheet is dead and can be deleted. Deleting it would take this
+   with it.
+   Same two colours, same result, said here instead, so the page it
+   came from can be cleaned out without anything going quiet. Teal
+   ground, navy ink: 7.16:1, and the inverse of the unselected tabs,
+   which is the pattern this file already uses wherever something is
+   picked out against navy.
+   The theme transitions background over 0.2s and that is left alone. */
+body.page-node-type-multi-column-page #block-doe-content .tab-labels .tab-button.active {
+  background-color: var(--i-teal);
+  color: var(--i-navy);
+  font-weight: 700;
 }
