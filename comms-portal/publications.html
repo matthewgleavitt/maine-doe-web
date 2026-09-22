@@ -284,7 +284,10 @@ function App(){
   useEffect(()=>{
     (async()=>{
       try{
-        const r=await fetch(API+'?type=newsroom_stats');
+        // CDN-first via fetchCdnOrLive; wrap so the existing code below
+        // that expects an r.json() shape still works.
+        const j=await fetchCdnOrLive('newsroom_stats');
+        const r={ok:true,json:async()=>j};
         const j=await r.json();
         if(j.error) setNewsroomStatsError(j.error);
         else setNewsroomStats(j);

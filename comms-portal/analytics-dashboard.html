@@ -96,6 +96,26 @@ function AnalyticsDashboard() {
   const [expandedFiles, setExpandedFiles] = useState({});
   const [ownerFilter, setOwnerFilter] = useState("");
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA432dtGEN-UzmSDtzlaL7SEVxChnMOfl0Lgr2BEhg/exec";
+  // Static CDN mirror — refreshed every 15 min by refresh-portal-data.yml.
+  // Only the default 30-day window is mirrored (the most common view). Any
+  // other window (7/90/365) falls straight through to live Apps Script.
+  const CDN_BASE = "https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/";
+  const CDN_STALE_MINUTES = 60;
+  async function fetchCdnOrLive(type){
+    try{
+      const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);
+      const r=await fetch(CDN_BASE+type+".json",{signal:c.signal});
+      clearTimeout(t);
+      if(r.ok){
+        const d=await r.json();
+        const age=(Date.now()-new Date(d._fetched||0).getTime())/60000;
+        if(age<CDN_STALE_MINUTES){ console.log("["+type+"] CDN, age "+Math.round(age)+" min"); return d; }
+        console.warn("["+type+"] CDN stale ("+Math.round(age)+" min), falling back to live");
+      }
+    }catch(e){ console.warn("["+type+"] CDN failed, falling back to live:",e.message); }
+    const rr=await fetch(SCRIPT_URL+"?type="+type,{cache:"no-store"});
+    return rr.json();
+  }
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pageData, setPageData] = useState(null);
@@ -325,10 +345,19 @@ function AnalyticsDashboard() {
       }
     }
     try {
-      const [pD, fD] = await Promise.all([
-        fetchJson(SCRIPT_URL+"?type=pages&days="+d),
-        fetchJson(SCRIPT_URL+"?type=files&days="+d),
-      ]);
+      // Default 30-day window uses the CDN mirror (~100ms). Other windows
+      // (7/90/365) go straight to live Apps Script since they aren't
+      // mirrored. Same fallback path if the CDN payload is unreachable
+      // or older than 60 min.
+      const [pD, fD] = d === "30"
+        ? await Promise.all([
+            fetchCdnOrLive("pages"),
+            fetchCdnOrLive("files"),
+          ])
+        : await Promise.all([
+            fetchJson(SCRIPT_URL+"?type=pages&days="+d),
+            fetchJson(SCRIPT_URL+"?type=files&days="+d),
+          ]);
       if (pD.error) throw new Error(pD.error);
       const pageRows = pD.rows||[];
       const fileRows = fD.rows||[];

@@ -334,7 +334,7 @@ function Portal(){
 
     // Web stats (page views, total pages, total files) — independent of the above
     (async()=>{
-      const j=await fetchJson(SCRIPT_URL+'?type=web_stats','web_stats');
+      const j=await fetchCdnOrLive('web_stats');
       if(!j) return;
       const next={
         pageViews:j.pageViews||'—',

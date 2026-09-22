@@ -33,6 +33,10 @@ const ENDPOINTS = [
   { type: 'announcements',  ttl: 900,  desc: 'Portal notifications' },
   { type: 'moderation',     ttl: 90,   desc: 'Drupal pending-approval queue' },
   { type: 'youtube',        ttl: 900,  desc: 'YouTube submissions tracker' },
+  { type: 'pages',          ttl: 21600, desc: 'GA4 page views (30-day)' },
+  { type: 'files',          ttl: 21600, desc: 'GA4 file downloads (30-day)' },
+  { type: 'web_stats',      ttl: 900,   desc: 'Portal stats tile' },
+  { type: 'newsroom_stats', ttl: 3600,  desc: 'WordPress.com newsroom analytics' },
 ];
 
 const DATA_DIR = path.join(process.cwd(), 'data');
