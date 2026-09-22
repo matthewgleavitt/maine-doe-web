@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-e  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-g  ·  Last edited: 2026-09-22
  *
  * ============================================================
  * SCOPE
@@ -5320,12 +5320,93 @@ body.page-node-type-multi-column-page #block-doe-content .row > [class*="col-"]:
   margin-bottom: 0;
 }
 
-/* RESTATED AFTER THE RULE ABOVE, WHICH OTHERWISE UNDOES IT.
-   Zeroing the card's bottom margin for every column holding a card
-   also zeroed it for the last row of a pair, so the 18px this file
-   puts between two adjacent rows collapsed to nothing. Same
-   specificity, later wins, so the between-rows case is said again
-   here rather than fought with !important. */
-body.page-node-type-multi-column-page #block-doe-content .row:has(+ .row) > [class*="col-"]:has(> .card) > .card {
+/* THE GAP AFTER A ROW BELONGS TO THE ROW, NOT TO THE CARD IN IT.
+   The first version of this put 18px under the last card of a pair
+   of rows, which worked for two rows of cards and for nothing else.
+   Matt, immediately: "now between DC note and reflection or other
+   cards/notes, there's NO space at all." Measured on /mtss/teams,
+   three places where a row of cards met a .dc-note with 0px between
+   them, and on the foster care page a row meeting a Tableau embed
+   the same way. Of course: the spacer was on the card, so anything
+   that was not a card got nothing.
+   One margin on the row itself is the whole thing. Whatever follows
+   a row — another row, a callout, an embed, a table — sits 18px
+   below it, and the pair of rules underneath stop that doubling up
+   with the 26px a row already carries on top. */
+body.page-node-type-multi-column-page #block-doe-content .row {
   margin-bottom: 18px;
+}
+
+
+/* ── A ROW LABEL IS NOT A COLUMN HEADER ──────────────────────────
+   Matt, on the Individual Student table: "there's one random cell
+   that's darker ... it highlights beige at weird times."
+   The dark cell is a <th scope="row">. The rule above paints every
+   th navy with white type, which is right for the header row and
+   wrong for a cell that labels a row from inside the body — it comes
+   out as a navy block halfway down a white table, reading as a
+   second header that starts nowhere.
+   650 of them across 20 pages, so this is not one odd table.
+   scope says which is which, and the markup already carries it: a
+   row label keeps the table's own ground and says what it is by
+   being bold and navy, the way a label does everywhere else here. */
+body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody th[scope="row"] {
+  background: transparent !important;
+  color: var(--i-navy) !important;
+  font-weight: 700;
+}
+/* And it follows the row under the cursor like any other cell, which
+   it could not do while it was painted navy and !important. */
+body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody tr:hover > th[scope="row"] {
+  background: #eae0d6 !important;
+}
+
+
+
+/* ── THE SECTION RULES, ONE STEP DARKER ──────────────────────────
+   Matt: "For h2's could the line be slightly darker too?"
+   The rule above a section header is 2px of rgba(24,43,60,.42) and
+   the line beside a sub-heading is 1px of half that, .21 — a
+   deliberate pair, so both move together or the family breaks.
+   .42 to .55 and .21 to .275: still the same navy, still exactly
+   half, about a third more present. On white that takes the section
+   rule from 2.47:1 to 3.2:1 and the sub-heading line from 1.5:1 to
+   1.8:1, which is enough to read as drawn rather than as an artefact
+   without either becoming a border. */
+body.page-node-type-multi-column-page #block-doe-content .blockhead::before,
+body.page-node-type-multi-column-page #block-doe-content .doe-section::before,
+body.page-node-type-multi-column-page .blockhead::before,
+body.page-node-type-multi-column-page .doe-section::before {
+  border-top-color: rgba(24, 43, 60, .55);
+}
+body.page-node-type-multi-column-page .doe-sub::after {
+  background: rgba(24, 43, 60, .275);
+}
+
+/* ── THE TAB STRIP ───────────────────────────────────────────────
+   Matt: "the space between the tabs and the first item is still
+   pretty big" and "the space between buttons/tabs is really really
+   small — maybe a few more px."
+   Both are the same oversight from opposite directions. The strip
+   sets gap: 8px, but the labels are wrapped in a <p>, so they are
+   not its flex children and the gap applies to nothing: measured
+   between two buttons, 0px. They were touching. The margin goes on
+   the buttons, where it reaches them.
+   And the panel: 14px of margin above it plus what the first thing
+   inside brings. 6px is enough to separate the panel from the strip
+   it belongs to — a tab and its contents are one object, and too
+   much air between them reads as two. */
+body.page-node-type-multi-column-page #block-doe-content .tab-labels .tab-button {
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+/* ON THE STRIP, NOT THE PANEL. margin-top: 6px on the panel did
+   nothing visible: .tab-labels carries margin-bottom: 16px, the two
+   collapse, and the larger of them is the gap. The number has to be
+   set where it is coming from. */
+body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-labels {
+  margin-bottom: 6px;
+}
+body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-content {
+  margin-top: 6px !important;
 }
