@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — the page review panel
- * Version: 2026-09-21-h  ·  Last edited: 2026-09-21
+ * Version: 2026-09-22-a  ·  Last edited: 2026-09-22
  *
  *   node build-review-panel.js
  *   then open http://localhost:8791/review/
@@ -328,8 +328,75 @@ function frame(body, withInjector) {
     + '<scr' + 'ipt src="https://code.jquery.com/jquery-3.7.0.min.js"></scr' + 'ipt>'
     + '<scr' + 'ipt src="https://www.maine.gov/awt/templateV3/js/datatables/js/jquery.dataTables.min.js"></scr' + 'ipt>'
     + '<scr' + 'ipt>' + DATATABLES + '</scr' + 'ipt>'
+    + '<scr' + 'ipt>' + TABS + '</scr' + 'ipt>'
     + (withInjector ? '<scr' + 'ipt>' + ACCORDION + '</scr' + 'ipt>' : '') + '</body></html>';
 }
+
+/* TABS, BOTH KINDS, RUN IN THE FRAME.
+   26 pages carry tab markup and none of them worked here: the
+   stylesheet for tabs is already in two of the production sheets the
+   frame loads, but the SCRIPT is not, and the script is what hides
+   the panels. So every tabbed page previewed with all of its panels
+   stacked on top of each other, which is neither the live page nor
+   the proposal.
+   The site runs two behaviours on the same .lesson-tabs.js-tabs hook
+   and they are not interchangeable: 13 pages are BUTTONS
+   (.tab-button[data-tab] naming a panel id, panels in .tab-contents)
+   and 13 are RADIOS (a hidden input per tab, a label[for], the panel
+   id derived as inputId + '-content', panels in .content). Both are
+   mirrored exactly rather than merged into one tolerant version — a
+   preview that initialises tabs the live site would not is worse
+   than one that leaves them stacked, because it shows a page working
+   that is broken in production. */
+const TABS = \`
+(function () {
+  function radioTabs(t) {
+    var inputs = [].slice.call(t.querySelectorAll('input[type="radio"][name]'));
+    var panels = [].slice.call(t.querySelectorAll('.content .tab-content'));
+    var labels = [].slice.call(t.querySelectorAll('.tab-labels .tab-button[for]'));
+    if (!inputs.length || !panels.length || !labels.length) return false;
+    function show(id) {
+      var panel = t.querySelector('#' + CSS.escape(id + '-content'));
+      panels.forEach(function (p) { p.style.display = 'none'; });
+      if (panel) panel.style.display = 'block';
+      labels.forEach(function (l) { l.classList.toggle('active', l.getAttribute('for') === id); });
+    }
+    var checked = inputs.filter(function (i) { return i.checked; })[0] || inputs[0];
+    if (checked) show(checked.id);
+    inputs.forEach(function (i) {
+      i.addEventListener('change', function () { if (i.checked) show(i.id); });
+    });
+    return true;
+  }
+  function buttonTabs(t) {
+    var wrap = t.querySelector('.tab-labels');
+    var buttons = [].slice.call(t.querySelectorAll('.tab-labels .tab-button[data-tab]'));
+    var panels = [].slice.call(t.querySelectorAll('.tab-contents .tab-content'));
+    if (!wrap || !buttons.length || !panels.length) return false;
+    panels.forEach(function (c) { c.style.display = 'none'; });
+    var initial = t.querySelector('.tab-labels .tab-button.active[data-tab]') || buttons[0];
+    var firstPanel = t.querySelector('#' + CSS.escape(initial.getAttribute('data-tab')));
+    if (firstPanel) firstPanel.style.display = 'block';
+    buttons.forEach(function (b) { b.classList.toggle('active', b === initial); });
+    wrap.addEventListener('click', function (e) {
+      var btn = e.target.closest('.tab-button[data-tab]');
+      if (!btn) return;
+      var panel = t.querySelector('#' + CSS.escape(btn.getAttribute('data-tab')));
+      if (!panel) return;
+      buttons.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      panels.forEach(function (c) { c.style.display = 'none'; });
+      panel.style.display = 'block';
+    });
+    return true;
+  }
+  document.querySelectorAll('.lesson-tabs.js-tabs').forEach(function (el) {
+    if (el.getAttribute('data-tabs-bound') === '1') return;
+    el.setAttribute('data-tabs-bound', '1');
+    if (!radioTabs(el)) buttonTabs(el);
+  });
+})();
+\`;
 
 /* THE SEARCH BEHAVIOUR, RUN IN THE FRAME.
    The panel was linking DataTables' STYLESHEET and none of its

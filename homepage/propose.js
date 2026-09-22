@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-b  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-c  ·  Last edited: 2026-09-22
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -71,7 +71,19 @@ const TITLE_LINES = (() => {
    three divs early. Depth is counted instead. */
 const componentSpans = (src) => {
   const spans = [];
-  const open = /<div[^>]*class="[^"]*\b(?:contact-cube|card|dc-note|jumbotron)\b[^"]*"[^>]*>/gi;
+  /* lesson-tabs IS A COMPONENT TOO, and leaving it off this list cost
+     two pages their tabs. A tab set is a strip of labels, a row of
+     hidden radios and a stack of panels that only work as one object:
+     the label strip is not a paragraph, and the panel headings are
+     not the page's outline. With nothing marking it as a component,
+     every rule here was free to reach inside — on
+     /schools/nutrition/laws/policymemos the banner rule lifted the
+     whole label strip out and set it as the page's lead sentence, and
+     on /data-reporting/ReportingCalendars the .tab-labels wrapper
+     disappeared altogether. Both pages kept their words, so the loss
+     check passed; what broke was the structure, which is the thing
+     the tabs are. */
+  const open = /<div[^>]*class="[^"]*\b(?:contact-cube|card|dc-note|jumbotron|lesson-tabs)\b[^"]*"[^>]*>/gi;
   let m;
   while ((m = open.exec(src))) {
     let depth = 1, i = m.index + m[0].length;
