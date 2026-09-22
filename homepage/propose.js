@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-n  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-r  ·  Last edited: 2026-09-22
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -106,7 +106,21 @@ const componentSpans = (src) => {
       i = t.index + t[0].length;
     }
     spans.push([m.index, depth === 0 ? i : src.length]);
-    open.lastIndex = spans[spans.length - 1][1];
+    /* THE SCAN DOES NOT JUMP PAST WHAT IT JUST FOUND.
+       It used to set lastIndex to the end of the span, to save
+       re-finding a card nested inside a card. The saving is nothing
+       and the cost is total: if ONE walk overruns — a transform
+       leaves a div unbalanced inside a component, and the depth
+       never returns to zero — that span runs to the end of the
+       document and every component after it is never looked for.
+       On /learning/earlychildhood/PDG that lost the contact block,
+       so the rewrap saw a bare h3 with nothing protecting it and
+       wrapped it in a .doe-sub. A contact block draws its own
+       heading and divider; wrapped, it got a teal tick and a rule
+       it was never meant to have. 1 of 369 cubes, and the reason it
+       was only one is luck rather than design.
+       Nested spans are harmless: every test here asks only whether
+       an index falls inside ANY span. */
   }
   /* Accordion terms and panels cannot nest in this markup, and
      neither can a nav, so a lazy match is right for all three.
@@ -3711,6 +3725,256 @@ function propose(node, audit, index, opts = {}) {
     }
   }
 
+  /* A BOLD LINE DIVIDING A CARD IS A HEADING.
+     Matt: "in the middle we have Examples, which is likely just
+     bolded text, we have that likely on a lot of pages, where we have
+     segmentation and that should be the H3 we worked on to divide
+     sections within a specific card."
+     A paragraph inside a card whose whole content is a few bold words
+     is doing a heading's job: it names the part of the card that
+     follows it. Set as a paragraph it carries no level, so a screen
+     reader announces a run of text with some bold in it and the card
+     offers nothing to scan by. As h3 it takes the section bar the
+     card sub-headings already use.
+     TWO OR MORE IN THE SAME CARD, which is what makes it
+     segmentation rather than emphasis. A single bold line is as
+     likely to be a lead-in or a stressed sentence, and promoting one
+     of those invents a section that is not there. Where a card has
+     two, they are dividing it.
+     AND NOT A LEAD-IN. A trailing colon means the words introduce
+     what comes next in the same breath — "Possible selections are:"
+     — which is a sentence, not a title. Nor anything long enough to
+     be a sentence in the first place. */
+  if (opts.cardseg !== false) {
+    let n = 0, first = null;
+    const BOLD = /<p(?![^>]*class)[^>]*>\s*<strong>([^<]{3,60})<\/strong>\s*<\/p>/gi;
+    html = html.replace(/<div class="card-body">[\s\S]*?(?=<\/div>\s*<\/div>)/gi, (body) => {
+      const hits = [...body.matchAll(BOLD)]
+        .filter(m => !/[:：]\s*$/.test(strip(m[1])))
+        .filter(m => strip(m[1]).split(/\s+/).length <= 8);
+      /* ONE IS ENOUGH IF IT IS DIVIDING RATHER THAN LEADING.
+         Two was the first test and it is the safe half of the rule,
+         but it missed the clearest case on the page Matt raised:
+         "Examples" on /learning/standardsreview/socialstudies sits
+         between two lists of links inside one card, and it is the
+         only bold line in there — the first list needs no label
+         because the card header already gave it one.
+         So a lone one qualifies when there is block content both
+         above it and below it inside the same card. That is what
+         separates a divider from a lead-in: a lead-in has nothing in
+         front of it. */
+      const dividing = hits.filter(m => {
+        const before = body.slice(0, m.index), after = body.slice(m.index + m[0].length);
+        return /<(p|ul|ol|table|h[2-6])\b/i.test(before) && /<(p|ul|ol|table)\b/i.test(after);
+      });
+      if (hits.length < 2 && !dividing.length) return body;
+      let out = body;
+      for (const m of (hits.length >= 2 ? hits : dividing)) {
+        out = out.replace(m[0], `<h3>${m[1].trim()}</h3>`);
+        n++; if (!first) first = strip(m[1]).slice(0, 40);
+      }
+      return out;
+    });
+    if (n) decisions.push({ id: 'cardseg', on: true, label: 'Let a bold line dividing a card be its heading',
+      why: `${n} line${n > 1 ? 's inside the cards are' : ' inside a card is'} a paragraph holding nothing but a few bold words — "${first}" is one — with the part of the card it names underneath. That is a heading, and set as a paragraph it carries no level, so the card offers nothing to scan by and a screen reader announces only running text. Each becomes an h3 and takes the same section bar the other card headings use. Only where a card has two or more, which is what makes them divisions rather than one stressed line. Not a word changes.`,
+      value: n + ' heading' + (n > 1 ? 's' : '') });
+  }
+
+  /* A ONE-ROW TABLE IS A LAYOUT, NOT DATA — SO IT BECOMES CARDS.
+     Matt, on the science standards: "I have all of the info inside of
+     tables for grade level, is that really the best way to do it?"
+     It is not, and the giveaway is in the markup: these tables have
+     headers and exactly ONE body row. A table says its rows and its
+     columns relate to each other; with one row there is nothing to
+     relate, so the grid is being borrowed to stand three lists side
+     by side. Each cell is a grade and the standards for it.
+     Measured at 375px before the change: the High School / Middle
+     School table came out 400px wide and the K/1/2 table 457px, both
+     wider than the phone they were on, with columns down to 100px. A
+     table solves that by scrolling sideways inside its own box, which
+     is the reader's problem rather than a fix.
+     A card per column is the page's own component and it stacks: the
+     header is the grade, the body is its list. Three cards on a
+     desktop row, one above another on a phone, no sideways scroll,
+     and the links become a real list instead of a run of text with
+     line breaks in it.
+     BOTH SHAPES OF CELL. Two of the three already hold a <ul>; the
+     third separates its entries with <br>, so that one is split into
+     list items. Either way every word survives — the <br> is the
+     drawing, not the text.
+     NAMED PAGE BY PAGE. 23 one-row tables sit on 11 pages and only
+     this shape is a stack of labelled lists; the others are genuine
+     two-column comparisons — "Allowable Uses of Grant Funds" against
+     "Unallowable" — where side by side IS the meaning and cards would
+     break the comparison. A person decides which is which. */
+  if (opts.tablecards) {
+    let n = 0;
+    const heads = [].concat(opts.tablecards).map(h => String(h).toLowerCase());
+    html = html.replace(/<table\b[^>]*>([\s\S]*?)<\/table>/gi, (m, inner) => {
+      if (/colspan|rowspan/i.test(inner)) return m;
+      const ths = [...inner.matchAll(/<th\b[^>]*>([\s\S]*?)<\/th>/gi)].map(x => x[1]);
+      /* ONE COLUMN COUNTS TOO, when the page has named it. A table
+         with a single column and a single row is the clearest case
+         of all — a box drawn round one list — and the only reason
+         to require two was to avoid guessing. Named in overrides,
+         there is no guess: /learning/standardsreview/mathematics
+         has an 8th Grade table exactly like that. */
+      if (ths.length < 1) return m;
+      const body = (inner.match(/<tbody\b[^>]*>([\s\S]*)<\/tbody>/i) || [, inner])[1];
+      const rows = [...body.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)];
+      const data = rows.filter(r => /<td\b/i.test(r[1]));
+      if (data.length !== 1) return m;
+      if (!heads.includes(strip(ths[0]).toLowerCase())) return m;
+      const tds = [...data[0][1].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)].map(x => x[1]);
+      if (tds.length !== ths.length) return m;
+      const w = ths.length >= 4 ? 3 : ths.length === 3 ? 4 : 6;
+      const cols = ths.map((h, k) => {
+        let cell = (tds[k] || '').trim();
+        if (!/<ul\b|<ol\b/i.test(cell)) {
+          const parts = cell.split(/<br\s*\/?>/i).map(t => t.trim()).filter(t => strip(t));
+          cell = '<ul>\n' + parts.map(t => `<li>${t}</li>`).join('\n') + '\n</ul>';
+        }
+        return `<div class="col-sm-${w} py-2">\n<div class="card h-100">\n`
+          + `<div class="card-header text-white bg-primary"><strong>${strip(h)}</strong></div>\n`
+          + `<div class="card-body">\n${cell}\n</div>\n</div>\n</div>`;
+      });
+      n++;
+      return '<div class="row">\n' + cols.join('\n') + '\n</div>';
+    });
+    if (n) decisions.push({ id: 'tablecards', on: true, label: 'Set a one-row table as the cards it is',
+      why: `${n} table${n > 1 ? 's have' : ' has'} column headers and a single body row, so nothing in ${n > 1 ? 'them relates' : 'it relates'} row to column — the grid is standing labelled lists side by side. At 375px they came out wider than the screen and scrolled sideways inside their own box. As cards they carry the same headings, stack on a phone, and the entries become a real list. Named in overrides.json for this page, because a one-row table can also be a genuine comparison. No word changes.`,
+      value: n + ' table' + (n > 1 ? 's' : '') });
+  }
+
+  /* A COLUMN OF SHORT ENTRIES KEEPS THEM ON ONE LINE.
+     Matt, on the standards-process table: "Step is there, but then in
+     that column Ste and p1 are on different lines, and same with Time
+     Period as Summer gets cut off. Typically when there are
+     paragraphs in a table we can assume it has more wiggle room to be
+     on multiple lines and give single lines a little more space."
+     That is the rule, and table-layout:auto will follow it on its own
+     once a short column is allowed to state a real minimum. It sizes
+     each column to its longest unbreakable run, so a column of
+     "Step 1" and "Step 2" asks for the width of "Step" — it may break
+     at the space — and the column with the paragraphs takes
+     everything else. Measured: Step got 74px, of which 40 is the
+     cell's own padding, leaving 34 for text that needs 45.
+     white-space:nowrap raises that minimum to the whole entry, so the
+     column asks for what it actually needs and the prose column gives
+     it up. Nothing is widened by force; one number in the layout is
+     corrected and the browser does the rest.
+     ONLY WHERE THERE IS SOMEWHERE FOR THE SPACE TO COME FROM. A
+     column qualifies when every cell in it, header included, is at
+     most 16 characters, and only in a table that also has a column
+     running past 60 — a prose column with room to give. Two short
+     columns side by side are already fine and are left alone.
+     A table using colspan is skipped rather than guessed at: the
+     column a cell belongs to stops being its index, and a rule that
+     mis-counts would pin nowrap on the wrong column. */
+  if (opts.tightcols !== false) {
+    let cols = 0, tabs = 0;
+    html = html.replace(/<table\b([^>]*)>([\s\S]*?)<\/table>/gi, (m, tAttrs, body) => {
+      if (/\bcolspan=/i.test(body)) return m;
+      const rows = [...body.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)]
+        .map(r => [...r[1].matchAll(/<(td|th)\b([^>]*)>([\s\S]*?)<\/\1>/gi)]);
+      if (rows.length < 2) return m;
+      const n = Math.max(...rows.map(r => r.length));
+      if (n < 2) return m;
+      const len = [];
+      for (let i = 0; i < n; i++) len[i] = Math.max(0, ...rows.map(r => (r[i] ? strip(r[i][3]).length : 0)));
+      const tight = len.map((l, i) => l > 0 && l <= 16 && i);
+      if (!len.some(l => l > 60)) return m;
+      const want = new Set(tight.filter(x => x !== false));
+      if (!want.size) return m;
+      tabs++; cols += want.size;
+      let out = m;
+      for (const r of rows) r.forEach((c, i) => {
+        if (!want.has(i)) return;
+        const fixed = /class="/.test(c[2])
+          ? c[0].replace(/class="/, 'class="doe-tight ')
+          : c[0].replace(new RegExp('^<' + c[1], 'i'), '<' + c[1] + ' class="doe-tight"');
+        out = out.replace(c[0], fixed);
+      });
+      return out;
+    });
+    if (cols) decisions.push({ id: 'tightcols', on: true, label: 'Let a column of short entries keep them on one line',
+      why: `${cols} column${cols > 1 ? 's hold' : ' holds'} nothing longer than sixteen characters and ${cols > 1 ? 'sit' : 'sits'} in a table that also has a column of paragraphs. The layout sizes a column by its longest unbreakable run, so "Step 1" asks only for the width of "Step" and the paragraph column takes the rest — which is how "Step" and "1" end up on separate lines in a column with room to spare beside it. Held on one line, the column asks for what it needs. Nothing is widened by force and no word changes.`,
+      value: cols + ' column' + (cols > 1 ? 's' : '') + ' in ' + tabs + ' table' + (tabs > 1 ? 's' : '') });
+  }
+
+  /* THE MIRROR OF THE RULE ABOVE: a heading held UP rather than down.
+     { "h2": ["Assessment", "The Standards Review Process"] }
+     The outline walk reads nesting from the levels it is given, so a
+     topic an author wrote as h3 stays a sub-part of whatever section
+     precedes it. On /learning/standardsreview/socialstudies that put
+     "Assessment" and "The Standards Review Process" inside "Review
+     Cycles", which they are not — they are the page's other two
+     subjects, sitting beside it.
+     Matt: "I feel like Assessment and then the Standards Process
+     should be H2, which would then bring in a ToC." Both halves
+     follow: the contents list appears once a page has three sections,
+     and with these promoted it has exactly three.
+     Named page by page, never inferred. Nothing in the markup
+     distinguishes a sub-part from a topic the author under-levelled;
+     only somebody who knows the page can say which this is.
+     It runs here so the wrapper reconciliation below sees the final
+     level and swaps the sub-heading for a section header, and so the
+     contents list, built after that, finds it. */
+  if (opts.h2) {
+    for (const want of [].concat(opts.h2)) {
+      const needle = String(want).replace(/\s+/g, ' ').trim().toLowerCase();
+      let hit = false;
+      html = html.replace(/<h3\b([^>]*)>([\s\S]*?)<\/h3>/gi, (m, attrs, inner) => {
+        if (hit || strip(inner).replace(/\s+/g, ' ').trim().toLowerCase() !== needle) return m;
+        hit = true;
+        decisions.push({ id: 'h2:' + slug(needle.slice(0, 30)), on: true,
+          label: 'Raise this heading to a section',
+          why: `"${strip(inner).slice(0, 48)}" is written as h3, so the outline reads it as a part of the section above it rather than a section of its own. Named in overrides.json for this page. Only the level changes, and with it the treatment and its place in the contents list.`,
+          value: 'h3 to h2' });
+        return `<h2${attrs}>${inner}</h2>`;
+      });
+      if (!hit) notes.push(`Heading not raised — no h3 reads "${want}".`);
+    }
+  }
+
+  /* A FOURTH LEVEL, WHERE A PAGE GENUINELY HAS FOUR.
+     { "h4": ["Advancing a Unified Early Care and Education System"] }
+     The outline cap pulls every h4 and deeper up to h3 on purpose: a
+     fourth-level title on a page that only goes to three is announced
+     as belonging to a level that does not exist. On
+     /learning/earlychildhood/PDG the page really does go to four.
+     Every heading sits inside a tab panel, the panel's own first
+     heading names the grant year, and "Advancing…" and "Grant
+     Documents" are parts of that year — so capping them to h3 puts
+     them at the same level as the year they belong to and the page
+     reads as two headings back to back with nothing between.
+     Matt: "Advancing shouldn't be H3, because then they are back to
+     back, so if Advancing and Grant Documents need to be H4, then we
+     can make a style for that."
+     Named page by page, because nothing in the markup distinguishes a
+     fourth level from a heading someone over-nested, and the cap is
+     right for every page that has not been looked at.
+     Placed after the cap so it is not undone by it, and before the
+     wrapper reconciliation so the h4 is left unwrapped — it is a part
+     of a panel, and neither a section header nor a page sub-heading
+     belongs on it. The stylesheet draws it from its level here. */
+  if (opts.h4) {
+    for (const want of [].concat(opts.h4)) {
+      const needle = String(want).replace(/\s+/g, ' ').trim().toLowerCase();
+      let hit = 0;
+      html = html.replace(/<h3\b([^>]*)>([\s\S]*?)<\/h3>/gi, (m, attrs, inner) => {
+        if (strip(inner).replace(/\s+/g, ' ').trim().toLowerCase() !== needle) return m;
+        hit++;
+        return `<h4${attrs}>${inner}</h4>`;
+      });
+      if (hit) decisions.push({ id: 'h4:' + slug(needle.slice(0, 30)), on: true,
+        label: 'Hold this heading a level below the one above it',
+        why: `"${want}" is a part of the section that opens the panel it sits in, not a peer of it — at h3 the two read as headings back to back. ${hit > 1 ? hit + ' of them, ' : ''}Named in overrides.json for this page. Only the level changes.`,
+        value: 'h3 to h4' + (hit > 1 ? ' ×' + hit : '') });
+      else notes.push(`Heading not lowered — no h3 reads "${want}".`);
+    }
+  }
+
   /* AND THE WRAPPERS HAVE TO AGREE WITH THE LEVELS AFTER IT.
      A heading is wrapped before that last renumbering, so the wrapper
      can end up round the wrong level: on
@@ -3740,7 +4004,19 @@ function propose(node, audit, index, opts = {}) {
     for (const [lv, cls] of [['2', 'blockhead'], ['3', 'doe-sub']]) {
       const bare = [...html.matchAll(new RegExp('<h' + lv + '\\b[^>]*>[\\s\\S]*?<\\/h' + lv + '>', 'gi'))]
         .filter(m => free(m.index))
-        .filter(m => !/<div[^>]*class="[^"]*\b(?:blockhead|doe-sub)\b[^"]*"[^>]*>\s*$/i.test(html.slice(Math.max(0, m.index - 140), m.index)))
+        /* NOR A HEADING THAT OPENS A COMPONENT. The span walk is
+           supposed to cover this, and on one page in 369 it did not:
+           the contact block on /learning/earlychildhood/PDG came out
+           with its "Contact" wrapped in a .doe-sub, which gave it a
+           teal tick and a rule on top of the divider the cube draws
+           for itself. Matt: "contact cubes should not have ever been
+           touched."
+           Rather than chase why the walk lost it, the test that
+           matters is stated directly here: a heading sitting
+           immediately inside a component opener belongs to that
+           component and is never the page's to wrap. Cheap, local,
+           and it does not depend on anything upstream being right. */
+        .filter(m => !/<div[^>]*class="[^"]*\b(?:blockhead|doe-sub|contact-cube|card|dc-note|jumbotron)\b[^"]*"[^>]*>\s*$/i.test(html.slice(Math.max(0, m.index - 200), m.index)))
         .filter(m => !/<(li|td|th|blockquote|figure)\b/i.test(html.slice(Math.max(0, m.index - 400), m.index).split(/<\/(?:li|td|th|blockquote|figure)>/).pop()));
       for (const m of bare.reverse()) {
         html = html.slice(0, m.index) + `<div class="${cls}">` + m[0] + '</div>' + html.slice(m.index + m[0].length);
@@ -4654,7 +4930,34 @@ function propose(node, audit, index, opts = {}) {
      block list fails to match itself — which left two pages reporting
      a loss that was actually an exempt removal. */
   const key = t => normKey(textOf(t));
-  const exempt = new Set(removedOnPurpose.map(key));
+  /* A DECLARED REMOVAL IS BROKEN INTO THE SAME PIECES THE
+     COMPARISON USES, and until now it was not. blocks() cuts a
+     document at every block boundary and keys each piece; this keyed
+     the whole declared string as ONE. So a removal spanning more than
+     one block — a paragraph holding a sentence and a link, which is
+     three pieces — never matched any of them, and the page was
+     refused for losing text that had been declared.
+     That is what stopped the career standards link becoming a banner
+     button three times over: "Looking for the standards themselves?
+     Download the [link]." is one paragraph to the override and three
+     blocks to the check, and the two could not meet.
+     Both forms are kept. The whole-string key still covers a removal
+     that is exactly one block, and the decomposed keys cover the
+     rest. Nothing is weakened: every piece still has to be declared
+     by something, and a piece nobody declared is still a loss. */
+  /* A BANNER BUTTON'S LABEL LEAVES THE BODY, so it is a removal as
+     well as an addition. It was only ever listed as an addition,
+     which filters the AFTER side — and that is the wrong side. The
+     label is text the body HAD and no longer has, because it moved
+     into the banner, and the banner is not part of the html this
+     check reads. So the block sat in "before", found no match in
+     "after", and the page was refused for moving a link it was told
+     to move. Three attempts at the career standards button died
+     here. Named on both sides now. */
+  const ctaText = [].concat(opts.cta || []).map(c => c && c.label).filter(Boolean)
+    .concat([].concat(opts.figure || []).map(f => f && f.button).filter(Boolean));
+  const declared = removedOnPurpose.concat(ctaText);
+  const exempt = new Set(declared.map(key).concat(declared.flatMap(t => blocks(String(t)))));
   /* Renames and edits replace text with different text, so the block
      that was there is gone and a new one has appeared. Both sides
      need exempting or every hand edit reads as a loss. */
@@ -4674,7 +4977,7 @@ function propose(node, audit, index, opts = {}) {
     ...[].concat(opts.figure || []).map(f => f.button).filter(Boolean),
     ...(deckJoined ? [deckJoined] : []),
     ...joined,
-  ].map(key));
+  ].flatMap(t => [key(t)].concat(blocks(String(t)))));
   const before = blocks(node.body).filter(t => !exempt.has(t));
   const after = blocks(html.replace(ADDED, ' ')).filter(t => !added.has(t));
   const missing = [];
@@ -4686,7 +4989,28 @@ function propose(node, audit, index, opts = {}) {
       if (c) pool.set(t, c - 1); else missing.push(t);
     }
   }
-  const safe = missing.length === 0;
+  /* AND THE DIVS HAVE TO BALANCE THE WAY THEY DID GOING IN.
+     This check exists because it caught me. A hand-written replace on
+     /schoolsupports/climate/restraintandseclusion unwrapped a card
+     and kept one of its two closing tags, so the proposal carried an
+     extra </div>. That tag closed #block-doe-content early — and
+     every rule in this stylesheet is scoped to that block, so
+     everything after the stray tag silently lost its cards, its
+     headings, its chevrons and its buttons. The page still passed the
+     content check, because not one word was missing.
+     It is not enough to be balanced; it has to be balanced the SAME
+     as the source, since a body that arrives skewed stays skewed and
+     that is the author's to fix rather than this tool's to hide.
+     Cheap to test, and the failure it catches does not look like a
+     markup fault when you meet it — it looks like the design broke. */
+  const divs = t => (String(t).match(/<div\b/gi) || []).length - (String(t).match(/<\/div>/gi) || []).length;
+  const skewBefore = divs(node.body), skewAfter = divs(html);
+  if (skewBefore !== skewAfter) {
+    notes.push(`UNBALANCED <div>: the proposal closes ${Math.abs(skewAfter - skewBefore)} more than it opens `
+      + `compared with the source (source ${skewBefore}, proposal ${skewAfter}). A stray closing tag ends `
+      + `#block-doe-content early and everything after it loses the stylesheet. Do not apply.`);
+  }
+  const safe = missing.length === 0 && skewBefore === skewAfter;
   if (!safe) {
     notes.push(`CONTENT LOST: ${missing.length} block(s) of text are missing from the proposal. `
       + `First: "${missing[0].slice(0, 90)}…". Do not apply.`);

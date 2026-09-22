@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-v  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-ab  ·  Last edited: 2026-09-22
  *
  * ============================================================
  * SCOPE
@@ -1589,6 +1589,77 @@ body.page-node-type-multi-column-page #block-doe-content .dc-note a.btn * {
   text-decoration: none !important;
 }
 
+/* A BUTTON'S LABEL SITS HIGH IN ITS OWN BOX.
+   Matt, on the two full-width buttons: "it looks like the text is not
+   centered vertically."
+   The padding is already symmetric — Bootstrap's btn-lg gives 8px top
+   and bottom — so nothing in the box is lopsided. League Spartan is:
+   its glyphs sit above the middle of the line box they are set in, so
+   an evenly padded button still reads top-heavy. Measured on the two
+   here, 12px of clear space above the text and 13 below.
+   Half a pixel each way corrects it without changing the button's
+   height: 12.50 and 12.50 on both. A label on a shorter line-height,
+   like the citation button further up the same page, lands within a
+   pixel, which is as close as one value gets for both. */
+body.page-node-type-multi-column-page #block-doe-content a.btn,
+body.page-node-type-multi-column-page #block-doe-content a.btn-cta {
+  padding-top: 8.5px;
+  padding-bottom: 7.5px;
+}
+
+/* A COLUMN HOLDING NOTHING BUT A BUTTON SPACES ITSELF ONCE.
+   Matt, on the two stacked buttons: "there's a pretty big gap
+   between them." 50px of it, and no single thing was wrong — three
+   separate spacings were all doing the same job at once:
+
+     16px  the paragraph's own bottom margin
+      8px  the column's py-2, bottom
+     18px  the row's row-gap, which is what actually separates two
+           columns that have wrapped onto different lines
+      8px  the next column's py-2, top
+
+   The row-gap is the one that means something here; it exists so a
+   card grid wrapping to a second line does not butt against the
+   first. The other two are a paragraph and a column each assuming
+   nothing else will provide the gap. Where the column's whole content
+   is one button there is nothing for them to separate, so they stand
+   down and the row-gap alone is the spacing: 18px.
+   30 columns on 12 pages are this shape. Only 2 are full width, so
+   for the other 28 this changes nothing visible — they sit side by
+   side and their vertical padding was never separating anything
+   either. */
+body.page-node-type-multi-column-page #block-doe-content .row > [class*="col-"] > p:has(> a.btn:only-child) {
+  margin: 0;
+}
+body.page-node-type-multi-column-page #block-doe-content .row > [class*="col-"]:has(> p > a.btn:only-child) {
+  /* !important, because py-2 is a Bootstrap utility and those all
+     carry it. Without it this rule computes, loses, and looks like it
+     did nothing. */
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* A FOURTH LEVEL, DRAWN A STEP QUIETER THAN THE THIRD.
+   The outline cap means an h4 only ever reaches the page because
+   somebody named it in overrides.json, and it only gets named where
+   a page genuinely nests four deep — a tab panel whose own first
+   heading names the section, with parts beneath it.
+   So it takes the sub-heading family mark and steps down from it:
+   the teal edge at 3px rather than 4, 15px rather than the 19px a
+   .doe-sub carries, sentence case rather than the small caps, and
+   no rule across — the rule is what says "a new part of the page",
+   which this is not. It is a part of the part above it, and the
+   edge alone says that. */
+body.page-node-type-multi-column-page #block-doe-content h4:not(.card *):not(.contact-cube *):not(.dc-note *):not(dd *) {
+  font-family: var(--i-display);
+  font-size: 15px; font-weight: 700;
+  letter-spacing: .01em;
+  color: var(--i-navy);
+  margin: 22px 0 10px;
+  padding: 0 0 0 11px;
+  border-left: 3px solid var(--i-teal);
+}
+
 /* ── THE SECTION ─────────────────────────────────────────────────
    What lifts a block onto white used to be whether an author happened
    to reach for Bootstrap's .jumbotron — which is no basis for a
@@ -1722,6 +1793,112 @@ body.page-node-type-multi-column-page #block-doe-content table th[style*="px"],
 body.page-node-type-multi-column-page #block-doe-content table td[style*="px"] {
   width: auto !important;
 }
+/* AND ONE LEVEL DOWN, WHERE THE CARD HOLDS A ROW.
+   Matt, on /specialservices/EarlyChildhoodSpecialEducation/FAPE:
+   "those are headings inside of the settings for delivering, which
+   should've been fixed in the sweep."
+   They should have been, and the reason they were not is a single
+   ">" in the selector above. The card there holds a two-column row
+   and the headings sit inside the columns, so they are grandchildren
+   of .card-body rather than children of it and every rule written for
+   a card sub-heading walked straight past them. 17 headings on 5
+   pages.
+   NO NEGATIVE SIDE MARGINS HERE, which is the one thing that cannot
+   carry over. The bar above reaches -20px to meet the card's own
+   edges; inside a column that same -20 reaches into the gutter and
+   over the column beside it. A bar in a column spans the column. */
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h2,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h3,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h4,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h5,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h6 {
+  display: block !important;
+  background: var(--i-cardbar) !important;
+  color: #fff !important;
+  margin: 18px 0 10px !important;
+  padding: 13px 18px !important;
+  border: 0 !important;
+  /* THE TEAL EDGE COMES BACK. It was on the quiet version of this
+     heading and went when the bar arrived, because the bar set
+     border:0 to clear the theme's. Matt asked for it back, and it is
+     the mark the whole family shares — 4px down the left of a
+     .doe-sub out on the page, 3px inside an accordion panel, and now
+     4px here, flush with the card's own left edge where the bar's
+     negative margin reaches it. */
+  border-left: 4px solid var(--i-teal) !important;
+  border-radius: 0 !important;
+  font-family: var(--i-display);
+  font-size: 16px !important; font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: .01em;
+  width: auto !important;
+}
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h2:first-child,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h3:first-child,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h4:first-child,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h5:first-child,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h6:first-child {
+  margin-top: 0 !important;
+}
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h2::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h3::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h4::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h5::after,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body > .row > [class*="col-"] > h6::after {
+  content: none !important;
+}
+/* A STANDING LINK INSIDE A CARD IS NOT A STANDING LINK EITHER.
+   The same correction already made for accordion panels, for the same
+   reason and on Matt's same note: "Eligibility for ECSE — that link
+   doesn't need to be bolded." A paragraph that is only a link earns
+   17px display bold out on the page, where it is a destination in its
+   own right. Inside a card the header has already named the thing and
+   the link is simply what is in it, so the weight says it twice.
+   16px display at ordinary weight, midblue, chevron kept — the
+   chevron is the part that says the row goes somewhere. 103 of these
+   on 33 pages. */
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body p.doe-action > a,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body p.doe-action > a,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body p.doe-action > a,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body p.doe-action > a,
+body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-header) > .card-body p.doe-action > a {
+  font-size: 16px; font-weight: 500;
+}
+/* A COLUMN MARKED SHORT BY THE TOOL — see tightcols in propose.js.
+   It holds nothing over sixteen characters and sits beside a column
+   of paragraphs, so holding it on one line costs that column a
+   little width and costs the reader nothing.
+   AND IT LETS GO ON A PHONE. nowrap is a promise the layout can
+   only keep while there is width to spare; at 651px and under there
+   is not, and a column that refuses to wrap there pushes the whole
+   table sideways. Below that it wraps like any other. */
+/* THE DESCENDANTS TOO, AND WITH WEIGHT, because neither was
+   optional. white-space inherits, so nowrap on the cell should have
+   been enough — but "Step 1" is written <strong>Step 1</strong> and
+   something in the theme sets white-space:normal on inline elements,
+   which put the wrap back INSIDE the cell that had just refused it.
+   The cell measured nowrap and still broke over two lines.
+   overflow-wrap has to stand down as well: it is allowed to break a
+   word that would overflow even under nowrap, and the rule above
+   sets it break-word on every cell. With both in hand the column
+   asks for its real width — Step went 74px to 98, Time Period 91 to
+   127, and Details gave up the 60 without complaint. */
+body.page-node-type-multi-column-page #block-doe-content table th.doe-tight,
+body.page-node-type-multi-column-page #block-doe-content table td.doe-tight,
+body.page-node-type-multi-column-page #block-doe-content table th.doe-tight *,
+body.page-node-type-multi-column-page #block-doe-content table td.doe-tight * {
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+@media (max-width: 651px) {
+  body.page-node-type-multi-column-page #block-doe-content table th.doe-tight,
+  body.page-node-type-multi-column-page #block-doe-content table td.doe-tight,
+  body.page-node-type-multi-column-page #block-doe-content table th.doe-tight *,
+  body.page-node-type-multi-column-page #block-doe-content table td.doe-tight * {
+    white-space: normal !important;
+  }
+}
 body.page-node-type-multi-column-page #block-doe-content table th,
 body.page-node-type-multi-column-page #block-doe-content table td {
   /* overflow-wrap, not word-break. They behave the same for the case
@@ -1729,7 +1906,30 @@ body.page-node-type-multi-column-page #block-doe-content table td {
      word-break is the deprecated spelling and browsers disagree about
      it at the edges. This is the same property the links use, for the
      same reason, twenty sections down. */
-  overflow-wrap: break-word;
+  overflow-wrap: break-word !important;
+  /* AND THE THEME'S word-break IS CANCELLED, which is the whole
+     reason a narrow column was shredding its own words.
+     Setting overflow-wrap here was never enough: the theme sets
+     word-break:break-word on cells, that is the deprecated alias for
+     overflow-wrap:anywhere, and it wins because it is a different
+     property rather than a competing value of the same one. So the
+     cell kept breaking anywhere.
+     Two things follow from anywhere, and the second is the worse.
+     "Step 1" came out over FOUR lines on
+     /learning/standardsreview/socialstudies — Matt: "Step is there,
+     but then in that column Ste and p1 are on different lines."
+     And because a column's minimum width under table-layout:auto is
+     its longest unbreakable run, anywhere tells the browser that
+     minimum is ONE CHARACTER. So the layout hands almost everything
+     to the column with the most text and starves the short ones:
+     Step got 74px and Time Period 91px against Details on 629.
+     normal puts the floor back at the longest word, which is what
+     makes Matt's other point work by itself — "typically when there
+     are paragraphs in a table we can assume it has more wiggle room
+     to be on multiple lines and give single lines a little more
+     space." That is exactly what auto does once the short columns
+     are allowed to state a real minimum. */
+  word-break: normal !important;   /* the theme carries weight here */
 }
 
 
@@ -2976,9 +3176,82 @@ body.page-node-type-multi-column-page #block-doe-content .doe-action > a.btn::af
 body.page-node-type-multi-column-page #block-doe-content .doe-action > a.btn,
 body.page-node-type-multi-column-page #block-doe-content .doe-action > a.btn-cta {
   display: inline-block !important;
-  background-image: none !important;
-  padding-right: 22px;
+  /* THE CHEVRON IS BLANKED, THE BUTTON'S OWN MARK IS NOT. This used
+     to be background-image:none, which was right while the only thing
+     that could land here was the action link's chevron painting
+     behind a button label. Buttons carry their own mark now — a
+     download, an off-site pane, or a chevron, chosen from the href —
+     and none of them is inherited, so blanking the lot took the one
+     that was meant. The block below sets it after this rule and wins
+     on order, which is why nothing is left to undo here. */
   text-decoration: none !important;
+}
+
+/* ── WHAT A BUTTON DOES, DRAWN ON IT ─────────────────────────────
+   Matt: "is it possible to know if it's a file or if it's a link, and
+   if it's a link use the box and if it's a file like a PDF use the
+   download icon?"
+   It is, and the href already says which without a single change to
+   the markup. Counted across the 746 buttons on 268 pages:
+
+     167  end in a file extension        (158 pdf, 4 docx, 3 xlsx, …)
+     219  go to a host that is not maine.gov
+     349  go somewhere else on maine.gov
+       6  are an in-page anchor or a mailto
+
+   Not one of the 167 file URLs carries a query string after the
+   extension, so [href][href$=".pdf"] is exact rather than approximate — the
+   reason this can be attribute selectors and not a markup pass.
+   Three marks, three meanings: an arrow into a tray for something
+   that downloads, a pane with an arrow leaving it for somewhere off
+   this site, and the same chevron the links already use for a page on
+   maine.gov. The file rule is written last so that a PDF hosted on
+   ed.gov reads as a download, which is what will actually happen when
+   you press it.
+   PADDING GOES ON BOTH SIDES, not just the one with the mark on it.
+   A button centres its label, so 40px of room on the right and 16 on
+   the left would push every label 12px off centre — which is the same
+   fault as the vertical one further up, in the other axis. */
+body.page-node-type-multi-column-page #block-doe-content a.btn,
+body.page-node-type-multi-column-page #block-doe-content a.btn-cta {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http%3A//www.w3.org/2000/svg' width='10' height='14'%3E%3Cpath d='M2 2l5 5-5 5' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+body.page-node-type-multi-column-page #block-doe-content a.btn[href^="http"]:not([href*="maine.gov"]) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http%3A//www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.4 7.9v3.6a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3.6'/%3E%3Cpath d='M8.7 1.6h3.7v3.7'/%3E%3Cpath d='M6.2 7.8 12.3 1.7'/%3E%3C/svg%3E");
+}
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".pdf"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".PDF"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".doc"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".DOC"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".docx"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".DOCX"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".xls"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".XLS"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".xlsx"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".XLSX"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".ppt"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".PPT"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".pptx"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".PPTX"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".csv"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".CSV"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".zip"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".ZIP"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".rtf"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href][href$=".RTF"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http%3A//www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 1.6V9.1'/%3E%3Cpath d='M4.2 6.4 7 9.2 9.8 6.4'/%3E%3Cpath d='M1.9 12.1h10.2'/%3E%3C/svg%3E");
+}
+/* An anchor on this page and a mail link are neither, and a mail link
+   already has its own object elsewhere. No mark, no extra room. */
+body.page-node-type-multi-column-page #block-doe-content a.btn[href^="#"],
+body.page-node-type-multi-column-page #block-doe-content a.btn[href^="mailto:"] {
+  background-image: none;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 /* Buttons and card links are identified by their box, not a rule. */
@@ -5826,9 +6099,17 @@ body.page-node-type-multi-column-page #block-doe-content .card:has(> .card-heade
   color: #fff !important;
   /* The side margins reach the card's own edges, which is 20px of
      body padding either side — the same reach the header has. */
-  margin: 18px -20px 16px !important;
+  margin: 18px -20px 10px !important;
   padding: 13px 18px !important;
   border: 0 !important;
+  /* THE TEAL EDGE COMES BACK. It was on the quiet version of this
+     heading and went when the bar arrived, because the bar set
+     border:0 to clear the theme's. Matt asked for it back, and it is
+     the mark the whole family shares — 4px down the left of a
+     .doe-sub out on the page, 3px inside an accordion panel, and now
+     4px here, flush with the card's own left edge where the bar's
+     negative margin reaches it. */
+  border-left: 4px solid var(--i-teal) !important;
   border-radius: 0 !important;
   font-family: var(--i-display);
   font-size: 16px !important; font-weight: 700;

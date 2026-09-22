@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-22-c  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-f  ·  Last edited: 2026-09-22
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -93,7 +93,23 @@ const FORMAT_ALT = FORMAT_WORDS.slice().sort((a, b) => b.length - a.length)
    exactly those two behind, which is the worst of both worlds. The
    unit is still required; it is just allowed to be sloppy. Safe
    because nothing here fires unless a format word is beside it. */
-const SIZE_RE = '[0-9][0-9.,]*\\s*[KMG](?:KB|B)?\\b';
+/* THE UNIT IS REQUIRED, OR A STREET ADDRESS IS A FILE SIZE.
+   This read a number followed by a bare K, M or G, with the B
+   optional — and across the site that matched 760 times against 73
+   real file sizes. "10 Maplewood Avenue", "169 Main Street",
+   "2025 Maine Climate Literacy Plan", every "MSAD 27": all of them
+   were being taken as a size and deleted from the comparison the
+   content check runs on. It is invisible until two strings that
+   differ only inside a swallowed run are declared equal, which is
+   how "Life and Career Ready Standards 2020 K-Diploma document" came
+   to key as "…standards-diplomadocument" and a page that had lost
+   nothing was refused.
+   So the unit has to be spelled: KB, MB, GB. The two genuine bare
+   ones on the site — "(, 64K)" and ", 1.1M" — are kept by the second
+   branch, which wants a bracket or comma in front and a bracket or
+   comma after, the shape a size is actually written in. An address
+   has a street name after it and never matches. */
+const SIZE_RE = '(?:[0-9][0-9.,]*\\s*[KMG]B\\b|(?<=[(,]\\s{0,3})[0-9][0-9.,]*\\s*[KMG](?=\\s*[),]))';
 
 const normFmt = (raw) => String(raw).trim().replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').toLowerCase();
 /* What the chip says. */
@@ -303,9 +319,38 @@ const FIXES = [
     return [h, n];
   }],
 
-  ['target/rel stripped', (h) => {
+  /* TARGET IS NORMALISED, THEN PUT BACK WHERE IT BELONGS.
+     This rule used to strip every target="_blank" on the page, full
+     stop, because authors were scattering them at random — the same
+     document opening in a new window on one page and not the next.
+     Matt's rule replaces that with a decision: "yes to target blank
+     on off maine.gov sites, universal on the entire website, that way
+     people never lose their place on our website."
+     So the strip stays as the first move, which is what makes this
+     consistent rather than additive — whatever an author typed is
+     discarded, and the destination alone decides. Then every link
+     that genuinely leaves maine.gov gets it back.
+     3,929 links on 515 pages leave, across 1,186 hosts. The 13,506
+     that stay do not get one: a new tab for a page on your own site
+     breaks the back button and stacks up windows for no reason.
+     MAINE.GOV MEANS THE DOMAIN, NOT THE STRING. A host is matched by
+     its ending, so neo.maine.gov and legislature.maine.gov stay put
+     while a link reading maine.gov.example.com would not fool it.
+     rel IS NOT PUT BACK. Every browser in support has implied
+     rel="noopener" for target="_blank" since 2021, so writing it adds
+     an attribute to 3,929 links to restate a default. It is still
+     stripped for the same reason it always was: it was noise. */
+  ['target set by destination', (h) => {
     let n = 0;
-    h = h.replace(/\s(target="_blank"|rel="(noopener|noreferrer)[^"]*")/gi, () => { n++; return ''; });
+    h = h.replace(/\s(target="[^"]*"|rel="(noopener|noreferrer)[^"]*")/gi, '');
+    h = h.replace(/<a\b([^>]*)>/gi, (m, attrs) => {
+      const href = (attrs.match(/href="([^"]*)"/i) || [])[1] || '';
+      if (!/^https?:\/\//i.test(href)) return m;
+      const host = (href.split('/')[2] || '').toLowerCase().replace(/:\d+$/, '');
+      if (/(^|\.)maine\.gov$/.test(host)) return m;
+      n++;
+      return `<a${attrs} target="_blank">`;
+    });
     return [h, n];
   }],
 
@@ -2446,7 +2491,27 @@ const FIXES = [
       const named = /aria-label=/i.test(aAttrs)
         ? aAttrs
         : `${aAttrs} aria-label="${text.replace(/"/g, '&quot;')}, ${label}"`;
-      return `<li${attrs}><a${named}>${lead.trim()}</a>${chip}</li>`;
+      /* AND THE ROW IT PRODUCES IS A LINK ROW, SO IT IS MARKED AS ONE.
+         What comes out of here is by construction a <li> whose whole
+         content is a link, which is the definition .doe-action exists
+         for — but the rule that applies that mark ran earlier, when
+         the row still read "Connors, John – (PDF)" and the link was
+         only part of it.
+         That rule refuses a leading qualifier over 30 characters,
+         because past that length it is a description rather than a
+         label, and it is right to. The cost lands here: in the list
+         of submitted comments on
+         /learning/standardsreview/socialstudies, "Connors, John" is
+         15 characters and got a chevron, "Maine Curriculum Leaders
+         Association" is 37 and did not, and the reader sees one list
+         where some rows are marked and some are not for a reason that
+         is about nobody's name.
+         Marked at the point the shape becomes true, rather than by
+         loosening a threshold that is doing its job elsewhere. */
+      const cls = /class="/.test(attrs)
+        ? attrs.replace(/class="/, 'class="doe-action ')
+        : ` class="doe-action"` + attrs;
+      return `<li${/\bdoe-action\b/.test(attrs) ? attrs : cls}><a${named}>${lead.trim()}</a>${chip}</li>`;
     });
     return [h, n];
   }],

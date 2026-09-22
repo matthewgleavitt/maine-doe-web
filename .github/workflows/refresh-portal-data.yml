@@ -1,0 +1,50 @@
+name: Refresh portal data
+
+# Fetches read-only portal endpoints from Apps Script and commits the
+# JSON responses to /data/*.json. Frontend pages can then read these
+# from raw.githubusercontent.com's CDN (~100ms globally) instead of
+# waiting on Apps Script (2-10s, occasionally 30s+ on Google's flaky
+# edge).
+#
+# This workflow does NOT touch anything on Gateway. It only adds/updates
+# files under /data/ in this repo. Frontend changes to consume the JSON
+# come in a separate later step, once we've verified the data files
+# look right.
+
+on:
+  # Manual trigger — use this for the first few test runs so it doesn't
+  # kick off on cron automatically before we've verified output.
+  workflow_dispatch:
+  # Every 15 minutes once we're ready. Uncomment to enable.
+  # schedule:
+  #   - cron: '*/15 * * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch each portal endpoint
+        run: node .github/scripts/fetch-portal-data.js
+
+      - name: Commit + push if anything changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No data changes to commit"
+          else
+            git commit -m "Refresh portal data $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi

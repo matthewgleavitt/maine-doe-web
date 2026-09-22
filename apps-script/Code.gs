@@ -567,11 +567,14 @@ function doGet(e) {
   var bypassCache = !!(e && e.parameter && e.parameter.refresh);
   var cache = CacheService.getScriptCache();
   if (type !== 'web_stats' && type !== 'event' && !bypassCache) {
-    // Payloads bigger than 100KB use chunked storage. All the GA/stats
-    // endpoints can spill over depending on the site's volume, so we chunk
-    // them consistently.
+    // Payloads bigger than 100KB use chunked storage. Calendar (recurrence
+    // expansion), events (bulk submissions), and publications (Mailchimp
+    // campaign list) all cross the 100KB single-key cap once the sheet has
+    // enough content; the previous single-key writes were silently failing
+    // with "Argument too large: value" during warmCache.
     var isChunked = (type === 'youtube_stats' || type === 'newsroom_stats' ||
-                     type === 'pages' || type === 'files');
+                     type === 'pages' || type === 'files' ||
+                     type === 'calendar' || type === 'events' || type === 'publications');
     var cached = isChunked ? chunkedCacheGet(cache, cacheKey) : cache.get(cacheKey);
     if (cached) {
       var output = ContentService.createTextOutput(_trimCalendar_(cached, calCount));
@@ -746,7 +749,8 @@ function doGet(e) {
         ttl = 300;
     }
     if (type === 'youtube_stats' || type === 'newsroom_stats' ||
-        type === 'pages' || type === 'files') {
+        type === 'pages' || type === 'files' ||
+        type === 'calendar' || type === 'events' || type === 'publications') {
       // Large payload — chunk it. Clear any stale non-chunked entry first.
       try { cache.remove(cacheKey); } catch(re) {}
       var ok = chunkedCachePut(cache, cacheKey, jsonStr, ttl);
@@ -2345,11 +2349,14 @@ function warmCache() {
     warmed.push('youtube');
   } catch(e) { Logger.log('Warm youtube failed: ' + e.message); }
 
-  // Event submissions
+  // Event submissions — chunked; single-key was failing with "Argument too
+  // large" once the sheet passed ~100KB of JSON.
   try {
     var evData = JSON.stringify(getEventSubmissions());
-    cache.put('portal_events_30', evData, 900);
-    warmed.push('events');
+    var evKey = 'portal_events_30';
+    try { cache.remove(evKey); } catch(re) {}
+    var okEv = chunkedCachePut(cache, evKey, evData, 900);
+    warmed.push('events(' + Math.ceil(evData.length/1024) + 'KB' + (okEv?'':' - too big to chunk') + ')');
   } catch(e) { Logger.log('Warm events failed: ' + e.message); }
 
   // Templates
@@ -2363,8 +2370,10 @@ function warmCache() {
   // and campaigns rarely change hour-to-hour.
   try {
     var pubData = JSON.stringify(getPublications());
-    cache.put('portal_publications_30', pubData, 1800);
-    warmed.push('publications');
+    var pubKey = 'portal_publications_30';
+    try { cache.remove(pubKey); } catch(re) {}
+    var okPub = chunkedCachePut(cache, pubKey, pubData, 1800);
+    warmed.push('publications(' + Math.ceil(pubData.length/1024) + 'KB' + (okPub?'':' - too big to chunk') + ')');
   } catch(e) { Logger.log('Warm publications failed: ' + e.message); }
 
   // Moderation queue — biggest win. Was previously uncached AND unwarmed, so
@@ -2392,8 +2401,10 @@ function warmCache() {
   // keeps entries alive between warmings.
   try {
     var calData = JSON.stringify(getPublishedEvents());
-    cache.put('portal_calendar_30', calData, 900);
-    warmed.push('calendar');
+    var calKey = 'portal_calendar_30';
+    try { cache.remove(calKey); } catch(re) {}
+    var okCal = chunkedCachePut(cache, calKey, calData, 900);
+    warmed.push('calendar(' + Math.ceil(calData.length/1024) + 'KB' + (okCal?'':' - too big to chunk') + ')');
   } catch(e) { Logger.log('Warm calendar failed: ' + e.message); }
 
   // Newsroom stats — 60 min cache. Payload can spill over 100KB (article
@@ -2416,6 +2427,25 @@ function warmCache() {
     if (okYt) warmed.push('youtube_stats(' + Math.ceil(ytData.length/1024) + 'KB)');
     else Logger.log('Warm youtube_stats: payload too big to chunk (' + ytData.length + ' bytes)');
   } catch(e) { Logger.log('Warm youtube_stats failed: ' + e.message); }
+
+  // YouTube library (homepage "Latest Videos" band) — cold start hits the
+  // YouTube Data API and takes ~29s. Cache key matches doGet's construction:
+  // `portal_` + type + `_` + days, where days defaults to 30. Warm at both
+  // the default count and the actual band count so either request hits warm.
+  try {
+    // Warm at the default count (matches doGet's fallback when no count
+    // param is passed). Small payload, single-key put fits comfortably.
+    var ytLibData = JSON.stringify(getHomepageVideos_(3));
+    var ytLibKey = 'portal_youtube_videos_30';
+    try { cache.remove(ytLibKey); } catch(re) {}
+    if (ytLibData.length > 90000) {
+      var okLib = chunkedCachePut(cache, ytLibKey, ytLibData, 900);
+      warmed.push('youtube_videos(' + Math.ceil(ytLibData.length/1024) + 'KB' + (okLib?'':' - too big to chunk') + ')');
+    } else {
+      cache.put(ytLibKey, ytLibData, 900);
+      warmed.push('youtube_videos(' + Math.ceil(ytLibData.length/1024) + 'KB)');
+    }
+  } catch(e) { Logger.log('Warm youtube_videos failed: ' + e.message); }
 
   // NOTE: Drupal pages/files are NOT warmed here — they're cached in Sheets
   // by cacheDrupalData (runs every 30 min) and served directly from Sheets.
