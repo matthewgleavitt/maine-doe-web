@@ -64,7 +64,11 @@ const API='https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA
 // CDN payload is unreachable or older than STALE_MINUTES.
 const CDN_BASE='https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/';
 const CDN_STALE_MINUTES=150;
-async function fetchCdnOrLive(type){
+async function fetchCdnOrLive(type, onRevalidate){
+  const live = async () => {
+    const rr = await fetch(API + '?type=' + type, { cache: 'no-store' });
+    return rr.json();
+  };
   try{
     const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);
     const r=await fetch(CDN_BASE+type+'.json',{signal:c.signal});
@@ -72,12 +76,23 @@ async function fetchCdnOrLive(type){
     if(r.ok){
       const d=await r.json();
       const age=(Date.now()-new Date(d._fetched||0).getTime())/60000;
-      if(age<CDN_STALE_MINUTES){ console.log('['+type+'] CDN, age '+Math.round(age)+' min'); return d; }
-      console.warn('['+type+'] CDN stale ('+Math.round(age)+' min), falling back to live');
+      if(age<CDN_STALE_MINUTES){
+        console.log('['+type+'] CDN paint, age '+Math.round(age)+' min');
+        // Stale-while-revalidate: hand back the CDN copy now so the page
+        // paints immediately, then check live in the background. Without
+        // this, a row added minutes ago wouldn't appear until the next
+        // GitHub Actions cron run refreshed the mirror.
+        if(typeof onRevalidate==='function'){
+          live().then(function(fresh){
+            if(fresh && !fresh.error) onRevalidate(fresh);
+          }).catch(function(e){ console.warn('['+type+'] revalidate failed:',e.message); });
+        }
+        return d;
+      }
+      console.warn('['+type+'] CDN stale ('+Math.round(age)+' min), going live');
     }
-  }catch(e){ console.warn('['+type+'] CDN failed, falling back to live:',e.message); }
-  const rr=await fetch(API+'?type='+type,{cache:'no-store'});
-  return rr.json();
+  }catch(e){ console.warn('['+type+'] CDN failed, going live:',e.message); }
+  return live();
 }
 
 const NEWSLETTER_BUILDER_URL='https://www.maine.gov/doe/sites/maine.gov.doe/files/bulk/communications/newsletter-builder/?backend=drupal';
@@ -234,7 +249,7 @@ function App(){
 
   useEffect(()=>{
     (async()=>{
-      try{ const j=await fetchCdnOrLive('publications'); setData(j);}catch(e){setData({error:e.message});}
+      try{ const j=await fetchCdnOrLive('publications', setData); setData(j);}catch(e){setData({error:e.message});}
       setLoading(false);
     })();
   },[]);
@@ -242,7 +257,9 @@ function App(){
   useEffect(()=>{
     (async()=>{
       try{
-        const j=await fetchCdnOrLive('commons');
+        const j=await fetchCdnOrLive('commons', function(fresh){
+          if(fresh&&Array.isArray(fresh.posts)&&fresh.posts.length) setCommonsPosts(fresh.posts);
+        });
         if(j&&Array.isArray(j.posts)&&j.posts.length) setCommonsPosts(j.posts);
         else setCommonsPosts(FALLBACK_POSTS);
       }catch(e){setCommonsPosts(FALLBACK_POSTS);}

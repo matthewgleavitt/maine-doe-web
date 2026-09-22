@@ -1082,36 +1082,31 @@ function hydrateFromCache() {
   } catch(e) { return false; }
 }
 
-// Fetch strategy:
-//   1. Try the static CDN mirror first (~100-300ms globally, always
-//      available unless GitHub is down). If the payload is fresh, use it.
-//   2. If CDN unreachable OR payload older than STALE_MINUTES, fall back
-//      to the live Apps Script endpoint with 3-attempt retry (same
-//      behavior the calendar had before this change).
-// Result: 99% of loads never touch Apps Script; the remaining 1% get the
-// same experience as before, so there's no risk of user-visible regression.
-async function fetchCalendarJson() {
-  // ── 1. Static CDN attempt ─────────────────────────────
+// Fetch the static CDN mirror. Returns the payload if it's usable and
+// fresh enough, otherwise null. Never throws.
+async function fetchCalendarCdn() {
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 5000);
     const r = await fetch(CALENDAR_STATIC_URL, { signal: ctrl.signal });
     clearTimeout(t);
-    if (r.ok) {
-      const data = await r.json();
-      const fetchedAt = data && data._fetched ? new Date(data._fetched).getTime() : 0;
-      const ageMin = (Date.now() - fetchedAt) / 60000;
-      if (fetchedAt && ageMin < STALE_MINUTES) {
-        console.log('[calendar] loaded from CDN, age ' + Math.round(ageMin) + ' min');
-        return data;
-      }
-      console.warn('[calendar] CDN payload is stale (' + Math.round(ageMin) + ' min old), falling back to live');
+    if (!r.ok) return null;
+    const data = await r.json();
+    const fetchedAt = data && data._fetched ? new Date(data._fetched).getTime() : 0;
+    const ageMin = (Date.now() - fetchedAt) / 60000;
+    if (fetchedAt && ageMin < STALE_MINUTES) {
+      console.log('[calendar] CDN paint, age ' + Math.round(ageMin) + ' min');
+      return data;
     }
+    console.warn('[calendar] CDN payload is stale (' + Math.round(ageMin) + ' min old)');
   } catch(e) {
-    console.warn('[calendar] CDN fetch failed, falling back to live:', e.message);
+    console.warn('[calendar] CDN fetch failed:', e.message);
   }
+  return null;
+}
 
-  // ── 2. Live Apps Script fallback ──────────────────────
+// Fetch live from Apps Script, 3 attempts with backoff. Throws on failure.
+async function fetchCalendarLive() {
   const attempt = async () => {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 60000);
@@ -1135,26 +1130,79 @@ async function fetchCalendarJson() {
   throw lastErr;
 }
 
+// Cheap change-detector so a revalidate that returns identical data
+// doesn't trigger a pointless re-render (which would wipe scroll position
+// and any open dropdown). id+date catches adds, removals, and reschedules;
+// status catches cancellations.
+function eventsSignature(list) {
+  if (!Array.isArray(list)) return '';
+  let s = list.length + ':';
+  for (let i = 0; i < list.length; i++) {
+    const e = list[i];
+    s += e.id + e.date + (e.status || '') + '|';
+  }
+  return s;
+}
+
+// Apply a fresh event list to the page.
+function applyEvents(list) {
+  EVENTS = list || [];
+  try { sessionStorage.setItem(CAL_CACHE_KEY, JSON.stringify(EVENTS)); } catch(e){}
+  populateFocusSelect();
+  populateTypeSelect();
+  render();
+}
+
+// Stale-while-revalidate.
+//
+// Phase 1 paints from the CDN mirror in ~200ms so nobody waits.
+// Phase 2 then fetches live from Apps Script in the background and swaps
+// the data in if it actually changed. That's what lets a staff member
+// submit an event and see it on the calendar on the next reload, instead
+// of waiting for the next GitHub Actions cron run to refresh the mirror.
+//
+// The revalidate is silent: no spinner, no layout jump, and it skips the
+// re-render entirely when nothing changed or a detail modal is open.
 async function loadEvents() {
   const hadCache = hydrateFromCache();
+  const container = document.getElementById('events-container');
+
+  // ── Phase 1: fast paint from the CDN ──────────────────
+  let painted = hadCache;
+  const cdn = await fetchCalendarCdn();
+  if (cdn && !cdn.error && Array.isArray(cdn.events)) {
+    applyEvents(cdn.events);
+    painted = true;
+  } else if (!painted && container) {
+    container.innerHTML = '<div class="empty"><div class="big">Loading events...</div></div>';
+  }
+
+  // ── Phase 2: revalidate against live Apps Script ──────
   try {
-    const container = document.getElementById('events-container');
-    if (container && !hadCache) container.innerHTML = '<div class="empty"><div class="big">Loading events...</div></div>';
-    const data = await fetchCalendarJson();
-    if (data.error) throw new Error(data.error);
-    EVENTS = data.events || [];
-    // Persist for next visit so the return trip is instant.
-    try { sessionStorage.setItem(CAL_CACHE_KEY, JSON.stringify(EVENTS)); } catch(e){}
-    populateFocusSelect();
-    populateTypeSelect();
-    render();
+    const live = await fetchCalendarLive();
+    if (live.error) throw new Error(live.error);
+    const fresh = live.events || [];
+    if (eventsSignature(fresh) === eventsSignature(EVENTS)) {
+      console.log('[calendar] revalidated, no changes');
+      return;
+    }
+    // Don't yank the page out from under someone reading a detail modal.
+    // They'll get the fresh copy on their next visit.
+    const modalOpen = document.getElementById('modal-scrim')?.classList.contains('open');
+    if (modalOpen) {
+      console.log('[calendar] changes found but modal is open, deferring');
+      return;
+    }
+    console.log('[calendar] revalidated, applying ' + fresh.length + ' events');
+    applyEvents(fresh);
   } catch (err) {
-    // If we hydrated from cache, keep that view — a failed refresh shouldn't
-    // wipe events off the screen. Only show the error state on a truly cold visit.
-    if (hadCache) { console.warn('[calendar] refresh failed, keeping cached view:', err.message); return; }
-    document.getElementById('events-container').innerHTML =
-      '<div class="empty"><div class="big">Could not load events</div><div class="sm">' +
-      String(err.message || err) + '</div></div>';
+    // A failed revalidate is fine as long as something is already on screen.
+    if (painted) { console.warn('[calendar] revalidate failed, keeping current view:', err.message); return; }
+    if (container) {
+      container.innerHTML =
+        '<div class="empty"><div class="big">Could not load events</div><div class="sm">' +
+        String(err.message || err) + '</div></div>';
+    }
   }
 }
 

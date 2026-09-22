@@ -101,7 +101,11 @@ function AnalyticsDashboard() {
   // other window (7/90/365) falls straight through to live Apps Script.
   const CDN_BASE = "https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/";
   const CDN_STALE_MINUTES = 150;
-  async function fetchCdnOrLive(type){
+  async function fetchCdnOrLive(type, onRevalidate){
+    const live = async () => {
+      const rr = await fetch(SCRIPT_URL + "?type=" + type, { cache: "no-store" });
+      return rr.json();
+    };
     try{
       const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);
       const r=await fetch(CDN_BASE+type+".json",{signal:c.signal});
@@ -109,12 +113,23 @@ function AnalyticsDashboard() {
       if(r.ok){
         const d=await r.json();
         const age=(Date.now()-new Date(d._fetched||0).getTime())/60000;
-        if(age<CDN_STALE_MINUTES){ console.log("["+type+"] CDN, age "+Math.round(age)+" min"); return d; }
-        console.warn("["+type+"] CDN stale ("+Math.round(age)+" min), falling back to live");
+        if(age<CDN_STALE_MINUTES){
+          console.log("["+type+"] CDN paint, age "+Math.round(age)+" min");
+          // Stale-while-revalidate: hand back the CDN copy now so the page
+          // paints immediately, then check live in the background. Without
+          // this, a row added minutes ago wouldn't appear until the next
+          // GitHub Actions cron run refreshed the mirror.
+          if(typeof onRevalidate==="function"){
+            live().then(function(fresh){
+              if(fresh && !fresh.error) onRevalidate(fresh);
+            }).catch(function(e){ console.warn("["+type+"] revalidate failed:",e.message); });
+          }
+          return d;
+        }
+        console.warn("["+type+"] CDN stale ("+Math.round(age)+" min), going live");
       }
-    }catch(e){ console.warn("["+type+"] CDN failed, falling back to live:",e.message); }
-    const rr=await fetch(SCRIPT_URL+"?type="+type,{cache:"no-store"});
-    return rr.json();
+    }catch(e){ console.warn("["+type+"] CDN failed, going live:",e.message); }
+    return live();
   }
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
