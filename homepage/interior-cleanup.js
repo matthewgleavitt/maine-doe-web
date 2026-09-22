@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-22-g  ·  Last edited: 2026-09-22 15:10
+ * Version: 2026-09-22-h  ·  Last edited: 2026-09-22 16:45
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt

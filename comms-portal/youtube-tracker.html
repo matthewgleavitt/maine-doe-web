@@ -337,7 +337,15 @@ function App(){
   const [ytStats,setYtStats]=useState(null);
   const [ytStatsError,setYtStatsError]=useState(null);
   const [ytStatsLoading,setYtStatsLoading]=useState(false);
-  const [data,setData]=useState([]);
+  // Rehydrate from sessionStorage so the table paints instantly with the
+  // last-known list. The fresh fetch runs in the background and swaps in
+  // updated data when it lands. Since the submissions endpoint contains
+  // PII we can't mirror it to the public CDN, so this is the best we can
+  // do for a free/instant-feel experience.
+  const [data,setData]=useState(()=>{
+    try{ const s=sessionStorage.getItem('doe_youtube_submissions'); if(s){ return JSON.parse(s); } }catch(e){}
+    return [];
+  });
   const [loading,setLoading]=useState(true);
   const [err,setErr]=useState(null);
   const [search,setSearch]=useState('');
@@ -405,13 +413,26 @@ function App(){
   }
 
   async function load({refresh=false}={}){
-    setLoading(true); setErr(null);
+    // Three-layer speed strategy:
+    //   1. sessionStorage rehydration (already done in useState init) —
+    //      instant paint on repeat visits within a session.
+    //   2. CDN fetch (this call) — ~100ms globally, refreshed every 15 min
+    //      by GitHub Actions. Handles the between-session case.
+    //   3. Live Apps Script fallback — only if user explicitly hits
+    //      Refresh (force=true) or if the CDN payload is missing/stale.
+    const hadCached = data.length > 0;
+    if(!hadCached) setLoading(true);
+    setErr(null);
     try{
-      const j=await fetchJson(API+'?type=youtube'+(refresh?'&refresh=1':''));
+      const j = refresh
+        ? await fetchJson(API+'?type=youtube&refresh=1')
+        : await fetchCdnOrLive('youtube');
       if(j.error) throw new Error(j.error);
-      setData(j.rows||[]);
+      const rows = j.rows||[];
+      setData(rows);
+      try{ sessionStorage.setItem('doe_youtube_submissions',JSON.stringify(rows)); }catch(e){}
     }
-    catch(e){setErr(e.message);}
+    catch(e){ if(!hadCached) setErr(e.message); }
     setLoading(false);
   }
   useEffect(()=>{load();},[]);

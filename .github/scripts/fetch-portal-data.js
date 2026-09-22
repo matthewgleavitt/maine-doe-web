@@ -32,6 +32,7 @@ const ENDPOINTS = [
   { type: 'store',          ttl: 900,  desc: 'Maine DOE Store catalog' },
   { type: 'announcements',  ttl: 900,  desc: 'Portal notifications' },
   { type: 'moderation',     ttl: 90,   desc: 'Drupal pending-approval queue' },
+  { type: 'youtube',        ttl: 900,  desc: 'YouTube submissions tracker' },
 ];
 
 const DATA_DIR = path.join(process.cwd(), 'data');

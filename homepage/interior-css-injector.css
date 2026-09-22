@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-ac  ·  Last edited: 2026-09-22 15:10
+ * Version: 2026-09-22-ad  ·  Last edited: 2026-09-22 16:40
  *
  * ============================================================
  * SCOPE
@@ -650,6 +650,21 @@ body.page-node-type-multi-column-page #block-doe-content .blockhead:first-child:
 body.page-node-type-multi-column-page #block-doe-content .contact-cube {
   position: relative;
   margin-top: 64px;
+}
+/* EXCEPT AFTER A CARD, WHICH BRINGS ITS OWN ROOM.
+   Matt, on /numeracy: "there seems to be a bigger gap than needed on
+   the end of the page before contact card line." The 64px is right
+   where the page ends in text, and wrong where it ends in a card: a
+   card body carries 20px of padding below its last line, so the
+   distance from the last thing a reader sees to the rule measured
+   52px there against 30px on a page that ends in a paragraph. The
+   gap is the same; what is in it is not.
+   44px gives back the card's own padding and lands the ink 32px from
+   the rule, which is what the text version gets. 131 of the 331
+   contact blocks follow a card or a row of cards. */
+body.page-node-type-multi-column-page #block-doe-content .card + .contact-cube,
+body.page-node-type-multi-column-page #block-doe-content .row:has(> [class*="col-"] > .card) + .contact-cube {
+  margin-top: 44px;
 }
 /* NOT CONDITIONAL ON THE PAGE HAVING SECTION HEADERS.
    It was :has(.blockhead), on the reasoning that a divider only makes
@@ -4636,6 +4651,25 @@ body.page-node-type-multi-column-page #block-doe-content .contact-cube h4::after
   display: block;
   border-top: 1px solid rgba(255, 255, 255, .28);
   margin-top: 13px;
+}
+/* THE CONTACT HEADING WAS THE ONLY ONE ON THE PAGE NOT SET BOLD.
+   Matt, on /numeracy: "contact card can you check to see if the word
+   'contact' has the appropriate sizing etc. DOesnt look bolded."
+   It is not. Measured on that page: the section header is 26.4px at
+   weight 900, the card headers are 16px at 700, and "Contact" came
+   out 28px at weight 500 — the lightest heading on the page and also
+   the largest, larger than the section headers it comes after. It is
+   inheriting the theme's bare h3, which nothing else here does.
+   24px at 700 puts it under the section header and in the same
+   weight class as every other heading, which is what it is: the
+   label on the last block of the page, not a bigger section than the
+   sections. Set for h2, h3 and h4 because authors write it at all
+   three. 331 contact blocks. */
+body.page-node-type-multi-column-page #block-doe-content .contact-cube h2,
+body.page-node-type-multi-column-page #block-doe-content .contact-cube h3,
+body.page-node-type-multi-column-page #block-doe-content .contact-cube h4 {
+  font-size: 24px;
+  font-weight: 700;
 }
 /* The heading is white like everything else in the cube. An author
    who pasted a colour onto it gets overruled — on a navy ground the

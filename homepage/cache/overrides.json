@@ -344,5 +344,11 @@
   "replace": {
    "<li class=\"list-group-item\"><a href=\"https://www.maine.gov/doe/index.php/learning/multilinguallearner/identification\">Maine's Multilingual Learner Identification Policy</a>  &nbsp;and&nbsp;  <a href=\"https://www.maine.gov/doe/learning/multilinguallearner/policy/survey\">Language Use Survey</a> </li>": "<li class=\"doe-action list-group-item\"><a href=\"https://www.maine.gov/doe/index.php/learning/multilinguallearner/identification\">Maine's Multilingual Learner Identification Policy</a></li>\n\t<li class=\"doe-action list-group-item\"><a href=\"https://www.maine.gov/doe/learning/multilinguallearner/policy/survey\">Language Use Survey</a></li>"
   }
+ },
+ "/numeracy": {
+  "replace": {
+   "<ul class=\"list-group list-group-flush\">\r\n\t<li class=\"doe-action list-group-item\"><a href=\"https://view.genially.com/69a9f84837b2277a70376023\" target=\"_blank\">Numeracy Playbook</a></li>\r\n</ul>": "<p><a class=\"btn btn-info btn-lg btn-block mt-4\" href=\"https://view.genially.com/69a9f84837b2277a70376023\" target=\"_blank\">Numeracy Playbook</a></p>"
+  },
+  "_why": "Matt, 22 Sep: the Playbook opens with a button, the same as the Action Plan card above it."
  }
 }

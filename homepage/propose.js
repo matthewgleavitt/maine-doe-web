@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-u  ·  Last edited: 2026-09-22 16:05
+ * Version: 2026-09-22-v  ·  Last edited: 2026-09-22 16:45
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -3854,7 +3854,24 @@ function propose(node, audit, index, opts = {}) {
        The length that matters is the one the page shows, so the raw
        cap is only a cheap first pass and the real test is the word
        count on the stripped text. */
-    const BOLD = /<p(?![^>]*class)[^>]*>\s*<strong>([^<]{3,90})<\/strong>\s*<\/p>/gi;
+    /* NO CLASS, OR ONLY card-text — WHICH IS NO CLASS EITHER.
+       Matt, on /numeracy: "Under Professional learning, can those
+       bolded titles be the h3s." Leadership, Asynchronous
+       Professional Learning Module and Strengthening Instruction for
+       Multilingual Learners are exactly the shape this rule is for,
+       and every one was refused because the author typed them as
+       <p class="card-text">. card-text is Bootstrap's name for body
+       copy inside a card — it is what the paragraphs around them
+       carry too, so it says nothing about this paragraph that would
+       make it not a heading. A text-align utility rides along with
+       it on four of them and means no more.
+       Everything else still has to have no class at all: doe-action,
+       doe-item and the rest are marks this file put there, and a
+       paragraph it has already identified as something is not a
+       heading waiting to be found. 14 paragraphs site-wide carry
+       card-text in this shape, and each still has to pass every test
+       below. */
+    const BOLD = /<p(?![^>]*\sclass="(?!(?:card-text|text-align-(?:left|center|right))(?:\s+(?:card-text|text-align-(?:left|center|right)))*")[^>]*)[^>]*>\s*<strong>([^<]{3,90})<\/strong>\s*<\/p>/gi;
     html = html.replace(/<div class="card-body">[\s\S]*?(?=<\/div>\s*<\/div>)/gi, (body) => {
       const hits = [...body.matchAll(BOLD)]
         .filter(m => !/[:：]\s*$/.test(strip(m[1])))
