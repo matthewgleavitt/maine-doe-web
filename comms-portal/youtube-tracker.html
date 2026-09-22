@@ -439,13 +439,16 @@ function App(){
     if(!hadCached) setLoading(true);
     setErr(null);
     try{
+      const applyRows = (payload) => {
+        const rows = (payload && payload.rows) || [];
+        setData(rows);
+        try{ sessionStorage.setItem('doe_youtube_submissions',JSON.stringify(rows)); }catch(e){}
+      };
       const j = refresh
         ? await fetchJson(API+'?type=youtube&refresh=1')
-        : await fetchCdnOrLive('youtube');
+        : await fetchCdnOrLive('youtube', applyRows);
       if(j.error) throw new Error(j.error);
-      const rows = j.rows||[];
-      setData(rows);
-      try{ sessionStorage.setItem('doe_youtube_submissions',JSON.stringify(rows)); }catch(e){}
+      applyRows(j);
     }
     catch(e){ if(!hadCached) setErr(e.message); }
     setLoading(false);
