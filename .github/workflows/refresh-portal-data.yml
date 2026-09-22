@@ -29,10 +29,10 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
 
-      - name: Set up Node 20
+      - name: Set up Node 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Fetch each portal endpoint
         run: node .github/scripts/fetch-portal-data.js
