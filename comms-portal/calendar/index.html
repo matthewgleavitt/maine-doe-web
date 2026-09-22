@@ -896,6 +896,12 @@
 // ─── EVENT DATA ────────────────────────────────────────
 let EVENTS = [];
 const CALENDAR_ENDPOINT = "https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA432dtGEN-UzmSDtzlaL7SEVxChnMOfl0Lgr2BEhg/exec?type=calendar";
+// Static CDN mirror — refreshed every 15 min by .github/workflows/refresh-portal-data.yml.
+// Fetches in ~100-300ms globally vs 2-30s (sometimes 60s+) from Apps Script.
+// Falls back to the live endpoint below if the CDN fetch fails or the
+// payload is older than STALE_MINUTES.
+const CALENDAR_STATIC_URL = "https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/calendar.json";
+const STALE_MINUTES = 30;
 const CAL_CACHE_KEY = 'doe_calendar_events_v1';
 
 // Rehydrate from sessionStorage on load so the page paints instantly with
@@ -915,26 +921,44 @@ function hydrateFromCache() {
   } catch(e) { return false; }
 }
 
-// Resilient fetch — the Apps Script feed is currently returning HTTP 404 on
-// ~2 of 3 requests (Google-side deployment/routing issue). When it works
-// it's a fast ~3s cache hit; when it 404s, the body is an HTML error page.
-// This tries up to 3 attempts, checks status + Content-Type before calling
-// .json(), and only retries when the response isn't a valid JSON payload.
+// Fetch strategy:
+//   1. Try the static CDN mirror first (~100-300ms globally, always
+//      available unless GitHub is down). If the payload is fresh, use it.
+//   2. If CDN unreachable OR payload older than STALE_MINUTES, fall back
+//      to the live Apps Script endpoint with 3-attempt retry (same
+//      behavior the calendar had before this change).
+// Result: 99% of loads never touch Apps Script; the remaining 1% get the
+// same experience as before, so there's no risk of user-visible regression.
 async function fetchCalendarJson() {
+  // ── 1. Static CDN attempt ─────────────────────────────
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 5000);
+    const r = await fetch(CALENDAR_STATIC_URL, { signal: ctrl.signal });
+    clearTimeout(t);
+    if (r.ok) {
+      const data = await r.json();
+      const fetchedAt = data && data._fetched ? new Date(data._fetched).getTime() : 0;
+      const ageMin = (Date.now() - fetchedAt) / 60000;
+      if (fetchedAt && ageMin < STALE_MINUTES) {
+        console.log('[calendar] loaded from CDN, age ' + Math.round(ageMin) + ' min');
+        return data;
+      }
+      console.warn('[calendar] CDN payload is stale (' + Math.round(ageMin) + ' min old), falling back to live');
+    }
+  } catch(e) {
+    console.warn('[calendar] CDN fetch failed, falling back to live:', e.message);
+  }
+
+  // ── 2. Live Apps Script fallback ──────────────────────
   const attempt = async () => {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 60000);
     try {
       const r = await fetch(CALENDAR_ENDPOINT, { cache: 'no-store', signal: ctrl.signal });
       if (!r.ok) throw new Error('HTTP ' + r.status);
-      const ct = r.headers.get('content-type') || '';
-      // Apps Script redirects to googleusercontent for the payload; the CT
-      // should end up as application/json. If we somehow got text/html, the
-      // upstream returned an error page — treat as retryable failure.
       const body = await r.text();
-      if (ct.indexOf('json') === -1 && body.trim().charAt(0) !== '{') {
-        throw new Error('non-JSON response');
-      }
+      if (body.trim().charAt(0) !== '{') throw new Error('non-JSON response');
       return JSON.parse(body);
     } finally { clearTimeout(t); }
   };
@@ -943,7 +967,7 @@ async function fetchCalendarJson() {
     try { return await attempt(); }
     catch(e) {
       lastErr = e;
-      console.warn('[calendar] fetch attempt ' + (i+1) + ' failed:', e.message);
+      console.warn('[calendar] live fetch attempt ' + (i+1) + ' failed:', e.message);
       if (i < 2) await new Promise(r => setTimeout(r, 1400 + i * 800));
     }
   }

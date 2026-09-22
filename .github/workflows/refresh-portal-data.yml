@@ -12,12 +12,12 @@ name: Refresh portal data
 # look right.
 
 on:
-  # Manual trigger — use this for the first few test runs so it doesn't
-  # kick off on cron automatically before we've verified output.
   workflow_dispatch:
-  # Every 15 minutes once we're ready. Uncomment to enable.
-  # schedule:
-  #   - cron: '*/15 * * * *'
+  # Every 15 minutes. GitHub Actions cron isn't guaranteed to fire on the
+  # exact minute (can slip 5-15 min under heavy load), so effective refresh
+  # interval is ~15-30 min. STALE_MINUTES on the frontend accepts that.
+  schedule:
+    - cron: '*/15 * * * *'
 
 permissions:
   contents: write

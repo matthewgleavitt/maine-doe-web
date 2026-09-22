@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-s  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-t  ·  Last edited: 2026-09-22 15:10
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
