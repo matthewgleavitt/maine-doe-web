@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-j  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-k  ·  Last edited: 2026-09-22
  *
  * ============================================================
  * SCOPE
@@ -5476,4 +5476,36 @@ body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-conte
   padding: 0 16px;
   margin-top: 6px;
   border-radius: 0;
+}
+
+
+/* ── HOVER ON A TABLE THAT USES rowspan ──────────────────────────
+   Matt: "the entire first column highlights with the first row, but
+   it applies to both the first and second ... we certainly have
+   finance tables that span columns over multiple rows."
+   The hover band exists so the eye can carry one row across to the
+   far column. A cell that spans several rows belongs to all of them,
+   so tinting it while one of them is hovered says something untrue:
+   on /mtss/teams a two-row label lights up and the table reads as
+   two rows highlighted at once. It gets worse with distance —
+   /Testing_Accountability/model/indicators has a cell spanning
+   ELEVEN rows, so hovering any one of them would wash a block
+   eleven rows deep.
+   266 spanning cells across 7 tables on 6 pages, and 234 of them are
+   in one cost-sharing table, which is exactly the finance shape Matt
+   means. This is not a rare edge.
+
+   SO A SPANNING CELL DOES NOT TAKE THE TINT. The hovered row's own
+   cells still light up and still carry the eye across; the label
+   beside them stays quiet, which is honest, because it is not that
+   row's cell alone. Highlighting the whole span instead would be the
+   other defensible answer and CSS cannot express it — there is no
+   way to ask which rows a cell reaches. Between a true half-answer
+   and a false whole one, the true half.
+   rowspan="1" is written out explicitly in a few places and means no
+   span at all, so it is excluded from the exclusion. */
+body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody tr:hover > td[rowspan]:not([rowspan="1"]),
+body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody tr:hover > th[rowspan]:not([rowspan="1"]),
+body.page-node-type-multi-column-page #block-doe-content table:has(th) tbody tr:hover > th[scope="row"][rowspan]:not([rowspan="1"]) {
+  background: transparent !important;
 }
