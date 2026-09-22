@@ -809,18 +809,21 @@ body.page-node-type-multi-column-page #block-doe-content .doe-hero .doe-toc a:ho
 }
 body.page-node-type-multi-column-page #block-doe-content h2,
 body.page-node-type-multi-column-page #block-doe-content h3,
-body.page-node-type-multi-column-page #block-doe-content h4 {
+body.page-node-type-multi-column-page #block-doe-content h4,
+body.page-node-type-multi-column-page #block-doe-content h3 {
   margin-top: 3.2em; margin-bottom: .5em;
 }
 body.page-node-type-multi-column-page #block-doe-content h3 + *,
-body.page-node-type-multi-column-page #block-doe-content h4 + * {
+body.page-node-type-multi-column-page #block-doe-content h4 + *,
+body.page-node-type-multi-column-page #block-doe-content h3 + * {
   margin-top: 13px;
 }
 body.page-node-type-multi-column-page #block-doe-content .doe-sub + * {
   margin-top: 0;
 }
 body.page-node-type-multi-column-page #block-doe-content h3:first-child,
-body.page-node-type-multi-column-page #block-doe-content h4:first-child {
+body.page-node-type-multi-column-page #block-doe-content h4:first-child,
+body.page-node-type-multi-column-page #block-doe-content h3:first-child {
   margin-top: 0;
 }
 body.page-node-type-multi-column-page #block-doe-content .blockhead h2,
@@ -831,7 +834,8 @@ body.page-node-type-multi-column-page #block-doe-content .card h4,
 body.page-node-type-multi-column-page #block-doe-content .card h5,
 body.page-node-type-multi-column-page #block-doe-content .contact-cube h2,
 body.page-node-type-multi-column-page #block-doe-content .contact-cube h3,
-body.page-node-type-multi-column-page #block-doe-content .jumbotron h4 {
+body.page-node-type-multi-column-page #block-doe-content .jumbotron h4,
+body.page-node-type-multi-column-page #block-doe-content .jumbotron h3 {
   margin-top: 0; margin-bottom: 0;
 }
 body.page-node-type-multi-column-page #block-doe-content p a,
@@ -1011,7 +1015,8 @@ body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion >
 body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h3:not(:first-child),
 body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h4:not(:first-child),
 body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h5:not(:first-child),
-body.page-node-type-multi-column-page #block-doe-content .card > .card-body > .card-title:not(:first-child) {
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > .card-title:not(:first-child),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h3:not(:first-child) {
   margin: 26px -20px 16px !important;
   padding: 13px 18px;
   background: var(--i-navy); color: #fff;

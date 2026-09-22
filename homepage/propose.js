@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-21-o  ·  Last edited: 2026-09-21
+ * Version: 2026-09-21-p  ·  Last edited: 2026-09-21
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -116,7 +116,19 @@ const rebuildOutline = (src) => {
     if (inComponent(off)) return m;
     const raw = +n;
     while (stack.length && stack[stack.length - 1].raw >= raw) stack.pop();
-    const lv = stack.length ? Math.min(6, stack[stack.length - 1].lv + 1) : 2;
+    /* CAPPED AT 3, WHICH IS A DECISION ABOUT THE SITE AND NOT ABOUT
+       ANY PAGE. Matt: "I don't think we'd ever use anything beyond an
+       H3." He is right — the page title is the h1, a section header
+       is the h2, and a part of a section is the h3. There is no
+       fourth thing on these pages; where a fourth level appeared it
+       was an author reaching for a smaller typeface, not a deeper
+       idea. 395 headings on 98 pages sat at h4 or below.
+       Capping rather than shifting keeps the nesting that is real and
+       flattens only what runs past the bottom: a genuine third level
+       stays a third level, and a fourth becomes a sibling of it. That
+       also closes the level skips for free — you cannot skip past a
+       floor — which were 84 of them on 60 pages. */
+    const lv = stack.length ? Math.min(3, stack[stack.length - 1].lv + 1) : 2;
     stack.push({ raw, lv });
     if (lv !== raw) { changed++; if (!first) first = { from: raw, to: lv, text: strip(inner).slice(0, 48) }; }
     return `<h${lv}${attrs}>${inner}</h${lv}>`;
@@ -2951,6 +2963,26 @@ function propose(node, audit, index, opts = {}) {
      unfolded into an h2, which happens afterwards.
      Run before the contents list, because that reads the levels. */
   if (opts.outline !== false) html = rebuildOutline(html).html;
+
+  /* AND THE HEADINGS INSIDE COMPONENTS, WHICH THE WALK SKIPS.
+     A card's title, a contact block's "Contact", an accordion term:
+     the walk leaves these alone on purpose, because they label a
+     thing on the page rather than a part of it, and the walk's job is
+     the page's outline. But they are still headings, a screen reader
+     still announces their level, and an h5 card title inside an h2/h3
+     page is still a skip. They are styled by their class and their
+     position, never by their number, so the number can come to the
+     floor with everything else. */
+  if (opts.outline !== false) {
+    let capped = 0;
+    html = html.replace(/<h([4-6])\b([^>]*)>([\s\S]*?)<\/h\1>/gi, (m, n, attrs, inner) => {
+      capped++;
+      return `<h3${attrs}>${inner}</h3>`;
+    });
+    if (capped) decisions.push({ id: 'capheadings', on: true, label: 'Bring every heading up to h3 or above',
+      why: `${capped} heading${capped > 1 ? 's sat' : ' sat'} at h4 or deeper inside a card, a callout, a contact block or an accordion panel — components the outline walk leaves alone because they label a thing rather than a section. A reader using a screen reader still hears the level, so a fourth-level title inside a page that only goes to three is announced as belonging to a level that does not exist. Each is styled by its class and its position rather than its number, so nothing changes on screen.`,
+      value: capped + ' heading' + (capped > 1 ? 's' : '') });
+  }
 
   /* A HEADING HELD AT THE LEVEL IT WAS WRITTEN, named page by page.
      The outline rebuild is right in general — a page should not open
