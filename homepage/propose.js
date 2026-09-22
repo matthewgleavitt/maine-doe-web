@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-a  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-b  ·  Last edited: 2026-09-22
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -3012,6 +3012,49 @@ function propose(node, audit, index, opts = {}) {
      characters long by the time we finish. Five of them were, all
      five carrying a `subheads` decision. The first pass cleans what
      the author wrote; this one cleans what we wrote. */
+  /* A LIST ITEM THAT IS ONLY A PICTURE IS NOT A LIST ITEM.
+     Matt, on /learning/technology/infrastructure: "The Act Now flyer
+     can be full width and actually that could just be an image card
+     with that as the thumbnail. Makes it a little more prominent."
+     The flyer is sitting as the first row of a list group inside the
+     "Cyber Incident Responses" card, floated left at 366x470 with an
+     align="left" attribute, so the prose in the row beneath wraps
+     around a picture that is taller than it is. A list group is rows
+     of links; a picture is not a row.
+     The card already has a title and a body, so the picture has an
+     obvious place to go: the top of the card, which is where this
+     library puts a card's image, above the navy bar and full width.
+     Two of them on the site, both flyers, both in a technology card.
+     The float, the align attribute and the hand-set pixel size all go
+     with it — card-img-top sizes itself. */
+  if (opts.imgcard !== false) {
+    const cardSpans = [...html.matchAll(/<div[^>]*class="(?:[^"]*\s)?card(?:\s[^"]*)?"[^>]*>/gi)]
+      .map(m => {
+        let d = 1, i = m.index + m[0].length;
+        const t = /<div\b[^>]*>|<\/div>/gi; t.lastIndex = i; let z;
+        while (d > 0 && (z = t.exec(html))) { d += z[0][1] === '/' ? -1 : 1; i = z.index + z[0].length; }
+        return { open: m[0], start: m.index, inner: m.index + m[0].length, end: i };
+      });
+    let moved = 0, alt = '';
+    for (const m of [...html.matchAll(/<li[^>]*>\s*(<img[^>]*>)\s*<\/li>/gi)].reverse()) {
+      const card = cardSpans.filter(c => m.index > c.inner && m.index < c.end)
+        .sort((a, b) => (b.end - b.inner) - (a.end - a.inner)).pop();
+      if (!card) continue;
+      const img = m[1]
+        .replace(/\s(?:align|width|height|hspace|vspace|border)="[^"]*"/gi, '')
+        .replace(/\sstyle="[^"]*"/gi, '')
+        .replace(/\sclass="[^"]*"/gi, '')
+        .replace(/<img/i, '<img class="card-img-top"');
+      alt = alt || (m[1].match(/alt="([^"]*)"/i) || [, ''])[1];
+      html = html.slice(0, m.index) + html.slice(m.index + m[0].length);
+      html = html.slice(0, card.inner) + '\n' + img + '\n' + html.slice(card.inner);
+      moved++;
+    }
+    if (moved) decisions.push({ id: 'imgcard', on: true, label: 'Make the flyer the card\'s picture',
+      why: `"${alt}" is sitting as a row of a list group inside a card, floated left at a hand-set size, so the text in the row beneath wraps around a picture taller than it is. A list group is rows of links. It moves to the top of the card, which is where a card's picture goes — full width, above the title bar, sized by the card rather than by hand. Nothing else moves.`,
+      value: alt || (moved + ' image') });
+  }
+
   if (opts.longhead !== false) {
     let n = 0;
     html = html.replace(/<h([1-6])\b([^>]*)>([\s\S]*?)<\/h\1>/gi, (m, lv, attrs, inner) => {
