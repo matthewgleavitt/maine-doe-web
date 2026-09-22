@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-21-p  ·  Last edited: 2026-09-21
+ * Version: 2026-09-22-a  ·  Last edited: 2026-09-22
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -498,6 +498,49 @@ function propose(node, audit, index, opts = {}) {
      slab inside the navy contact block on 392 pages. */
   const spans = componentSpans(html);
   const inComponent = i => spans.some(([a, b]) => i >= a && i < b);
+
+  /* (a-0) A HEADING THAT IS A PARAGRAPH.
+     Matt: "nothing should be 100 characters and in any sort of
+     heading. People used the H to make things bigger or misused them
+     when they should've been p."
+     61 of them across 37 pages, median 175 characters and the
+     longest 1,000. They are not long titles — they are a list of
+     filenames on /funding/accounting/handbook/uploadfiles, a whole
+     contact block squeezed into one heading on /schools/eut/policies/
+     families, four sentences of preamble on /learning/II/PL/lit&neur.
+     None is a heading by any reading; each is body text that was set
+     as a heading to make it stand out.
+
+     IT MATTERS MORE THAN IT LOOKS, because 27 of the 61 are h2 — the
+     level this file builds the contents list from. A 375-character
+     section title becomes a 375-character line in the list of links
+     at the top of the page, and a screen reader announces it as a
+     section of the document.
+
+     A QUESTION IS EXEMPT whatever its length. The FAQ rule promotes
+     questions to headings on purpose, and a long question is still a
+     question. None of the 61 ends in a question mark today, so the
+     guard costs nothing now and stops this rule fighting that one
+     later.
+
+     THE id SURVIVES. An anchor may already be linked to from the
+     contents list or from another page, so the paragraph keeps it and
+     the link still lands. Not a word changes; only the tag. */
+  if (opts.longhead !== false) {
+    let n = 0, first = null, longest = 0;
+    html = html.replace(/<h([1-6])\b([^>]*)>([\s\S]*?)<\/h\1>/gi, (m, lv, attrs, inner) => {
+      const t = strip(inner);
+      if (t.length <= 100) return m;
+      if (/\?\s*$/.test(t)) return m;
+      n++; longest = Math.max(longest, t.length);
+      if (!first) first = t.slice(0, 56);
+      const id = (attrs.match(/\sid="[^"]*"/i) || [''])[0];
+      return `<p${id}>${inner}</p>`;
+    });
+    if (n) decisions.push({ id: 'longhead', on: true, label: 'Set an over-long heading as the paragraph it is',
+      why: `${n} heading${n > 1 ? 's run' : ' runs'} past 100 characters — the longest here is ${longest}. "${first}…" is body text that was set as a heading to make it stand out, so it is announced as a section of the page and, at h2, written into the contents list as a link. It becomes a paragraph. Any anchor on it is kept, so existing links still land, and not a word changes.`,
+      value: n + ' heading' + (n > 1 ? 's' : '') });
+  }
 
   if (opts.outline !== false) {
     const o = rebuildOutline(html);
@@ -2962,6 +3005,31 @@ function propose(node, audit, index, opts = {}) {
      and Environments Observation Tool" once that accordion has been
      unfolded into an h2, which happens afterwards.
      Run before the contents list, because that reads the levels. */
+  /* THE LONG-HEADING PASS RUNS TWICE, FOR THE REASON THE OUTLINE
+     WALK DOES. The transforms above MAKE headings — subheads lifts a
+     bold run-in line into one, the FAQ rule promotes a question — so
+     a heading that did not exist when the first pass ran can be 400
+     characters long by the time we finish. Five of them were, all
+     five carrying a `subheads` decision. The first pass cleans what
+     the author wrote; this one cleans what we wrote. */
+  if (opts.longhead !== false) {
+    let n = 0;
+    html = html.replace(/<h([1-6])\b([^>]*)>([\s\S]*?)<\/h\1>/gi, (m, lv, attrs, inner) => {
+      const t = strip(inner);
+      if (t.length <= 100 || /\?\s*$/.test(t)) return m;
+      n++;
+      const id = (attrs.match(/\sid="[^"]*"/i) || [''])[0];
+      return `<p${id}>${inner}</p>`;
+    });
+    if (n) {
+      const d = decisions.find(z => z.id === 'longhead');
+      if (d) d.value = (parseInt(d.value) || 0) + n + ' headings';
+      else decisions.push({ id: 'longhead', on: true, label: 'Set an over-long heading as the paragraph it is',
+        why: `${n} heading${n > 1 ? 's run' : ' runs'} past 100 characters after the page was restructured — a bold line lifted into a heading by an earlier step turned out to be a paragraph. It becomes one. Not a word changes.`,
+        value: n + ' heading' + (n > 1 ? 's' : '') });
+    }
+  }
+
   if (opts.outline !== false) html = rebuildOutline(html).html;
 
   /* AND THE HEADINGS INSIDE COMPONENTS, WHICH THE WALK SKIPS.
