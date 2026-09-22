@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-i  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-j  ·  Last edited: 2026-09-22
  *
  * ============================================================
  * SCOPE
@@ -5260,40 +5260,6 @@ body.page-node-type-multi-column-page #block-doe-content .row:has(+ .row) > [cla
 }
 
 
-/* ── THE BOX AROUND A TAB PANEL ──────────────────────────────────
-   Matt: "Everything in the tab has an outline, do you think it
-   should? If you do, then I think maybe it should be darker."
-   I do not think it should. Measured, the panel carries
-   `border: 1px solid #ccc` on a #fafafa ground — a faint grey box
-   drawn around content that is itself almost entirely bordered
-   cards, so on /mtss/teams four navy-framed cards sit inside a
-   fifth, fainter frame that means nothing. The tab strip above
-   already says where the panel begins; that is a tab strip's whole
-   job. Two frames for one boundary is one too many, and making the
-   outer one darker would only make the duplication louder.
-   The ground goes with it. A panel is not a surface of its own — it
-   is the page, shown one section at a time.
-
-   AND THE GAP ABOVE IT. 16px of margin plus 16px of padding put the
-   first thing in the panel 32px below the tabs. With the box gone
-   there is nothing for that padding to sit inside, so the panel
-   starts where the tabs end and the content begins immediately. */
-body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-content {
-  border: 0 !important;
-  background: transparent !important;
-  /* VERTICAL PADDING ONLY. Taking all four sides to zero pulled the
-     text nine pixels left of the panel: a Bootstrap .row carries
-     margin-left:-15px and expects a container's padding to absorb
-     it, so with the padding gone the negative margin hung the
-     paragraphs outside the panel while the cards, which sit in
-     padded columns, stayed put. The sides keep their 16px and do
-     that job; only the top and bottom go, because those were spacing
-     content away from a border that is no longer drawn. */
-  padding: 0 16px !important;
-  margin-top: 14px !important;
-}
-
-
 /* ── AND THE SAME SUM AGAIN, INSIDE ONE ROW ──────────────────────
    The rule above closed the gap BETWEEN two rows. Matt, looking at
    /mtss/teams: "I thought we changed it site-wide just now but the
@@ -5383,35 +5349,6 @@ body.page-node-type-multi-column-page .doe-sub::after {
   background: rgba(24, 43, 60, .275);
 }
 
-/* ── THE TAB STRIP ───────────────────────────────────────────────
-   Matt: "the space between the tabs and the first item is still
-   pretty big" and "the space between buttons/tabs is really really
-   small — maybe a few more px."
-   Both are the same oversight from opposite directions. The strip
-   sets gap: 8px, but the labels are wrapped in a <p>, so they are
-   not its flex children and the gap applies to nothing: measured
-   between two buttons, 0px. They were touching. The margin goes on
-   the buttons, where it reaches them.
-   And the panel: 14px of margin above it plus what the first thing
-   inside brings. 6px is enough to separate the panel from the strip
-   it belongs to — a tab and its contents are one object, and too
-   much air between them reads as two. */
-body.page-node-type-multi-column-page #block-doe-content .tab-labels .tab-button {
-  margin-right: 6px;
-  margin-bottom: 6px;
-}
-/* ON THE STRIP, NOT THE PANEL. margin-top: 6px on the panel did
-   nothing visible: .tab-labels carries margin-bottom: 16px, the two
-   collapse, and the larger of them is the gap. The number has to be
-   set where it is coming from. */
-body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-labels {
-  margin-bottom: 6px;
-}
-body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-content {
-  margin-top: 6px !important;
-}
-
-
 /* ── A VIDEO BESIDE TEXT TAKES THE LARGER HALF ───────────────────
    Matt: "The quote and video just make the video larger and have the
    quote be less of that space."
@@ -5447,27 +5384,96 @@ body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-conte
 }
 
 
-/* ── THE SELECTED TAB, OWNED HERE ────────────────────────────────
-   Matt: "is there a way we could make it so that the tab that is
-   current is highlighted, maybe just the inverse (teal with dark
-   blue lettering)?"
-   That is what it already does — but not from anywhere this file
-   controls. The rule doing it is
-   `.tab-button.active { background-color:#42c3f7; color:#182b3c }`,
-   and it is sitting inside the ECSE onboarding page's own stylesheet,
-   which Drupal has aggregated into a site-wide file. So a rule
-   written for one page is what gives all 25 tabbed pages their
-   selected state, and I have just told Matt that most of that
-   stylesheet is dead and can be deleted. Deleting it would take this
-   with it.
-   Same two colours, same result, said here instead, so the page it
-   came from can be cleaned out without anything going quiet. Teal
-   ground, navy ink: 7.16:1, and the inverse of the unselected tabs,
-   which is the pattern this file already uses wherever something is
+/* ── TABS, THE WHOLE COMPONENT, OWNED HERE ───────────────────────
+   Matt: "I would like to capture most of our rules for interior
+   pages here, and keep the CSS/JS injectors for things like our
+   commons and special pages."
+   Tabs are the clearest case. Everything that draws them was living
+   in a separate injector rule, and it had grown the way CSS does
+   when it is edited under pressure:
+     · .lesson-tabs .tab-labels declared twice, .tab-content twice;
+     · the selected tab declared twice, once as
+       `.lesson-tabs .tab-labels label.tab-button.active` and again
+       as `div.lesson-tabs.js-tabs div.tab-labels label.tab-button
+       .active`, each with !important — a specificity argument
+       between a file and itself;
+     · a hand-written list of ids, #tab1 through #tab27, to mark the
+       checked one, which only works for pages that happen to use
+       those ids and silently does nothing for the ones that do not.
+   Said once here instead. The JS adds .active, so no id list is
+   needed and pages can call their tabs whatever they like.
+
+   THE COLOURS ARE NOT NEW. Navy pill with teal type, and the
+   selected one inverted to teal with navy type — 7.16:1 either way,
+   and the same inversion this file uses everywhere something is
    picked out against navy.
-   The theme transitions background over 0.2s and that is left alone. */
-body.page-node-type-multi-column-page #block-doe-content .tab-labels .tab-button.active {
+
+   WHAT STAYS BEHIND. `.ck-content .js-tabs .tab-content
+   { display: block }` belongs to the editing experience, not the
+   page: it is what lets an author see inside every panel in
+   CKEditor. It should stay in the injector rule that serves the
+   editor, and so should anything genuinely local to one page. */
+body.page-node-type-multi-column-page #block-doe-content .lesson-tabs input[type="radio"] {
+  display: none;
+}
+body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-labels {
+  display: flex;
+  flex-wrap: wrap;
+  /* 6px between pills. The strip set gap: 0.5em, but on these pages
+     the labels are wrapped in a <p>, so they are not the strip's
+     flex children and the gap reached nothing — measured between two
+     buttons, 0px. They were touching. The margin goes on the button,
+     where it lands whatever the markup puts in between. */
+  /* NO gap HERE. It was declared 0.5em and never applied on any of
+     these pages: the labels are wrapped in a <p>, so they are the
+     paragraph's children and not the strip's, and gap only reaches
+     a flex container's own children. The margin on the button is
+     what actually spaces them.
+     A 4px difference remains between pages and it is the markup, not
+     this file: the buttons are inline-block, so a newline between
+     two of them in the source renders as a word space. /mtss/teams
+     writes them without one and comes out 6px; the standards review
+     pages write one per line and come out 10px. Fixable only by
+     zeroing the font-size of a wrapper this file does not own, which
+     is a worse trade than 4px. */
+  margin-bottom: 6px;
+  border-bottom: 0;
+  box-sizing: content-box;
+}
+body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-button {
+  display: inline-block;
+  background-color: var(--i-navy);
+  color: var(--i-teal);
+  padding: .5em 1.2em;
+  margin: 0 6px 6px 0;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1em;
+  font-weight: 600;
+  transition: background .2s ease;
+}
+body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-button:hover {
+  background-color: #2b4054;
+}
+body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-labels .tab-button.active {
   background-color: var(--i-teal);
   color: var(--i-navy);
   font-weight: 700;
+}
+/* THE PANEL HAS NO BOX. It carried `border: 1px solid #ccc` on a
+   #fafafa ground — a faint frame drawn around content that is itself
+   mostly bordered cards, so four navy-framed cards sat inside a
+   fifth, fainter one. The tab strip above already says where the
+   panel begins; that is a tab strip's whole job.
+   The sides keep their padding: a Bootstrap .row inside carries
+   margin-left:-15px and expects a container to absorb it, and
+   without it the text hangs off the panel's left edge. */
+body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-content {
+  border: 0;
+  background: transparent;
+  padding: 0 16px;
+  margin-top: 6px;
+  border-radius: 0;
 }
