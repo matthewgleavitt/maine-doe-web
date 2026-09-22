@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-b  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-c  ·  Last edited: 2026-09-22
  *
  * ============================================================
  * SCOPE
@@ -5204,4 +5204,57 @@ body.page-node-type-multi-column-page #block-doe-content .tableauPlaceholder .ta
 body.page-node-type-multi-column-page #block-doe-content object.tableauViz {
   width: 100% !important;
   max-width: 100% !important;
+}
+
+
+/* ── TWO GAPS THAT WERE THE SUM OF THINGS, NOT A DECISION ────────
+   1. UNDER A SECTION BAR.
+   Matt: "there is still a pretty big gap between the heading for
+   2025 Training and the training video." Measured on the foster care
+   card: 29px, which is the bar's own 16px plus the list's own 13px.
+   A card body is a flex column so the two do not collapse, and the
+   gap is therefore decided by whatever happens to come next rather
+   than by anything anyone chose. This file already zeroes the top
+   margin of whatever follows a card's TITLE bar for exactly this
+   reason; a section bar is the same object and needs the same thing.
+   The bar's 16px becomes the whole gap, once, on every card. */
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h2:not(:first-child) + *,
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h3:not(:first-child) + *,
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h4:not(:first-child) + *,
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h5:not(:first-child) + *,
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > .card-title:not(:first-child) + * {
+  margin-top: 0 !important;
+}
+
+/* 2. BETWEEN TWO ROWS OF CARDS.
+   Matt, on the Resources block: "between Student and Maine DOE that
+   gap in between where they stack is pretty wide." It was 57px, and
+   like the one above it is a sum rather than a choice: the card's own
+   15px bottom margin, the column's 8px bottom padding, and the next
+   row's 26px top margin, none of which know about each other.
+   The number it should be is already decided elsewhere. A row that
+   wraps puts 18px between its own lines (row-gap, section 23a), and
+   two rows of cards under one heading are the same grid split across
+   two elements — a reader cannot tell which cards are in which row,
+   and should not be able to. So the gap between rows is set to the
+   gap within one: 18px, built explicitly out of the three parts
+   rather than left to add up. */
+body.page-node-type-multi-column-page #block-doe-content .row + .row {
+  margin-top: 0;
+}
+/* !important ON BOTH PADDINGS, BECAUSE py-2 IS A BOOTSTRAP UTILITY
+   AND THOSE CARRY IT. Without it the column keeps 8px underneath and
+   the next row's column keeps 8px above, and the gap comes out 34px
+   instead of the 18 intended — the card's own margin plus two
+   paddings that were never meant to stack. Taken out only between
+   two adjacent rows: a row that stands alone keeps its py-2, and a
+   row that wraps internally is spaced by row-gap either way. */
+body.page-node-type-multi-column-page #block-doe-content .row:has(+ .row) > [class*="col-"] {
+  padding-bottom: 0 !important;
+}
+body.page-node-type-multi-column-page #block-doe-content .row + .row > [class*="col-"] {
+  padding-top: 0 !important;
+}
+body.page-node-type-multi-column-page #block-doe-content .row:has(+ .row) > [class*="col-"] > .card {
+  margin-bottom: 18px;
 }
