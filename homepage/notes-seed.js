@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — the notes an author needs to act on
- * Version: 2026-09-21-a  ·  Last edited: 2026-09-21
+ * Version: 2026-09-22-b  ·  Last edited: 2026-09-22 17:15
  *
  *   node notes-seed.js            report
  *   node notes-seed.js --json     cache/notes-seed.json for the panel
@@ -51,6 +51,29 @@ for (const x of idx) {
     add(x.alias, 'unfinished',
       `The page still says "${soon[0]}". Has it arrived, or should the line come out?`,
       soon.length + ' place' + (soon.length > 1 ? 's' : ''));
+
+  /* A HUB WITH NO PICTURE IN ITS BANNER.
+     Matt, on /numeracy: "Can we remove the globe but then just make a
+     note to add an image to all of the hubs."
+     The six hubs are the front doors to their subjects and each one
+     already had a banner graphic — a photograph with the hub's name
+     set into it — which is retired here because the name repeats the
+     page title Drupal already prints. The photograph is not replaced
+     by anything: the banner renders as flat navy, and on /numeracy
+     the only picture left was a globe diagram that has now come off
+     too.
+     The band takes a photograph as a background with one attribute,
+     so this is a picture away from being finished. What it needs is a
+     copy of the existing banner CROPPED TO THE PICTURE, with the
+     lettering out of it — otherwise the words sit behind the page's
+     own h1. That is a person's job, so it is a note and not a rule.
+     Only the hubs, which is what Matt asked for. 332 pages had a
+     banner retired and the same note would be true of all of them;
+     the hubs are where it is worth doing first. */
+  if (/\bhub\b/i.test(x.title || '') && !/background-image/.test(h))
+    add(x.alias, 'needs a picture',
+      'The banner has no photograph. This hub\'s old banner graphic is retired because its lettering repeats the page title, which leaves the band flat navy.',
+      'Needs the banner image cropped to the picture, without the words');
 
   /* A picture whose alt text is its file name. */
   const badAlt = [...h.matchAll(/<img\b[^>]*\balt="([^"]*)"/gi)]

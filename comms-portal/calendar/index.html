@@ -1565,6 +1565,52 @@ function scrollCarousel(dir) {
   c.scrollBy({ left: dir * 340, behavior: 'smooth' });
 }
 
+// ─── AUTO-HEIGHT for iframe embeds ─────────────────────
+// When the calendar is embedded in a Drupal page via iframe, the parent
+// page has no way to know how tall the content is — so it either sets a
+// fixed height (min-height:1200px) which creates a double-scroll on
+// long content, or wastes whitespace on short content. Fix: measure our
+// own scrollHeight and postMessage it to the parent frame whenever the
+// content changes. The parent listens and resizes the iframe. Loaded
+// standalone (not in an iframe) this is a no-op.
+(function setupAutoHeight(){
+  // Only do this when we're actually inside an iframe on a different origin.
+  try { if (window.top === window.self) return; } catch (e) { /* cross-origin, keep going */ }
+
+  var lastReported = 0;
+  function reportHeight() {
+    // The visible calendar surface is inside .container / main, plus any
+    // floating chrome. scrollHeight of documentElement is the safe bet.
+    var h = Math.max(
+      document.documentElement.scrollHeight,
+      document.body ? document.body.scrollHeight : 0
+    );
+    if (h > 0 && Math.abs(h - lastReported) > 4) {
+      lastReported = h;
+      try {
+        window.parent.postMessage({
+          type: 'doe-calendar-height',
+          height: h,
+          source: 'gateway.maine.gov/doe/communications/calendar'
+        }, '*');
+      } catch (e) { /* parent unreachable, ignore */ }
+    }
+  }
+
+  // Fire on load, on resize, whenever the events list re-renders, and on
+  // orientation change. Also poll gently for the first few seconds while
+  // async fetches settle.
+  window.addEventListener('load', reportHeight);
+  window.addEventListener('resize', reportHeight);
+  if (typeof ResizeObserver === 'function') {
+    var ro = new ResizeObserver(reportHeight);
+    if (document.body) ro.observe(document.body);
+    document.addEventListener('DOMContentLoaded', function(){ ro.observe(document.body); });
+  }
+  // Belt-and-suspenders for the first paint window.
+  for (var i = 1; i <= 6; i++) setTimeout(reportHeight, i * 500);
+})();
+
 // ─── INIT ──────────────────────────────────────────────
 loadEvents();
 </script>

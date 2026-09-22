@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-ad  ·  Last edited: 2026-09-22 16:40
+ * Version: 2026-09-22-ag  ·  Last edited: 2026-09-22 18:30
  *
  * ============================================================
  * SCOPE
@@ -659,12 +659,27 @@ body.page-node-type-multi-column-page #block-doe-content .contact-cube {
    distance from the last thing a reader sees to the rule measured
    52px there against 30px on a page that ends in a paragraph. The
    gap is the same; what is in it is not.
-   44px gives back the card's own padding and lands the ink 32px from
-   the rule, which is what the text version gets. 131 of the 331
-   contact blocks follow a card or a row of cards. */
+   44px WAS WRONG AND MATT CAUGHT IT: "now there is almost NO space
+   before the contact line." The rule is drawn at a fixed -34px from
+   the cube, so it is not centred in the gap — it sits in the lower
+   half of it. Taking 20px off the total took all 20 off the TOP
+   half, and the line ended up 10px under the card's edge against 34
+   below it. The measurement was right and the reasoning was not: I
+   treated the card's 20px of padding as invisible slack, but a card
+   is a drawn object with a border and a fill, so its EDGE is what a
+   reader sees, not its last line of text.
+   Both halves come down together instead. 52px with the rule at -28
+   gives 24 above and 28 below, against the 30 and 34 a page that
+   ends in text gets — a fifth off, and still a line with room on
+   both sides of it. 131 of the 331 contact blocks follow a card or a
+   row of cards. */
 body.page-node-type-multi-column-page #block-doe-content .card + .contact-cube,
 body.page-node-type-multi-column-page #block-doe-content .row:has(> [class*="col-"] > .card) + .contact-cube {
-  margin-top: 44px;
+  margin-top: 52px;
+}
+body.page-node-type-multi-column-page #block-doe-content .card + .contact-cube::before,
+body.page-node-type-multi-column-page #block-doe-content .row:has(> [class*="col-"] > .card) + .contact-cube::before {
+  top: -28px;
 }
 /* NOT CONDITIONAL ON THE PAGE HAVING SECTION HEADERS.
    It was :has(.blockhead), on the reasoning that a divider only makes
@@ -1338,6 +1353,42 @@ body.page-node-type-multi-column-page #block-doe-content table:has(th) th {
   vertical-align: bottom;
 }
 body.page-node-type-multi-column-page #block-doe-content table:has(th) th:last-child { border-right: 0; }
+/* A TABLE INSIDE A CARD DOES NOT GET THE CARD'S OWN BLUE.
+   Matt, on /numeracy: "I dont like the table inside of the card being
+   the same blue color... I think we should try it as white inside."
+   Same colour was the fault: the card's title bar and the table's
+   header row both measured #182b3c, so the card looked like it had
+   two title bars and the table's header competed with the card's
+   name instead of sitting under it.
+   A MID-BLUE STEP DOWN WAS TRIED FIRST AND MATT TURNED IT DOWN —
+   "that blue is weird" — which is fair: a third blue to hold a
+   two-level hierarchy is one blue too many.
+   WHAT MAKES WHITE WORK IS THE RULE, NOT THE FILL. White alone does
+   look hollow: the card is #f3f7fa and the body cells are
+   transparent over it, so a white header differs from the rows
+   beneath by about two per cent of luminance and stops reading as a
+   header. A 3px navy edge under it does the job the fill was doing —
+   the header is the lightest band in the table with a hard line
+   closing it, which is a table header in anyone's reading. Navy on
+   white is 14.49:1.
+   THE DIVIDERS FLIP WITH IT. They are white at .18 alpha, drawn to
+   show on navy, and on a white header they are invisible. They take
+   the cool hairline the rest of the table's grid uses.
+   box-shadow rather than border-bottom, because the table is
+   border-collapse: separate with a 2px navy frame and a 10px radius:
+   a border on the cell adds to the cell's box and pushes the header
+   out of the corner curve, while an inset shadow paints inside it.
+   18 tables sit inside cards, on 12 pages. Every other table on the
+   site keeps the navy. */
+body.page-node-type-multi-column-page #block-doe-content .card table:has(th) th {
+  background: #fff !important;
+  color: var(--i-navy) !important;
+  box-shadow: inset 0 -3px 0 var(--i-navy);
+  border-right: 1px solid var(--i-rule-cool);
+}
+body.page-node-type-multi-column-page #block-doe-content .card table:has(th) th:last-child {
+  border-right: 0;
+}
 /* THE BOTTOM CORNERS, WHERE THE BORDER APPEARED TO CUT OUT.
    The table is border-collapse: separate with a 2px navy border and
    a 10px radius, and overflow: hidden to make the corners bite. A
@@ -3349,6 +3400,23 @@ body.page-node-type-multi-column-page #block-doe-content .card .card-img-top.doe
   object-position: center top;
   max-height: 360px;
 }
+/* A SQUARE PHOTOGRAPH GETS A SQUARE BAND.
+   Matt, on /jobsandrecovery/successnavigators: "those are taller
+   images, so they need to be height 100%." The seven coordinators are
+   800x800 and the band is 16:9, so each rendered 223x125 — forty-four
+   per cent of the picture cropped out of the middle, which on a
+   headshot is the top of the head and the shoulders.
+   The portrait class is not the answer: a square in a 3:4 box loses a
+   sixth off each side. A square band loses nothing, and because every
+   picture in the row is square the row still lines up, which is all
+   the fixed ratio was ever for. The class is written by propose.js
+   from the measured file, so it only fires on a picture actually
+   measured square. 16 card pictures, on 6 pages. */
+body.page-node-type-multi-column-page #block-doe-content .card .card-img-top.doe-img-square {
+  aspect-ratio: 1 / 1;
+  object-position: center center;
+  max-height: 360px;
+}
 body.page-node-type-multi-column-page #block-doe-content .card .card-img-top {
   aspect-ratio: 16 / 9;
   object-fit: cover;
@@ -4010,6 +4078,53 @@ body.page-node-type-multi-column-page #block-doe-content a.doe-email:hover::befo
 /* ON A GROUND THAT IS ALREADY NAVY the chip would disappear into it,
    so it inverts — teal fill, navy ink. Same pair, swapped, which is
    exactly what the format chip does in the same places. */
+/* THE CHIP KEEPS ITS OWN SIZE INSIDE AN ACTION ITEM.
+   Matt, on /jobsandrecovery/successnavigators: "this is where we have
+   a problem with emails and the contact chips."
+   The cleanup marks a list item whose content is a link as an action
+   link, and the action rule sets that link to 16px. It out-specifies
+   the chip's own .83em — li.doe-action > a is one class deeper than
+   a.doe-email — so every chip inside one rendered at 16px instead of
+   13.3px: twenty per cent oversized in exactly the place with least
+   room. In a 183px column that is the difference between an address
+   on one line and an address broken across two.
+   A chip is not an action link. It is already a bordered object with
+   its own icon, and the chevron the action rule hands out would be a
+   second mark on the same thing. */
+body.page-node-type-multi-column-page #block-doe-content li.doe-action > a.doe-email,
+body.page-node-type-multi-column-page #block-doe-content p.doe-action > a.doe-email {
+  font-size: .83em;
+}
+/* AND IT HAS TO SURVIVE WRAPPING. line-height is 14px, which is right
+   for the single line the chip is drawn as and collides with itself
+   the moment an address is longer than its column: two 13px lines
+   14px apart. Inside a card that is the common case — of the eight
+   addresses here, five wrap at the width the page actually renders —
+   so in a card the chip is a small block that wraps, not a pill that
+   pretends it never will. The icon holds to the first line rather
+   than centring against both. */
+body.page-node-type-multi-column-page #block-doe-content .card a.doe-email {
+  line-height: 1.3;
+  align-items: flex-start;
+  padding-top: 5px; padding-bottom: 5px;
+}
+/* THE CONTACT DETAILS AT THE FOOT OF A BIO CARD.
+   Matt: "That contact section is weird anyways, email and phone is
+   indented. I think there used to be lined dividing? i liked that."
+   Both true. The details are written as a list group, so Bootstrap's
+   .list-group-item holds them 20px in from everything else in the
+   card — an indent with nothing to its left, because there is only
+   ever one item. And the flush variant drops the borders, so the
+   block ran on from the end of the bio with nothing between them.
+   Back to the card's own left edge, with a rule above it: the same
+   hairline the rest of the page divides with, which is what makes it
+   read as the card's footer rather than another paragraph.
+   31 list items hold contact details, across 11 pages. */
+body.page-node-type-multi-column-page #block-doe-content .card .list-group-item:has(a.doe-email) {
+  padding-left: 0; padding-right: 0;
+  margin-top: 4px;
+  border-top: 1px solid rgba(24, 43, 60, .22);
+}
 body.page-node-type-multi-column-page #block-doe-content .contact-cube a.doe-email,
 body.page-node-type-multi-column-page #block-doe-content .dc-note a.doe-email,
 body.page-node-type-multi-column-page #block-doe-content .doe-hero a.doe-email,

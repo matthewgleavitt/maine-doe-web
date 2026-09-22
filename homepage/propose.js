@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-v  ·  Last edited: 2026-09-22 16:45
+ * Version: 2026-09-22-x  ·  Last edited: 2026-09-22 18:20
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -3083,6 +3083,43 @@ function propose(node, audit, index, opts = {}) {
      It is a decision rather than a certainty, so it is listed with
      the file it removes — and banner-report.js will tell you whether
      that file is used anywhere else before you delete it. */
+  /* (b0) A PICTURE THE PAGE'S OWNER HAS ASKED TO REMOVE.
+     { "dropImage": ["Numeracy Hub - Landing Page - 8.28.25"] }
+     Named page by page and never inferred, the same way dropSection
+     is. Matched on the file name rather than on the surrounding
+     markup, because the markup is the one thing that changes as the
+     page is rebuilt and the file name is the one thing that does not.
+     /numeracy is the case: a 2000x2000 diagram of a globe with three
+     arrows curving into it, labelled Tools, Connections and
+     Dispositions. Matt: "Can we remove the globe." Its three words
+     are the content and they exist only as pixels — set at an angle,
+     so they do not reflow, do not scale with a reader's text size and
+     go tiny on a phone — and its alt text reads "steam", copied from
+     the STEAM hub, so a screen reader is told the wrong subject and
+     gets none of the three (WCAG 1.1.1). Square, in a 778px column,
+     it stood 778px tall: a full screen before any content.
+     A paragraph left holding nothing goes with it. */
+  if (opts.dropImage) {
+    let n = 0;
+    for (const want of [].concat(opts.dropImage)) {
+      const needle = String(want).toLowerCase();
+      const before = html;
+      html = html.replace(/<img[^>]*>/gi, (tag) => {
+        const src = decodeURIComponent((tag.match(/src="([^"]*)"/i) || [, ''])[1]);
+        const alt = (tag.match(/alt="([^"]*)"/i) || [, ''])[1];
+        if (!(src + ' ' + alt).toLowerCase().includes(needle)) return tag;
+        n++;
+        return '';
+      });
+      if (html === before) { notes.push(`Image not removed — nothing on this page is named "${want}".`); continue; }
+      /* The wrapper it was alone in, and the breaks that spaced it. */
+      html = html.replace(/<p\b[^>]*>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>/gi, '');
+    }
+    if (n) decisions.push({ id: 'dropImage', on: true, label: 'Remove a picture',
+      why: `${n} picture${n > 1 ? 's are' : ' is'} taken off the page — named in overrides.json, which is the only way this happens. No text moves; the paragraph it was sitting in comes out with it if there is nothing else in it.`,
+      value: [].concat(opts.dropImage).join(', ') });
+  }
+
   if (opts.removeBannerGraphic !== false) {
     const head = html.slice(0, 2500);
     for (const m of head.matchAll(/<img[^>]*>/gi)) {
@@ -4297,7 +4334,7 @@ function propose(node, audit, index, opts = {}) {
      strip. Nothing is guessed — a picture with no measurement keeps
      the default. */
   if (opts.portrait !== false && SIZES) {
-    let n = 0;
+    let n = 0, sq = 0;
     html = html.replace(/<img\b([^>]*\bclass="[^"]*\bcard-img-top\b[^"]*"[^>]*)>/gi, (m, attrs) => {
       const src = (attrs.match(/src="([^"]*)"/i) || [])[1];
       if (!src) return m;
@@ -4313,11 +4350,31 @@ function propose(node, audit, index, opts = {}) {
         size = SIZES[key] || SIZES[dec(src)] || null;
       } catch (e) { size = null; }
       if (!size || !size.w || !size.h) return m;
-      if (size.h <= size.w * 1.05) return m;          // landscape or square: leave it
-      if (/doe-img-portrait/.test(attrs)) return m;
+      if (/doe-img-portrait|doe-img-square/.test(attrs)) return m;
+      /* A SQUARE PHOTOGRAPH IS NOT A LANDSCAPE ONE.
+         This read "landscape or square: leave it", and square was the
+         wrong half of that. Matt, on /jobsandrecovery/successnavigators:
+         "those are taller images, so they need to be height 100%."
+         The seven coordinators are 800x800 and the card band is 16:9,
+         so each was rendered 223x125 — forty-four per cent of the
+         picture thrown away, taken out of the middle, which on a
+         headshot is the top of the head and the shoulders.
+         3:4 is not the answer either: a square in a 3:4 box crops a
+         sixth off each side. A square band crops nothing, and because
+         every picture in the row is square the row still lines up,
+         which is the only thing the fixed ratio was ever for.
+         16 card pictures are square, across 6 pages. */
+      if (size.w >= size.h * 0.95 && size.w <= size.h * 1.05) {
+        sq++;
+        return `<img${attrs.replace(/class="/, 'class="doe-img-square ')}>`;
+      }
+      if (size.h <= size.w * 1.05) return m;          // landscape: the band is right
       n++;
       return `<img${attrs.replace(/class="/, 'class="doe-img-portrait ')}>`;
     });
+    if (sq) decisions.push({ id: 'square', on: true, label: 'Let a square photograph stay square',
+      why: `${sq} card picture${sq > 1 ? 's are' : ' is'} square, and every card image is cropped to a 16:9 band — so ${sq > 1 ? 'they are' : 'it is'} rendered 223x125 and forty-four per cent of the picture is thrown away, taken out of the middle. On a headshot that is the top of the head and the shoulders. Given a square band ${sq > 1 ? 'they keep' : 'it keeps'} the whole picture, and because the row's pictures are all square the row still lines up. The file does not change.`,
+      value: sq + ' picture' + (sq > 1 ? 's' : '') });
     if (n) decisions.push({ id: 'portrait', on: true, label: 'Let a portrait photograph keep its shape',
       why: `${n} card picture${n > 1 ? 's are' : ' is'} taller than ${n > 1 ? 'they are' : 'it is'} wide — headshots, mostly — and every card image is cropped to 16:9, so most of the person is thrown away to make a landscape strip. Measured from the files: these are 500x667 rendered into 293x165. Marked as portrait, the card gives them a shape they fit and the picture runs up the card instead. The file does not change.`,
       value: n + ' picture' + (n > 1 ? 's' : '') });

@@ -349,6 +349,9 @@
   "replace": {
    "<ul class=\"list-group list-group-flush\">\r\n\t<li class=\"doe-action list-group-item\"><a href=\"https://view.genially.com/69a9f84837b2277a70376023\" target=\"_blank\">Numeracy Playbook</a></li>\r\n</ul>": "<p><a class=\"btn btn-info btn-lg btn-block mt-4\" href=\"https://view.genially.com/69a9f84837b2277a70376023\" target=\"_blank\">Numeracy Playbook</a></p>"
   },
-  "_why": "Matt, 22 Sep: the Playbook opens with a button, the same as the Action Plan card above it."
+  "_why": "Matt, 22 Sep: the Playbook opens with a button, the same as the Action Plan card above it; the globe diagram comes off and the hub needs a banner photograph.",
+  "dropImage": [
+   "Numeracy Hub - Landing Page - 8.28.25"
+  ]
  }
 }

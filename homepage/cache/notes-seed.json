@@ -888,6 +888,12 @@
   "detail": "Card image cap · Card image cap"
  },
  {
+  "alias": "/learning/content/new",
+  "kind": "needs a picture",
+  "text": "The banner has no photograph. This hub's old banner graphic is retired because its lettering repeats the page title, which leaves the band flat navy.",
+  "detail": "Needs the banner image cropped to the picture, without the words"
+ },
+ {
   "alias": "/Testing_Accountability/MECAS/math_ELA_Literacy",
   "kind": "accessibility",
   "text": "1 image describes itself with a file name rather than what the picture shows. A screen reader reads it out as written.",
@@ -1092,6 +1098,12 @@
   "detail": "here · here"
  },
  {
+  "alias": "/learning/hub",
+  "kind": "needs a picture",
+  "text": "The banner has no photograph. This hub's old banner graphic is retired because its lettering repeats the page title, which leaves the band flat navy.",
+  "detail": "Needs the banner image cropped to the picture, without the words"
+ },
+ {
   "alias": "/safety/emergencymanagement",
   "kind": "unfinished",
   "text": "The page still says \"coming soon\". Has it arrived, or should the line come out?",
@@ -1219,9 +1231,21 @@
  },
  {
   "alias": "/steam",
+  "kind": "needs a picture",
+  "text": "The banner has no photograph. This hub's old banner graphic is retired because its lettering repeats the page title, which leaves the band flat navy.",
+  "detail": "Needs the banner image cropped to the picture, without the words"
+ },
+ {
+  "alias": "/steam",
   "kind": "accessibility",
   "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
   "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/numeracy",
+  "kind": "needs a picture",
+  "text": "The banner has no photograph. This hub's old banner graphic is retired because its lettering repeats the page title, which leaves the band flat navy.",
+  "detail": "Needs the banner image cropped to the picture, without the words"
  },
  {
   "alias": "/numeracy",
@@ -1231,8 +1255,20 @@
  },
  {
   "alias": "/artsandhumanities",
+  "kind": "needs a picture",
+  "text": "The banner has no photograph. This hub's old banner graphic is retired because its lettering repeats the page title, which leaves the band flat navy.",
+  "detail": "Needs the banner image cropped to the picture, without the words"
+ },
+ {
+  "alias": "/artsandhumanities",
   "kind": "accessibility",
   "text": "4 images describe themselves with a file name rather than what the picture shows. A screen reader reads it out as written.",
   "detail": "Card image cap · Card image cap · Card image cap"
+ },
+ {
+  "alias": "/literacy",
+  "kind": "needs a picture",
+  "text": "The banner has no photograph. This hub's old banner graphic is retired because its lettering repeats the page title, which leaves the band flat navy.",
+  "detail": "Needs the banner image cropped to the picture, without the words"
  }
 ]

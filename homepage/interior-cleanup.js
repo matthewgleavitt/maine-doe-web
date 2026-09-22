@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-22-h  ·  Last edited: 2026-09-22 16:45
+ * Version: 2026-09-22-i  ·  Last edited: 2026-09-22 18:20
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -1969,6 +1969,40 @@ const FIXES = [
      Demoting to a blockhead h2 also makes the section countable: the
      contents list is generated from .blockhead h2, so a page whose
      sections were h1s could never have one. */
+  /* A PARAGRAPH IS NOT A CONTACT BLOCK.
+     Matt, on /jobsandrecovery/successnavigators: "The data like 3,239,
+     etc. is in an H2 and should not be, it should maybe be in a DC
+     note. Same with the next section. maybe just combine them all."
+     It is not a heading — it is <p class="contact-cube">, which draws
+     the navy slab the contact block uses, and a navy slab is what the
+     section headers are, so it reads as one. The class is on the
+     wrong thing twice over: the contact block is a <div> holding a
+     person's name, title, phone and email, and this is a run of
+     programme statistics with none of those in it.
+     dc-note is the callout this is: navy with a teal edge, which says
+     "worth stopping for" instead of "new section". Adjacent ones join,
+     because the two here were one paragraph in the source until a
+     blank line inside it split them.
+     Only a <p>, and only with no email or phone anywhere in it — a
+     real contact block written on the wrong element still gets to be
+     a contact block. 2 of these, both on that page. */
+  ['paragraph with the contact block\'s class', (h) => {
+    let n = 0;
+    h = h.replace(/<p\b([^>]*)\sclass="([^"]*\bcontact-cube\b[^"]*)"([^>]*)>([\s\S]*?)<\/p>/gi,
+      (m, a1, cls, a2, inner) => {
+        if (/mailto:|tel:|\(?\d{3}\)?[-. ]\s*\d{3}[-. ]\d{4}/.test(inner)) return m;
+        n++;
+        const keep = cls.replace(/\bcontact-cube\b/g, '').replace(/\s+/g, ' ').trim();
+        const rest = (a1 + a2).trim();
+        return `<div class="dc-note">\n<p${rest ? ' ' + rest : ''}${keep ? ` class="${keep}"` : ''}>${inner}</p>\n</div>`;
+      });
+    if (n > 1) {
+      /* Two that were one. */
+      h = h.replace(/<\/div>(\s*)<div class="dc-note">/gi, (m, gap) => (/\n\s*\n/.test(gap) ? m : ''));
+    }
+    return [h, n];
+  }],
+
   /* A ROW INSIDE A ROW IS A ROW CLOSED IN THE WRONG PLACE.
      Matt, on /numeracy: "these cards seem to be the wrong width so
      thinking there is something up with the code here", and "the
