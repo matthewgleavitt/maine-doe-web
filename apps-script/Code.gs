@@ -561,9 +561,10 @@ function doGet(e) {
   // edit form. The endpoint is small and per-user, so no caching is correct.
   //
   // 'moderation' USED to bypass cache too, but that meant every portal load
-  // fired a live Drupal round-trip (1-3s) for every user. A 90s TTL is well
-  // within the "fresh enough for an approval queue" window, and the Refresh
-  // button on Pending Approvals still passes ?refresh=1 to force a bypass.
+  // fired a live Drupal round-trip (1-3s) for every user. It now caches for a
+  // full warm cycle; approvals happen in Drupal, which can't invalidate that,
+  // so the Refresh button on Pending Approvals passes ?refresh=1 to force a
+  // bypass when someone needs to confirm an approval landed.
   var bypassCache = !!(e && e.parameter && e.parameter.refresh);
   var cache = CacheService.getScriptCache();
   if (type !== 'web_stats' && type !== 'event' && !bypassCache) {
@@ -711,10 +712,14 @@ function doGet(e) {
   if (type !== 'web_stats' && type !== 'event' && !result.error) {
     var ttl;
     switch (type) {
-      // Approval queue — 90s is fresh enough for a moderation view; the
-      // Refresh button still passes ?refresh=1 to force a bypass.
+      // Approval queue — same trap the calendar hit below. 90s was written
+      // by a warmer that only runs every 10 min, so the entry was expired for
+      // ~8.5 of every 10 minutes and whoever landed in that window paid the
+      // full cold path (measured 77s). 900s outlives the warmer, so every
+      // request is served from cache and the data is at most one warm cycle
+      // old. The Refresh button still passes ?refresh=1 to force a bypass.
       case 'moderation':
-        ttl = 90; break;
+        ttl = 900; break;
       // Fresh — user-facing writes should show quickly. Calendar was 300s
       // but the warmer runs every 10 min → entries expired mid-cycle and the
       // next visitor paid Apps Script cold-start + Sheet read + recurrence
@@ -2377,11 +2382,13 @@ function warmCache() {
   } catch(e) { Logger.log('Warm publications failed: ' + e.message); }
 
   // Moderation queue — biggest win. Was previously uncached AND unwarmed, so
-  // every portal load fired a live Drupal round-trip (1-3s). 90s TTL matches
-  // the doGet write TTL — always fresh, never cold.
+  // every portal load fired a live Drupal round-trip (1-3s). TTL must match
+  // the doGet write TTL (900s) and outlive this warmer's 10-min interval; at
+  // 90s the entry expired mid-cycle and portal loads fell through to the cold
+  // path instead of the cache this block exists to fill.
   try {
     var modData = JSON.stringify(getModerationQueue());
-    cache.put('portal_moderation_30', modData, 90);
+    cache.put('portal_moderation_30', modData, 900);
     warmed.push('moderation');
   } catch(e) { Logger.log('Warm moderation failed: ' + e.message); }
 

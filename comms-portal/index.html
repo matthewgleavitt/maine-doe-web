@@ -233,7 +233,13 @@ function Portal(){
     try{ const s=sessionStorage.getItem('doe_portal_queue_status'); if(s) return JSON.parse(s); }catch(e){}
     return {};
   });
-  const [modQueue,setModQueue]=useState([]);
+  const [modQueue,setModQueue]=useState(()=>{
+    // The list itself rehydrates too, not just the sidebar count. Without this
+    // the table renders empty next to a cached badge number, which reads as
+    // "0 items" until the fetch lands.
+    try{ const s=sessionStorage.getItem('doe_portal_mod_queue'); if(s) return JSON.parse(s); }catch(e){}
+    return [];
+  });
   const [webStats,setWebStats]=useState(()=>{
     // Same rehydrate pattern as queueStatus — show last-known numbers instantly
     // on reload, then overwrite when the fresh fetch lands. Skips the "···"
@@ -241,6 +247,7 @@ function Portal(){
     try{ const s=sessionStorage.getItem('doe_portal_web_stats'); if(s) return JSON.parse(s); }catch(e){}
     return {pageViews:null,totalPages:null,totalFiles:null};
   });
+  const [modRefreshing,setModRefreshing]=useState(false);
   // Session-scoped cache-buster for iframes — fresh on every portal load, cached within a session.
   const [sessionV]=useState(()=>Date.now().toString(36));
 
@@ -250,10 +257,27 @@ function Portal(){
   // CDN payload is unreachable or older than 60 min.
   const CDN_BASE='https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/';
   const CDN_STALE_MINUTES=150;
+  // Per-type override. 150 min suits slow-moving catalogs (store, publications),
+  // but the moderation queue is a worklist people act on minute to minute — an
+  // hour-old count there is worse than no count, so it gets a tight budget and
+  // usually falls through to live.
+  const CDN_STALE_BY_TYPE={ moderation:10 };
   async function fetchCdnOrLive(type, onRevalidate){
+    const maxAge=CDN_STALE_BY_TYPE[type]||CDN_STALE_MINUTES;
+    // Google's Apps Script edge intermittently answers with a 7.9KB HTML 404
+    // instead of JSON (measured ~1 call in 4). One retry turns that from a
+    // silent stick-on-stale-data into a blip.
     const live = async () => {
-      const rr = await fetch(SCRIPT_URL + '?type=' + type, { cache: 'no-store' });
-      return rr.json();
+      for(let attempt=0;attempt<2;attempt++){
+        const rr = await fetch(SCRIPT_URL + '?type=' + type, { cache: 'no-store' });
+        const body = await rr.text();
+        if(rr.ok && body.charAt(0)==='{') return JSON.parse(body);
+        if(attempt===0){
+          console.warn('['+type+'] live returned '+rr.status+' '+(body.charAt(0)==='<'?'HTML':'unparseable')+', retrying');
+          await new Promise(r=>setTimeout(r,1200));
+        }
+      }
+      throw new Error('live fetch returned a non-JSON response twice');
     };
     try{
       const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);
@@ -262,7 +286,7 @@ function Portal(){
       if(r.ok){
         const d=await r.json();
         const age=(Date.now()-new Date(d._fetched||0).getTime())/60000;
-        if(age<CDN_STALE_MINUTES){
+        if(age<maxAge){
           console.log('['+type+'] CDN paint, age '+Math.round(age)+' min');
           // Stale-while-revalidate: hand back the CDN copy now so the page
           // paints immediately, then check live in the background. Without
@@ -280,6 +304,50 @@ function Portal(){
     }catch(e){ console.warn('['+type+'] CDN failed, going live:',e.message); }
     return live();
   }
+
+  // Drupal hands back rendered markup for each column, so the fields have to be
+  // pulled out of the HTML. Defined at component scope because both the initial
+  // load and the Refresh button apply the same shape.
+  const applyModeration=useCallback((j)=>{
+    if(!j) return;
+    const items=j.rows||(Array.isArray(j)?j:[]);
+    const parsed=items.map(item=>{
+      const titleMatch=(item.title||'').match(/>([^<]+)</);
+      const hrefMatch=(item.title||'').match(/href="([^"]+)"/);
+      const nameMatch=(item.name||'').match(/content="([^"]+)"/)||(item.name||'').match(/>([^<…]+)/);
+      const dateMatch=(item.changed||'').match(/title="([^"]+)"/);
+      return{
+        title:titleMatch?titleMatch[1].replace(/&amp;/g,'&'):item.title||'',
+        href:hrefMatch?'https://www.maine.gov'+hrefMatch[1].replace(/\/revisions\/\d+\/view/,'/edit'):'',
+        author:nameMatch?nameMatch[1]:'',
+        date:dateMatch?dateMatch[1]:'',
+        state:item.moderation_state||'',
+      };
+    });
+    setModQueue(parsed);
+    try{sessionStorage.setItem('doe_portal_mod_queue',JSON.stringify(parsed));}catch(e){}
+    setQueueStatus(prev=>{
+      const next={...prev,website:{pending:parsed.length,total:parsed.length}};
+      try{sessionStorage.setItem('doe_portal_queue_status',JSON.stringify(next));}catch(e){}
+      return next;
+    });
+  },[]);
+
+  // Approvals happen in Drupal, which has no way to tell Apps Script its cached
+  // copy is out of date. This bypasses both caches so an approval can be
+  // confirmed right away instead of waiting out the warm cycle.
+  const refreshModeration=useCallback(async()=>{
+    setModRefreshing(true);
+    try{
+      const r=await fetch(SCRIPT_URL+'?type=moderation&refresh=1',{cache:'no-store'});
+      const body=await r.text();
+      if(body.charAt(0)!=='{') throw new Error('non-JSON response');
+      const j=JSON.parse(body);
+      if(j.error) throw new Error(j.error);
+      applyModeration(j);
+    }catch(e){ console.warn('[moderation] manual refresh failed:',e.message); }
+    setModRefreshing(false);
+  },[applyModeration]);
 
   useEffect(()=>{
     // Track viewport width for responsive layout, but NEVER auto-collapse the sidebar.
@@ -324,29 +392,6 @@ function Portal(){
     // Moderation queue (Drupal proxied via Apps Script) — CDN paint, then
     // live revalidate so a page you just sent for review shows up.
     (async()=>{
-      const applyModeration=(j)=>{
-        if(!j) return;
-        const items=j.rows||(Array.isArray(j)?j:[]);
-        const parsed=items.map(item=>{
-          const titleMatch=(item.title||'').match(/>([^<]+)</);
-          const hrefMatch=(item.title||'').match(/href="([^"]+)"/);
-          const nameMatch=(item.name||'').match(/content="([^"]+)"/)||(item.name||'').match(/>([^<…]+)/);
-          const dateMatch=(item.changed||'').match(/title="([^"]+)"/);
-          return{
-            title:titleMatch?titleMatch[1].replace(/&amp;/g,'&'):item.title||'',
-            href:hrefMatch?'https://www.maine.gov'+hrefMatch[1].replace(/\/revisions\/\d+\/view/,'/edit'):'',
-            author:nameMatch?nameMatch[1]:'',
-            date:dateMatch?dateMatch[1]:'',
-            state:item.moderation_state||'',
-          };
-        });
-        setModQueue(parsed);
-        setQueueStatus(prev=>{
-          const next={...prev,website:{pending:parsed.length,total:parsed.length}};
-          try{sessionStorage.setItem('doe_portal_queue_status',JSON.stringify(next));}catch(e){}
-          return next;
-        });
-      };
       applyModeration(await fetchCdnOrLive('moderation', applyModeration));
     })();
 
@@ -647,6 +692,12 @@ function Portal(){
                     {modQueue.length>0&&<span style={{fontSize:12,fontWeight:700,color:'#f59e0b',background:'rgba(245,158,11,0.15)',padding:'2px 10px',borderRadius:12,border:'1px solid rgba(245,158,11,0.3)'}}>{modQueue.length}</span>}
                   </div>
                   <div style={{display:'flex',alignItems:'center',gap:12}}>
+                    <button onClick={refreshModeration} disabled={modRefreshing}
+                      style={{fontSize:12,fontWeight:600,color:modRefreshing?'#64748b':'#e2e8f0',background:'rgba(255,255,255,0.08)',
+                        border:'1px solid rgba(255,255,255,0.15)',borderRadius:8,padding:'4px 12px',
+                        cursor:modRefreshing?'default':'pointer',fontFamily:'inherit'}}>
+                      {modRefreshing?'Checking…':'Refresh'}
+                    </button>
                     <a href="https://stateofmaine.sharepoint.com/:f:/t/DOETeam/IgA5Z26x-XMtR67bDYrVBg0eAcbc8G9dYzlzZkjdM1ovgvM?e=H75zYF" target="_blank" rel="noopener noreferrer"
                       style={{fontSize:12,fontWeight:600,color:'#34d399',textDecoration:'none',display:'flex',alignItems:'center',gap:4}}>
                       Website Uploads <I d={icons.ext} size={12} color="#34d399"/>

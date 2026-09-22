@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-22-s  ·  Last edited: 2026-09-22 22:35
+ * Version: 2026-09-23-a  ·  Last edited: 2026-09-23 01:10
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -581,6 +581,23 @@ const FIXES = [
         n++;
         return `<p${attrs}><strong>${label.trim()}</strong><br>\n${body.trim()}</p>`;
       });
+    return [h, n];
+  }],
+
+  /* A HARD SPACE AT THE END OF A LIST ITEM.
+     Matt, on /Testing_Accountability/MECAS/NWEA: "there's an extra
+     space after for tech coordinators." The items under it read
+     <li><a>NWEA System and Technology Guide</a>&nbsp;</li> — a hard
+     space typed after the link, which prints as a gap between the
+     link and the chevron the design puts after it, so those rows sit
+     a character wider than the rows around them.
+     859 of these across 169 pages, which is the same habit as the
+     indent runs: a space typed to nudge something. The space at the
+     START of an item goes too, for the same reason. */
+  ['hard spaces at the edge of a list item removed', (h) => {
+    let n = 0;
+    h = h.replace(/(<li\b[^>]*>)((?:\s|&nbsp;)*&nbsp;(?:\s|&nbsp;)*)/gi, (m, open) => { n++; return open; });
+    h = h.replace(/((?:\s|&nbsp;)*&nbsp;(?:\s|&nbsp;)*)(<\/li>)/gi, (m, pad, close) => { n++; return close; });
     return [h, n];
   }],
 

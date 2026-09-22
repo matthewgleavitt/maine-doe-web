@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-ah  ·  Last edited: 2026-09-22 18:50
+ * Version: 2026-09-22-al  ·  Last edited: 2026-09-23 00:45
  *
  * ============================================================
  * SCOPE
@@ -120,16 +120,30 @@ body.page-node-type-multi-column-page {
      where the picture is strongest; the left side stays near solid
      whatever this says, so the type is never affected.
 
-       .80  the picture is clearly a photograph
-       .90  a texture behind the words          ← current
-       .96  barely there
+       .66  the picture is clearly a photograph  ← current
+       .78  a texture behind the words
+       .90  barely there
       1     no picture at all
+
+     THE WHOLE CURVE MOVED, NOT JUST THIS NUMBER. Matt: "Still needs
+     to be lighter, or the gradient in toward further, its just near
+     impossible to see." He is right and the second half of that is
+     the real fault: this dial only ever set the value at the far
+     RIGHT EDGE, and the stops before it held .955 to .98 across the
+     first eighty per cent of the band. So the photograph could only
+     appear in a narrow wedge at the very end, and moving this number
+     from .90 to .80 lightened a strip most of a band's width away
+     from anything anyone looks at.
+     The stops below are regraded so the veil thins across the right
+     half rather than at the edge of it, and the numbers on the scale
+     above moved with them: at the new shape .66 at the edge is what
+     .80 used to be. Contrast is measured for every stop below.
 
      Turn this dial rather than editing the gradient: the other stops
      are calculated to keep 17px type past 4.5:1 against a worst-case
      white photograph, and they only hold if this is the one that
      moves. Below about .78 that guarantee stops being true. */
-  --i-art-veil: .90;
+  --i-art-veil: .66;
 }
 
 /* ── ANCHOR PADDING — see note at top ───────────────────────────── */
@@ -1952,6 +1966,28 @@ body.page-node-type-multi-column-page #block-doe-content table td.doe-tight * {
     white-space: normal !important;
   }
 }
+/* THE FIRST COLUMN GETS A FLOOR.
+   Matt, on /learning/earlychildhood/pkexpansiongrant/2021: "SAU,
+   there are a LOT of breaks in single word there, so that column
+   needs to be larger."
+   Measured: that column rendered 66px wide with 40px of padding in
+   it, so 26px of room, and "Tremont Consolidated School" came out
+   over THIRTEEN lines at about two characters each. The cause is the
+   auto table algorithm, not the wrap mode — the table's content
+   already needs more room than the column gives it, so the algorithm
+   hands the space to the columns with the most text and serves the
+   short one below even its own longest word. Setting overflow-wrap
+   to normal changes nothing; I tried it and the column stayed 66px.
+   What fixes it is a floor. 9em is the narrowest that holds
+   "Consolidated", which is the longest word the first column of any
+   of these tables has to carry, and it took that cell from thirteen
+   lines to six. A first column already wider than this is untouched,
+   which is most of them — the other three tables on that page sit at
+   127, 179 and 104 and only the last one moves. */
+body.page-node-type-multi-column-page #block-doe-content table th:first-child,
+body.page-node-type-multi-column-page #block-doe-content table td:first-child {
+  min-width: 9em;
+}
 body.page-node-type-multi-column-page #block-doe-content table th,
 body.page-node-type-multi-column-page #block-doe-content table td {
   /* overflow-wrap, not word-break. They behave the same for the case
@@ -2748,20 +2784,28 @@ body.page-node-type-multi-column-page #block-doe-content .doe-hero::before {
   content: ''; position: absolute; inset: 0; z-index: 0;
   background-image: inherit;
   background-size: cover; background-position: right 25%;
-  /* Desaturated and lifted a little. The veil controls how much of
-     the picture shows; this controls how hard it reads when it does.
-     A photograph at full saturation behind type competes with it even
-     at low opacity, because the eye goes to colour. Taking a quarter
-     of the saturation out and raising the midtones turns it into a
-     texture behind the words rather than an image under them. */
-  filter: saturate(.62) brightness(1.16);
-  /* The picture never reaches full strength even at its strongest
-     point — 82%, not 100%. The veil says how much navy sits over it;
-     this says how much of the picture is there to be covered. Two
-     levers pulling the same way is what finally took it from an image
-     under the words to a texture behind them. */
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.18) 44%, rgba(0,0,0,.82) 86%);
-          mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.18) 44%, rgba(0,0,0,.82) 86%);
+  /* THE SECOND LEVER, and it was the one doing most of the hiding.
+     Lightening the veil could only go so far while this was set to
+     make the picture a texture: a quarter of the saturation gone and
+     the midtones lifted, which washes a photograph out before the
+     veil even reaches it. Matt: "its just near impossible to see."
+     Saturation is nearly back and the brightness lift is off, so the
+     picture is a picture. It is still not at full colour, because a
+     photograph at full saturation behind type pulls the eye off the
+     words. */
+  filter: saturate(.92);
+  /* AND THE MASK OPENS. It held the picture at 18% of itself at the
+     middle of the band and never let it past 82% at all, so the two
+     levers were multiplying: a fifth of a washed-out photograph
+     under a .96 veil is nothing to see.
+     It now reaches full strength by 78%, which is past where the
+     title and the description end. The left stays transparent so the
+     words open on flat navy. Nothing here can make the text worse
+     than the veil's own worst case, which is measured below against
+     a pure white photograph at full strength — this only decides how
+     much of the real picture is there to be covered. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.35) 40%, rgba(0,0,0,1) 78%);
+          mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.35) 40%, rgba(0,0,0,1) 78%);
 }
 /* THE VEIL, and it is a gradient rather than a flat wash — which is
    what lets the title run full width AND the picture stay visible.
@@ -2778,16 +2822,26 @@ body.page-node-type-multi-column-page #block-doe-content .doe-hero::before {
            26px and up, is large text under 1.4.3 and clears 3:1. */
 body.page-node-type-multi-column-page #block-doe-content .doe-hero::after {
   content: ''; position: absolute; inset: 0; z-index: 0;
-  /* Regraded so the dense part reaches further right and the
-     description can run nearly the full width of the band. Measured
-     against a pure white photograph, worst case:
-       at 65% (where a 76ch deck ends)  .93 → 8.5:1
-       at 100% (where the h1 can reach) .70 → 5.2:1, and the h1 is
-                large text, which needs 3. */
+  /* REGRADED SO THE PICTURE HAS THE RIGHT HALF, not the last inch of
+     it. The old shape held .975 to 56% and .955 to 80%, which is
+     solid navy by eye for four fifths of the band — the photograph
+     was only ever visible in the wedge past that, and on a band
+     200px tall that wedge is a few hundred square pixels.
+     It now thins steadily from the middle out. Every stop is
+     measured for white text against a PURE WHITE photograph, which
+     is the worst case a picture can present and far worse than any
+     real one:
+       0%   .97  13.3:1
+       45%  .94  12.1:1
+       75%  .82   8.2:1
+       100% .66   4.9:1
+     The lightest point still clears 4.5:1, so this holds for the
+     17px description as normal text and not merely for the title as
+     large text. Below about .60 at the edge that stops being true. */
   background: linear-gradient(to right,
-    rgba(24, 43, 60, .98) 0%,
-    rgba(24, 43, 60, .975) 56%,
-    rgba(24, 43, 60, .955) 80%,
+    rgba(24, 43, 60, .97) 0%,
+    rgba(24, 43, 60, .94) 45%,
+    rgba(24, 43, 60, .82) 75%,
     rgba(24, 43, 60, var(--i-art-veil)) 100%);
   pointer-events: none;
 }
@@ -3368,7 +3422,22 @@ body.page-node-type-multi-column-page #block-doe-content a:focus-visible {
    makes a row of cards read as a set, so every shape has to hit it.
    Selectors below name all four rather than the one class, and the
    markup can be corrected page by page without the look changing. */
-body.page-node-type-multi-column-page #block-doe-content .card p:has(> img) {
+/* AND ONLY WHERE THE PICTURE OPENS THE CARD.
+   Matt, on /learning/multilinguallearner/identification: "Can there
+   just be a little space before the button?" The ELP decision tree is
+   a picture in the MIDDLE of a card body with a button under it, and
+   this rule zeroed its margins too — so the button sat flush against
+   the bottom edge of the thumbnail, measured at 0px where every other
+   button on the page has 16.
+   The reason for zeroing is the card's top edge: a paragraph's own
+   margin held a leading picture off it and the rounded corners showed
+   as white above a square image. That argument is about the FIRST
+   thing in the card and nothing else. A picture further down is
+   content in the flow and keeps the spacing the flow gives it.
+   6 image paragraphs open a card body; 4 sit further down, on 3
+   pages. */
+body.page-node-type-multi-column-page #block-doe-content .card > p:first-child:has(> img),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > p:first-child:has(> img) {
   margin: 0; padding: 0; line-height: 0;
 }
 body.page-node-type-multi-column-page #block-doe-content .card > img,

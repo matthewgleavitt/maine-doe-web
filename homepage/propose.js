@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-ad  ·  Last edited: 2026-09-22 22:20
+ * Version: 2026-09-23-a  ·  Last edited: 2026-09-23 01:15
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -3296,7 +3296,30 @@ function propose(node, audit, index, opts = {}) {
      the same line, and naming it once should fix both. */
   if (opts.boldhead) {
     let n = 0;
-    for (const [from, to] of Object.entries(opts.boldhead)) {
+    /* true ON ITS OWN MEANS EVERY ONE ON THE PAGE.
+       Matt, on /Testing_Accountability/MECAS/NWEA, listed eighteen of
+       them section by section and then "same in the next section"
+       four times over. A page whose bold lines are ALL headings is a
+       page to say that about once, not eighteen times — and naming
+       each would be eighteen chances to mistype one. The named form
+       is still there for a page where only some of them are. */
+    const all = opts.boldhead === true;
+    if (all) {
+      html = html.replace(/<p\b[^>]*>([\s\S]*?)<\/p>/gi, (m, inner) => {
+        const text = strip(inner).replace(/\s+/g, ' ').trim();
+        if (!text || text.length > 90 || text.split(/\s+/).length > 12) return m;
+        if (!/<(?:strong|b)\b/i.test(inner)) return m;
+        /* The bold has to be the whole line, not a run inside it. */
+        if (strip(inner.replace(/<(?:strong|b)\b[^>]*>[\s\S]*?<\/(?:strong|b)>/gi, '')).trim()) return m;
+        if (/mailto:|tel:|\(?\d{3}\)?[-. ]\s*\d{3}[-. ]\d{4}/.test(inner)) return m;
+        n++;
+        return `<h3>${text}</h3>`;
+      });
+      if (n) decisions.push({ id: 'boldhead', on: true, label: 'Make the bold lines headings',
+        why: `${n} line${n > 1 ? 's on this page are' : ' on this page is'} a paragraph holding nothing but a few bold words, with the part it names underneath. Asked for by name in overrides.json: each becomes an h3, so it is announced as a heading and takes the treatment the page's other headings take. A line carrying an email address or a phone number is left alone, because that is a person rather than a section. Not a word changes.`,
+        value: n + ' heading' + (n > 1 ? 's' : '') });
+    }
+    for (const [from, to] of Object.entries(all ? {} : opts.boldhead)) {
       const needle = String(from).replace(/\s+/g, ' ').trim().toLowerCase();
       const before = html;
       /* MATCHED ON THE WORDS, NOT ON THE MARKUP. Written as
@@ -5433,7 +5456,27 @@ function propose(node, audit, index, opts = {}) {
     ...joined,
   ].flatMap(t => [key(t)].concat(blocks(String(t)))));
   const before = blocks(node.body).filter(t => !exempt.has(t));
-  const after = blocks(html.replace(ADDED, ' ')).filter(t => !added.has(t));
+  /* AN ADDED BLOCK CANCELS ONE COPY, NOT EVERY COPY.
+     This filtered the after side by key, so a line written into
+     overrides.json that happens to match words ALREADY on the page
+     took the page's own copies out of the comparison with it. On
+     /learning/multilinguallearner/identification the button was
+     renamed to "Empowering Every Family", which is also the title of
+     the card it sits in — and the filter removed both, leaving the
+     card's own title reading as lost.
+     One added block spends one copy. Anything the page already had
+     is still there to be matched. */
+  const after = (() => {
+    const spend = new Map();
+    for (const t of added) spend.set(t, (spend.get(t) || 0) + 1);
+    const out = [];
+    for (const t of blocks(html.replace(ADDED, ' '))) {
+      const n = spend.get(t) || 0;
+      if (n) { spend.set(t, n - 1); continue; }
+      out.push(t);
+    }
+    return out;
+  })();
   const missing = [];
   {
     const pool = new Map();
