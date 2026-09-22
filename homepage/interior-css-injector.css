@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-c  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-e  ·  Last edited: 2026-09-22
  *
  * ============================================================
  * SCOPE
@@ -5256,5 +5256,76 @@ body.page-node-type-multi-column-page #block-doe-content .row + .row > [class*="
   padding-top: 0 !important;
 }
 body.page-node-type-multi-column-page #block-doe-content .row:has(+ .row) > [class*="col-"] > .card {
+  margin-bottom: 18px;
+}
+
+
+/* ── THE BOX AROUND A TAB PANEL ──────────────────────────────────
+   Matt: "Everything in the tab has an outline, do you think it
+   should? If you do, then I think maybe it should be darker."
+   I do not think it should. Measured, the panel carries
+   `border: 1px solid #ccc` on a #fafafa ground — a faint grey box
+   drawn around content that is itself almost entirely bordered
+   cards, so on /mtss/teams four navy-framed cards sit inside a
+   fifth, fainter frame that means nothing. The tab strip above
+   already says where the panel begins; that is a tab strip's whole
+   job. Two frames for one boundary is one too many, and making the
+   outer one darker would only make the duplication louder.
+   The ground goes with it. A panel is not a surface of its own — it
+   is the page, shown one section at a time.
+
+   AND THE GAP ABOVE IT. 16px of margin plus 16px of padding put the
+   first thing in the panel 32px below the tabs. With the box gone
+   there is nothing for that padding to sit inside, so the panel
+   starts where the tabs end and the content begins immediately. */
+body.page-node-type-multi-column-page #block-doe-content .lesson-tabs .tab-content {
+  border: 0 !important;
+  background: transparent !important;
+  /* VERTICAL PADDING ONLY. Taking all four sides to zero pulled the
+     text nine pixels left of the panel: a Bootstrap .row carries
+     margin-left:-15px and expects a container's padding to absorb
+     it, so with the padding gone the negative margin hung the
+     paragraphs outside the panel while the cards, which sit in
+     padded columns, stayed put. The sides keep their 16px and do
+     that job; only the top and bottom go, because those were spacing
+     content away from a border that is no longer drawn. */
+  padding: 0 16px !important;
+  margin-top: 14px !important;
+}
+
+
+/* ── AND THE SAME SUM AGAIN, INSIDE ONE ROW ──────────────────────
+   The rule above closed the gap BETWEEN two rows. Matt, looking at
+   /mtss/teams: "I thought we changed it site-wide just now but the
+   spacing on the stacked cards look really wide." He is right, and
+   it is a different case wearing the same clothes: those four cards
+   are one row wrapping to two lines, not two rows.
+   Measured between "Organization" and "Customization": 49px. The
+   row's own row-gap of 18, plus the column's py-2 twice over (8
+   above, 8 below), plus the card's 15px bottom margin. Three spacers
+   for one gap, again.
+   row-gap already states the intended number, so it becomes the only
+   one: the column's vertical padding and the card's bottom margin go,
+   and a wrapped line sits exactly 18px below the one above it —
+   the same 18px two adjacent rows now use, so a grid reads the same
+   whether it is one row wrapping or two rows stacked.
+   ONLY COLUMNS HOLDING A CARD. A column of prose or an image keeps
+   its py-2, because there the padding is the only thing separating
+   it from what is underneath. */
+body.page-node-type-multi-column-page #block-doe-content .row > [class*="col-"]:has(> .card) {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+body.page-node-type-multi-column-page #block-doe-content .row > [class*="col-"]:has(> .card) > .card {
+  margin-bottom: 0;
+}
+
+/* RESTATED AFTER THE RULE ABOVE, WHICH OTHERWISE UNDOES IT.
+   Zeroing the card's bottom margin for every column holding a card
+   also zeroed it for the last row of a pair, so the 18px this file
+   puts between two adjacent rows collapsed to nothing. Same
+   specificity, later wins, so the between-rows case is said again
+   here rather than fought with !important. */
+body.page-node-type-multi-column-page #block-doe-content .row:has(+ .row) > [class*="col-"]:has(> .card) > .card {
   margin-bottom: 18px;
 }

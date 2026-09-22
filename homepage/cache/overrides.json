@@ -129,5 +129,11 @@
       "mailto:aubrie.howard@maine.gov": "mailto:Daniel.r.Weeks@maine.gov",
       "<em>Student Success and Wellbeing Specialist</em><br />": "<em>Social Emotional Learning Specialist</em><br />\n<strong>Phone:</strong> 207-624-6639<br />"
     }
+  },
+  "/mtss/teams": {
+    "_why": "Matt, 2026-09-22. The overview now sits in the banner, so the \"Overview\" section bar labels a single line telling the reader to use the tabs below it.",
+    "dropText": [
+      "Overview"
+    ]
   }
 }

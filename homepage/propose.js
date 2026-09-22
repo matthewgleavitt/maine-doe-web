@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-c  ·  Last edited: 2026-09-22
+ * Version: 2026-09-22-f  ·  Last edited: 2026-09-22
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -82,8 +82,19 @@ const componentSpans = (src) => {
      on /data-reporting/ReportingCalendars the .tab-labels wrapper
      disappeared altogether. Both pages kept their words, so the loss
      check passed; what broke was the structure, which is the thing
-     the tabs are. */
-  const open = /<div[^>]*class="[^"]*\b(?:contact-cube|card|dc-note|jumbotron|lesson-tabs)\b[^"]*"[^>]*>/gi;
+     the tabs are.
+
+     .tab-labels, NOT .lesson-tabs, AND THE DIFFERENCE IS THE WHOLE
+     POINT. Marking the entire tab set as a component protected the
+     label strip and also walled off everything INSIDE the panels —
+     which is not tab furniture, it is the page. On /mtss/teams that
+     cost twelve headings their sub-heading wrapper and four their
+     section header: "Helpful Resources" stopped being drawn with the
+     teal rule and became plain bold text, because the rule that
+     wraps it was told to keep out. Only the strip of labels is
+     furniture. What is in a panel is content and is treated as
+     content. */
+  const open = /<div[^>]*class="[^"]*\b(?:contact-cube|card|dc-note|jumbotron|tab-labels)\b[^"]*"[^>]*>/gi;
   let m;
   while ((m = open.exec(src))) {
     let depth = 1, i = m.index + m[0].length;
@@ -328,7 +339,15 @@ function propose(node, audit, index, opts = {}) {
          em before p before the containers, so the smallest element
          holding the text is the one that goes. */
       let hit = null;
-      for (const tag of ['em', 'strong', 'p', 'li', 'div']) {
+      /* HEADINGS TOO. dropText could reach an em, a strong, a
+         paragraph, a list item or a div, which covers a sentence but
+         not a title — so a heading that has become redundant had no
+         way to be removed except by taking its whole section with it.
+         On /mtss/teams the banner now carries the overview, leaving
+         an "Overview" bar above one line of text. Innermost first is
+         still the rule, so the heading goes and the blockhead wrapper
+         left behind is cleared by tidyEmpties. */
+      for (const tag of ['em', 'strong', 'h2', 'h3', 'p', 'li', 'div']) {
         const re = new RegExp('<' + tag + '\\b[^>]*>((?:(?!<' + tag + '\\b)[\\s\\S])*?)<\\/' + tag + '>', 'gi');
         for (const m of html.matchAll(re)) {
           if (strip(m[1]).replace(/\s+/g, ' ').trim().toLowerCase() === needle) { hit = [m[0], m[1]]; break; }
@@ -3096,6 +3115,35 @@ function propose(node, audit, index, opts = {}) {
      page is still a skip. They are styled by their class and their
      position, never by their number, so the number can come to the
      floor with everything else. */
+  /* A HEADING INSIDE A TAB PANEL IS NOT A SECTION OF THE PAGE.
+     Matt, on /mtss/teams: "School-Level team — let's make all of
+     those headings H3's like team / theory into action."
+     He is describing a real inconsistency. The panel opened with
+     "School-Level Team" drawn as a full section bar, numbered "2",
+     while "Theory into Action" three inches below it took the quiet
+     sub-heading with the teal rule — and the tab BUTTON the reader
+     just pressed already said "School-Level Team". The bar was a
+     third copy of a label the page had given twice.
+     53 headings on 8 pages sit at h2 inside a panel, and on both
+     /mtss/teams and the ECSE onboarding page the first one repeats
+     its own tab label word for word.
+     A tab strip is the level: pressing a tab is how you choose a
+     section, so what is inside one is a part of that section, not a
+     peer of it. At h3 they take the sub-heading treatment, and they
+     drop out of the contents list, which was numbering tab panels as
+     though a reader could scroll to them. */
+  if (opts.paneldepth !== false) {
+    let n = 0, first = null;
+    html = html.replace(/<div[^>]*class="(?:[^"]*\s)?tab-content(?:\s[^"]*)?"[^>]*>[\s\S]*?(?=<div[^>]*class="(?:[^"]*\s)?tab-content|$)/gi,
+      (panel) => panel.replace(/<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi, (m, attrs, inner) => {
+        n++; if (!first) first = strip(inner).slice(0, 44);
+        return `<h3${attrs}>${inner}</h3>`;
+      }));
+    if (n) decisions.push({ id: 'paneldepth', on: true, label: 'Hold a tab panel\'s headings below the tabs',
+      why: `${n} heading${n > 1 ? 's inside the tab panels are' : ' inside a tab panel is'} set at h2, the level this page uses for its own sections — so "${first}" was drawn as a full section bar and counted into the contents list, while the sub-headings beneath it took the quiet rule. Pressing a tab is how a reader chooses a section, so what is inside one belongs to that section rather than sitting beside it. Not a word changes.`,
+      value: n + ' heading' + (n > 1 ? 's' : '') });
+  }
+
   if (opts.outline !== false) {
     let capped = 0;
     html = html.replace(/<h([4-6])\b([^>]*)>([\s\S]*?)<\/h\1>/gi, (m, n, attrs, inner) => {
