@@ -100,7 +100,7 @@ function AnalyticsDashboard() {
   // Only the default 30-day window is mirrored (the most common view). Any
   // other window (7/90/365) falls straight through to live Apps Script.
   const CDN_BASE = "https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/";
-  const CDN_STALE_MINUTES = 60;
+  const CDN_STALE_MINUTES = 150;
   async function fetchCdnOrLive(type){
     try{
       const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-22-i  ·  Last edited: 2026-09-22 18:20
+ * Version: 2026-09-22-o  ·  Last edited: 2026-09-22 20:45
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -507,6 +507,181 @@ const FIXES = [
      than the others".
      Only when the paragraph is the item's entire content and carries
      nothing of its own, so nothing can be lost by removing it. */
+  /* A CALLOUT HOLDING NOTHING BUT A BUTTON.
+     Matt, on /learning/highered/forprofit: "that button with renewal
+     can go just under it, not in a DC Note."
+     A callout is navy with a teal edge and it exists to hold words
+     worth stopping for. A button is already the loudest object on a
+     page, so a box drawn round one adds a second frame and says
+     nothing the button did not. The two together read as a callout
+     whose text failed to load.
+     Only where the callout holds no words of its own — a button with
+     a sentence beside it is a callout doing its job. 4 of these, on
+     4 pages. */
+  ['callout holding only a button unwrapped', (h) => {
+    let n = 0;
+    h = h.replace(/<div[^>]*class="[^"]*\bdc-note\b[^"]*"[^>]*>((?:(?!<div\b)[\s\S])*?)<\/div>/gi,
+      (m, inner) => {
+        if (!/<a\b[^>]*class="[^"]*\bbtn\b/i.test(inner)) return m;
+        const words = inner
+          .replace(/<a\b[^>]*class="[^"]*\bbtn\b[^"]*"[^>]*>[\s\S]*?<\/a>/gi, '')
+          .replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').trim();
+        if (words) return m;
+        n++; return inner.trim();
+      });
+    return [h, n];
+  }],
+
+  /* A HARD SPACE LOOSE BETWEEN TWO BLOCKS.
+     Matt, on /educators/nationalstandards: "after the bulleted list
+     under eligibility there's a big gap." Measured: 58px where every
+     other join in that panel is 18. Between the list and the
+     paragraph sits a bare &nbsp; — not in a paragraph, not in
+     anything. At block level it makes an anonymous line box of its
+     own, so it is a blank line 25px tall with the two margins either
+     side of it, and it stops those margins collapsing into each
+     other as well.
+     It is a spacer somebody typed, and this stylesheet sets the
+     spacing. The rule below that wraps loose text in a paragraph
+     would have made it <p>&nbsp;</p>, which is the same blank line
+     with a tag on it, so this has to come first.
+     18 of these across 11 pages. Whitespace only; no word moves. */
+  ['hard spaces loose between blocks removed', (h) => {
+    let n = 0;
+    h = h.replace(/(<\/(?:ul|ol|p|div|dl|dd|table|h[1-6]|blockquote|figure)>)((?:\s|&nbsp;)*&nbsp;(?:\s|&nbsp;)*)(?=<(?:ul|ol|p|div|dl|dd|table|h[1-6]|blockquote|figure|\/))/gi,
+      (m, close) => { n++; return close + '\n'; });
+    return [h, n];
+  }],
+
+  /* A LINK WHOSE WORDS ARE A FULL STOP.
+     Matt, on /steam: "that link doesn't have a chevron." It could not
+     have one — it has no words to put it after. The item links the
+     same Canva URL twice, once with its real name and then again with
+     "." as the whole of the link text:
+       <a href="…">STEAM PowerED Maine Instructional Design
+       Resources</a><span><a href="…">.</a> </span>This curated list…
+     A screen reader announces that second one as a link called "full
+     stop", and it is a 4px target sitting against the first (WCAG
+     2.4.4). It is also what stopped the item being written like its
+     neighbours, which all read <a>name</a><br>description.
+     The link comes off and the character stays, so the sentence still
+     ends the way it was written. 18 of these on 11 pages. */
+  ['links with no words unwrapped', (h) => {
+    let n = 0;
+    h = h.replace(/<a\b[^>]*>((?:\s|&nbsp;|[.,;:·•])*)<\/a>/gi, (m, inner) => {
+      if (!/[.,;:·•]/.test(inner)) return m;
+      n++; return inner;
+    });
+    return [h, n];
+  }],
+
+  /* A RULE INSIDE A LIST ITEM IS THE END OF THE LIST.
+     Matt, on /steam: "the bullet anchors to the bottom of that
+     section." An <hr> and the "Safety:" label that follows it were
+     typed inside the third bullet of the Apply list rather than after
+     the list, so the label became the tail of a bullet: the marker
+     sits at the top of a very tall item and the heading hangs off the
+     bottom of it, with the rest of the list carrying on underneath.
+     An <hr> is a break between sections and a list item is not a
+     section, so this is always a list that was never closed. The item
+     keeps what came before the rule; the rule and everything after it
+     inside that item move out to sit between two lists, which is
+     where they were meant to be. 3 of these, on 3 pages. */
+  ['list closed at a rule inside an item', (h) => {
+    let n = 0;
+    for (let guard = 0; guard < 20; guard++) {
+      const m = /<(ul|ol)\b[^>]*>[\s\S]*?<\/\1>/i.exec(h);
+      let done = true;
+      const lists = [...h.matchAll(/<(ul|ol)\b([^>]*)>([\s\S]*?)<\/\1>/gi)];
+      for (const L of lists) {
+        const [whole, tag, attrs, body] = L;
+        const items = [...body.matchAll(/<li\b[^>]*>(?:(?!<\/?li\b)[\s\S])*?<\/li>/gi)];
+        const hit = items.find(i => /<hr\s*\/?>/i.test(i[0]));
+        if (!hit) continue;
+        const at = hit[0].search(/<hr\s*\/?>/i);
+        const head = hit[0].slice(0, at).replace(/<li\b[^>]*>/i, '');
+        const tail = hit[0].slice(at).replace(/<\/li>\s*$/i, '');
+        const before = body.slice(0, hit.index) + (head.trim() ? `<li>${head.trim()}</li>\n` : '');
+        const after = body.slice(hit.index + hit[0].length);
+        const rebuilt =
+          `<${tag}${attrs}>${before}</${tag}>\n${tail.trim()}\n` +
+          (after.trim() ? `<${tag}${attrs}>${after}</${tag}>` : '');
+        h = h.slice(0, L.index) + rebuilt + h.slice(L.index + whole.length);
+        n++; done = false;
+        break;
+      }
+      if (done) break;
+    }
+    return [h, n];
+  }],
+
+  /* PADDING AROUND A BOLD LINE.
+     Matt, on /steam: "Engage and safety don't have the right
+     headings." Safety was a different fault; Engage is this one —
+     <p class="text-align-center">&nbsp;<strong>Engage:</strong></p>.
+     The rule that makes a bold divider a heading looks for a
+     paragraph holding nothing but the bold run, and a stray &nbsp;
+     in front of it means the paragraph holds something else. It
+     prints as an indent and reads as nothing. 4 of these on 2 pages. */
+  ['padding removed from a bold line', (h) => {
+    let n = 0;
+    h = h.replace(/(<p\b[^>]*>)((?:\s|&nbsp;)+)?(<strong>[^<]{1,120}<\/strong>)((?:\s|&nbsp;)+)?(<\/p>)/gi,
+      (m, open, lead, bold, tail, close) => {
+        if (!/&nbsp;/i.test(lead || '') && !/&nbsp;/i.test(tail || '')) return m;
+        n++; return open + bold + close;
+      });
+    return [h, n];
+  }],
+
+  /* A LIST ITEM HOLDING NOTHING BUT PUNCTUATION.
+     Matt, on /LGBTQ/staff accordion 7: "Theres a stray sub bullet."
+     Under PowerSchool the first sub-item is <li><p>.</p></li> — a
+     bullet whose entire content is a full stop, left behind when the
+     link it ended was deleted. It draws a marker, takes a line, and
+     says nothing.
+     35 of these across 23 pages, most of them <li>&nbsp;</li>. An
+     item has to hold a word to be an item. */
+  ['list items holding no words removed', (h) => {
+    let n = 0;
+    /* INNERMOST ITEMS ONLY. A lazy [\s\S]*? stops at the first
+       </li> it meets, which inside a nested list is the CHILD's —
+       so the parent swallowed the child and the child was never
+       tested on its own. That is why <li>.</li> under PowerSchool
+       survived: it was inside the match for <li>PowerSchool…, which
+       has words in it. Matching only items with no <li> inside them
+       tests each one for itself. */
+    h = h.replace(/<li\b[^>]*>((?:(?!<\/?li\b)[\s\S])*?)<\/li>/gi, (m, inner) => {
+      const words = inner.replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ');
+      if (/[A-Za-z0-9]/.test(words)) return m;
+      if (/<img\b|<iframe\b|<a\b/i.test(inner)) return m;   /* a picture or a link is content */
+      n++; return '';
+    });
+    return [h, n];
+  }],
+
+  /* AND THE LABEL ABOVE A NESTED LIST.
+     Matt, same panel: "really big spacing between bullets like
+     Web2School / Support Sign in." The item's own words are wrapped
+     in a paragraph with the sub-list after them —
+     <li><p>Web2School</p><ul>…</ul></li> — and a paragraph carries
+     paragraph margins, so every one of these opened a 16px gap above
+     and below its own label inside a list that spaces its items at
+     8px. Three levels of that is what made the panel sprawl.
+     The rule below only unwraps a paragraph that is the item's WHOLE
+     content, so it never saw these. The label is the item's text, not
+     a paragraph in it; the list underneath is unchanged.
+     15 of these on 6 pages. */
+  ['list label unwrapped above its sub-list', (h) => {
+    let n = 0;
+    h = h.replace(/(<li\b[^>]*>)\s*<p(\s[^>]*)?>((?:(?!<\/?p\b)[\s\S])*?)<\/p>(\s*)(?=<(?:ul|ol)\b)/gi,
+      (m, open, attrs, inner, gap) => {
+        if (attrs && /style=|class=/i.test(attrs)) return m;
+        if (!inner.replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ').trim()) return m;
+        n++; return open + inner.trim() + gap;
+      });
+    return [h, n];
+  }],
+
   ['paragraph inside a list item unwrapped', (h) => {
     let n = 0;
     h = h.replace(/(<li\b[^>]*>)\s*<p(\s[^>]*)?>([\s\S]*?)<\/p>\s*(<\/li>)/gi,
@@ -517,6 +692,67 @@ const FIXES = [
       });
     return [h, n];
   }],
+
+  /* AN ITEM WRITTEN UNLIKE THE REST OF ITS LIST.
+     Matt, on /steam: "this curated list of resources is not set up
+     like the others." The others read
+       <a>Go STEAM Learning Hub</a><br>Georgia Tech's STEAM learning
+       hub features lesson plans…
+     and this one ran the description straight on after the link.
+     The break is what makes the link the item and the sentence its
+     description — it is what the stylesheet sets the two apart with —
+     so without it the link and the prose carry the same weight and
+     the row does not match its neighbours.
+     THE LIST ITSELF IS THE EVIDENCE. Nothing here decides that a link
+     ought to have a description under it; it only matches a row to
+     the rows beside it, and only where at least two of them already
+     write it that way. A list where no item uses the break is left
+     exactly as it is.
+     The separator the author typed instead — a full stop, a colon, a
+     hard space — is what the break replaces, because it was doing the
+     break's job. 4 of these on 2 pages. */
+  ['list item matched to its siblings', (h) => {
+    let n = 0;
+    h = h.replace(/<(ul|ol)\b([^>]*)>([\s\S]*?)<\/\1>/gi, (whole, tag, attrs, body) => {
+      const items = [...body.matchAll(/<li\b[^>]*>((?:(?!<\/?li\b)[\s\S])*?)<\/li>/gi)];
+      if (items.length < 2) return whole;
+      const linked = items.filter(i => /^\s*(?:<strong>\s*)?<a\b/i.test(i[1]));
+      const BR = /<\/a>\s*(?:<\/strong>)?\s*(?:[.,;:]|&nbsp;|\s)*<br\s*\/?>/i;
+      if (linked.filter(i => BR.test(i[1])).length < 2) return whole;
+      let out = body;
+      for (const i of linked) {
+        if (BR.test(i[1])) continue;
+        const end = i[1].indexOf('</a>');
+        if (end < 0) continue;
+        const after = i[1].slice(end + 4);
+        const words = after.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').trim().split(/\s+/).filter(Boolean);
+        if (words.length < 5) continue;
+        /* Only a separator comes out — a mark with the link on one
+           side and the description on the other, whether the author
+           left it bare or inside a span of its own. A sentence that
+           happens to start with punctuation is not touched. */
+        const rest = after
+          .replace(/^(\s*(?:<\/strong>)?\s*)<span[^>]*>((?:\s|&nbsp;|[.:;,])*)<\/span>/i, '$1')
+          .replace(/^((?:<\/strong>)?)\s*(?:[.:;,]\s*)?(?:&nbsp;|\s)*/i, '$1');
+        /* A DESCRIPTION IS A SENTENCE AND STARTS LIKE ONE.
+           /steam also has <a>STEAM And Scientific Reasoning in Head
+           Start</a> and <a>Scientific Reasoning</a><br>Explore… —
+           one item naming two pages. What follows the first link
+           there is "and", not a description, and a break after it
+           would cut the pair in half. Anything that does not open
+           with a capital is the rest of the line rather than the
+           start of a new one. */
+        const opens = rest.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+        if (!/^[A-Z0-9"“(]/.test(opens)) continue;
+        const fixed = i[1].slice(0, end + 4) + '<br />\n\t' + rest.replace(/^(<\/strong>)/, '');
+        out = out.replace(i[0], i[0].replace(i[1], fixed));
+        n++;
+      }
+      return `<${tag}${attrs}>${out}</${tag}>`;
+    });
+    return [h, n];
+  }],
+
   /* TEXT THAT IS NOT IN ANYTHING.
      47 runs of text on 13 pages sit at block level with no paragraph
      around them — the editor dropped out of the <p> and the sentence
@@ -1969,6 +2205,24 @@ const FIXES = [
      Demoting to a blockhead h2 also makes the section countable: the
      contents list is generated from .blockhead h2, so a page whose
      sections were h1s could never have one. */
+  /* A HEADING THAT STARTS WITH A SPACE.
+     16 headings on 15 pages open with &nbsp; or whitespace left over
+     from editing — "&nbsp;STEAM Resources" on /steam. Inside a
+     section bar it prints as an indent nothing else on the page has,
+     and a screen reader announces the heading with a pause in front
+     of it. The same at the end. Whitespace only; no word moves. */
+  ['whitespace at the edge of a heading', (h) => {
+    let n = 0;
+    h = h.replace(/(<h([1-6])\b[^>]*>)((?:&nbsp;|\s)*)([\s\S]*?)((?:&nbsp;|\s)*)(<\/h\2>)/gi,
+      (m, open, lv, lead, inner, tail, close) => {
+        if (!/&nbsp;/i.test(lead) && !/&nbsp;/i.test(tail)) return m;
+        if (!inner.trim()) return m;
+        n++;
+        return open + inner + close;
+      });
+    return [h, n];
+  }],
+
   /* A PARAGRAPH IS NOT A CONTACT BLOCK.
      Matt, on /jobsandrecovery/successnavigators: "The data like 3,239,
      etc. is in an H2 and should not be, it should maybe be in a DC
@@ -3000,6 +3254,19 @@ function contentDiff(before, after) {
      improve looked exactly like a page nobody had tried to. */
   const noPlaceholder = x => noBrackets(x).replace(/\uFFFC/g, '');
   if (noPlaceholder(a) === noPlaceholder(b)) return { spacingOnly: true };
+  /* A PUNCTUATION MARK STANDING ON ITS OWN IS NOT A WORD.
+     /LGBTQ/staff has <li><p>.</p></li> under PowerSchool — a bullet
+     whose whole content is a full stop, left where a deleted link
+     used to end. Matt: "Theres a stray sub bullet." Removing it takes
+     one character off the page and this check is right that it did;
+     it is wrong about what that character was.
+     STANDING ON ITS OWN IS THE WHOLE TEST. The mark has to have
+     whitespace on both sides, so it is a token by itself rather than
+     the end of a sentence. Both sides are normalised the same way, so
+     a real full stop attached to real words is untouched on either
+     side and a lost sentence still reports as a lost sentence. */
+  const noLoneMark = x => bare(String(x).replace(/(^|\s)[.,;:·•‧∙*\-–—]+(?=\s|$)/g, ' '));
+  if (noLoneMark(a) === noLoneMark(b)) return { spacingOnly: true };
   /* AND THE WHOLE SET AT ONCE.
      Each of the checks above is one normalisation tried on its own,
      which works only while a page has exactly one kind of allowed

@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-ag  ·  Last edited: 2026-09-22 18:30
+ * Version: 2026-09-22-ah  ·  Last edited: 2026-09-22 18:50
  *
  * ============================================================
  * SCOPE
@@ -1353,41 +1353,28 @@ body.page-node-type-multi-column-page #block-doe-content table:has(th) th {
   vertical-align: bottom;
 }
 body.page-node-type-multi-column-page #block-doe-content table:has(th) th:last-child { border-right: 0; }
-/* A TABLE INSIDE A CARD DOES NOT GET THE CARD'S OWN BLUE.
-   Matt, on /numeracy: "I dont like the table inside of the card being
-   the same blue color... I think we should try it as white inside."
-   Same colour was the fault: the card's title bar and the table's
-   header row both measured #182b3c, so the card looked like it had
-   two title bars and the table's header competed with the card's
-   name instead of sitting under it.
-   A MID-BLUE STEP DOWN WAS TRIED FIRST AND MATT TURNED IT DOWN —
-   "that blue is weird" — which is fair: a third blue to hold a
-   two-level hierarchy is one blue too many.
-   WHAT MAKES WHITE WORK IS THE RULE, NOT THE FILL. White alone does
-   look hollow: the card is #f3f7fa and the body cells are
-   transparent over it, so a white header differs from the rows
-   beneath by about two per cent of luminance and stops reading as a
-   header. A 3px navy edge under it does the job the fill was doing —
-   the header is the lightest band in the table with a hard line
-   closing it, which is a table header in anyone's reading. Navy on
-   white is 14.49:1.
-   THE DIVIDERS FLIP WITH IT. They are white at .18 alpha, drawn to
-   show on navy, and on a white header they are invisible. They take
-   the cool hairline the rest of the table's grid uses.
-   box-shadow rather than border-bottom, because the table is
-   border-collapse: separate with a 2px navy frame and a 10px radius:
-   a border on the cell adds to the cell's box and pushes the header
-   out of the corner curve, while an inset shadow paints inside it.
-   18 tables sit inside cards, on 12 pages. Every other table on the
-   site keeps the navy. */
-body.page-node-type-multi-column-page #block-doe-content .card table:has(th) th {
-  background: #fff !important;
-  color: var(--i-navy) !important;
-  box-shadow: inset 0 -3px 0 var(--i-navy);
-  border-right: 1px solid var(--i-rule-cool);
+/* A TABLE INSIDE A CARD SITS ON WHITE, LIKE EVERY OTHER TABLE.
+   Matt: "can you make the header dark blue and the body white."
+   That is the answer, and it was never the header. Body cells are
+   transparent on purpose, so a table paints on whatever is behind
+   it: out on the page that is #block-doe-content, which is white, so
+   the house table is a navy header over white rows. Inside a card it
+   is the card's own #f3f7fa, so every row picked up the tint and the
+   whole table read as blue — which is what "the same blue color" was
+   pointing at. The header was only the most obvious blue in it.
+   Two earlier attempts moved the header instead and both were wrong:
+   a mid-blue step down ("that blue is weird") and a white header with
+   a navy edge under it. Recolouring the header to fix a tint on the
+   body is treating the symptom.
+   The table brings its own white, the header keeps the navy it has
+   everywhere else, and a table inside a card now looks like a table
+   anywhere else. 18 tables sit inside cards, on 12 pages. */
+body.page-node-type-multi-column-page #block-doe-content .card table:has(th) {
+  background: #fff;
 }
-body.page-node-type-multi-column-page #block-doe-content .card table:has(th) th:last-child {
-  border-right: 0;
+body.page-node-type-multi-column-page #block-doe-content .card table:has(th) tbody td,
+body.page-node-type-multi-column-page #block-doe-content .card table:has(th) tbody th {
+  background: #fff;
 }
 /* THE BOTTOM CORNERS, WHERE THE BORDER APPEARED TO CUT OUT.
    The table is border-collapse: separate with a 2px navy border and

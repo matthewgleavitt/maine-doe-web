@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-x  ·  Last edited: 2026-09-22 18:20
+ * Version: 2026-09-22-ab  ·  Last edited: 2026-09-22 20:55
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -2013,6 +2013,65 @@ function propose(node, audit, index, opts = {}) {
       value: n + ' link' + (n > 1 ? 's' : '') });
   }
 
+  /* (b7b) THE BUTTON COMES OUT OF THE CALLOUT.
+     { "liftbtn": true }
+     Matt, on /learning/highered/forprofit: "that button with renewal
+     can go just under it, not in a DC Note."
+     A callout with a sentence and an action in it is a real shape and
+     eight pages use it, so this is not a sweep. Where it is wrong is
+     where the callout is the notice and the button is the page's
+     action rather than the notice's: boxed together, the button reads
+     as part of the announcement instead of the thing to do next, and
+     the teal edge that marks the callout has a second framed object
+     inside it.
+     The button moves to directly under the callout, where a full
+     width action sits against the note's bottom edge and reads as
+     what follows from it. Named per page, because only a person can
+     say whether the action belongs to the notice or to the page. */
+  if (opts.liftbtn) {
+    let n = 0;
+    html = html.replace(/<div[^>]*class="[^"]*\bdc-note\b[^"]*"[^>]*>((?:(?!<div\b)[\s\S])*?)<\/div>/gi,
+      (m, inner) => {
+        const BTN = /\s*<p\b[^>]*>\s*<a\b[^>]*class="[^"]*\bbtn\b[^"]*"[^>]*>[\s\S]*?<\/a>\s*<\/p>/gi;
+        const found = inner.match(BTN);
+        if (!found) return m;
+        const kept = inner.replace(BTN, '');
+        /* The callout has to still say something without it. */
+        if (!kept.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').trim()) return m;
+        n += found.length;
+        return m.replace(inner, kept) + '\n' + found.map(f => f.trim()).join('\n');
+      });
+    if (n) decisions.push({ id: 'liftbtn', on: true, label: 'Take the button out of the callout',
+      why: `${n} button${n > 1 ? 's sit' : ' sits'} inside a callout — named in overrides.json for this page. The callout is the notice and the button is what to do about it, and boxed together the button reads as part of the announcement rather than the next step, with one framed object inside another. It moves to directly under the callout. Not a word changes and the link is the same.`,
+      value: n + ' button' + (n > 1 ? 's' : '') });
+  }
+
+  /* (b8) EVERY BUTTON ON THIS PAGE THE FULL WIDTH.
+     { "fullbtn": true }
+     Matt, on /learning/highered/forprofit: "Buttons on this page can
+     all be full width."
+     Whether a button spans the column or sizes to its label is a
+     judgement about the page rather than about the button: a row of
+     three actions wants three shapes side by side, and a page whose
+     actions are each the one thing to do in their section wants them
+     to look like rows. So this is named per page and never inferred.
+     btn-block is Bootstrap's own class and the stylesheet already
+     knows it — a full-width button reads its label from the left edge
+     with the mark at the right. The banner's own action is left out;
+     it is sized to itself by design. */
+  if (opts.fullbtn) {
+    let n = 0;
+    html = html.replace(/<a\b([^>]*\bclass="([^"]*)"[^>]*)>/gi, (m, all, cls) => {
+      if (!/(?:^|\s)btn(?:\s|$)/.test(cls)) return m;
+      if (/\bbtn-block\b/.test(cls) || /\bbtn-cta\b/.test(cls)) return m;
+      n++;
+      return m.replace('class="' + cls + '"', 'class="' + cls + ' btn-block"');
+    });
+    if (n) decisions.push({ id: 'fullbtn', on: true, label: 'Run the buttons the full width',
+      why: `${n} button${n > 1 ? 's size' : ' sizes'} to ${n > 1 ? 'their labels' : 'its label'}, so they sit at whatever width the words happen to make and a page of them reads as a ragged edge. Asked for by name in overrides.json for this page: each becomes the width of its column, with the label at the left edge and the mark at the right, which is how a row of actions reads as a set. Nothing else changes.`,
+      value: n + ' button' + (n > 1 ? 's' : '') });
+  }
+
   if (opts.buttons !== false) {
     let n = 0;
     html = html.replace(/(<a\b[^>]*class=")([^"]*)(")/gi, (m, a, cls, b) => {
@@ -3911,7 +3970,6 @@ function propose(node, audit, index, opts = {}) {
     const BOLD = /<p(?![^>]*\sclass="(?!(?:card-text|text-align-(?:left|center|right))(?:\s+(?:card-text|text-align-(?:left|center|right)))*")[^>]*)[^>]*>\s*<strong>([^<]{3,90})<\/strong>\s*<\/p>/gi;
     html = html.replace(/<div class="card-body">[\s\S]*?(?=<\/div>\s*<\/div>)/gi, (body) => {
       const hits = [...body.matchAll(BOLD)]
-        .filter(m => !/[:：]\s*$/.test(strip(m[1])))
         /* 70, and entities decoded before measuring: strip() leaves
            &amp; as five characters, so "Health Education Resource
            Documents [By Standards &amp; Grades]" measured 63 for a
@@ -3931,10 +3989,27 @@ function propose(node, audit, index, opts = {}) {
          above it and below it inside the same card. That is what
          separates a divider from a lead-in: a lead-in has nothing in
          front of it. */
-      const dividing = hits.filter(m => {
-        const before = body.slice(0, m.index), after = body.slice(m.index + m[0].length);
-        return /<(p|ul|ol|table|h[2-6])\b/i.test(before) && /<(p|ul|ol|table)\b/i.test(after);
-      });
+      /* A TRAILING COLON IS ALLOWED ONLY IN COMPANY.
+         Matt, on /steam: "those titles Explore Engage, etc. those
+         should be the H3." Explore:, Apply: and Safety: divide the
+         STEAM Foundations card into three, and the colon was the only
+         thing refusing them — it was a blanket disqualification.
+         It cannot be dropped outright. /learning/technology/contact
+         writes "Contact Emma for:" above each person's list of
+         responsibilities, nine times, one to a card: a lead-in to the
+         list underneath it, not a section of anything, and as
+         headings they would put nine of them in the page's outline.
+         What separates the two is company. Two or more in one card
+         are dividing it, whatever punctuation they carry; one on its
+         own has to earn it, and a colon says it is introducing what
+         follows rather than naming it. So a lone label still has to
+         be colon-free to qualify. */
+      const dividing = hits
+        .filter(m => !/[:：]\s*$/.test(strip(m[1])))
+        .filter(m => {
+          const before = body.slice(0, m.index), after = body.slice(m.index + m[0].length);
+          return /<(p|ul|ol|table|h[2-6])\b/i.test(before) && /<(p|ul|ol|table)\b/i.test(after);
+        });
       if (hits.length < 2 && !dividing.length) return body;
       let out = body;
       for (const m of (hits.length >= 2 ? hits : dividing)) {
@@ -5281,6 +5356,50 @@ function propose(node, audit, index, opts = {}) {
       if (c) pool.set(t, c - 1); else missing.push(t);
     }
   }
+  /* A BLOCK THAT WAS BROKEN IN TWO HAS NOT GONE ANYWHERE.
+     <br> is a block boundary to the comparison above, which is right
+     — a line break is where one thing ends and the next begins — but
+     it means that adding one turns a block into two, and the multiset
+     sees the original vanish. /steam is the case: the cleanup gives
+     "Maine Climate Action Plan: A Guide: Designed to help teachers…"
+     the break its sibling rows already use, so the row's one block
+     becomes a link and a description, and every word is where it was.
+     Only an exact reappearance is forgiven. The missing block has to
+     be the whole of two or more blocks that sit NEXT TO EACH OTHER in
+     the proposal, in order, with nothing else between them, and those
+     pieces are then spent so they cannot also account for something
+     else. A block that came back in a different place, or with a word
+     gone, still reports. */
+  if (missing.length) {
+    const ordered = textOf(unchip(html.replace(ADDED, ' ')).replace(/<!--[\s\S]*?--!?>/g, ' ').replace(BLOCK, '\u0001'))
+      .split('\u0001').map(t => normKey(t)).filter(t => t.length > 1);
+    /* AND ONE MARK AT THE JOIN MAY GO WITH IT. The separator the
+       author typed where the break now is — "A Guide: Designed to
+       help…", "Resources. This curated list…" — was doing the
+       break's job and comes out with it. Allowed only AT A JOIN, one
+       character, and nowhere else in the block: the pieces still have
+       to match letter for letter, so a colon inside a sentence is
+       still a colon that has to be there. */
+    const esc = x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const still = [];
+    for (const t of missing) {
+      let found = false;
+      for (let i = 0; i < ordered.length && !found; i++) {
+        const parts = [];
+        for (let j = i; j < ordered.length && parts.join('').length < t.length; j++) {
+          parts.push(ordered[j]);
+          if (parts.length < 2) continue;
+          if (new RegExp('^' + parts.map(esc).join('[.:;,]?') + '$').test(t)) {
+            ordered.splice(i, parts.length); found = true; break;
+          }
+        }
+      }
+      if (!found) still.push(t);
+    }
+    missing.length = 0;
+    missing.push(...still);
+  }
+
   /* AND THE DIVS HAVE TO BALANCE THE WAY THEY DID GOING IN.
      This check exists because it caught me. A hand-written replace on
      /schoolsupports/climate/restraintandseclusion unwrapped a card

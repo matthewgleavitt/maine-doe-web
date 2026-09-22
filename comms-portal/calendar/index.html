@@ -70,10 +70,15 @@
        ?carousel=1 → additionally converts the card grid into a compact
                        horizontal carousel and hides the filter bar. Use
                        this for narrow team-specific widgets */
-  html.embed-mode .hero-compact,
+  /* embed=1 drops the title block but keeps the hero band + filters, so a
+     maine.gov page that already has its own <h1> doesn't get two. */
+  html.embed-mode .hero-inner,
   html.embed-mode .skip-link { display: none !important; }
+  html.embed-mode .hero { padding-top: 24px; padding-bottom: 24px; }
+  html.embed-mode .hero .control-panel { margin-top: 0; }
   html.embed-mode .container { padding-top: 0 !important; }
-  /* Carousel-only chrome hiding */
+  /* Carousel-only chrome hiding — the whole hero goes, filters included */
+  html.carousel-mode .hero,
   html.carousel-mode .filter-bar,
   html.carousel-mode #program-filter-banner { display: none !important; }
   html.carousel-mode .container { padding: 0 !important; max-width: none; }
@@ -163,6 +168,140 @@
   .hero .stats .stat .lbl { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-top: 8px; }
 
   /* ─── Filter bar ───────────────────────────────────── */
+  /* ─── HERO ──────────────────────────────────────────
+     Full-bleed dark band holding the title, live count, search and
+     filters. Sits OUTSIDE .container so the background runs edge to
+     edge; its inner wrapper re-applies the same max-width. */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 800px 400px at 90% -10%, rgba(66,195,247,0.14), rgba(66,195,247,0) 60%),
+      radial-gradient(ellipse 900px 500px at 15% 110%, rgba(52,211,153,0.07), rgba(52,211,153,0) 55%),
+      linear-gradient(135deg, var(--navy) 0%, #0c1926 55%, #0a1520 100%);
+    color: var(--warm-white);
+    padding: 44px var(--pad) 48px;
+    border-bottom: 4px solid var(--teal);
+    margin-bottom: 0;
+  }
+  /* Fine grid — grounds the flat gradient without competing with content */
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(66,195,247,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(66,195,247,0.06) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.85) 45%, rgba(0,0,0,0.35) 100%);
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.85) 45%, rgba(0,0,0,0.35) 100%);
+    pointer-events: none;
+  }
+  /* Single diagonal light streak */
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -20%; left: 45%;
+    width: 60%; height: 220%;
+    background: linear-gradient(115deg, rgba(66,195,247,0) 40%, rgba(66,195,247,0.06) 50%, rgba(66,195,247,0) 60%);
+    transform: rotate(-8deg);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative; z-index: 1;
+    max-width: var(--maxw); margin: 0 auto;
+    display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end;
+  }
+  @media (max-width: 720px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 20px; }
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-display); font-weight: 700; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--teal);
+    margin: 0 0 12px;
+  }
+  .hero-eyebrow::before { content: ''; width: 26px; height: 2px; background: var(--teal); border-radius: 1px; }
+  .hero h1 {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(26px, 4vw, 42px); line-height: 1.05;
+    letter-spacing: -0.015em; color: #fff; text-wrap: balance;
+    margin: 0 0 18px; max-width: 620px;
+  }
+  .hero h1 .accent { color: var(--teal); }
+  .hero-lede {
+    font-size: 14.5px; line-height: 1.6; color: #cfd8e0; font-weight: 500;
+    max-width: 560px; margin: 0;
+  }
+  .count-tile {
+    align-self: end; padding: 18px 22px 16px; border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border: 1px solid rgba(66,195,247,0.28);
+    min-width: 170px;
+  }
+  .count-num {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 40px; font-weight: 700; color: var(--mint, #34d399);
+    line-height: 1; letter-spacing: -0.02em;
+  }
+  .count-label {
+    font-family: var(--font-display); font-weight: 700; font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: #b8c4cf; margin-top: 6px;
+  }
+  .control-panel {
+    position: relative; z-index: 1;
+    max-width: var(--maxw); margin: 32px auto 0;
+    display: grid; gap: 14px;
+  }
+  .control-panel .filter-row {
+    display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: end;
+  }
+  @media (max-width: 780px) {
+    .control-panel .filter-row { grid-template-columns: 1fr; }
+  }
+  .control-panel .label {
+    font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(255,255,255,0.55); margin: 0 0 6px;
+  }
+  /* Dark input chrome — all three controls share one solid navy fill so
+     the grid pattern can't show through and they read as one family. */
+  .hero .search-input,
+  .hero .select {
+    background: #142236;
+    border: 1.5px solid rgba(66,195,247,0.25);
+    color: #fff;
+  }
+  .hero .search-input::placeholder { color: #94a3b8; }
+  .hero .search-input:hover,
+  .hero .select:hover,
+  .hero .search-input:focus,
+  .hero .select:focus {
+    border-color: var(--teal);
+    background: #172a41;
+  }
+  .hero .search-icon { color: #94a3b8; stroke: #94a3b8; }
+  .hero .select-caret { stroke: var(--teal); }
+  .hero .search-clear { color: #94a3b8; }
+  .hero .search-clear:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  /* Segmented view toggle on dark */
+  .hero .view-toggle {
+    background: rgba(0,0,0,0.28);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 11px;
+    padding: 4px;
+  }
+  .hero .view-toggle button {
+    border-radius: 8px; padding: 9px 16px; color: #cbd5e1;
+    font-weight: 700; font-size: 12px;
+  }
+  .hero .view-toggle button:hover { color: #fff; }
+  .hero .view-toggle button.active {
+    background: linear-gradient(180deg, var(--teal), #2ba8dd);
+    color: var(--navy);
+    box-shadow: 0 4px 12px rgba(66,195,247,0.35), inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+
   .filter-bar { padding: 32px 0 28px; border-bottom: 1px solid var(--rule); }
   .filter-bar .label { font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px; }
   .filter-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 24px; align-items: flex-start; }
@@ -373,7 +512,8 @@
   /* ─── Card ─────────────────────────────────────────── */
   .card {
     background: #f5eee5;
-    border: 1px solid var(--rule);
+    /* Navy outer border to match the interior-page treatment */
+    border: 1.5px solid var(--navy);
     border-radius: 8px;
     padding: 0;
     display: flex;
@@ -630,12 +770,20 @@
   .mg-nav button { all: unset; padding: 8px 14px; border: 1px solid var(--rule); border-radius: 100px; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); cursor: pointer; }
   .mg-nav button:hover { border-color: var(--ink); color: var(--ink); }
 
-  .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
-  .dow { background: var(--warm-white-2); padding: 10px; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); text-align: center; }
-  .day-cell { background: var(--panel); min-height: 96px; padding: 8px; display: flex; flex-direction: column; gap: 4px; position: relative; }
-  .day-cell.other { background: color-mix(in srgb, var(--panel) 60%, transparent); opacity: 0.5; }
-  .day-cell .num { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--ink); align-self: flex-start; padding: 2px 4px; }
-  .day-cell.today .num { background: var(--ink); color: var(--ground); border-radius: 3px; }
+  /* minmax(0, 1fr) — NOT plain 1fr, which resolves to minmax(auto, 1fr)
+     and lets a long event title push its whole column wider than the
+     other six. That was the "cells are all messed up" bug. */
+  .month-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1.5px solid var(--navy); border-radius: 10px; overflow: hidden; }
+  .dow { background: var(--navy); padding: 12px 10px; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #fff; text-align: center; }
+  /* Fixed min-height keeps every cell in a row the same height regardless
+     of how many events land on that day. */
+  .day-cell { background: var(--panel); min-height: 118px; padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 5px; position: relative; }
+  .day-cell.other { background: #faf7f2; opacity: 0.55; }
+  .day-cell .num { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--ink); align-self: flex-start; padding: 2px 6px; border-radius: 4px; font-variant-numeric: tabular-nums; }
+  /* Today: teal ring + teal number chip, no fill — the ring and chip carry
+     it without competing with the event pills inside the cell. */
+  .day-cell.today { box-shadow: inset 0 0 0 2px var(--teal); }
+  .day-cell.today .num { background: var(--teal); color: var(--navy); font-weight: 900; padding: 2px 8px; box-shadow: 0 1px 4px rgba(24,43,60,0.15); }
   .day-dot {
     display: flex;
     align-items: center;
@@ -646,8 +794,8 @@
     border-radius: 3px;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 10px;
-    line-height: 1.2;
+    font-size: 11.5px;
+    line-height: 1.25;
     letter-spacing: 0.02em;
     cursor: pointer;
     border: 0;
@@ -841,10 +989,20 @@
 </style>
 
 <a href="#events-container" class="skip-link">Skip to events</a>
-<div class="container">
-  <section class="hero-compact" aria-labelledby="cal-heading" style="padding:10px 20px 12px;border-bottom:1px solid rgba(24,43,60,0.13);display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;"><h1 id="cal-heading" style="font-family:League Spartan,sans-serif;font-weight:800;font-size:20px;line-height:1.2;color:#182b3c;margin:0;">Events &amp; Professional Development Calendar</h1><span style="font-family:League Spartan,sans-serif;font-size:12px;color:#475569;"><b id="stat-events" style="color:#182b3c;font-weight:800;font-size:16px;">-</b> upcoming</span></section>
+<section class="hero" aria-labelledby="cal-heading">
+  <div class="hero-inner">
+    <div>
+      <p class="hero-eyebrow">Maine Department of Education</p>
+      <h1 id="cal-heading">Events &amp; <span class="accent">Professional Development</span> Calendar</h1>
+      <p class="hero-lede">Register for office hours, trainings, webinars, and community-of-practice sessions across every focus area.</p>
+    </div>
+    <div class="count-tile">
+      <div class="count-num" id="stat-events">—</div>
+      <div class="count-label">Upcoming</div>
+    </div>
+  </div>
 
-  <section class="filter-bar">
+  <div class="control-panel">
     <div class="filter-search">
       <div class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.35-4.35"/></svg>
@@ -877,7 +1035,10 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
+<div class="container">
 
   <div id="program-filter-banner" style="margin:14px 0 0;padding:12px 18px;background:linear-gradient(135deg,#0d7ba010,#42c3f712);border:1.5px solid #42c3f755;border-radius:12px;display:none;align-items:center;gap:12px;flex-wrap:wrap;">
     <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:220px;">
@@ -901,7 +1062,7 @@ const CALENDAR_ENDPOINT = "https://script.google.com/macros/s/AKfycbx9_qEikjvV4i
 // Falls back to the live endpoint below if the CDN fetch fails or the
 // payload is older than STALE_MINUTES.
 const CALENDAR_STATIC_URL = "https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/calendar.json";
-const STALE_MINUTES = 60;
+const STALE_MINUTES = 150;
 const CAL_CACHE_KEY = 'doe_calendar_events_v1';
 
 // Rehydrate from sessionStorage on load so the page paints instantly with
@@ -1579,13 +1740,24 @@ function scrollCarousel(dir) {
 
   var lastReported = 0;
   function reportHeight() {
-    // The visible calendar surface is inside .container / main, plus any
-    // floating chrome. scrollHeight of documentElement is the safe bet.
-    var h = Math.max(
-      document.documentElement.scrollHeight,
-      document.body ? document.body.scrollHeight : 0
-    );
-    if (h > 0 && Math.abs(h - lastReported) > 4) {
+    // Measure the actual content container (.container), NOT
+    // documentElement.scrollHeight — the latter picked up a runaway 56k px
+    // value on the first frame, likely from body min-height * iframe viewport
+    // feedback. .container is bounded by the real event cards + chrome.
+    var container = document.querySelector('.container');
+    var h = 0;
+    if (container) {
+      var rect = container.getBoundingClientRect();
+      // rect.top is the offset from the top of the iframe viewport; add it
+      // to the container height so any top chrome (skip-link etc.) is
+      // included. Then add a small bottom padding buffer.
+      h = Math.ceil(rect.bottom + 24);
+    } else if (document.body) {
+      h = document.body.scrollHeight;
+    }
+    // Guard against absurd values from a mid-animation measurement.
+    if (h < 200 || h > 100000) return;
+    if (Math.abs(h - lastReported) > 4) {
       lastReported = h;
       try {
         window.parent.postMessage({

@@ -353,5 +353,24 @@
   "dropImage": [
    "Numeracy Hub - Landing Page - 8.28.25"
   ]
+ },
+ "/steam": {
+  "dropImage": [
+   "STEAM Hub - Landing Page - Description"
+  ],
+  "_why": "Matt, 22 Sep: the description collage comes off, the same as the Numeracy globe; the hub needs a banner photograph."
+ },
+ "/educators/nationalstandards": {
+  "dropText": [
+   "Salary Supplement",
+   "Scholarship Fund"
+  ],
+  "_why": "Matt, 22 Sep: each panel opens with a heading the panel title already gives, and another heading straight under it."
+ },
+ "/learning/highered/forprofit": {
+  "useDeck": false,
+  "fullbtn": true,
+  "_why": "Matt, 22 Sep: the 2026 update is a notice rather than a description, so it stays in the body with the renewal button under it, and every button runs the full width.",
+  "liftbtn": true
  }
 }

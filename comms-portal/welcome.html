@@ -68,7 +68,7 @@ const API='https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA
 // Fetches in ~100ms vs 2-30s from Apps Script. Falls back to live if the
 // CDN payload is unreachable or older than CDN_STALE_MINUTES.
 const CDN_BASE='https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/';
-const CDN_STALE_MINUTES=60;
+const CDN_STALE_MINUTES=150;
 async function fetchCdnOrLive(type){
   try{
     const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);
