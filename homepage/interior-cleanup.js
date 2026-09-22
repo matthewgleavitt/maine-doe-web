@@ -1969,6 +1969,97 @@ const FIXES = [
      Demoting to a blockhead h2 also makes the section countable: the
      contents list is generated from .blockhead h2, so a page whose
      sections were h1s could never have one. */
+  /* A ROW INSIDE A ROW IS A ROW CLOSED IN THE WRONG PLACE.
+     Matt, on /numeracy: "these cards seem to be the wrong width so
+     thinking there is something up with the code here", and "the
+     Resources and professional learning heading is weird, its
+     centered and the line doesnt extend the whole way". Both are the
+     same fault, and it is in the markup. The Numeracy Playbook's row
+     closes its column and then never closes itself, so everything
+     below it — three more rows, a section header and the standards
+     card, the rest of the page — is a child of that row.
+     A .row is a flex container with negative side margins, and its
+     children are meant to be columns. A row dropped straight into one
+     becomes a flex item instead: it is sized to its content rather
+     than to the grid, which is the wrong card width, and
+     justify-content-center then centres it. The section header got
+     the same treatment, which is why it sat in the middle of the
+     column with its rule stopping at the end of the words.
+     The repair moves the closing tag rather than adding one: the row
+     closes after its last column, and everything that followed
+     becomes its sibling. No tag is added or dropped, so the balance
+     is unchanged and not one word moves.
+     16 of these across 9 pages. */
+  ['row closed at its last column', (h) => {
+    let n = 0;
+    const isRow = (cls) => /(?:^|\s)row(?:\s|$)/.test(cls);
+    const isCol = (cls) => /(?:^|\s)col(?:-[a-z0-9]+)*(?:\s|$)/.test(cls);
+    for (let guard = 0; guard < 40; guard++) {
+      const tag = /<div\b([^>]*)>|<\/div>/gi;
+      const stack = [];
+      let m, fix = null;
+      while ((m = tag.exec(h))) {
+        if (m[0][1] === '/') {
+          const done = stack.pop();
+          if (done) done.close = { at: m.index, end: m.index + m[0].length };
+          const top = stack[stack.length - 1];
+          if (top && top.lastChildEnd !== undefined) top.lastChildEnd = m.index + m[0].length;
+          if (done && done.split !== undefined && done.close) { fix = done; break; }
+          continue;
+        }
+        const cls = (m[1].match(/class="([^"]*)"/i) || [, ''])[1];
+        const parent = stack[stack.length - 1];
+        /* The first child of a row that is not a column is where the
+           row should already have closed — but only once at least one
+           column has been seen, so a row used as a plain wrapper is
+           left alone. */
+        if (parent && parent.isRow && parent.cols > 0 && parent.split === undefined && !isCol(cls)) {
+          parent.split = parent.lastChildEnd;
+        }
+        if (parent && parent.isRow && isCol(cls)) parent.cols++;
+        stack.push({ isRow: isRow(cls), cols: 0, lastChildEnd: m.index, split: undefined });
+        if (parent) parent.lastChildEnd = m.index;
+      }
+      if (!fix || fix.split === undefined) break;
+      /* Close where the columns end; drop the close that was at the
+         far end. Same number of tags, one level less of nesting. */
+      h = h.slice(0, fix.split) + '\n</div>' + h.slice(fix.split, fix.close.at) + h.slice(fix.close.end);
+      n++;
+    }
+    /* AND A ROW WHOSE CHILDREN ARE ROWS. The same fault one level up,
+       left behind when the row above it is closed: a row holding rows
+       and no column of its own. It is doing no grid work — it only
+       adds the negative margins and the flex, which is what sizes the
+       rows inside it to their content instead of the column. It comes
+       off; what was inside it stays exactly where it was.
+       2 of these, on 2 pages. A row holding ordinary content and no
+       row is left alone — that one may be deliberate. */
+    for (let guard = 0; guard < 40; guard++) {
+      const tag = /<div\b([^>]*)>|<\/div>/gi;
+      const stack = [];
+      let m, fix = null;
+      while ((m = tag.exec(h))) {
+        if (m[0][1] === '/') {
+          const done = stack.pop();
+          if (done && done.isRow && done.cols === 0 && done.rowKids > 0) {
+            fix = { open: done.open, openEnd: done.openEnd, at: m.index, end: m.index + m[0].length };
+            break;
+          }
+          continue;
+        }
+        const cls = (m[1].match(/class="([^"]*)"/i) || [, ''])[1];
+        const parent = stack[stack.length - 1];
+        if (parent && parent.isRow && isCol(cls)) parent.cols++;
+        if (parent && parent.isRow && isRow(cls)) parent.rowKids++;
+        stack.push({ isRow: isRow(cls), cols: 0, rowKids: 0, open: m.index, openEnd: m.index + m[0].length });
+      }
+      if (!fix) break;
+      h = h.slice(0, fix.open) + h.slice(fix.openEnd, fix.at) + h.slice(fix.end);
+      n++;
+    }
+    return [h, n];
+  }],
+
   /* A HEADING WEARS ITS OWN HIDDEN CLASS.
      /schoolsupports/highmobility/titleIpartC ends with
        <p><span class="visually-hidden"><h1>Title I, Part C is

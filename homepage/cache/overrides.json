@@ -329,15 +329,20 @@
   "_why": "Matt, 22 Sep: a button does not need to say PDF, and a link that is the whole row does not need a full stop after it."
  },
  "/learning/earlychildhood/PDG": {
-  "_why": "Matt, 22 Sep: every heading here sits in a tab panel and the panel opens with its grant year, so Advancing, Intended Outcomes and Grant Documents are parts of that year rather than peers of it.",
-  "h4": [
-   "Advancing a Unified Early Care and Education System for Maine Families",
-   "Grant Documents",
-   "Intended Outcomes"
+  "_why": "Matt, 22 Sep: the year and the grant name are one title, and every heading in a grant panel is an h3.",
+  "h4": false,
+  "joinheads": [
+   "Advancing a Unified Early Care and Education System for Maine Families"
   ]
  },
  "/schoolsupports/highmobility/titleIpartC": {
   "uncard": true,
-  "_why": "Matt, 22 Sep: the Collaboration section is a card with no header, so it is the section’s own text — this page only."
+  "_why": "Matt, 22 Sep: the Collaboration section is a card with no header, so it is the section’s own text; the eligibility card keeps its box and gets a name; the two multilingual links are two lines.",
+  "cardhead": {
+   "Each highly mobile student must have": "Eligibility"
+  },
+  "replace": {
+   "<li class=\"list-group-item\"><a href=\"https://www.maine.gov/doe/index.php/learning/multilinguallearner/identification\">Maine's Multilingual Learner Identification Policy</a>  &nbsp;and&nbsp;  <a href=\"https://www.maine.gov/doe/learning/multilinguallearner/policy/survey\">Language Use Survey</a> </li>": "<li class=\"doe-action list-group-item\"><a href=\"https://www.maine.gov/doe/index.php/learning/multilinguallearner/identification\">Maine's Multilingual Learner Identification Policy</a></li>\n\t<li class=\"doe-action list-group-item\"><a href=\"https://www.maine.gov/doe/learning/multilinguallearner/policy/survey\">Language Use Survey</a></li>"
+  }
  }
 }

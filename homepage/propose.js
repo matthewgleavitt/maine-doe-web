@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-22-t  ·  Last edited: 2026-09-22 15:10
+ * Version: 2026-09-22-u  ·  Last edited: 2026-09-22 16:05
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -1687,6 +1687,66 @@ function propose(node, audit, index, opts = {}) {
     if (n) decisions.push({ id: 'unhead', on: true, label: 'Set a caption back as text',
       why: `${n} heading${n > 1 ? 's are' : ' is'} a label on the thing underneath rather than a section of the page — named in overrides.json for this page. Set as headings they are announced as structure, counted into the outline, and drawn with the same rule as a heading that opens a whole grid. They stay bold and keep their place; only the tag changes.`,
       value: n + ' heading' + (n > 1 ? 's' : '') });
+  }
+
+  /* A TITLE JOINED BY HAND IS NOT AN OVER-LONG HEADING.
+     The length test below is a guess at body text that was set as a
+     heading. A title someone asked for in overrides.json is not a
+     guess, so it is exempt — otherwise joining two halves of one name
+     can push it past 100 characters and the next pass sets the whole
+     thing back as a paragraph, which is what happened here first. */
+  const joinedHeads = [];
+  /* (c9b) TWO HEADINGS THAT ARE ONE TITLE.
+     { "joinheads": ["Advancing a Unified Early Care and Education
+                     System for Maine Families"] }
+     /learning/earlychildhood/PDG opens each grant year with the year
+     and then the grant's own name, written as two headings inside one
+     section wrapper:
+       <div class="blockhead">
+         <h3>2025 Preschool Development Grant</h3>
+         <h4>Advancing a Unified Early Care and Education System…</h4>
+       </div>
+     Matt: "In the original the advancing is WITH the other title, so
+     can the H3 that is already there just includ advancing and then
+     make it together." They are one title in two parts, and split
+     across two levels the second reads as a section of the first
+     rather than the rest of its name — which is what made it "too
+     small now and looks exactly like the one above it, just smaller".
+     Joined with a colon into the heading above, which is how the
+     page already writes the other years' names in their opening line.
+     Named per page, because only an author knows which pair is one
+     title and which is a heading with a sub-heading. */
+  if (opts.joinheads) {
+    let n = 0;
+    for (const want of [].concat(opts.joinheads)) {
+      const needle = String(want).replace(/\s+/g, ' ').trim().toLowerCase();
+      const before = html;
+      /* NEITHER HALF MAY CONTAIN ANOTHER HEADING. Written with a
+         plain [\s\S]*? the first capture ran from the page's own h2
+         all the way to the next closing h2, swallowing the deck and
+         the tab labels, and the "title" it built was the whole top of
+         the page. The two halves have to be adjacent headings with
+         nothing but whitespace between them. */
+      const PAIR = new RegExp(
+        '<h([1-6])\\b([^>]*)>((?:(?!<\\/?h[1-6]\\b)[\\s\\S])*?)<\\/h\\1>' +
+        '\\s*<h([1-6])\\b[^>]*>((?:(?!<\\/?h[1-6]\\b)[\\s\\S])*?)<\\/h\\4>', 'gi');
+      html = html.replace(PAIR, (m, l1, a1, t1, l2, t2) => {
+        if (strip(t2).replace(/\s+/g, ' ').trim().toLowerCase() !== needle) return m;
+        n++;
+        const joined = `${t1.trim().replace(/[:\s]+$/, '')}: ${t2.trim()}`;
+        joinedHeads.push(strip(joined).replace(/\s+/g, ' ').trim());
+        /* Two blocks become one, so the loss check sees both of the
+           originals go. Declared, the way a rename declares the name
+           it replaces — every word is still on the page, in the one
+           heading that now holds them. */
+        removedOnPurpose.push(strip(t1), strip(t2));
+        return `<h${l1}${a1}>${joined}</h${l1}>`;
+      });
+      if (html === before) notes.push(`Join skipped — no heading reads "${want}".`);
+    }
+    if (n) decisions.push({ id: 'joinheads', on: true, label: 'Let one title be one heading',
+      why: `${n} heading${n > 1 ? 's are' : ' is'} the second half of the title above it rather than a section of it — named in overrides.json for this page. Split across two levels the second reads as something inside the first, and drawn one size smaller it looks like a smaller copy of it. The two are joined into the heading that was already there. Not a word changes.`,
+      value: n + ' title' + (n > 1 ? 's' : '') });
   }
 
   if (opts.unwrapheads !== false) {
@@ -3516,6 +3576,7 @@ function propose(node, audit, index, opts = {}) {
     html = html.replace(/<h([1-6])\b([^>]*)>([\s\S]*?)<\/h\1>/gi, (m, lv, attrs, inner) => {
       const t = strip(inner);
       if (t.length <= 100 || /\?\s*$/.test(t)) return m;
+      if (joinedHeads.includes(t.replace(/\s+/g, ' ').trim())) return m;
       n++;
       const id = (attrs.match(/\sid="[^"]*"/i) || [''])[0];
       return `<p${id}>${inner}</p>`;
@@ -4350,6 +4411,55 @@ function propose(node, audit, index, opts = {}) {
       value: n + ' table' + (n > 1 ? 's' : '') });
   }
 
+  /* (t3b) A CARD THAT KEEPS ITS BOX GETS A NAME.
+     { "cardhead": { "Each highly mobile student must have": "Eligibility" } }
+     The other answer to the header-less card. Where the card sits
+     beside another card in a row, taking the box off would leave one
+     column boxed and the other not — so it stays a card and is given
+     the title it was missing. Matt, on
+     /schoolsupports/highmobility/titleIpartC: "a card either needs a
+     header or needs to be plain paragraph text. So add the header
+     saying 'eligibility' or just make it a regular P."
+     The key is any distinctive run of words inside the card, so the
+     direction reads as what is on the page rather than as a count of
+     divs. Only a card with no header of its own is given one. */
+  if (opts.cardhead) {
+    let n = 0;
+    for (const [find, label] of Object.entries(opts.cardhead)) {
+      const at = html.indexOf(find);
+      if (at < 0) { notes.push(`Card header skipped — "${String(find).slice(0, 48)}" is not on this page.`); continue; }
+      /* The nearest card opening above the words. */
+      const before = html.slice(0, at);
+      /* class="(?:[^"]*\s)?card(?:\s[^"]*)?" AND NOT \bcard\b.
+         A word boundary treats "card-body" as the word "card"
+         followed by a hyphen, so the nearest opening above the words
+         was the body rather than the card, and the title bar was put
+         inside the box it was meant to sit on top of. The class token
+         has to be card and nothing else. */
+      const opens = [...before.matchAll(/<div[^>]*class="(?:[^"]*\s)?card(?:\s[^"]*)?"[^>]*>/gi)];
+      if (!opens.length) { notes.push(`Card header skipped — "${String(find).slice(0, 48)}" is not inside a card.`); continue; }
+      const open = opens[opens.length - 1];
+      const start = open.index + open[0].length;
+      let depth = 1, i = start;
+      const tag = /<div\b[^>]*>|<\/div>/gi;
+      tag.lastIndex = i;
+      let t;
+      while (depth > 0 && (t = tag.exec(html))) { depth += t[0][1] === '/' ? -1 : 1; i = t.index + t[0].length; }
+      if (depth !== 0 || at > i) { notes.push(`Card header skipped — the card around "${String(find).slice(0, 48)}" is not closed.`); continue; }
+      if (/class="[^"]*\b(?:card-header|card-title)\b/i.test(html.slice(start, i))) {
+        notes.push(`Card header skipped — the card around "${String(find).slice(0, 48)}" already has one.`);
+        continue;
+      }
+      html = html.slice(0, start)
+        + `\n<div class="card-header text-white bg-primary"><strong>${label}</strong></div>`
+        + html.slice(start);
+      n++;
+    }
+    if (n) decisions.push({ id: 'cardhead', on: true, label: 'Name the card',
+      why: `${n} card${n > 1 ? 's were' : ' was'} drawn as a box with nothing saying what the box is. A card is a call-out and the title is how a reader knows what has been called out; without one it is a border around a paragraph. The name is given in overrides.json for this page. Nothing inside the card changes.`,
+      value: Object.values(opts.cardhead).join(', ') });
+  }
+
   /* (t4) A CARD THAT IS THE SECTION IS NOT A CARD.
      Matt, on /schoolsupports/communityschools/info and again on
      /schoolsupports/highmobility/titleIpartC: "is that a card? if so,
@@ -4376,7 +4486,7 @@ function propose(node, audit, index, opts = {}) {
       let m, done = true;
       while ((m = re.exec(html))) {
         const at = m.index + m[0].length;
-        const open = /^<div([^>]*)class="([^"]*\bcard\b[^"]*)"([^>]*)>/i.exec(html.slice(at));
+        const open = /^<div([^>]*)class="((?:[^"]*\s)?card(?:\s[^"]*)?)"([^>]*)>/i.exec(html.slice(at));
         if (!open) continue;
         let depth = 1, i = at + open[0].length;
         const tag = /<div\b[^>]*>|<\/div>/gi;
