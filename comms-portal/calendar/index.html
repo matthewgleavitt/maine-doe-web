@@ -901,7 +901,7 @@ const CALENDAR_ENDPOINT = "https://script.google.com/macros/s/AKfycbx9_qEikjvV4i
 // Falls back to the live endpoint below if the CDN fetch fails or the
 // payload is older than STALE_MINUTES.
 const CALENDAR_STATIC_URL = "https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/calendar.json";
-const STALE_MINUTES = 30;
+const STALE_MINUTES = 60;
 const CAL_CACHE_KEY = 'doe_calendar_events_v1';
 
 // Rehydrate from sessionStorage on load so the page paints instantly with
