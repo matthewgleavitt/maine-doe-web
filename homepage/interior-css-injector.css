@@ -6203,6 +6203,20 @@ body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-con
   line-height: 23px;                   /* was 15.3 x 1.5 = 22.95 */
   margin-bottom: 8px;                  /* was 7.65 */
 }
+/* EXCEPT IN A LIST GROUP, WHERE THE MARGIN IS LOAD-BEARING — the
+   same trap the list rules further down already record, walked into
+   from a different direction. Bootstrap overlaps .list-group-item
+   borders with margin-bottom:-1px so one row's bottom edge and the
+   next row's top edge are drawn as a single line. The whole-pixel
+   rhythm above set 8px on every li in a panel, which pulled them
+   apart and drew both: two hairlines 8px apart between every pair of
+   rows. Matt saw it on the Project Posters accordion and said it was
+   on others too, which it was — every list group inside a panel.
+   The spacing inside a list group is the list group's to decide. */
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd li.list-group-item,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd li.list-group-item {
+  margin-bottom: -1px;
+}
 body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd ul,
 body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd ol,
 body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd ul,

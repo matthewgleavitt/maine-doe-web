@@ -128,6 +128,28 @@ const canonKey = (raw) => (FORMAT_CANON[normFmt(raw)] || String(raw)).toLowerCas
    pages, 110 on /learning/standardsreview/science alone. */
 const isPdfLabel = (raw) => canonKey(raw) === 'pdf';
 
+/* IS THIS POSITION INSIDE TEXT THAT IS HIDDEN ON PURPOSE?
+   .visually-hidden and .sr-only are the two classes this site uses to
+   put something in the page for a screen reader or a search engine
+   and not on the screen. Walking backwards and counting the wrapper's
+   opens against its closes is enough: the wrapper is always a single
+   element and never nests inside itself. */
+const inHidden = (src, at) => {
+  const before = String(src).slice(0, at);
+  for (const tag of ['span', 'div', 'p']) {
+    const re = new RegExp('<' + tag + '\\b[^>]*>|</' + tag + '>', 'gi');
+    const open = new RegExp('class="[^"]*\\b(?:visually-hidden|sr-only)\\b', 'i');
+    const stack = [];
+    let m;
+    while ((m = re.exec(before))) {
+      if (m[0][1] === '/') stack.pop();
+      else stack.push(open.test(m[0]));
+    }
+    if (stack.some(Boolean)) return true;
+  }
+  return false;
+};
+
 /* ── transforms ──────────────────────────────────────────────────
    Each returns [html, countOfChanges]. Order matters: unwrap
    safelinks before stripping attributes, or the real URL is lost. */
@@ -1947,10 +1969,29 @@ const FIXES = [
      Demoting to a blockhead h2 also makes the section countable: the
      contents list is generated from .blockhead h2, so a page whose
      sections were h1s could never have one. */
+  /* EXCEPT WHEN IT IS DELIBERATELY HIDDEN.
+     /schoolsupports/highmobility/titleIpartC ends with
+     <span class="visually-hidden"><h1>Title I, Part C is formerly
+     known as Maine Migrant Education (MEP)</h1></span> — a former
+     name kept for people who search for it, on purpose not shown.
+     Matt: "that is supposed to be hidden text just for SEO."
+     The level is still wrong, so it is still demoted: a second h1 is
+     announced by a screen reader whether or not it is drawn, and two
+     h1s is no better for a search engine than for a reader. What it
+     does not get is the section header. A .blockhead is a navy slab
+     the width of the column, it is what the contents list is built
+     from, and a <div> inside a <span> inside a <p> is not valid
+     markup — so the hidden line would have been offered in the list
+     as somewhere to jump to and landed the reader on nothing. It
+     becomes a plain h2 and stays hidden, which is what it was for. */
   ['body h1 to blockhead h2', (h) => {
     let n = 0;
     h = h.replace(/<h1[^>]*>\s*(?:<strong>)?([\s\S]*?)(?:<\/strong>)?\s*<\/h1>/gi,
-      (m, text) => { n++; return `<div class="blockhead">\n<h2>${text.trim()}</h2>\n</div>`; });
+      (m, text, off) => {
+        n++;
+        if (inHidden(h, off)) return `<h2>${text.trim()}</h2>`;
+        return `<div class="blockhead">\n<h2>${text.trim()}</h2>\n</div>`;
+      });
     return [h, n];
   }],
 
@@ -2616,6 +2657,32 @@ const FIXES = [
       (m, sp, closes, a) => { n++; return closes + a + sp; });
     h = h.replace(/(<a\b[^>]*>)((?:<(?:strong|em|b|i|u|span|sup|sub)\b[^>]*>)+)((?:\s|&nbsp;)+)/gi,
       (m, a, opens, sp) => { n++; return sp + a + opens; });
+    return [h, n];
+  }],
+
+  /* A BOOTSTRAP ALERT IS THE SITE'S CALLOUT WRITTEN THE WRONG WAY.
+     Matt, on /schoolsupports/highmobility/titleIpartC: "there is a
+     weird gray box?" — <div class="alert alert-secondary">, which
+     Bootstrap draws as a pale grey slab with a thin grey border. It
+     belongs to no part of this site's design: the callout here is
+     .dc-note, navy with a teal edge, and it is what every other
+     "please note" on the site is drawn as. A grey box in the middle
+     of a page reads as something switched off rather than something
+     worth stopping for.
+     Four of them, on four pages, in three colours nobody chose on
+     purpose. role="alert" goes with them: it tells a screen reader
+     this appeared just now and must interrupt, which is wrong for
+     text that has been sitting in the page since it was written
+     (WCAG 4.1.3). Not a word changes. */
+  ['bootstrap alert to callout', (h) => {
+    let n = 0;
+    h = h.replace(/<div([^>]*)\sclass="([^"]*\balert\b[^"]*)"([^>]*)>/gi, (m, a1, cls, a2) => {
+      if (/\balert-(?:icon|body|title|text|link|dismissible|heading)\b|\bblock-alert\b/i.test(cls)) return m;
+      n++;
+      const keep = cls.replace(/\balert(?:-[a-z]+)?\b/gi, '').replace(/\s+/g, ' ').trim();
+      const rest = (a1 + a2).replace(/\srole="alert"/gi, '');
+      return `<div${rest} class="dc-note${keep ? ' ' + keep : ''}">`;
+    });
     return [h, n];
   }],
 

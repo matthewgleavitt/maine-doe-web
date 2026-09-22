@@ -94,6 +94,36 @@ const componentSpans = (src) => {
      wraps it was told to keep out. Only the strip of labels is
      furniture. What is in a panel is content and is treated as
      content. */
+  /* TEXT HIDDEN ON PURPOSE IS LEFT ALONE.
+     /schoolsupports/highmobility/titleIpartC ends with
+     <span class="visually-hidden"><h1>Title I, Part C is formerly
+     known as Maine Migrant Education (MEP)</h1></span> — a former
+     name kept for people searching for it, deliberately not shown.
+     The class survived every transform, so the text stayed hidden,
+     but the heading inside it did not: it was renumbered, wrapped in
+     a section bar and offered in the contents list. A list that sends
+     a reader to something invisible is worse than no entry, and a
+     .blockhead inside a <span> inside a <p> is not valid markup
+     either. Matt: "that is supposed to be hidden text just for SEO."
+     Marked as a component span, which is the mechanism that already
+     means "this belongs to something else, leave it": the heading
+     keeps its level, gets no wrapper and never reaches the list.
+     A span rather than a div, and closed by counting spans. */
+  {
+    const vh = /<span[^>]*class="[^"]*\b(?:visually-hidden|sr-only)\b[^"]*"[^>]*>/gi;
+    let v;
+    while ((v = vh.exec(src))) {
+      let depth = 1, i = v.index + v[0].length;
+      const tag = /<span\b[^>]*>|<\/span>/gi;
+      tag.lastIndex = i;
+      let t;
+      while (depth > 0 && (t = tag.exec(src))) {
+        depth += t[0][1] === '/' ? -1 : 1;
+        i = t.index + t[0].length;
+      }
+      spans.push([v.index, depth === 0 ? i : src.length]);
+    }
+  }
   const open = /<div[^>]*class="[^"]*\b(?:contact-cube|card|dc-note|jumbotron|tab-labels)\b[^"]*"[^>]*>/gi;
   let m;
   while ((m = open.exec(src))) {
@@ -3747,11 +3777,26 @@ function propose(node, audit, index, opts = {}) {
      be a sentence in the first place. */
   if (opts.cardseg !== false) {
     let n = 0, first = null;
-    const BOLD = /<p(?![^>]*class)[^>]*>\s*<strong>([^<]{3,60})<\/strong>\s*<\/p>/gi;
+    /* 90 RAW, MEASURED AGAIN ON THE STRIPPED TEXT BELOW. A cap on
+       the raw markup counts entities as their spelling, so
+       "Health Education Resource Documents [By Standards &amp;
+       Grades]" is 62 characters to this regex and 58 to a reader —
+       and it was refused for the two characters an ampersand costs.
+       The length that matters is the one the page shows, so the raw
+       cap is only a cheap first pass and the real test is the word
+       count on the stripped text. */
+    const BOLD = /<p(?![^>]*class)[^>]*>\s*<strong>([^<]{3,90})<\/strong>\s*<\/p>/gi;
     html = html.replace(/<div class="card-body">[\s\S]*?(?=<\/div>\s*<\/div>)/gi, (body) => {
       const hits = [...body.matchAll(BOLD)]
         .filter(m => !/[:：]\s*$/.test(strip(m[1])))
-        .filter(m => strip(m[1]).split(/\s+/).length <= 8);
+        /* 70, and entities decoded before measuring: strip() leaves
+           &amp; as five characters, so "Health Education Resource
+           Documents [By Standards &amp; Grades]" measured 63 for a
+           title a reader sees as 59. The word count is the test that
+           actually separates a title from a sentence; the length is
+           only there to stop a runaway. */
+        .filter(m => strip(m[1]).replace(/&[a-z#0-9]+;/gi, "x").length <= 70)
+        .filter(m => strip(m[1]).split(/\s+/).length <= 10);
       /* ONE IS ENOUGH IF IT IS DIVIDING RATHER THAN LEADING.
          Two was the first test and it is the safe half of the rule,
          but it missed the clearest case on the page Matt raised:
@@ -4295,6 +4340,61 @@ function propose(node, audit, index, opts = {}) {
     if (n) decisions.push({ id: 'searchtable', on: true, label: 'Let a long table be searched',
       why: `${n} table${n > 1 ? 's run' : ' runs'} to fifteen rows or more, so finding one row means reading every row. The theme already loads the search behaviour on every page and switches it on for any table marked this way — 26 tables across the site already are, including the contact directory. It adds a search box and a "show 25 entries" menu above the table, makes the column headings sortable, and pages below twenty-five rows at a time — which leaves all but the longest tables whole. Nothing is reordered and nothing changes until someone types.`,
       value: n + ' table' + (n > 1 ? 's' : '') });
+  }
+
+  /* (t4) A CARD THAT IS THE SECTION IS NOT A CARD.
+     Matt, on /schoolsupports/communityschools/info and again on
+     /schoolsupports/highmobility/titleIpartC: "is that a card? if so,
+     it doesn't have a header and it should, either something is a
+     paragraph text or its called out as a card and it shuld be a
+     header."
+     The shape he is pointing at is a card with no header and no
+     title, sitting directly under a section header and holding the
+     whole of that section. A card is a call-out: it says "this part
+     is a thing of its own" and it needs a name to say what the thing
+     is. This one has no name because the section header two lines
+     above already gave it one, and giving it a header would print
+     that title twice. So it is the other answer — it is the section's
+     paragraph text, drawn in a box for no reason. The box comes off
+     and every word stays exactly where it was.
+
+     195 of these on 110 pages. OPT-IN PER PAGE while that is a
+     decision Matt has not made site-wide; { "uncard": true } turns it
+     on for one page. */
+  if (opts.uncard) {
+    let n = 0;
+    for (;;) {
+      const re = /<div[^>]*class="[^"]*\bblockhead\b[^"]*"[^>]*>[\s\S]*?<\/div>\s*(?:<!--[^>]*-->\s*)?/gi;
+      let m, done = true;
+      while ((m = re.exec(html))) {
+        const at = m.index + m[0].length;
+        const open = /^<div([^>]*)class="([^"]*\bcard\b[^"]*)"([^>]*)>/i.exec(html.slice(at));
+        if (!open) continue;
+        let depth = 1, i = at + open[0].length;
+        const tag = /<div\b[^>]*>|<\/div>/gi;
+        tag.lastIndex = i;
+        let t;
+        while (depth > 0 && (t = tag.exec(html))) { depth += t[0][1] === '/' ? -1 : 1; i = t.index + t[0].length; }
+        if (depth !== 0) continue;
+        const whole = html.slice(at, i);
+        if (/class="[^"]*\b(?:card-header|card-title)\b/i.test(whole)) continue;
+        if (/<img[^>]*\bcard-img/i.test(whole)) continue;
+        /* The body is the card's only content, so unwrapping is two
+           wrappers off and nothing else moved. */
+        const inner = whole
+          .replace(/^<div[^>]*>\s*/, '')
+          .replace(/\s*<\/div>\s*$/, '')
+          .replace(/^\s*<div[^>]*class="[^"]*\bcard-body\b[^"]*"[^>]*>\s*/i, '')
+          .replace(/\s*<\/div>\s*$/, '');
+        html = html.slice(0, at) + inner + html.slice(i);
+        n++; done = false;
+        break;
+      }
+      if (done) break;
+    }
+    if (n) decisions.push({ id: 'uncard', on: true, label: 'Let the section be text, not a box',
+      why: `${n} card${n > 1 ? 's hold' : ' holds'} the whole of the section directly beneath its header, with no header of its own. A card is a call-out and needs a name to say what it is calling out; this one has none because the section header above already named it, and giving it one would print the same title twice. So it is the other answer: it is the section's own text, drawn in a box for no reason. The box comes off and every word stays where it is.`,
+      value: n + ' card' + (n > 1 ? 's' : '') });
   }
 
   /* ── 4. SECTION HEADINGS AND THE CONTENTS LIST ──────────────── */

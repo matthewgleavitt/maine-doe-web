@@ -2416,6 +2416,10 @@ body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-con
   line-height: 23px;
   margin-bottom: 8px;
 }
+body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd li.list-group-item,
+body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd li.list-group-item {
+  margin-bottom: -1px;
+}
 body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd ul,
 body.page-node-type-multi-column-page #block-doe-content dl.ckeditor-accordion > dd ol,
 body.page-node-type-multi-column-page #block-doe-content .ckeditor-accordion-container dl > dd ul,
