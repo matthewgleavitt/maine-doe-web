@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-21-aa  ·  Last edited: 2026-09-21
+ * Version: 2026-09-22-a  ·  Last edited: 2026-09-22
  *
  * ============================================================
  * SCOPE
@@ -5135,4 +5135,73 @@ body.page-node-type-multi-column-page #block-doe-content a.btn-info:focus {
 body.page-node-type-multi-column-page #block-doe-content .btn-info {
   padding-left: 16px;
   padding-right: 16px;
+}
+
+
+/* ── THE SECTION BAR NEEDED ROOM, AND AN EVEN GAP ────────────────
+   Matt: "I like how the darker headings are in there now with the
+   training but they don't have enough breathing room ... the space
+   above 2025-2026 training is too much, and the space inside the
+   heading for historical and the other need to be equal and wider."
+
+   Measured on /schools/safeschools/fostercare, both bars came out
+   `padding: 0 0 7px 11px`. No top padding at all, so the words sat
+   hard against the top edge of a 29px navy bar with a 7px gap under
+   them — the breathing room was missing on one side only.
+
+   13px and 18px is not a new number. It is exactly what .card-header
+   uses, and a section bar inside a card is the same object as the
+   card's own title bar, so the two should be set the same. Equal top
+   and bottom, and wider than the 7px it had.
+
+   AND THE GAP ABOVE, WHICH WAS TWO DIFFERENT GAPS. A card body is a
+   flex column, and margins do not collapse in one, so the space above
+   a bar was the bar's own 18px PLUS whatever the element before it
+   carried underneath: 34px after a paragraph, 18px after a list, on
+   the same card. Zeroing the preceding element's bottom margin makes
+   the bar's own margin the whole gap, once, whatever happens to come
+   before it — the same fix this file already applies below the bar,
+   now applied above it too. */
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h2:not(:first-child),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h3:not(:first-child),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h4:not(:first-child),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > h5:not(:first-child),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > .card-title:not(:first-child) {
+  padding: 13px 18px !important;
+  /* NO margin-top HERE. It was set to 22px and had no effect: the
+     rule further up sets the whole margin shorthand with !important,
+     so the bar's top margin is its 18px and stays that. Once the
+     element above stops adding its own, 18px IS the gap, on every
+     card, which is what was asked for. A declaration that loses every
+     time is worse than no declaration — it reads as the number in
+     force when it is not. */
+}
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > *:has(+ h2:not(:first-child)),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > *:has(+ h3:not(:first-child)),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > *:has(+ h4:not(:first-child)),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > *:has(+ h5:not(:first-child)),
+body.page-node-type-multi-column-page #block-doe-content .card > .card-body > *:has(+ .card-title:not(:first-child)) {
+  margin-bottom: 0 !important;
+}
+
+/* ── A TABLEAU WIDGET SIZED FOR SOMEBODY ELSE'S SCREEN ───────────
+   Every embed on the site carries the width Tableau's own copy-and-
+   paste code wrote into it, as a pixel value set by an inline script
+   at load: 1200px on the ESSER, biliteracy, multilingual, NAEP and
+   federal relief dashboards, 1000px on foster care, the liaison
+   lookup and the climate seal, 900px on the summit. Thirteen pages,
+   and the column they sit in is 874px, so every one of them runs off
+   the side of the page and takes the page's own scrollbar with it.
+   !important because the script sets it as an inline style, and an
+   inline style is only beaten by this.
+   THE HEIGHT IS LEFT ALONE ON PURPOSE. It is also hand-set, but a
+   Tableau view crops rather than reflows when it is shortened, so
+   guessing a height here would hide rows of somebody's data. The
+   width is what overflows; the width is what this fixes. */
+body.page-node-type-multi-column-page #block-doe-content .tableauPlaceholder,
+body.page-node-type-multi-column-page #block-doe-content .tableauPlaceholder > object,
+body.page-node-type-multi-column-page #block-doe-content .tableauPlaceholder .tableauViz,
+body.page-node-type-multi-column-page #block-doe-content object.tableauViz {
+  width: 100% !important;
+  max-width: 100% !important;
 }
