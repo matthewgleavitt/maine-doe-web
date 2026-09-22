@@ -3504,8 +3504,21 @@ function propose(node, audit, index, opts = {}) {
   } else if (sections.length && sections.length < 3) {
     notes.push(`${sections.length} section header${sections.length > 1 ? 's' : ''} — too few for a contents list.`);
   }
-  if (audit && audit.outline.some(o => /jumps/.test(o.issue))) {
-    notes.push(`Heading levels skip: ${audit.outline.filter(o => /jumps/.test(o.issue)).map(o => o.issue).join('; ')}. Needs a person.`);
+  /* MEASURED ON WHAT WE ARE HANDING OVER, NOT ON WHAT WE WERE GIVEN.
+     This read audit.outline — the audit of the LIVE page — and told a
+     reviewer "Needs a person" on 384 pages. The outline walk has
+     rebuilt the levels and the cap has closed every gap by the time
+     this runs, so on all 384 the person was being sent to look at a
+     fault that no longer existed in the proposal. A note that
+     describes the source rather than the output is worse than no
+     note: it costs a reviewer the time to go and find nothing.
+     Kept rather than deleted, and pointed at the finished html, so it
+     still speaks up if a later transform ever reopens a gap. */
+  {
+    const seq = [...html.matchAll(/<h([1-6])\b/gi)].map(m => +m[1]);
+    const jumps = [];
+    for (let i = 1; i < seq.length; i++) if (seq[i] > seq[i - 1] + 1) jumps.push(`h${seq[i - 1]} to h${seq[i]}`);
+    if (jumps.length) notes.push(`Heading levels skip in the proposal: ${[...new Set(jumps)].join('; ')}. Needs a person.`);
   }
   if (audit && !audit.components.blockheads && audit.words > 400) {
     notes.push(`${audit.words} words with no section headers at all — the biggest single improvement available here.`);
