@@ -299,26 +299,58 @@ async function fetchFeedJson() {
   throw lastErr;
 }
 
-// Populate the focus + type dropdowns dynamically from live event data.
-// Programs list is hand-curated for now (matches PROGRAMS in events-tracker.html).
+// All three dropdowns are built from the feed — they list only the values that
+// published events actually carry, with counts. A focus area or program that no
+// event uses yet will not appear here, because nothing in the feed references
+// it. The set staff can choose from when submitting is FOCUS_AREAS / PROGRAMS
+// in events-tracker.html.
+// Programs belong to a focus area in practice, so the program list is kept as
+// counts-per-focus rather than one flat tally. Picking a focus narrows the
+// program dropdown to the ones that actually occur under it; 'All focus areas'
+// shows every program. Filled by populateFilters, read by syncProgramOptions.
+let PROGRAMS_BY_FOCUS = {};   // { focusArea: { program: count } }
+let PROGRAMS_ALL = {};        // { program: count } across every focus
+
 async function populateFilters() {
   try {
     const data = await fetchFeedJson();
     const events = data.events || [];
 
-    const focusCounts = {}, typeCounts = {}, programCounts = {};
+    const focusCounts = {}, typeCounts = {};
+    PROGRAMS_BY_FOCUS = {};
+    PROGRAMS_ALL = {};
     events.forEach(e => {
       if (e.focusArea) focusCounts[e.focusArea] = (focusCounts[e.focusArea] || 0) + 1;
       if (e.type) typeCounts[e.type] = (typeCounts[e.type] || 0) + 1;
-      if (e.programInitiative) programCounts[e.programInitiative] = (programCounts[e.programInitiative] || 0) + 1;
+      if (e.programInitiative) {
+        PROGRAMS_ALL[e.programInitiative] = (PROGRAMS_ALL[e.programInitiative] || 0) + 1;
+        if (e.focusArea) {
+          const bucket = PROGRAMS_BY_FOCUS[e.focusArea] || (PROGRAMS_BY_FOCUS[e.focusArea] = {});
+          bucket[e.programInitiative] = (bucket[e.programInitiative] || 0) + 1;
+        }
+      }
     });
 
     fillSelect(els.focus, focusCounts, 'All focus areas');
     fillSelect(els.type, typeCounts, 'Any type');
-    fillSelect(els.program, programCounts, 'Any / none');
+    syncProgramOptions();
   } catch(e) {
     console.warn('Could not load filter counts:', e.message);
   }
+}
+
+// Rebuild the program dropdown for whatever focus area is selected. If the
+// program currently chosen has no events under the new focus, drop it rather
+// than leaving a selection that would return nothing.
+function syncProgramOptions() {
+  const focus = els.focus.value;
+  const counts = focus ? (PROGRAMS_BY_FOCUS[focus] || {}) : PROGRAMS_ALL;
+  const chosen = els.program.value;
+  const stillValid = chosen && Object.prototype.hasOwnProperty.call(counts, chosen);
+  if (chosen && !stillValid) els.program.value = '';
+  fillSelect(els.program, counts, 'Any / none');
+  els.program.disabled = Object.keys(counts).length === 0;
+  return chosen && !stillValid;   // true when the selection was cleared
 }
 function fillSelect(sel, counts, allLabel) {
   const keys = Object.keys(counts).sort();
@@ -361,6 +393,10 @@ function render() {
   }
   els.preview.style.height = (parseInt(els.height.value, 10) || 480) + 'px';
 }
+
+// Changing the focus area re-scopes the program list before rendering, so the
+// embed URL is never built from a focus/program pair that has no events.
+els.focus.addEventListener('change', () => { syncProgramOptions(); render(); });
 
 // Wire up change events (radio buttons handled separately by name)
 [els.focus, els.program, els.type, els.embed, els.height].forEach(el => {
