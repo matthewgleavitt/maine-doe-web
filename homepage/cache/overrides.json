@@ -384,22 +384,6 @@
   "useDeck": false,
   "_why": "Matt, 22 Sep: the intro belongs under Civil Rights Statements and Information, and the three ways to file are set the way the Spanish copy of the same statement already sets them."
  },
- "/learning/earlychildhood/pkexpansiongrant/2021": {
-  "boldhead": {
-   "FY 2022-24 School Year": "2022-2024 School Year",
-   "FY 2023-24 and 2024-25 School Years": "2023-2024 & 2024-2025 School Year",
-   "FY 2025-26 School Year": "2025-2026 School Year"
-  },
-  "thead": {
-   "Funding FY 1": "Funding SY1",
-   "Funding FY 2": "Funding SY2",
-   "Funding FY2023-24": "Funding SY1",
-   "Funding FY2024-25": "Funding SY2",
-   "Funding 2025-26": "Funding SY1"
-  },
-  "_why": "Matt, 22 Sep: the grant rounds are school years, not fiscal years; each table is titled by its years as an h3 and the funding columns are named the same way in all four.",
-  "searchtable": false
- },
  "/lgbtq/student": {
   "art": "/doe/sites/maine.gov.doe/files/inline-images/iStock-683554208.jpg",
   "dropImage": [
@@ -473,11 +457,11 @@
    "FY 2025–26 School Year": "2025-2026 School Year"
   },
   "thead": {
-   "Funding FY 1": "Funding SY1",
-   "Funding FY 2": "Funding SY2",
-   "Funding FY 2023–24": "Funding SY1",
-   "Funding FY 2024–25": "Funding SY2",
-   "Funding FY 2025–26": "Funding SY1"
+   "Funding FY 1": "Funding&nbsp;SY1",
+   "Funding FY 2": "Funding&nbsp;SY2",
+   "Funding FY 2023–24": "Funding&nbsp;SY1",
+   "Funding FY 2024–25": "Funding&nbsp;SY2",
+   "Funding FY 2025–26": "Funding&nbsp;SY1"
   },
   "_why": "Matt, 23 Sep: the same page shape as /pkexpansiongrant/2021 — school years not fiscal years, each table titled as an h3, the funding columns named the same in all four, and none of them searchable."
  },

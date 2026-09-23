@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-23-b  ·  Last edited: 2026-09-23 15:00
+ * Version: 2026-09-23-c  ·  Last edited: 2026-09-23 17:45
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -581,6 +581,39 @@ const FIXES = [
         n++;
         return `<p${attrs}><strong>${label.trim()}</strong><br>\n${body.trim()}</p>`;
       });
+    return [h, n];
+  }],
+
+  /* THE EVENTS CALENDAR WIDGET IS 425px TALL.
+     Matt built the calendar at gateway.maine.gov and embeds it with
+     an iframe whose height is set in the page rather than by the
+     widget, so every page that carries one holds a copy of a number
+     only he can be right about. He has since rebuilt the widget and
+     the number is 425.
+     Eight pages embed it and they had drifted to three different
+     answers: six at 480, one at 450, and /calendar at height:800px.
+     ONLY THE EMBEDDED ONE, AND THE MIN-HEIGHT IS WHAT SAYS SO.
+     /calendar is the whole calendar rather than a strip of it: no
+     parameters, a fixed height:800px and no min-height at all. So the
+     presence of a min-height is itself the test, and it is the right
+     one — it is the very thing being corrected, and a tag without one
+     has nothing here to correct.
+     I first tested for embed=1 in the src and it was wrong twice
+     over. The markup writes &amp;embed=1, so the character in front
+     is a semicolon and [?&] matched none of the eight; and once that
+     was fixed, /safety and /safety/threatassessment still missed,
+     because they carry carousel=1 and no embed at all. Same widget,
+     same embedding, different parameters.
+     The number only. Nothing else in the tag moves. */
+  ['calendar widget height set to 425px', (h) => {
+    let n = 0;
+    h = h.replace(/<iframe\b[^>]*>/gi, (tag) => {
+      if (!/gateway\.maine\.gov\/doe\/communications\/calendar/i.test(tag)) return tag;
+      if (!/min-height:\s*[^;"']+/i.test(tag)) return tag;
+      const fixed = tag.replace(/min-height:\s*[^;"']+/i, 'min-height:425px');
+      if (fixed === tag) return tag;
+      n++; return fixed;
+    });
     return [h, n];
   }],
 
@@ -2714,6 +2747,19 @@ const FIXES = [
          position:absolute on the iframe itself is the tell: an iframe
          that is being positioned by its parent is already handled. */
       if (/style="[^"]*position:\s*absolute/i.test(frame)) return m;
+      /* AND ONLY A VIDEO. This wrapped every <iframe> on the site and
+         took its height away, which is right for a player and wrong
+         for everything else: of the 236 embeds here, 196 are video
+         and 40 are applications and documents — Google Docs, the SLDS
+         dashboards, Tableau, Power BI, ArcGIS, Canva, and Matt's own
+         events calendar. None of those is 16:9, and each was being
+         squeezed into it with the author's own height stripped out.
+         /calendar is the clearest: a full month view written at
+         height:800px came out 380px tall in a video box.
+         Named hosts rather than a guess, because the cost of being
+         wrong in the other direction is a player at the wrong shape.
+         An embed from anywhere else keeps the geometry it was given. */
+      if (!/\ssrc="[^"]*(?:youtube\.com|youtu\.be|vimeo\.com|edpuzzle\.com|powtoon\.com|wistia|brightcove|dailymotion)/i.test(frame)) return m;
       n++;
       /* THE WRAPPER OWNS THE GEOMETRY, SO THE IFRAME MUST NOT SET ANY.
          Stripping the width and height ATTRIBUTES was only half of

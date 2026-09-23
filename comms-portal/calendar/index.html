@@ -1645,6 +1645,53 @@ function updateStats() {
 // Accessibility: remember opener so we can return focus on close.
 let _lastFocused = null;
 
+// Where the user last clicked, in page coordinates. Needed because in the
+// expanded-iframe case below there is no viewport to centre on.
+let _lastClickPageY = 0;
+document.addEventListener('click', function (ev) {
+  _lastClickPageY = (ev.pageY || 0);
+}, true);
+
+// On /doe/calendar the parent grows the iframe to the full content height
+// (measured 51,191px) so the page scrolls once instead of twice. That makes
+// `position: fixed` useless inside the frame: fixed resolves against the
+// frame's own box, so the scrim filled all 51,191px and the modal centred at
+// page-y 25,788 while the reader was at 1,230. All you saw was blurred navy.
+//
+// When the frame has been expanded — we are in an iframe and the document no
+// longer scrolls itself — switch the scrim to absolute so it still covers the
+// page, and anchor the modal to the click instead of centring it.
+function positionModalForEmbed(scrim) {
+  const modal = document.getElementById('modal');
+  let expanded = false;
+  try {
+    expanded = window.self !== window.top &&
+               document.documentElement.scrollHeight <= window.innerHeight + 200;
+  } catch (e) { expanded = false; }
+
+  if (!expanded) {
+    scrim.style.position = '';
+    modal.style.position = '';
+    modal.style.top = '';
+    modal.style.left = '';
+    modal.style.transform = '';
+    modal.style.maxHeight = '';
+    return;
+  }
+  scrim.style.position = 'absolute';
+  modal.style.position = 'absolute';
+  modal.style.left = '50%';
+  modal.style.transform = 'translateX(-50%)';
+  // The stylesheet caps the modal at 88vh, but vh here is the expanded frame,
+  // so 88vh would be ~45,000px and a long event would run off the reader's
+  // screen instead of scrolling inside the modal. Cap in pixels instead.
+  modal.style.maxHeight = '700px';
+  // Sit just above the click so the card stays in view behind the modal, and
+  // never so high that the modal starts off the top of the page.
+  const top = Math.max(24, (_lastClickPageY || 0) - 120);
+  modal.style.top = top + 'px';
+}
+
 function openModal(id) {
   const e = EVENTS.find(x => x.id === id);
   if (!e) return;
@@ -1655,6 +1702,7 @@ function openModal(id) {
   scrim.setAttribute('role', 'dialog');
   scrim.setAttribute('aria-modal', 'true');
   scrim.setAttribute('aria-labelledby', 'modal-title');
+  positionModalForEmbed(scrim);
   const modal = document.getElementById('modal');
   modal.className = 'modal cat-' + cluster;
   modal.innerHTML = `

@@ -53140,7 +53140,7 @@
  {
   "alias": "/learning/earlychildhood",
   "title": "Early Learning",
-  "changed": "2026-09-21T20:16:56+00:00",
+  "changed": "2026-09-23T14:58:20+00:00",
   "words": 308,
   "bytes": 7259,
   "fixes": [
@@ -53262,7 +53262,7 @@
    "anchors": []
   },
   "age": {
-   "changed": "2026-09-21T20:16:56+00:00",
+   "changed": "2026-09-23T14:58:20+00:00",
    "yearsMentioned": [],
    "newestYear": null,
    "yearsBehind": null,
@@ -83058,7 +83058,7 @@
  {
   "alias": "/learning/multilinguallearner/pl",
   "title": "Multilingual Programs Professional Learning",
-  "changed": "2026-09-23T14:38:03+00:00",
+  "changed": "2026-09-23T14:59:49+00:00",
   "words": 485,
   "bytes": 8595,
   "fixes": [
@@ -83162,7 +83162,7 @@
    "anchors": []
   },
   "age": {
-   "changed": "2026-09-23T14:38:03+00:00",
+   "changed": "2026-09-23T14:59:49+00:00",
    "yearsMentioned": [
     2026,
     2027
