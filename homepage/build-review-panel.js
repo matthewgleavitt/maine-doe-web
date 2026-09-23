@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — the page review panel
- * Version: 2026-09-22-a  ·  Last edited: 2026-09-22
+ * Version: 2026-09-23-a  ·  Last edited: 2026-09-23 02:10
  *
  *   node build-review-panel.js
  *   then open http://localhost:8791/review/
@@ -405,20 +405,36 @@ const TABS = \`
    showed 259 rows rather than a search box and 25. Matt reviewed
    exactly that and reasonably concluded the table was wrong; it was
    the preview that was wrong.
-   The theme initialises on table.tables and table.tablessortdesc
-   plus five ids, and reads the row count from data-page-length.
    Mirrored here rather than loading Drupal's own aggregate, which
    would also drag the menus, Google Translate and analytics into
-   every frame. */
+   every frame.
+
+   AND IT IS NOW WHAT THE THEME ACTUALLY DOES. This said the theme
+   "reads the row count from data-page-length" and it does not. Its
+   lines, read out of the live aggregate, are exactly:
+     $('table.tables').DataTable()
+     $('table.tablessortdesc').DataTable({"order":[[0,"desc"]]})
+   No options on the first, so the library's default of ten rows is
+   what every searchable table on the site has always shown. This
+   mirror read the attribute and defaulted to twenty-five, so the
+   panel showed twenty-five rows where the page shows ten — a preview
+   saying something the site never did, which is the one thing a
+   preview must not do. */
 const DATATABLES = \`
 jQuery(function ($) {
   if (!$.fn || !$.fn.DataTable) return;
-  $('table.tables, table.tablessortdesc, #coolTable, #certificatetable, #framework2020, #table100, #filter')
-    .each(function () {
-      if ($.fn.dataTable.isDataTable(this)) return;
-      var n = parseInt($(this).attr('data-page-length'), 10) || 25;
-      try { $(this).DataTable({ pageLength: n, order: [], autoWidth: false }); } catch (e) {}
-    });
+  $('table.tables, #coolTable, #table100, #filter').each(function () {
+    if ($.fn.dataTable.isDataTable(this)) return;
+    try { $(this).DataTable({ autoWidth: false }); } catch (e) {}
+  });
+  $('table.tablessortdesc, #certificatetable').each(function () {
+    if ($.fn.dataTable.isDataTable(this)) return;
+    try { $(this).DataTable({ order: [[0, 'desc']], autoWidth: false }); } catch (e) {}
+  });
+  $('#framework2020').each(function () {
+    if ($.fn.dataTable.isDataTable(this)) return;
+    try { $(this).DataTable({ ordering: false, autoWidth: false }); } catch (e) {}
+  });
 });
 \`;
 

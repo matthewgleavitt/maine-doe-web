@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-23-a  ·  Last edited: 2026-09-23 01:15
+ * Version: 2026-09-23-b  ·  Last edited: 2026-09-23 02:10
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -4640,30 +4640,61 @@ function propose(node, audit, index, opts = {}) {
      26 tables already carry it, including the contact directory,
      whose own copy tells the reader to "type in a keyword(s) to the
      search bar below".
-     data-page-length="25" comes with it. The library's own default is
-     ten, which would hide rows that are visible today on 65 of these
-     tables; twenty-five leaves all but 22 of them whole while still
-     giving the reader the length menu and the pager the moment a
-     table is long enough to need them. Nothing is reordered until
-     someone asks.
+     data-page-length DID NOTHING AND IS GONE. It was written on every
+     one of these on the reasoning that ten rows would hide content —
+     but the theme's own line is
+       $('table.tables').DataTable()
+     with no options at all, so it never read the attribute and the
+     library's default of ten has been what these tables show all
+     along. The attribute's only effect was on this project's own
+     preview, which did read it and so showed twenty-five rows where
+     the live page shows ten. Matt asked for ten; ten is what it was.
+     The preview is corrected to match.
+
+     A DATE COLUMN SORTS NEWEST FIRST. The theme has a second hook —
+       $('table.tablessortdesc').DataTable({"order":[[0,"desc"]]})
+     — which is the same behaviour ordered by the first column,
+     descending. A table whose first column is a date should open on
+     the most recent row rather than on whatever happened to be typed
+     first, so those take that class instead.
+     ONLY WHERE THE DATES REALLY SORT. DataTables reads the column's
+     type from its contents, so a column of "December 20, 2023" sorts
+     chronologically and a column of "2004–2005" or "July" sorts
+     alphabetically — which would be worse than not sorting at all.
+     Every cell is tested, and the class is given only where at least
+     four fifths of them parse as a date. 15 of the 72 have a date
+     first column and 13 of those pass; the school-year ranges on
+     /schools/schoolops/homeinstruction/faq and the month names on
+     /data-reporting/ReportingCalendars do not, and keep the default.
+
      FIFTEEN ROWS. Below that the whole table is on screen at once and
      a search box is furniture; above it, finding one row means
      reading every row. */
   if (opts.searchtable !== false) {
-    let n = 0;
+    let n = 0, dated = 0;
     html = html.replace(/<table\b([^>]*)>([\s\S]*?)<\/table>/gi, (m, attrs, body) => {
       if (/\btables\b|\btablessortdesc\b/.test(attrs)) return m;
       const rows = (body.match(/<tr[\s>]/gi) || []).length - (/<thead[\s>]/i.test(body) ? 1 : 0);
       if (rows < 15) return m;
       n++;
+      /* The first column's cells, header excepted. */
+      const trs = [...body.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)];
+      const firstCells = trs.slice(1)
+        .map(r => (r[1].match(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/i) || [, ''])[1])
+        .map(t => strip(t).replace(/\s+/g, ' ').trim())
+        .filter(Boolean);
+      const parses = firstCells.filter(t => !isNaN(Date.parse(t))).length;
+      const byDate = firstCells.length >= 3 && parses >= firstCells.length * 0.8;
+      if (byDate) dated++;
+      const hook = byDate ? 'tablessortdesc' : 'tables';
       const withClass = /class="/.test(attrs)
-        ? attrs.replace(/class="/, 'class="tables ')
-        : attrs + ' class="tables"';
-      return `<table${withClass} data-page-length="25">${body}</table>`;
+        ? attrs.replace(/class="/, `class="${hook} `)
+        : attrs + ` class="${hook}"`;
+      return `<table${withClass}>${body}</table>`;
     });
     if (n) decisions.push({ id: 'searchtable', on: true, label: 'Let a long table be searched',
-      why: `${n} table${n > 1 ? 's run' : ' runs'} to fifteen rows or more, so finding one row means reading every row. The theme already loads the search behaviour on every page and switches it on for any table marked this way — 26 tables across the site already are, including the contact directory. It adds a search box and a "show 25 entries" menu above the table, makes the column headings sortable, and pages below twenty-five rows at a time — which leaves all but the longest tables whole. Nothing is reordered and nothing changes until someone types.`,
-      value: n + ' table' + (n > 1 ? 's' : '') });
+      why: `${n} table${n > 1 ? 's run' : ' runs'} to fifteen rows or more, so finding one row means reading every row. The theme already loads the search behaviour on every page and switches it on for any table marked this way — 26 tables across the site already are, including the contact directory. It adds a search box, a length menu and a pager, and makes the column headings sortable; ten rows show at a time, which is the library's own default.${dated ? ` ${dated} of them open on the most recent row, because the first column is a date that sorts — the rest are left in the order they were written.` : ' Nothing is reordered until someone asks.'}`,
+      value: n + ' table' + (n > 1 ? 's' : '') + (dated ? `, ${dated} by date` : '') });
   }
 
   /* (t3b) A CARD THAT KEEPS ITS BOX GETS A NAME.
