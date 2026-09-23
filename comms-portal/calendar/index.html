@@ -1774,7 +1774,15 @@ function positionModalForEmbed(scrim) {
   const modal = document.getElementById('modal');
   let expanded = false;
   try {
+    // "Content fits the viewport" alone is not enough to mean the parent grew
+    // the frame. A carousel embed is ~440px tall with ~416px of content, so it
+    // also fits — and treating it as expanded removed the height cap and left
+    // a ~900px modal overflowing a 440px frame with no way to scroll to the
+    // rest of it. A genuinely expanded frame is taller than any real browser
+    // window, so require that too, and exclude the carousel outright.
     expanded = window.self !== window.top &&
+               !document.documentElement.classList.contains('carousel-mode') &&
+               window.innerHeight > 1600 &&
                document.documentElement.scrollHeight <= window.innerHeight + 200;
   } catch (e) { expanded = false; }
 

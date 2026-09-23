@@ -83,27 +83,52 @@ const ic={
 function Card({children,style,pad=24}){
   return <div style={{background:B.wh,borderRadius:14,border:`1px solid ${B.rule}`,padding:pad,boxShadow:'0 2px 4px rgba(24,43,60,0.04)',...style}}>{children}</div>;
 }
+// Each section is a bounded card rather than a heading over loose fields. The
+// old version separated sections with a 13%-opacity hairline, which at a
+// glance left the whole form reading as one undifferentiated column of pale
+// boxes with no sense of where one group ended and the next began.
 function Section({label,icon,children}){
-  return <div style={{marginBottom:28}}>
-    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:14,paddingBottom:10,borderBottom:`1px solid ${B.rule}`}}>
-      {icon&&<Sv d={icon} size={16} c={B.tealInk}/>}
-      <h3 style={{fontFamily:'League Spartan',fontWeight:800,fontSize:14,letterSpacing:'.08em',textTransform:'uppercase',color:B.navy,margin:0}}>{label}</h3>
+  return <div style={{marginBottom:24,background:B.wh,border:`1.5px solid ${B.border}`,borderRadius:12,overflow:'hidden'}}>
+    <div style={{display:'flex',alignItems:'center',gap:10,padding:'13px 20px',background:B.navy,borderBottom:`3px solid ${B.teal}`}}>
+      {icon&&<Sv d={icon} size={16} c={B.teal}/>}
+      <h3 style={{fontFamily:'League Spartan',fontWeight:800,fontSize:13,letterSpacing:'.1em',textTransform:'uppercase',color:B.wh,margin:0}}>{label}</h3>
     </div>
-    <div>{children}</div>
+    {/* Trailing -18px absorbs the last Field's own bottom margin so the
+        section padding stays even top and bottom. */}
+    <div style={{padding:'20px 20px 2px'}}>{children}</div>
   </div>;
 }
-function Row({children,cols,gap=12}){
-  return <div style={{display:'grid',gridTemplateColumns:cols||'1fr',gap,marginBottom:12}}>{children}</div>;
+// No bottom margin here any more: the Fields inside carry their own, so a Row
+// adding its own on top produced uneven gaps between rows and single fields.
+function Row({children,cols,gap=16}){
+  return <div style={{display:'grid',gridTemplateColumns:cols||'1fr',gap}}>{children}</div>;
 }
+// Longest title that still fits three lines in the 303px card title column
+// at 21px / 25.2px line-height. Measured against the live calendar rather
+// than estimated; 12 of 127 existing events are over it.
+const TITLE_MAX=85;
+
+// Minimum description length. Chosen against the 127 events already on the
+// calendar: the median is 484 characters and the 5th percentile is 126, so
+// 120 rejects only the 5 that are genuinely one-liners ("Writing and
+// monitoring measurable goals", 39 characters) without pressing on anyone
+// writing a real description.
+const DESC_MIN=120;
+
+// Every field carries its own bottom margin. Previously only Row did, so a
+// Field placed directly between Rows — Program / initiative above Intended
+// audience, for one — sat flush against the next label with no gap at all.
 function Field({label,required,hint,error,children}){
-  return <div>
+  return <div style={{marginBottom:18}}>
     {label&&<label style={{display:'block',fontSize:11,fontWeight:700,color:B.navy,marginBottom:6,textTransform:'uppercase',letterSpacing:'.06em'}}>{label}{required&&<span style={{color:B.rust,marginLeft:3}}>*</span>}</label>}
     {children}
-    {hint&&<div style={{fontSize:11,color:B.ink3,marginTop:5,fontWeight:500}}>{hint}</div>}
-    {error&&<div style={{fontSize:11,color:B.rust,marginTop:5,fontWeight:600}}>{error}</div>}
+    {hint&&<div style={{fontSize:11.5,color:B.ink3,marginTop:6,fontWeight:500,lineHeight:1.45}}>{hint}</div>}
+    {error&&<div style={{fontSize:11.5,color:B.rust,marginTop:6,fontWeight:600}}>{error}</div>}
   </div>;
 }
-const inputSty={width:'100%',padding:'10px 14px',borderRadius:8,border:`1px solid ${B.border}50`,fontSize:14,fontFamily:'inherit',color:B.ink,outline:'none',background:B.wh,transition:'border-color .15s'};
+// Border was B.border at 50 hex alpha (~31%), which left every input reading
+// as a pale floating box rather than a bounded field.
+const inputSty={width:'100%',padding:'11px 14px',borderRadius:8,border:`1.5px solid ${B.border}`,fontSize:14,fontFamily:'inherit',color:B.ink,outline:'none',background:B.wh,transition:'border-color .15s,box-shadow .15s'};
 function Text({value,onChange,placeholder,type,max}){
   return <input type={type||'text'} value={value||''} onChange={e=>onChange(e.target.value)} placeholder={placeholder} maxLength={max}
     style={inputSty} onFocus={e=>e.currentTarget.style.borderColor=B.teal} onBlur={e=>e.currentTarget.style.borderColor=`${B.border}50`}/>;
@@ -169,7 +194,7 @@ function QuillEditor({value,onChange}){
     if(!holder.current||quill.current) return;
     quill.current=new Quill(holder.current,{
       theme:'snow',
-      placeholder:'Describe the event — who it\'s for, what people will learn, why they should attend...',
+      placeholder:'Write this as an invitation, not a label. Two or three sentences: what the session covers, who it is for, and what someone walks away able to do. "Join us to explore how Maine schools are using CSTAG to assess and manage threats. We will work through real scenarios and you will leave with a framework your team can apply immediately."',
       modules:{toolbar:[['bold','italic','underline'],[{'list':'ordered'},{'list':'bullet'}],['link'],['clean']]}
     });
     if(value) quill.current.clipboard.dangerouslyPasteHTML(value);
@@ -453,6 +478,11 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy,draft
     if(!form.intendedAudience) e.intendedAudience='Required';
     const descText=(form.description||'').replace(/<[^>]+>/g,'').trim();
     if(!descText) e.description='Required';
+    // A floor, not a target. "Bring MTSS questions or topics for discussion"
+    // is 45 characters and tells a reader nothing about whether to attend.
+    // DESC_MIN is roughly two sentences and clears every genuine description
+    // already on the calendar.
+    else if(descText.length<DESC_MIN) e.description=`Give people a reason to attend: what the session covers, who it is for, and what they will leave with. ${descText.length} of ${DESC_MIN} characters minimum.`;
     else if(descText.length>5000) e.description=`Please keep descriptions under 5,000 characters (currently ${descText.length.toLocaleString()}).`;
     if(!form.startDate) e.startDate='Required';
     if(!form.startTime) e.startTime='Required';
@@ -475,8 +505,14 @@ function EventForm({form,setForm,onSubmit,onDelete,editing,submitting,busy,draft
       </Section>
 
       <Section label="About the event" icon={ic.cal}>
-        <Field label="Title" required hint="Shorter titles appear cleanest on the calendar." error={err.title}>
-          <Text value={form.title} onChange={v=>uf('title',v)} placeholder="Short, descriptive title" max={120}/>
+        {/* 85 is measured, not guessed: the card title column is 303px at
+            21px/25.2px, where 85 characters is the longest title that still
+            fits three lines. Past that a card grows and the row it sits in
+            grows with it. */}
+        <Field label="Title" required
+          hint={`${(form.title||'').length}/${TITLE_MAX} characters. Titles over ${TITLE_MAX} wrap to a fourth line on the calendar.`}
+          error={err.title}>
+          <Text value={form.title} onChange={v=>uf('title',v)} placeholder="Short, descriptive title" max={TITLE_MAX}/>
         </Field>
         <Row cols="1fr 1fr">
           <Field label="Focus area" required error={err.focusArea}><Sel value={form.focusArea} onChange={v=>uf('focusArea',v)} options={FOCUS_AREAS} placeholder="Select focus area..."/></Field>

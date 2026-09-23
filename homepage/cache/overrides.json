@@ -471,5 +471,15 @@
    "<div class=\"dc-note\">\r\n<h4>What Participants Are Saying</h4>\r\n\r\n<p><em>\"This will help me to start a mentorship off on the right foot. Thank you!\"</em></p>\r\n\r\n<p><em>\"It is never too late to invest in the success of future teachers! Be proactive and engage others before they leave the system.\"</em></p>\r\n\r\n<p><em>\"Like our students, we all learn in different ways, and we need to find a way that will help the mentee the best.\"</em></p>\r\n\r\n<p><em>\"I realize the important role I could have in a new teacher's life.\"</em></p>\r\n</div>": "<h3>What Participants Are Saying</h3>\r\n\r\n<p><em>\"This will help me to start a mentorship off on the right foot. Thank you!\"</em></p>\r\n\r\n<p><em>\"It is never too late to invest in the success of future teachers! Be proactive and engage others before they leave the system.\"</em></p>\r\n\r\n<p><em>\"Like our students, we all learn in different ways, and we need to find a way that will help the mentee the best.\"</em></p>\r\n\r\n<p><em>\"I realize the important role I could have in a new teacher's life.\"</em></p>"
   },
   "_why": "Matt, 23 Sep: the mentor modules are another resource in the list, and the quotes are a heading with quotes under it rather than a callout."
+ },
+ "/learning/multilinguallearner/pl": {
+  "replace": {
+   "<ul class=\"list-group list-group-flush\">\r\n\t<li class=\"list-group-item\">\r\n\t<h5>Self Paced Workshops</h5>\r\n\t</li>\r\n\t": "<h3>Self Paced Workshops</h3>\r\n\r\n<ul class=\"list-group list-group-flush\">\r\n\t",
+   "</li>\r\n\t<li class=\"list-group-item\">\r\n\t<h5>On-Demand Videos</h5>\r\n\t</li>\r\n\t": "</li>\r\n</ul>\r\n\r\n<h3>On-Demand Videos</h3>\r\n\r\n<ul class=\"list-group list-group-flush\">\r\n\t",
+   "<p class=\"text-align-center\"><img alt=\"Core Learning\" src=\"/doe/sites/maine.gov.doe/files/inline-images/Multilingual%20Learning%20-%20WIDA%20Core%20Learning%20Collection%20Image%20-%209.11.26.png\" /></p>\r\n\r\n": "",
+   "<p>The <strong>WIDA Core Learning Collection</strong> provides": "<p><img alt=\"Core Learning\" src=\"/doe/sites/maine.gov.doe/files/inline-images/Multilingual%20Learning%20-%20WIDA%20Core%20Learning%20Collection%20Image%20-%209.11.26.png\" /></p>\r\n\r\n<p>The <strong>WIDA Core Learning Collection</strong> provides"
+  },
+  "fullbtn": true,
+  "_why": "Matt, 23 Sep: both buttons run the full width, the WIDA picture moves above the prose so the text wraps around it, and the two workshop headings are headings over their lists rather than rows in one."
  }
 }
