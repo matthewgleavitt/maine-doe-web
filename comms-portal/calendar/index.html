@@ -954,10 +954,13 @@
      actually here to read, so they go white against the navy block while the
      labels stay in the muted steel. */
   .modal .m-facts .val { color: #ffffff !important; display: block; }
-  /* Chips in the modal head sit on the pale modal ground with no edge of their
-     own, so they read as floating blocks of tint. A hairline navy border gives
-     them a shape. programPill sets its own inline border, hence the override. */
-  .modal .m-chips .info-chip { border: 1px solid var(--navy) !important; }
+  /* Chips sit on a pale ground with no edge of their own, so they read as
+     floating blocks of tint. A hairline navy border gives them a shape. This
+     covers the focus area chip at the top of the modal, the type and program
+     chips under the title, and the type chips on the cards themselves.
+     programPill sets its own inline border, hence the override. */
+  .modal .m-title-block .info-chip,
+  .card .info-chip { border: 1px solid var(--navy) !important; }
   .modal .m-mail {
     display: inline-flex;
     align-items: center;
@@ -1252,6 +1255,31 @@ const ICON_OF = {
   students: '<svg viewBox="0 0 24 24"><path d="M2 9l10-4 10 4-10 4L2 9z"/><path d="M6 11v4c0 1.5 2.7 3 6 3s6-1.5 6-3v-4"/><path d="M22 9v6"/></svg>'
 };
 
+// Icons were keyed on cluster, and four types share the 'learning' cluster, so
+// Webinar, Training, Workshop and Information Session all drew the same play
+// triangle. Key on the type itself and fall back to the cluster icon for any
+// type not listed here.
+const TYPE_ICON = {
+  // screen — a webinar is watched
+  'Webinar': '<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>',
+  // clipboard with a tick — not a mortarboard, which is already Student
+  // Opportunity's icon and would collide with it at 12px
+  'Training': '<svg viewBox="0 0 24 24"><path d="M9 3h6v3H9z"/><path d="M15 4.5h3v16H6v-16h3"/><path d="M9 13l2 2 4-4"/></svg>',
+  // wrench — a workshop is hands-on
+  'Workshop': '<svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8z"/></svg>',
+  // info circle
+  'Information Session': '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>',
+  // clock — office hours are a standing time
+  'Office Hours': '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>',
+  // speech bubbles
+  'Discussion Group': '<svg viewBox="0 0 24 24"><path d="M21 12a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 0 1 10 5h4a7 7 0 0 1 7 7z"/></svg>',
+  // presenter at a stand
+  'Conference': '<svg viewBox="0 0 24 24"><path d="M12 3v6"/><path d="M7 9h10l-2 5H9L7 9z"/><path d="M10 14v7"/><path d="M14 14v7"/><path d="M8 21h8"/></svg>'
+};
+function iconForType(type) {
+  return TYPE_ICON[type] || ICON_OF[getCluster(type)];
+}
+
 const CLOCK_SVG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>';
 const PIN_SVG = '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
 const USERS_SVG = '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>';
@@ -1380,7 +1408,7 @@ function timeText(e) {
 function typeChip(e) {
   const cluster = getCluster(e.type);
   const tc = typeColor(e.type);
-  return `<span class="info-chip type-chip" style="background:${tc.tint};color:${tc.color}">${ICON_OF[cluster]}${esc(e.type)}</span>`;
+  return `<span class="info-chip type-chip" style="background:${tc.tint};color:${tc.color}">${iconForType(e.type)}${esc(e.type)}</span>`;
 }
 
 function focusChip(e) {
@@ -1394,7 +1422,7 @@ function focusChip(e) {
 function programPill(e) {
   if (!e.programInitiative) return '';
   return `<span class="info-chip" style="background:linear-gradient(135deg,#0d7ba018,#42c3f712);color:#0d7ba0;border:1px solid #42c3f766;font-weight:700;font-size:11px;letter-spacing:.02em;">
-    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right:2px;"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right:2px;"><path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><path d="M7.5 7.5h.01"/></svg>
     ${esc(e.programInitiative)}
   </span>`;
 }
