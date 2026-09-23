@@ -3397,7 +3397,6 @@ function propose(node, audit, index, opts = {}) {
      versions. A phrase that is not found is reported rather than
      silently ignored — a typo in an instruction should not look like
      a completed edit. */
-  if (process.env.DUMP && alias === process.env.DUMP) require('fs').writeFileSync('/tmp/dump.html', html);
   if (opts.replace) {
     for (const [from, to] of Object.entries(opts.replace)) {
       if (!html.includes(from)) { notes.push(`Edit skipped — "${from.slice(0, 60)}" is not on this page.`); continue; }
