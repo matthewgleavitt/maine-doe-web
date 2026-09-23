@@ -1,0 +1,49 @@
+{
+  "_description": "Portal changelog shown on the Homebase 'What's New' tab. Newest first. NOT a commit log: an entry earns its place only if a member of staff would notice the difference. Things added, moved, renamed or reorganised, content refreshed, features fixed, pages made faster. Leave out internal plumbing, admin-only detail, and regressions that were live for an hour and never reached anyone. Where several pushes add up to one visible change, write one entry. Write it for the person using the portal, in plain terms, saying what is different or better for them now rather than what was broken or how it was built. Date an entry by the day it reached staff, which is not always the day it was written. 'time' is optional and only belongs on an entry where the real time is known.",
+  "entries": [
+    {
+      "date": "2026-09-23",
+      "text": "The EnGiNE page has a Request a Course button at the top, next to Visit EnGiNE."
+    },
+    {
+      "date": "2026-09-23",
+      "text": "The Maine DOE Store link has come out of the Homebase header, since the Store has its own tab."
+    },
+    {
+      "date": "2026-09-23",
+      "text": "Calendar widget filters load again, and picking a focus area now shows only the programs that run under it."
+    },
+    {
+      "date": "2026-09-22",
+      "text": "The portal and the events calendar open in about a second. Some pages used to take a minute."
+    },
+    {
+      "date": "2026-09-22",
+      "text": "The events calendar has a clearer header, and the month view marks today."
+    },
+    {
+      "date": "2026-09-22",
+      "text": "Repeating events behave properly. You can cancel a single date, and a series that runs into next year no longer shows as finished."
+    },
+    {
+      "date": "2026-09-22",
+      "text": "The YouTube request form asks for the video type before it will submit, and no longer records a request twice."
+    },
+    {
+      "date": "2026-09-21",
+      "text": "On the calendar carousel the Register buttons line up along the bottom of each card, and the event details are easier to read."
+    },
+    {
+      "date": "2026-09-16",
+      "text": "A YouTube request shows up in the list as soon as you submit it, instead of after a delay."
+    },
+    {
+      "date": "2026-09-15",
+      "text": "The Maine DOE Store has a tab in Homebase with the current items and prices, and a link to the store feedback survey."
+    },
+    {
+      "date": "2026-09-14",
+      "text": "The events calendar and the YouTube library stopped failing to load. They now retry on their own instead of showing an error."
+    }
+  ]
+}

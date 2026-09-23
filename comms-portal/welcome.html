@@ -60,6 +60,7 @@ const ic={
   book:["M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z","M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"],
   bag:["M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z","M3 6h18","M16 10a4 4 0 01-8 0"],
   msg:["M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"],
+  spark:["M12 3l1.9 5.8L20 10.7l-5.2 3.4L15.5 20 12 16.6 8.5 20l.7-5.9L4 10.7l6.1-1.9L12 3z"],
 };
 
 const B={navy:'#182b3c',teal:'#42c3f7',wh:'#ffffff',txt:'#182b3c',txtSec:'#334155',txtMute:'#475569',border:'#a8bdd0'};
@@ -102,6 +103,7 @@ async function fetchCdnOrLive(type, onRevalidate){
 
 const tabs=[
   {id:'about',label:'About',icon:ic.book},
+  {id:'whatsnew',label:"What's New",icon:ic.spark},
   {id:'announcements',label:'Notifications',icon:ic.bell},
   {id:'news',label:'Maine DOE News',icon:ic.news},
   {id:'social',label:'Social',icon:ic.users},
@@ -160,6 +162,21 @@ function App(){
     try{ return !sessionStorage.getItem('doe_store_catalog'); }catch(e){ return true; }
   });
   const [storeError,setStoreError]=useState(null);
+  const [changelog,setChangelog]=useState([]);
+
+  // Changelog lives in the repo at data/changelog.json rather than the sheet,
+  // so an entry ships in the same commit as the change it describes and the
+  // two cannot drift. Served off the same CDN as everything else.
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const r=await fetch(CDN_BASE+'changelog.json',{cache:'no-cache'});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const j=await r.json();
+        if(Array.isArray(j.entries)) setChangelog(j.entries);
+      }catch(e){ console.warn('[welcome] changelog fetch failed:',e.message); }
+    })();
+  },[]);
 
   useEffect(()=>{
     // CDN-first with live fallback (fetchCdnOrLive covers both paths).
@@ -365,6 +382,38 @@ function App(){
             </p>
           </div>
         </div>
+      </div>}
+
+      {/* ── WHAT'S NEW ── */}
+      {tab==='whatsnew'&&<div>
+        <p style={{fontSize:13,color:B.txtSec,lineHeight:1.7,fontWeight:500,marginBottom:18,maxWidth:620}}>
+          Recent changes to the portal and the tools it links to.
+        </p>
+        {changelog.length===0?<div style={{background:B.wh,borderRadius:14,padding:40,textAlign:'center',border:`2px solid ${B.border}30`}}>
+          <Sv d={ic.spark} size={32} color={B.border} style={{marginBottom:12}}/>
+          <p style={{fontSize:15,fontWeight:600,color:B.txtSec}}>Nothing logged yet</p>
+        </div>
+        :<div style={{borderRadius:14,border:`2px solid ${B.border}30`,background:B.wh,overflow:'hidden'}}>
+          {changelog.map((c,i)=>{
+            // Parse as local, not UTC. new Date('2026-09-23') is midnight UTC,
+            // which renders as the previous day anywhere west of Greenwich.
+            const p=String(c.date||'').split('-');
+            const when=p.length===3
+              ? new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString('en-US',{month:'short',day:'numeric'})
+              : (c.date||'');
+            // Only start a new date heading when the date actually changes, so
+            // a run of same-day entries reads as one group.
+            const newDay=i===0||changelog[i-1].date!==c.date;
+            return <div key={i} style={{display:'flex',gap:18,alignItems:'baseline',padding:'14px 22px',
+              borderTop:newDay&&i>0?`1px solid ${B.border}55`:'none'}}>
+              <div style={{flex:'0 0 96px',fontSize:12,fontWeight:700,color:newDay?B.navy:'transparent',
+                letterSpacing:'.01em',whiteSpace:'nowrap'}}>
+                {newDay?when:'·'}{newDay&&c.time?<span style={{fontWeight:600,color:B.txtMute}}>{' '+c.time}</span>:null}
+              </div>
+              <p style={{fontSize:13.5,color:B.txtSec,lineHeight:1.65,fontWeight:500,margin:0}}>{c.text||c.detail}</p>
+            </div>;
+          })}
+        </div>}
       </div>}
 
       {/* ── ANNOUNCEMENTS ── */}
