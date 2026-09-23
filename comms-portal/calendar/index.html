@@ -950,7 +950,14 @@
   .modal .m-facts { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 20px 22px; background: var(--navy); color: var(--warm-white); border-radius: 6px; margin-bottom: 24px; }
   .modal .m-facts svg { stroke: var(--steel-soft) !important; }
   .modal .m-facts strong { color: var(--steel-soft) !important; }
-  .modal .m-facts .val { color: var(--warm-white) !important; display: block; }
+  /* The values (date, venue, audience, contact) are the thing people are
+     actually here to read, so they go white against the navy block while the
+     labels stay in the muted steel. */
+  .modal .m-facts .val { color: #ffffff !important; display: block; }
+  /* Chips in the modal head sit on the pale modal ground with no edge of their
+     own, so they read as floating blocks of tint. A hairline navy border gives
+     them a shape. programPill sets its own inline border, hence the override. */
+  .modal .m-chips .info-chip { border: 1px solid var(--navy) !important; }
   .modal .m-mail {
     display: inline-flex;
     align-items: center;
@@ -1682,10 +1689,13 @@ function positionModalForEmbed(scrim) {
   modal.style.position = 'absolute';
   modal.style.left = '50%';
   modal.style.transform = 'translateX(-50%)';
-  // The stylesheet caps the modal at 88vh, but vh here is the expanded frame,
-  // so 88vh would be ~45,000px and a long event would run off the reader's
-  // screen instead of scrolling inside the modal. Cap in pixels instead.
-  modal.style.maxHeight = '700px';
+  // No height cap here. The stylesheet's 88vh is meaningless in an expanded
+  // frame, but a fixed pixel cap is worse: the child cannot see the reader's
+  // screen, so any number it picks is a guess, and 700px guessed low enough to
+  // put a scrollbar inside the modal and clip the event details. Letting the
+  // modal take its natural height means a long event simply extends down the
+  // page, which the reader can already scroll, instead of being cut off.
+  modal.style.maxHeight = 'none';
   // Sit just above the click so the card stays in view behind the modal, and
   // never so high that the modal starts off the top of the page.
   const top = Math.max(24, (_lastClickPageY || 0) - 120);
