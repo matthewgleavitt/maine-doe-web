@@ -77724,11 +77724,11 @@
  {
   "alias": "/cert/authority",
   "title": "Certification - Forms & Resources ",
-  "changed": "2026-09-23T13:18:15+00:00",
+  "changed": "2026-09-23T14:21:03+00:00",
   "words": 201,
-  "bytes": 5362,
+  "bytes": 5611,
   "fixes": [
-   "drupal entity attrs stripped: 32",
+   "drupal entity attrs stripped: 34",
    "action links marked: 8"
   ],
   "flags": [],
@@ -77773,7 +77773,7 @@
    "internal": [],
    "files": [
     "/doe/sites/maine.gov.doe/files/inline-files/Approved%20Program%20Template.pdf",
-    "/doe/sites/maine.gov.doe/files/inline-files/Waiver%20Affidavit.docx",
+    "/doe/sites/maine.gov.doe/files/inline-files/Certification%20-%202026%20Waiver%20Affidavit%20Template%20-%209.23.2026.docx",
     "/doe/sites/maine.gov.doe/files/inline-files/Certification%20-%202025-2026%20Certificate%20Endorsement%20List%20.pdf",
     "/doe/sites/maine.gov.doe/files/inline-files/Certification%20-%20Blank%20Upgrade%20sheet%20-%201.22.2025.xlsx",
     "/doe/sites/maine.gov.doe/files/inline-files/Teacher%20Rubric-%20Word%20%28002%29_1.pdf",
@@ -77794,7 +77794,7 @@
    "anchors": []
   },
   "age": {
-   "changed": "2026-09-23T13:18:15+00:00",
+   "changed": "2026-09-23T14:21:03+00:00",
    "yearsMentioned": [
     2026,
     2027

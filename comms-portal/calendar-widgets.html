@@ -405,9 +405,12 @@ els.focus.addEventListener('change', () => { syncProgramOptions(); render(); });
 });
 document.querySelectorAll('input[name="layout"]').forEach(r => {
   r.addEventListener('change', () => {
-    // Match preview iframe height to the layout — carousel is short, full is tall
+    // Match preview iframe height to the layout. Carousel content measures
+    // 416px with the card title clamped to 2 lines and the description to 3,
+    // so cards are near-uniform; 440 clears it plus the scrollbar without
+    // leaving dead white space under the row. Full calendar is tall.
     const isCarousel = document.getElementById('layout-carousel').checked;
-    els.height.value = isCarousel ? 480 : 900;
+    els.height.value = isCarousel ? 440 : 900;
     render();
   });
 });

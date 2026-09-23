@@ -720,12 +720,13 @@ function doGet(e) {
       // old. The Refresh button still passes ?refresh=1 to force a bypass.
       case 'moderation':
         ttl = 900; break;
-      // Fresh — user-facing writes should show quickly. Calendar was 300s
-      // but the warmer runs every 10 min → entries expired mid-cycle and the
-      // next visitor paid Apps Script cold-start + Sheet read + recurrence
-      // expansion. Bumped to 900s so cache always outlives the warmer.
+      // Calendar was 300s, then 900s. It now warms on warmCache's heavy pass,
+      // which comes round every 30 min, so 900s would expire in between and
+      // hand the next visitor a 12-118s rebuild. 2400s outlives the gap.
+      // Must stay >= the heavy-pass TTL in warmCache or the two disagree and
+      // whichever wrote last decides.
       case 'calendar':
-        ttl = 900; break;
+        ttl = 2400; break;
       case 'events': case 'commons':
         ttl = 300; break;
       // Real-time — manage view needs to reflect the edit the user JUST made
@@ -735,17 +736,26 @@ function doGet(e) {
       // ceiling (6 hours). A nightly + noon warmCache trigger keeps it fresh.
       case 'pages': case 'files': case 'file_pages':
         ttl = 21600; break;
-      // Moderate — template + inbox data. TTLs must be >= the warmCache
-      // interval (10 min) so warming actually holds — 900s gives a safe margin.
-      case 'youtube': case 'youtube_videos': case 'templates': case 'announcements':
+      // Moderate — template + inbox data, all warmed on every pass, so 900s
+      // clears the 10-minute interval with margin.
+      case 'youtube': case 'templates': case 'announcements':
         ttl = 900; break;
+      // youtube_videos warms on the heavy pass (its cold path hits the YouTube
+      // Data API and takes ~29s), so it needs to clear the 30-minute gap.
+      case 'youtube_videos':
+        ttl = 2400; break;
       // Store catalog — public OrderMyGear inventory. 15 min TTL so warmed
       // entries outlive the 10-min warmer; catalog changes rarely.
       case 'store':
         ttl = 900; break;
-      // Stable — Drupal indexes, Mailchimp campaigns, WP.com stats rarely change hour-to-hour
-      case 'drupal_pages': case 'drupal_files': case 'publications':
+      // Stable — Drupal indexes, Mailchimp campaigns rarely change hour to
+      // hour. publications also warms on the heavy pass, so it needs 2400s to
+      // clear the 30-minute gap; the Drupal indexes are not warmed at all and
+      // keep their own 1800s.
+      case 'drupal_pages': case 'drupal_files':
         ttl = 1800; break;
+      case 'publications':
+        ttl = 2400; break;
       // Newsroom stats: 60 min. Longer than others because the fetch touches
       // 8 wp.com endpoints and warming keeps first-load fast.
       case 'newsroom_stats': case 'youtube_stats':
@@ -2336,9 +2346,14 @@ function warmCache() {
   var cache = CacheService.getScriptCache();
   var warmed = [];
 
-  // TTL rule: warmed entries must outlive the warmCache trigger interval
-  // (10 min) so an entry never expires between two warmings and leaves users
-  // waiting on cold Apps Script. 900s = 15 min gives a 50% safety margin.
+  // Runs on a 10-minute trigger, in two halves. The cheap, live-path entries
+  // below warm on every pass at 900s (15 min, a 50% margin over the interval).
+  // The expensive ones past the WARM_PASS guard warm every 3rd pass and so use
+  // 2400s (40 min, a margin over the 30-minute gap). The rule either way:
+  // a warmed entry must outlive the gap until its next warming, or it expires
+  // in between and the next visitor pays the cold rebuild the warmer exists
+  // to prevent. That is exactly how moderation ended up at 90s against a
+  // 10-minute warmer, cold ~85% of the time.
 
   // Announcements
   try {
@@ -2371,15 +2386,6 @@ function warmCache() {
     warmed.push('templates');
   } catch(e) { Logger.log('Warm templates failed: ' + e.message); }
 
-  // Publications/Mailchimp — longer TTL (30 min) since Mailchimp is 3-8s cold
-  // and campaigns rarely change hour-to-hour.
-  try {
-    var pubData = JSON.stringify(getPublications());
-    var pubKey = 'portal_publications_30';
-    try { cache.remove(pubKey); } catch(re) {}
-    var okPub = chunkedCachePut(cache, pubKey, pubData, 1800);
-    warmed.push('publications(' + Math.ceil(pubData.length/1024) + 'KB' + (okPub?'':' - too big to chunk') + ')');
-  } catch(e) { Logger.log('Warm publications failed: ' + e.message); }
 
   // Moderation queue — biggest win. Was previously uncached AND unwarmed, so
   // every portal load fired a live Drupal round-trip (1-3s). TTL must match
@@ -2401,16 +2407,53 @@ function warmCache() {
     warmed.push('store');
   } catch(e) { Logger.log('Warm store failed: ' + e.message); }
 
+  // ── Everything above is cheap and sits on the live request path, so it
+  //    warms on every pass. Everything below is expensive (calendar alone is
+  //    519KB and 12-118s; youtube_stats 596KB; pages ~65s) AND is read by the
+  //    portal from the static CDN mirror rather than from here, so nothing
+  //    user-facing depends on it being minutes-fresh.
+  //
+  //    Warming the heavy set every 10 minutes meant this function ran for
+  //    ~3 minutes out of every 10 (measured 09:47:21 start, 09:50:16 finish
+  //    on 2026-09-23). Apps Script allows a script only so many concurrent
+  //    executions, so live requests queued behind it: a 636-byte moderation
+  //    payload served from a 4-minute-old cache took 42 seconds.
+  //
+  //    Running the heavy set every 3rd pass drops that contention window from
+  //    ~30% of the time to ~10%, which protects the writes that still go
+  //    straight to Apps Script — event submissions, YouTube requests, the
+  //    Refresh button. TTLs below are >= 2400s so entries still outlive the
+  //    30-minute gap between heavy passes.
+  //    Read the counter before incrementing it, so an unset property (a fresh
+  //    deployment) reads 0 and runs a full pass straight away rather than
+  //    letting the heavy caches coast for the first 30 minutes.
+  var warmProps = PropertiesService.getScriptProperties();
+  var warmPass = parseInt(warmProps.getProperty('WARM_PASS') || '0', 10) % 3;
+  warmProps.setProperty('WARM_PASS', String((warmPass + 1) % 3));
+  if (warmPass !== 0) {
+    Logger.log('Cache warmed (light pass, ' + (3 - warmPass) +
+               ' to go until the next full pass): ' + warmed.join(', '));
+    return;
+  }
+
+  // Publications/Mailchimp — Mailchimp is 3-8s cold and campaigns rarely
+  // change hour-to-hour, so this rides the heavy pass.
+  try {
+    var pubData = JSON.stringify(getPublications());
+    var pubKey = 'portal_publications_30';
+    try { cache.remove(pubKey); } catch(re) {}
+    var okPub = chunkedCachePut(cache, pubKey, pubData, 2400);
+    warmed.push('publications(' + Math.ceil(pubData.length/1024) + 'KB' + (okPub?'':' - too big to chunk') + ')');
+  } catch(e) { Logger.log('Warm publications failed: ' + e.message); }
+
   // Calendar feed — expensive because getPublishedEvents iterates the
   // EventSubmissions sheet AND expands every recurring series. Went from
-  // fast to slow after 25+ new rows landed (BTAM alone is 16 dates). Warm
-  // it every cycle so the public calendar page is never cold. TTL 900s
-  // keeps entries alive between warmings.
+  // fast to slow after 25+ new rows landed (BTAM alone is 16 dates).
   try {
     var calData = JSON.stringify(getPublishedEvents());
     var calKey = 'portal_calendar_30';
     try { cache.remove(calKey); } catch(re) {}
-    var okCal = chunkedCachePut(cache, calKey, calData, 900);
+    var okCal = chunkedCachePut(cache, calKey, calData, 2400);
     warmed.push('calendar(' + Math.ceil(calData.length/1024) + 'KB' + (okCal?'':' - too big to chunk') + ')');
   } catch(e) { Logger.log('Warm calendar failed: ' + e.message); }
 
@@ -2446,10 +2489,10 @@ function warmCache() {
     var ytLibKey = 'portal_youtube_videos_30';
     try { cache.remove(ytLibKey); } catch(re) {}
     if (ytLibData.length > 90000) {
-      var okLib = chunkedCachePut(cache, ytLibKey, ytLibData, 900);
+      var okLib = chunkedCachePut(cache, ytLibKey, ytLibData, 2400);
       warmed.push('youtube_videos(' + Math.ceil(ytLibData.length/1024) + 'KB' + (okLib?'':' - too big to chunk') + ')');
     } else {
-      cache.put(ytLibKey, ytLibData, 900);
+      cache.put(ytLibKey, ytLibData, 2400);
       warmed.push('youtube_videos(' + Math.ceil(ytLibData.length/1024) + 'KB)');
     }
   } catch(e) { Logger.log('Warm youtube_videos failed: ' + e.message); }
@@ -2515,7 +2558,7 @@ function warmCache() {
     PropertiesService.getScriptProperties().setProperty('STAT_TOTAL_FILES', String(allFiles.length));
   } catch(e) { Logger.log('Warm files failed: ' + e.message); }
 
-  Logger.log('Cache warmed: ' + warmed.join(', '));
+  Logger.log('Cache warmed (full pass): ' + warmed.join(', '));
 }
 
 

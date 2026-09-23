@@ -456,5 +456,36 @@
    "<p class=\"doe-action\"><a href=\"https://www.nwea.org/uploads/ME-Through-Year-Accessibility-Guide_NWEA_Guide.pdf\" target=\"_blank\">Accessibility Guide</a></p>\r\n\r\n\t<ul>\r\n\t\t": "<ul>\r\n\t\t<li class=\"doe-action\"><a href=\"https://www.nwea.org/uploads/ME-Through-Year-Accessibility-Guide_NWEA_Guide.pdf\" target=\"_blank\">Accessibility Guide</a></li>\r\n\t\t",
    "<div class=\"contact-cube contact-cube--photo\" id=\"contact\">\r\n<div class=\"contact-cube__inner\">\r\n<div class=\"contact-cube__photo\"><img alt=\"Krista Averill\" src=\"/doe/sites/maine.gov.doe/files/inline-images/Krista%20Averill.jpg\" /></div>\r\n\r\n<div class=\"contact-cube__text-group\">\r\n<div class=\"contact-cube__contact\">\r\n<h3>Contact</h3>\r\n\r\n<p><strong>Krista Averill</strong><br />\r\n<em>Assessment Coordinator</em><br />\r\n<strong>Phone:</strong> 207-215-6528<br />\r\n<strong>Email:</strong> <a href=\"mailto:krista.averill@maine.gov\">Krista.Averill@maine.gov</a></p>\r\n\r\n<p>For technical support with the Acacia or MAP Growth platforms, contact:<br />\r\n<strong>NWEA Maine Partner Support: (855) 430-1777</strong><br />\r\n<em>7:00 a.m. – 8:00 p.m. EST</em></p>\r\n</div>\r\n</div>\r\n": "<div class=\"contact-cube contact-cube--photo\" id=\"contact\">\n<h3>Contact</h3>\n\n<div class=\"contact-cube__inner\">\n<div class=\"contact-cube__photo\"><img alt=\"Krista Averill\" src=\"/doe/sites/maine.gov.doe/files/inline-images/Krista%20Averill.jpg\" /></div>\n\n<div class=\"contact-cube__text-group\">\n<div class=\"contact-cube__contact\">\n<p><strong>Krista Averill</strong><br />\r\n<em>Assessment Coordinator</em><br />\r\n<strong>Phone:</strong> 207-215-6528<br />\r\n<strong>Email:</strong> <a href=\"mailto:krista.averill@maine.gov\">Krista.Averill@maine.gov</a></p>\n</div>\n\n<div class=\"contact-cube__supports\">\n<p>For technical support with the Acacia or MAP Growth platforms, contact:<br />\r\n<strong>NWEA Maine Partner Support: (855) 430-1777</strong><br />\r\n<em>7:00 a.m. – 8:00 p.m. EST</em></p>\n</div>\n</div>\n"
   }
+ },
+ "/schools/nutrition/programs/cacfplanding": {
+  "balance": false,
+  "_why": "Matt, 23 Sep: the cards are halves, as written — the weighted split made the long one longer to read."
+ },
+ "/schools/nutrition/cacfp/atrisk": {
+  "balance": false,
+  "_why": "Matt, 23 Sep: the cards are halves, as written."
+ },
+ "/learning/earlychildhood/pkexpansiongrant": {
+  "searchtable": false,
+  "boldhead": {
+   "FY 2022–24 School Year": "2022-2024 School Year",
+   "FY 2023–24 and 2024–25 School Years": "2023-2024 & 2024-2025 School Year",
+   "FY 2025–26 School Year": "2025-2026 School Year"
+  },
+  "thead": {
+   "Funding FY 1": "Funding SY1",
+   "Funding FY 2": "Funding SY2",
+   "Funding FY 2023–24": "Funding SY1",
+   "Funding FY 2024–25": "Funding SY2",
+   "Funding FY 2025–26": "Funding SY1"
+  },
+  "_why": "Matt, 23 Sep: the same page shape as /pkexpansiongrant/2021 — school years not fiscal years, each table titled as an h3, the funding columns named the same in all four, and none of them searchable."
+ },
+ "/educators/educatoreval/inductionmentoring": {
+  "replace": {
+   "</ul>\r\n\r\n<p><a class=\"btn btn-info btn-lg btn-block\" href=\"/doe/educators/educatoreval/inductionmentoring/modules\">Maine's Mentor Modules</a></p>\r": "\t<li class=\"doe-action list-group-item\"><a href=\"/doe/educators/educatoreval/inductionmentoring/modules\">Maine's Mentor Modules</a></li>\r\n</ul>\r",
+   "<div class=\"dc-note\">\r\n<h4>What Participants Are Saying</h4>\r\n\r\n<p><em>\"This will help me to start a mentorship off on the right foot. Thank you!\"</em></p>\r\n\r\n<p><em>\"It is never too late to invest in the success of future teachers! Be proactive and engage others before they leave the system.\"</em></p>\r\n\r\n<p><em>\"Like our students, we all learn in different ways, and we need to find a way that will help the mentee the best.\"</em></p>\r\n\r\n<p><em>\"I realize the important role I could have in a new teacher's life.\"</em></p>\r\n</div>": "<h3>What Participants Are Saying</h3>\r\n\r\n<p><em>\"This will help me to start a mentorship off on the right foot. Thank you!\"</em></p>\r\n\r\n<p><em>\"It is never too late to invest in the success of future teachers! Be proactive and engage others before they leave the system.\"</em></p>\r\n\r\n<p><em>\"Like our students, we all learn in different ways, and we need to find a way that will help the mentee the best.\"</em></p>\r\n\r\n<p><em>\"I realize the important role I could have in a new teacher's life.\"</em></p>"
+  },
+  "_why": "Matt, 23 Sep: the mentor modules are another resource in the list, and the quotes are a heading with quotes under it rather than a callout."
  }
 }

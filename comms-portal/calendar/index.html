@@ -93,7 +93,7 @@
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    padding: 4px 40px 8px !important;
+    padding: 4px 56px 8px !important;
     scrollbar-width: thin;
   }
   html.carousel-mode .card-grid::-webkit-scrollbar { height: 8px; }
@@ -124,30 +124,40 @@
     z-index: 5;
     width: 40px; height: 40px;
     border-radius: 50%;
-    background: var(--card, #fff);
-    border: 1.5px solid var(--rule, #d9d3ca);
-    color: var(--ink, #182b3c);
-    box-shadow: 0 6px 16px rgba(24,43,60,0.12);
+    /* Navy face with a teal chevron. These sit on the host page's white
+       background, where the previous white fill left them near-invisible. */
+    background: var(--navy, #182b3c);
+    border: 1.5px solid var(--navy, #182b3c);
+    color: var(--teal, #42c3f7);
+    box-shadow: 0 6px 16px rgba(24,43,60,0.22);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
-    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s, border-color 0.15s;
   }
+  html.carousel-mode .carousel-arrow svg { stroke: var(--teal, #42c3f7) !important; }
+  /* Hover inverts the pair rather than changing only one of them. */
   html.carousel-mode .carousel-arrow:hover {
     background: var(--teal, #42c3f7);
-    border-color: var(--navy, #182b3c);
+    border-color: var(--teal, #42c3f7);
     transform: translateY(-50%) scale(1.06);
   }
   html.carousel-mode .carousel-arrow:hover svg { stroke: var(--navy, #182b3c) !important; }
+  /* Hidden rather than dimmed. A disabled arrow means there is nothing to
+     page to, and most embeds show every card at once, so a 40%-opacity navy
+     circle sat there permanently as a grey blob next to the cards. Either the
+     control is usable and solid, or it is not there. */
   html.carousel-mode .carousel-arrow:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+    opacity: 0;
+    pointer-events: none;
     transform: translateY(-50%);
   }
-  html.carousel-mode .carousel-arrow.prev { left: 6px; }
-  html.carousel-mode .carousel-arrow.next { right: 6px; }
+  /* 8px clear of the card-grid's 56px side padding, so a card edge never
+     slides under the arrow. */
+  html.carousel-mode .carousel-arrow.prev { left: 8px; }
+  html.carousel-mode .carousel-arrow.next { right: 8px; }
   html.carousel-mode .carousel-arrow svg { width: 18px; height: 18px; }
   /* When no events, keep the empty state readable */
   html.carousel-mode .empty { padding: 40px 20px; }

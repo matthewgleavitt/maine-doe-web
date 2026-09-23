@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-23-b  ·  Last edited: 2026-09-23 02:10
+ * Version: 2026-09-23-c  ·  Last edited: 2026-09-23 16:20
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -28,7 +28,19 @@ const { clean, textOf, FORMAT_ALT, FORMAT_WORDS, SIZE_RE, canonKey } = require('
 const strip = h => h.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 const slug = t => t.toLowerCase().replace(/&[a-z]+;/g, ' ')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48);
-const norm = x => strip(x || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+/* ENTITIES ARE DECODED BEFORE THE LETTERS ARE COUNTED, and leaving
+   that out cost four pages their title echo. This key drops
+   everything that is not a letter or a digit — so &amp; does not
+   vanish, it becomes the LETTERS a-m-p: "Mentoring & Induction" keys
+   as mentoringinduction from the title and mentoringampinduction
+   from the heading, and the two never match. Any page whose title
+   holds an ampersand was exempt from the echo test by accident. */
+const norm = x => strip(x || '')
+  .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ')
+  .replace(/&(?:#8217|rsquo|#39|apos);/g, "'")
+  .replace(/&(?:#8211|ndash);/g, '-').replace(/&(?:#8212|mdash);/g, '-')
+  .replace(/&quot;/g, '"')
+  .replace(/[^a-z0-9]/gi, '').toLowerCase();
 
 /* MEASURED IMAGE DIMENSIONS, keyed on the DECODED path. The markup
    writes a space as %20, the file list writes it as a space, and the

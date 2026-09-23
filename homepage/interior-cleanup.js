@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-23-a  ·  Last edited: 2026-09-23 01:10
+ * Version: 2026-09-23-b  ·  Last edited: 2026-09-23 15:00
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -2260,6 +2260,41 @@ const FIXES = [
       if (parts.length < 2 || !parts.every(s => /^<a\b/i.test(s))) return m;
       n += parts.length - 1;
       return parts.map(s => `<li${attrs}>${s}</li>`).join('\n');
+    });
+    return [h, n];
+  }],
+
+  /* A LINE BREAK LOOSE INSIDE A LIST.
+     Matt, on /Testing_Accountability/MECAS/NWEA: "looks like there is
+     extra space before For District and School Assessment." Every h3
+     on that page measures the same 18px above it, and that one
+     measured 18 too — the extra space was inside the list above it,
+     not in the gap: <br /> sitting between the last <li> and the
+     </ul>, which draws an empty line the list then closes around.
+     A <ul> may hold nothing but list items, so a break out there is
+     not markup an author could have meant. It is the same instinct as
+     the hard spaces and the indent runs: a gap typed rather than set.
+     21 of these across 17 pages. The rule below only knows about
+     breaks at the edge of a paragraph or a cell, so none of them was
+     ever in its reach. */
+  ['line breaks loose inside a list removed', (h) => {
+    let n = 0;
+    h = h.replace(/<(ul|ol)\b([^>]*)>([\s\S]*?)<\/\1>/gi, (m, tag, attrs, body) => {
+      if (!/<br\s*\/?>/i.test(body)) return m;
+      let depth = 0, out = '', last = 0;
+      const re = /<li\b[^>]*>|<\/li>|<br\s*\/?>/gi;
+      let t;
+      while ((t = re.exec(body))) {
+        if (/^<li/i.test(t[0])) { depth++; continue; }
+        if (/^<\/li/i.test(t[0])) { depth--; continue; }
+        if (depth > 0) continue;                 /* inside an item — not ours */
+        out += body.slice(last, t.index);
+        last = t.index + t[0].length;
+        n++;
+      }
+      if (!n) return m;
+      out += body.slice(last);
+      return `<${tag}${attrs}>${out}</${tag}>`;
     });
     return [h, n];
   }],

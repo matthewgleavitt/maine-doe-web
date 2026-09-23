@@ -1,5 +1,5 @@
 /* Maine DOE interior pages — CSS Injector rule
- * Version: 2026-09-22-al  ·  Last edited: 2026-09-23 00:45
+ * Version: 2026-09-23-b  ·  Last edited: 2026-09-23 16:40
  *
  * ============================================================
  * SCOPE
@@ -1600,6 +1600,24 @@ body.page-node-type-multi-column-page dl.ckeditor-accordion > dt a:focus-visible
    is what happened to the OCR note. The pop-out moves to the cool
    side of the palette: a teal wash, which is still brand, and is the
    one value neither the ground (#f5f1ed) nor the sections (#fff) use. */
+/* THE BOX SETS ITS OWN PADDING AND THE TEXT DOES NOT ADD TO IT.
+   Matt: "can a DC note have just a little less top and bottom space."
+   The padding below says 16px, and that is not what a callout was
+   showing: the paragraph inside brings its own 18px above and 16px
+   below, which stack on the padding rather than collapsing through
+   it, so a one-line note measured 34px of air above the words and 32
+   below inside an 88px box. Thirty-four is more space than the note
+   has words.
+   Only the first and last child lose their margin, so a note holding
+   two paragraphs still separates them. 207 callouts on 144 pages.
+   SCOPED THROUGH #block-doe-content, which is not decoration. The
+   first child is often a p.doe-action, and that rule sets its own
+   18px through the id — so without the id here the callout's first
+   paragraph kept its margin and only the last one lost it: 34px of
+   air above the words and 16 below, which is worse than the even 34
+   and 32 it started with. */
+body.page-node-type-multi-column-page #block-doe-content .dc-note > :first-child { margin-top: 0; }
+body.page-node-type-multi-column-page #block-doe-content .dc-note > :last-child  { margin-bottom: 0; }
 body.page-node-type-multi-column-page .dc-note {
   background: #e5ebf1;   /* 12% --i-midblue + white */
   background-image: none;
@@ -3607,6 +3625,23 @@ body.page-node-type-multi-column-page #block-doe-content hr {
 }
 body.page-node-type-multi-column-page #block-doe-content .contact-cube hr {
   border-top-color: rgba(255, 255, 255, .3);
+}
+/* AND A RULE INSIDE A CARD TAKES THE CARD'S OWN WEIGHT.
+   Matt, on /educators/educatoreval/inductionmentoring: "I am not sure
+   why the lines above valerie and holly are a different color than
+   the other divier lines but they are VERY light."
+   Same colour, different ground, and the list beside it had already
+   been corrected. --i-rule-cool is #cdd6de, chosen against white,
+   where it measures 1.47:1. A card is #f3f7fa, so the same line
+   comes out at 1.37:1 there — and the dividers between that card's
+   own list items are #acbbc8, darkened once already for exactly this
+   reason. So one card was drawing two different divider weights, and
+   the <hr> was the weaker.
+   It takes the same #acbbc8 the list items take, which is 1.79:1 on
+   the card against their 1.96:1 on white. 235 rules sit inside a
+   card, across 42 pages. */
+body.page-node-type-multi-column-page #block-doe-content .card hr {
+  border-top-color: #acbbc8;
 }
 
 body.page-node-type-multi-column-page #block-doe-content .doe-card-sub {
