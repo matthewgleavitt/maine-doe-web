@@ -136,26 +136,6 @@
     font-family: ui-monospace, Menlo, monospace; font-size: 12.5px;
     color: var(--teal-ink); border: 1px solid var(--rule);
   }
-  .presets {
-    display: grid; grid-template-columns: 1fr; gap: 8px;
-    margin-top: 4px;
-  }
-  .preset-btn {
-    text-align: left; padding: 10px 14px;
-    background: #fff; border: 1.5px solid var(--rule);
-    border-radius: 8px; font-family: var(--sans); font-size: 13px;
-    color: var(--ink); font-weight: 600; cursor: pointer;
-    transition: all 0.15s;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .preset-btn:hover { border-color: var(--teal); background: #f0fbff; }
-  .preset-btn .tag {
-    font-size: 10.5px; font-weight: 800;
-    color: var(--teal-ink); background: rgba(66,195,247,0.14);
-    padding: 3px 8px; border-radius: 4px;
-    letter-spacing: 0.06em; text-transform: uppercase;
-  }
-  .preset-btn .arrow { margin-left: auto; color: var(--ink-3); }
 </style>
 </head>
 <body>
@@ -172,11 +152,6 @@
     <!-- BUILDER PANEL -->
     <div class="panel" id="builder">
       <h2>Build your embed</h2>
-
-      <div class="field">
-        <label for="preset-select">Start from a preset (optional)</label>
-        <div class="presets" id="presets"></div>
-      </div>
 
       <div class="field">
         <label for="focus-select">Focus area</label>
@@ -258,19 +233,6 @@ const FEED_URL = 'https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-G
 const FEED_STATIC_URL = 'https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/calendar.json';
 const FEED_STALE_MINUTES = 1440;
 
-// Common presets — the Elfsight replacements Matt asked about.
-// Add a new one here when you spin up a new team widget.
-const PRESETS = [
-  { label: 'All events (main calendar page)', focus: '', program: '', type: '' },
-  { label: 'BTAM office hours', focus: '', program: 'Behavioral Threat Assessment & Management', type: '', tag: 'BTAM' },
-  { label: 'School Safety events', focus: 'School Safety', program: '', type: '', tag: 'School Safety' },
-  { label: 'Early Learning events', focus: 'Early Learning', program: '', type: '', tag: 'Early Learning' },
-  { label: 'Special Services & Inclusive Education events', focus: 'Special Services & Inclusive Education', program: '', type: '', tag: 'Special Services' },
-  { label: 'Instructional Supports (MTSS, etc.)', focus: 'Instructional Supports', program: '', type: '', tag: 'Instructional' },
-  { label: 'School Health webinars', focus: 'School Health', program: '', type: 'Webinar', tag: 'School Health' },
-  { label: 'Federal Programs', focus: 'Federal Programs', program: '', type: '', tag: 'Federal Programs' },
-];
-
 const $ = (id) => document.getElementById(id);
 const els = {
   focus: $('focus-select'),
@@ -283,7 +245,6 @@ const els = {
   preview: $('preview-frame'),
   openTab: $('open-in-tab'),
   copyBtn: $('copy-btn'),
-  presets: $('presets'),
 };
 
 function esc(s) {
@@ -400,23 +361,6 @@ function render() {
   }
   els.preview.style.height = (parseInt(els.height.value, 10) || 480) + 'px';
 }
-
-// Presets
-PRESETS.forEach((p, i) => {
-  const btn = document.createElement('button');
-  btn.className = 'preset-btn';
-  btn.type = 'button';
-  btn.innerHTML = (p.tag ? `<span class="tag">${esc(p.tag)}</span>` : '<span class="tag" style="visibility:hidden">·</span>') +
-    `<span>${esc(p.label)}</span>` +
-    `<span class="arrow">›</span>`;
-  btn.addEventListener('click', () => {
-    els.focus.value = p.focus || '';
-    els.program.value = p.program || '';
-    els.type.value = p.type || '';
-    render();
-  });
-  els.presets.appendChild(btn);
-});
 
 // Wire up change events (radio buttons handled separately by name)
 [els.focus, els.program, els.type, els.embed, els.height].forEach(el => {
