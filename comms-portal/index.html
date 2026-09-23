@@ -680,18 +680,21 @@ function Portal(){
                         fontSize:13,fontWeight:700,boxShadow:'0 4px 16px rgba(22,163,74,0.3)',border:'1.5px solid rgba(255,255,255,0.1)'}}>
                       <I d={icons.folder} size={16} color="#a7f3d0"/> File Uploads Folder
                     </a>
+                    {/* Solid fills, not rgba — this header lays a 60px grid over
+                        its gradient, and translucent buttons let the gridlines
+                        read straight through the button face. */}
                     <a href="https://www.maine.gov/doe/templates/assets" target="_blank" rel="noopener noreferrer"
                       style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,
-                        background:'rgba(255,255,255,0.08)',color:'#e2e8f0',textDecoration:'none',
+                        background:'#1b3149',color:'#e2e8f0',textDecoration:'none',
                         fontSize:13,fontWeight:700,border:'1.5px solid rgba(255,255,255,0.15)'}}>
                       <I d={icons.layers} size={16} color="#c084fc"/> Assets & Resources
                     </a>
                     <button onClick={()=>setWebSub(webToolsModule.id)}
                       style={{display:'inline-flex',alignItems:'center',gap:8,padding:'10px 20px',borderRadius:10,
-                        background:'rgba(255,255,255,0.08)',color:'#e2e8f0',cursor:'pointer',
+                        background:'#1b3149',color:'#e2e8f0',cursor:'pointer',
                         fontSize:13,fontWeight:700,border:'1.5px solid rgba(255,255,255,0.15)',fontFamily:'inherit'}}
-                      onMouseEnter={e=>{e.currentTarget.style.background='rgba(66,195,247,0.15)';e.currentTarget.style.borderColor='rgba(66,195,247,0.4)';}}
-                      onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.08)';e.currentTarget.style.borderColor='rgba(255,255,255,0.15)';}}>
+                      onMouseEnter={e=>{e.currentTarget.style.background='#22506b';e.currentTarget.style.borderColor='rgba(66,195,247,0.4)';}}
+                      onMouseLeave={e=>{e.currentTarget.style.background='#1b3149';e.currentTarget.style.borderColor='rgba(255,255,255,0.15)';}}>
                       <I d={icons.wrench} size={16} color="#fbbf24"/> Tools
                     </button>
                   </div>
@@ -707,7 +710,7 @@ function Portal(){
                   </div>
                   <div style={{display:'flex',alignItems:'center',gap:12}}>
                     <button onClick={refreshModeration} disabled={modRefreshing}
-                      style={{fontSize:12,fontWeight:600,color:modRefreshing?'#64748b':'#e2e8f0',background:'rgba(255,255,255,0.08)',
+                      style={{fontSize:12,fontWeight:600,color:modRefreshing?'#64748b':'#e2e8f0',background:'#22384e',
                         border:'1px solid rgba(255,255,255,0.15)',borderRadius:8,padding:'4px 12px',
                         cursor:modRefreshing?'default':'pointer',fontFamily:'inherit'}}>
                       {modRefreshing?'Checking…':'Refresh'}
