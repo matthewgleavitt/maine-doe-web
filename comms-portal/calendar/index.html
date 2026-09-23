@@ -467,6 +467,11 @@
     color: var(--cat-color, var(--navy-2));
   }
   .type-chip svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
+  /* The chip label is uppercase at line-height 1, so its optical centre is the
+     cap height, which sits above the centre of the line box that align-items
+     matches the icon to. The icon therefore reads a shade low. Lift it 1px and
+     stop it shrinking when the label wraps. */
+  .info-chip svg { flex: 0 0 auto; margin-top: -1px; }
 
   .badge-hours {
     display: inline-flex;
@@ -928,12 +933,18 @@
     max-height: 88vh;
     overflow-y: auto;
     border-radius: 10px;
-    padding: 36px 40px 32px;
+    /* The category bar is a real border, not an absolutely positioned ::before
+       with its own 10px 10px 0 0 radius. Two rounded shapes stacked at the
+       same corner never agree to the pixel, and the modal's pale ground showed
+       through the difference as a hairline of white on each top corner. A
+       border is drawn on the border box, so it follows the radius exactly.
+       padding-top drops by the 6px the border now occupies. */
+    border-top: 6px solid var(--cat-color, var(--rust));
+    padding: 30px 40px 32px;
     position: relative;
     box-shadow: 0 40px 80px -20px rgba(0,0,0,0.4);
   }
-  @media (max-width: 620px) { .modal { padding: 24px 24px 20px; } }
-  .modal::before { content: ''; position: absolute; left: 0; top: 0; right: 0; height: 6px; background: var(--cat-color, var(--rust)); border-radius: 10px 10px 0 0; }
+  @media (max-width: 620px) { .modal { padding: 18px 24px 20px; } }
   .modal-close {
     position: absolute; top: 16px; right: 16px;
     width: 36px; height: 36px;
@@ -945,8 +956,9 @@
   .modal-close:hover { background: var(--warm-white-2); color: var(--ink); }
   .modal-close svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
   .modal .m-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; margin-bottom: 12px; }
-  .modal h3 { font-family: var(--font-display); font-weight: 800; font-size: clamp(24px, 3.4vw, 32px); line-height: 1.1; letter-spacing: -0.015em; color: var(--ink); margin: 6px 0 20px; text-wrap: balance; }
-  .modal .m-desc { font-size: 15px; line-height: 1.65; color: var(--ink-2); margin: 0 0 24px; }
+  .modal h3 { font-family: var(--font-display); font-weight: 800; font-size: clamp(24px, 3.4vw, 32px); line-height: 1.1; letter-spacing: -0.015em; color: var(--ink); margin: 6px 0 10px; text-wrap: balance; }
+  /* Navy rather than the slate --ink-2. This is the paragraph people read. */
+  .modal .m-desc { font-size: 15px; line-height: 1.65; color: var(--ink); margin: 0 0 24px; }
   .modal .m-facts { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 20px 22px; background: var(--navy); color: var(--warm-white); border-radius: 6px; margin-bottom: 24px; }
   .modal .m-facts svg { stroke: var(--steel-soft) !important; }
   .modal .m-facts strong { color: var(--steel-soft) !important; }
@@ -961,11 +973,20 @@
      programPill sets its own inline border, hence the override. */
   .modal .m-title-block .info-chip,
   .card .info-chip { border: 1px solid var(--navy) !important; }
+  /* .m-title-block is a flex column with gap: 10px. Flex containers do not
+     collapse margins, so each child's own margin ADDS to the gap: the title to
+     chip distance was 10 (gap) + 10 (h3) + 4 (chips) = 24px. Zero the children
+     and let the gap alone space them, which also makes the chip-to-title and
+     title-to-chips gaps match. */
+  .modal .m-title-block h3 { margin: 0; }
+  .modal .m-title-block .m-chips { margin-top: 0; }
   .modal .m-mail {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin-top: 4px;
+    /* The contact name above is 15px display type; 4px left the address
+       crowding it while still reading as a separate line. */
+    margin-top: 8px;
     font-family: var(--font-body);
     font-size: 13px;
     font-weight: 500;
@@ -981,7 +1002,7 @@
   .modal .m-fact svg { width: 16px; height: 16px; stroke: var(--ink-3); stroke-width: 1.6; fill: none; margin-top: 2px; }
   .modal .m-fact strong { display: block; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
   .modal .m-fact .val { color: var(--ink); font-family: var(--font-display); font-weight: 600; font-size: 15px; letter-spacing: 0; text-transform: none; }
-  .modal .m-cta { display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border-radius: 6px; background: var(--ink); color: var(--ground); text-decoration: none; font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.15s; }
+  .modal .m-cta { display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border-radius: 6px; background: var(--ink); color: #ffffff; text-decoration: none; font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.15s; }
   .modal .m-cta svg { stroke: var(--teal) !important; transition: stroke 0.15s; }
   .modal .m-cta:hover { background: var(--cat-color); transform: translateX(2px); }
   .modal .m-cta:hover svg { stroke: var(--warm-white) !important; }
@@ -1234,17 +1255,21 @@ const CLUSTER_OF = {
 };
 
 // Per-type color — every event type gets its own hue, distinct from the teal topic strip.
+// Each pair is a dark ink on its own pale tint. The inks were darkened a step
+// across the board: at 11px uppercase on a tinted chip the lighter versions
+// (Office Hours sage on sage especially) were sitting close to the floor for
+// contrast, and these are read at a glance rather than dwelt on.
 const TYPE_COLOR = {
-  'Webinar':             { color: '#274f73', tint: '#d5dfe9' },  // Mid Blue
-  'Training':            { color: '#8a2e13', tint: '#f0d9d0' },  // Rust
-  'Workshop':            { color: '#a86018', tint: '#f4e3cd' },  // Amber
-  'Information Session': { color: '#4a6a80', tint: '#dce4ec' },  // Steel Blue
-  'Conference':          { color: '#182b3c', tint: '#c9d3dc' },  // Navy
-  'Discussion Group':    { color: '#6b3a5a', tint: '#e8dae5' },  // Plum
-  'Office Hours':        { color: '#3f7f5e', tint: '#d5ecdd' },  // Sage
-  'Public Hearing':      { color: '#a63c1e', tint: '#f5d4c9' },  // Deep Coral
-  'Student Opportunity': { color: '#0d7ba0', tint: '#d5f0fb' },
-  'Other':              { color: '#5c6a78', tint: '#d5dae0' }   // Deep Teal (used only here since topic strip is teal-tint bg)
+  'Webinar':             { color: '#1d3d5c', tint: '#d5dfe9' },  // Mid Blue
+  'Training':            { color: '#6e240f', tint: '#f0d9d0' },  // Rust
+  'Workshop':            { color: '#834a12', tint: '#f4e3cd' },  // Amber
+  'Information Session': { color: '#385264', tint: '#dce4ec' },  // Steel Blue
+  'Conference':          { color: '#101f2c', tint: '#c9d3dc' },  // Navy
+  'Discussion Group':    { color: '#532c46', tint: '#e8dae5' },  // Plum
+  'Office Hours':        { color: '#2d5f45', tint: '#d5ecdd' },  // Sage
+  'Public Hearing':      { color: '#822f18', tint: '#f5d4c9' },  // Deep Coral
+  'Student Opportunity': { color: '#0a5e7b', tint: '#d5f0fb' },
+  'Other':               { color: '#46525d', tint: '#d5dae0' }
 };
 function typeColor(type) { return TYPE_COLOR[type] || { color: '#274f73', tint: '#d5dfe9' }; }
 
@@ -1758,7 +1783,6 @@ function openModal(id) {
       <div class="m-fact"><span aria-hidden="true">${USER_SVG}</span><div><strong>Contact</strong><span class="val">${esc(c.name)}</span><a href="mailto:${esc(c.email)}" class="m-mail" aria-label="Email ${esc(c.name)}"><span aria-hidden="true">${MAIL_SVG}</span>${esc(c.email)}</a></div></div>
     </div>
     <a class="m-cta" href="${normUrl(e.register)}" target="_blank" rel="noopener" aria-label="Register for this event (opens new page)">Register <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;stroke-width:2.4;fill:none" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <div class="m-meta">Focus area - ${esc(e.focusArea)}</div>
   `;
   scrim.classList.add('open');
   document.body.style.overflow = 'hidden';

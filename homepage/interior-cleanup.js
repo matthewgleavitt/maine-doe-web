@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-23-c  ·  Last edited: 2026-09-23 17:45
+ * Version: 2026-09-23-d  ·  Last edited: 2026-09-23 18:10
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -592,23 +592,27 @@ const FIXES = [
      the number is 425.
      Eight pages embed it and they had drifted to three different
      answers: six at 480, one at 450, and /calendar at height:800px.
-     ONLY THE EMBEDDED ONE, AND THE MIN-HEIGHT IS WHAT SAYS SO.
-     /calendar is the whole calendar rather than a strip of it: no
-     parameters, a fixed height:800px and no min-height at all. So the
-     presence of a min-height is itself the test, and it is the right
-     one — it is the very thing being corrected, and a tag without one
-     has nothing here to correct.
-     I first tested for embed=1 in the src and it was wrong twice
-     over. The markup writes &amp;embed=1, so the character in front
-     is a semicolon and [?&] matched none of the eight; and once that
-     was fixed, /safety and /safety/threatassessment still missed,
-     because they carry carousel=1 and no embed at all. Same widget,
-     same embedding, different parameters.
+     THE ON-PAGE WIDGET ONLY. Matt: "dont touch /calendar that's a
+     different situation this is just for the on-page carousel
+     widgets." /calendar is the whole calendar rather than a strip of
+     it, and it says so three times over: no query string, a fixed
+     height:800px, and no min-height at all. Two signals are required
+     and it has neither, so it passes through byte for byte.
+     THE PARAMETERS ARE NOT A RELIABLE TEST ON THEIR OWN, which cost
+     me two passes. I looked for embed=1 first: the markup writes
+     &amp;embed=1, so the character in front is a semicolon and [?&]
+     matched none of the eight. With that fixed, /safety and
+     /safety/threatassessment still missed — they carry carousel=1 and
+     no embed at all, and /schools/nutrition is the other way round.
+     The widget is embedded in a page when it is asked for a slice of
+     the calendar (any query string) AND given a reserved height. Both
+     have to be true.
      The number only. Nothing else in the tag moves. */
   ['calendar widget height set to 425px', (h) => {
     let n = 0;
     h = h.replace(/<iframe\b[^>]*>/gi, (tag) => {
       if (!/gateway\.maine\.gov\/doe\/communications\/calendar/i.test(tag)) return tag;
+      if (!/communications\/calendar\/\?\w/i.test(tag)) return tag;
       if (!/min-height:\s*[^;"']+/i.test(tag)) return tag;
       const fixed = tag.replace(/min-height:\s*[^;"']+/i, 'min-height:425px');
       if (fixed === tag) return tag;
