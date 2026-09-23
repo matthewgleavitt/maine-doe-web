@@ -95,17 +95,34 @@ const DRIVE_ENGINE='https://drive.google.com/drive/folders/1tVV6XLt33yNhfrgqqfxa
 
 const ST={Received:{bg:'#dbeafe',color:'#1e40af',border:'#93c5fd'},Processing:{bg:'#fef3c7',color:'#92400e',border:'#fcd34d'},Complete:{bg:'#d1fae5',color:'#065f46',border:'#6ee7b7'}};
 
-function Input({label,required,children}){
-  return <div style={{marginBottom:14}}>
-    <label style={{display:'block',fontSize:12,fontWeight:700,color:B.navy,marginBottom:5,textTransform:'uppercase',letterSpacing:'.03em'}}>{label}{required&&' *'}</label>
+// Matches the events form: each field owns its spacing, and `hint` is a real
+// prop rather than an ad-hoc div appended after the input at each call site.
+function Input({label,required,hint,children}){
+  return <div style={{marginBottom:18}}>
+    <label style={{display:'block',fontSize:11,fontWeight:700,color:B.navy,marginBottom:6,textTransform:'uppercase',letterSpacing:'.06em'}}>{label}{required&&<span style={{color:'#8a2e13',marginLeft:3}}>*</span>}</label>
     {children}
+    {hint&&<div style={{fontSize:11.5,color:B.txtMute,marginTop:6,fontWeight:500,lineHeight:1.45}}>{hint}</div>}
+  </div>;
+}
+
+// A section card with a navy header and teal rule, same as the events form.
+// This form had no grouping at all: eleven fields in one flat column.
+function FormSection({label,icon,children}){
+  return <div style={{marginBottom:24,background:B.wh,border:`1.5px solid ${B.border}`,borderRadius:12,overflow:'hidden'}}>
+    <div style={{display:'flex',alignItems:'center',gap:10,padding:'13px 20px',background:B.navy,borderBottom:`3px solid ${B.teal}`}}>
+      {icon&&<Sv d={icon} size={16} color={B.teal}/>}
+      <h3 style={{fontWeight:800,fontSize:13,letterSpacing:'.1em',textTransform:'uppercase',color:B.wh,margin:0}}>{label}</h3>
+    </div>
+    <div style={{padding:'20px 20px 2px'}}>{children}</div>
   </div>;
 }
 
 function Field({value,onChange,placeholder,type,onFocus,onBlur}){
-  const s={width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:B.txt,outline:'none',background:B.wh};
+  // Border was B.border at 30 hex alpha (~19%), even fainter than the events
+  // form's before it was fixed.
+  const s={width:'100%',padding:'11px 14px',borderRadius:8,border:`1.5px solid ${B.border}`,fontSize:14,fontFamily:'inherit',color:B.txt,outline:'none',background:B.wh};
   const f=e=>e.currentTarget.style.borderColor=B.teal;
-  const b=e=>e.currentTarget.style.borderColor=`${B.border}30`;
+  const b=e=>e.currentTarget.style.borderColor=B.border;
   if(type==='textarea') return <textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={{...s,resize:'vertical',minHeight:100}} onFocus={f} onBlur={b}/>;
   return <input type={type||'text'} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={f} onBlur={b}/>;
 }

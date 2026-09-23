@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE interior pages — mechanical cleanup
- * Version: 2026-09-23-d  ·  Last edited: 2026-09-23 18:10
+ * Version: 2026-09-23-e  ·  Last edited: 2026-09-23 19:40
  *
  *   node interior-cleanup.js <url-or-file> [--write out.html]
  *   node interior-cleanup.js --audit urls.txt
@@ -617,6 +617,33 @@ const FIXES = [
       const fixed = tag.replace(/min-height:\s*[^;"']+/i, 'min-height:425px');
       if (fixed === tag) return tag;
       n++; return fixed;
+    });
+    return [h, n];
+  }],
+
+  /* A HEADING INSIDE A TABLE CELL IS TEXT MADE BIG.
+     Matt, on /funding/gpa/eps/resources: "the table at the end the
+     fonts are giant, should be normalized which is true everywhere."
+     Every cell of that table wraps its value in an <h3> — the year in
+     one, the two dollar figures in the others — so a table of numbers
+     is set at heading size throughout.
+     A table cell is already labelled by its column header; a heading
+     inside one names nothing and is announced by a screen reader as a
+     section of the document, which is why a reader tabbing the
+     outline of that page meets "$8,474". It is the same instinct as
+     the bold line used for emphasis, in the one place where the
+     structure is already explicit.
+     The words stay and the tag goes. The cell keeps any alignment it
+     was given, because that is the author laying out a table rather
+     than sizing text. 62 of these across 11 pages. */
+  ['headings inside table cells unwrapped', (h) => {
+    let n = 0;
+    h = h.replace(/<(t[dh])\b([^>]*)>([\s\S]*?)<\/\1>/gi, (m, tag, attrs, inner) => {
+      if (!/<h[1-6]\b/i.test(inner)) return m;
+      const out = inner.replace(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/gi, (hm, lv, text) => {
+        n++; return text.trim();
+      });
+      return `<${tag}${attrs}>${out}</${tag}>`;
     });
     return [h, n];
   }],
