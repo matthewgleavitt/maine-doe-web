@@ -747,49 +747,55 @@ function App(){
             <strong>IMPORTANT:</strong> Your video cannot contain copyrighted images/audio that you do not have permission to use. This can result in a copyright strike and the department losing our YouTube channel permanently.
           </div>
 
-          <Input label="Your Name" required><Field value={form.requestor} onChange={v=>uf('requestor',v)} placeholder="First Last"/></Input>
-          <Input label="Your Email" required><Field value={form.email} onChange={v=>uf('email',v)} placeholder="name@maine.gov" type="email"/></Input>
-          <Input label="What DOE Team Represents this Video Content" required><Field value={form.team} onChange={v=>uf('team',v)} placeholder="e.g., Communications, Assessment"/></Input>
+          <FormSection label="Who's submitting" icon={ic.user}>
+            <Input label="Your Name" required><Field value={form.requestor} onChange={v=>uf('requestor',v)} placeholder="First Last"/></Input>
+            <Input label="Your Email" required><Field value={form.email} onChange={v=>uf('email',v)} placeholder="name@maine.gov" type="email"/></Input>
+            <Input label="What DOE Team Represents this Video Content" required><Field value={form.team} onChange={v=>uf('team',v)} placeholder="e.g., Communications, Assessment"/></Input>
+          </FormSection>
 
-          <Input label="Title of Video" required>
-            <Field value={form.title} onChange={v=>uf('title',v)} placeholder="60-70 characters recommended"/>
-            <div style={{fontSize:11,color:form.title.length>70?'#ef4444':B.txtMute,marginTop:4,fontWeight:500}}>{form.title.length}/70 characters</div>
-          </Input>
+          <FormSection label="About the video" icon={ic.video}>
+            <Input label="Title of Video" required
+              hint={<span style={{color:form.title.length>70?'#ef4444':B.txtMute}}>{form.title.length}/70 characters. Longer titles are cut off in YouTube search results.</span>}>
+              <Field value={form.title} onChange={v=>uf('title',v)} placeholder="60-70 characters recommended"/>
+            </Input>
 
-          <Input label="Is your video intended for EnGiNE?">
-            <div style={{display:'flex',gap:8}}>
-              {['Yes','No'].map(o=><button key={o} onClick={()=>uf('engine',o)} style={{padding:'8px 20px',borderRadius:10,fontSize:14,fontWeight:600,cursor:'pointer',border:`2px solid ${form.engine===o?B.teal:B.border+'30'}`,background:form.engine===o?`${B.teal}10`:B.wh,color:form.engine===o?B.navy:B.txtMute}}>{o}</button>)}
-            </div>
-          </Input>
+            <Input label="Description" required
+              hint={`Write it as an invitation: what the video covers, who it is for, and what someone takes away. ${form.description.trim().length} of ${YT_DESC_MIN} characters minimum.`}>
+              <Field value={form.description} onChange={v=>uf('description',v)} type="textarea" placeholder="Join us as we walk through how Maine schools are using CSTAG. We cover the assessment framework, work through real scenarios, and finish with a checklist your team can apply straight away."/>
+            </Input>
 
-          {form.engine==='Yes'&&<Input label="EnGiNE Course Name"><Field value={form.engineCourse} onChange={v=>uf('engineCourse',v)} placeholder="Course name"/></Input>}
+            <Input label="What type of media are you sharing" required>
+              <select value={form.mediaType} onChange={e=>uf('mediaType',e.target.value)} style={{width:'100%',padding:'11px 14px',borderRadius:8,border:`1.5px solid ${B.border}`,fontSize:14,fontFamily:'inherit',color:form.mediaType?B.txt:B.txtMute,background:B.wh,cursor:'pointer',outline:'none'}}>
+                <option value="">Select Type...</option>
+                {['Webinar','Training','Information Session','Promotional Media','Office Hours','Good News'].map(o=><option key={o} value={o}>{o}</option>)}
+              </select>
+            </Input>
 
-          <Input label="Description" required>
-            <Field value={form.description} onChange={v=>uf('description',v)} type="textarea" placeholder="Give a complete understanding of the video content. If PD, include learning objectives."/>
-            <div style={{fontSize:11,color:B.txtMute,marginTop:4,fontWeight:500}}>Should be longer than a single sentence.</div>
-          </Input>
+            <Input label="Is your video intended for EnGiNE?">
+              <div style={{display:'flex',gap:8}}>
+                {['Yes','No'].map(o=><button key={o} onClick={()=>uf('engine',o)} style={{padding:'9px 22px',borderRadius:8,fontSize:14,fontWeight:600,cursor:'pointer',border:`1.5px solid ${form.engine===o?B.teal:B.border}`,background:form.engine===o?`${B.teal}18`:B.wh,color:form.engine===o?B.navy:B.txtMute}}>{o}</button>)}
+              </div>
+            </Input>
 
-          <Input label="What type of media are you sharing" required>
-            <select value={form.mediaType} onChange={e=>uf('mediaType',e.target.value)} style={{width:'100%',padding:'10px 14px',borderRadius:10,border:`2px solid ${B.border}30`,fontSize:14,fontFamily:'inherit',color:form.mediaType?B.txt:B.txtMute,background:B.wh,cursor:'pointer',outline:'none'}}>
-              <option value="">Select Type...</option>
-              {['Webinar','Training','Information Session','Promotional Media','Office Hours','Good News'].map(o=><option key={o} value={o}>{o}</option>)}
-            </select>
-          </Input>
+            {form.engine==='Yes'&&<Input label="EnGiNE Course Name"><Field value={form.engineCourse} onChange={v=>uf('engineCourse',v)} placeholder="Course name"/></Input>}
+          </FormSection>
 
-          <Input label="Playlists to add to">
-            <Field value={form.playlist} onChange={v=>uf('playlist',v)} placeholder="List all playlists"/>
-            <div style={{fontSize:11,color:B.txtMute,marginTop:4}}><a href="https://www.youtube.com/@MaineDOEComm/playlists" target="_blank" rel="noopener noreferrer" style={{color:B.teal,fontWeight:600}}>View current playlists →</a></div>
-          </Input>
+          <FormSection label="Publishing" icon={ic.globe}>
+            <Input label="Playlists to add to"
+              hint={<a href="https://www.youtube.com/@MaineDOEComm/playlists" target="_blank" rel="noopener noreferrer" style={{color:B.tealInk||B.teal,fontWeight:600}}>View current playlists →</a>}>
+              <Field value={form.playlist} onChange={v=>uf('playlist',v)} placeholder="List all playlists"/>
+            </Input>
 
-          <Input label="Privacy Setting">
-            <div style={{display:'flex',flexDirection:'column',gap:6}}>
-              {[{v:'Public',l:'Public — Most Common / For Everyone'},{v:'Unlisted',l:"Unlisted — Doesn't show in search, need direct link"},{v:'Private',l:'Private — Only accessible through sharing (rare)'}].map(o=>(
-                <button key={o.v} onClick={()=>uf('privacy',o.v)} style={{padding:'10px 16px',borderRadius:10,fontSize:13,fontWeight:500,cursor:'pointer',textAlign:'left',border:`2px solid ${form.privacy===o.v?B.teal:B.border+'30'}`,background:form.privacy===o.v?`${B.teal}10`:B.wh,color:form.privacy===o.v?B.navy:B.txtSec}}>{o.l}</button>
-              ))}
-            </div>
-          </Input>
+            <Input label="Privacy Setting">
+              <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                {[{v:'Public',l:'Public — Most Common / For Everyone'},{v:'Unlisted',l:"Unlisted — Doesn't show in search, need direct link"},{v:'Private',l:'Private — Only accessible through sharing (rare)'}].map(o=>(
+                  <button key={o.v} onClick={()=>uf('privacy',o.v)} style={{padding:'11px 16px',borderRadius:8,fontSize:13,fontWeight:500,cursor:'pointer',textAlign:'left',border:`1.5px solid ${form.privacy===o.v?B.teal:B.border}`,background:form.privacy===o.v?`${B.teal}18`:B.wh,color:form.privacy===o.v?B.navy:B.txtSec}}>{o.l}</button>
+                ))}
+              </div>
+            </Input>
 
-          <Input label="Any special notes?"><Field value={form.notes} onChange={v=>uf('notes',v)} type="textarea" placeholder="Anything else we should know?"/></Input>
+            <Input label="Any special notes?"><Field value={form.notes} onChange={v=>uf('notes',v)} type="textarea" placeholder="Anything else we should know?"/></Input>
+          </FormSection>
 
           {/* Video file upload */}
           <div style={{padding:'18px 20px',borderRadius:12,background:'linear-gradient(135deg,#0c192608,#162d4408)',border:`2px solid ${B.teal}20`,marginBottom:20}}>
