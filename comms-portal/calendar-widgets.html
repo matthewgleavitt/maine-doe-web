@@ -249,6 +249,14 @@
 <script>
 const CAL_BASE = 'https://gateway.maine.gov/doe/communications/calendar/';
 const FEED_URL = 'https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA432dtGEN-UzmSDtzlaL7SEVxChnMOfl0Lgr2BEhg/exec?type=calendar';
+// Same static mirror calendar/index.html reads, but with a far looser staleness
+// budget. This page only pulls the feed to list the focus areas and event types
+// in two dropdowns, and that set barely changes week to week. A day-old option
+// list costs nothing; going live costs 25-76s per attempt with a ~1-in-3 chance
+// of Google's edge 404, which is why the filters hung. Day-old dropdowns beat a
+// three-minute spinner.
+const FEED_STATIC_URL = 'https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/calendar.json';
+const FEED_STALE_MINUTES = 1440;
 
 // Common presets — the Elfsight replacements Matt asked about.
 // Add a new one here when you spin up a new team widget.
@@ -298,6 +306,26 @@ async function fetchFeedJson() {
       return JSON.parse(body);
     } finally { clearTimeout(t); }
   };
+  // Try the static mirror first. It answers in ~100ms and carries the same
+  // payload, so the dropdowns fill immediately instead of waiting on a rebuild.
+  try {
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), 5000);
+    const r = await fetch(FEED_STATIC_URL, { signal: c.signal });
+    clearTimeout(t);
+    if (r.ok) {
+      const d = await r.json();
+      const ageMin = (Date.now() - new Date(d._fetched || 0).getTime()) / 60000;
+      if (Array.isArray(d.events) && ageMin < FEED_STALE_MINUTES) {
+        console.log('[widgets] CDN feed, age ' + Math.round(ageMin) + ' min');
+        return d;
+      }
+      console.warn('[widgets] CDN feed stale (' + Math.round(ageMin) + ' min), going live');
+    }
+  } catch (e) {
+    console.warn('[widgets] CDN feed failed, going live:', e.message);
+  }
+
   let lastErr;
   for (let i = 0; i < 3; i++) {
     try { return await attempt(); }

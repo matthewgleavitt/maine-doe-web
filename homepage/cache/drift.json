@@ -1,7 +1,23 @@
 {
- "checkedAt": "2026-09-21T12:35:09.418Z",
- "snapshotAt": "2026-09-21T12:33:58.594Z",
- "edited": [],
+ "checkedAt": "2026-09-23T13:27:40.802Z",
+ "snapshotAt": "2026-09-23T13:14:34.373Z",
+ "edited": [
+  {
+   "alias": "/learning/cte/resources/certification",
+   "id": "f3839198-b5a5-45e9-a9f3-a5572f858d0c",
+   "title": "CTE Teacher Certification/Endorsement in Maine"
+  },
+  {
+   "alias": "/learning/CDS/CDSEmploymentOpportunities",
+   "id": "ed55710c-8848-497f-97e6-17091a9c864e",
+   "title": "CDS Employment Opportunities"
+  },
+  {
+   "alias": "/cert/authority",
+   "id": "4f769406-800e-4e78-a8d9-2c5b8d631202",
+   "title": "Certification - Forms & Resources "
+  }
+ ],
  "added": [],
  "removed": []
 }

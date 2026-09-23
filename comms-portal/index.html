@@ -252,9 +252,11 @@ function Portal(){
   const [sessionV]=useState(()=>Date.now().toString(36));
 
   const SCRIPT_URL='https://script.google.com/macros/s/AKfycbx9_qEikjvV4ieh-7CGv-Gq5Mm7PA432dtGEN-UzmSDtzlaL7SEVxChnMOfl0Lgr2BEhg/exec';
-  // Static CDN mirror — refreshed every 15 min by refresh-portal-data.yml.
-  // Fetches in ~100ms vs 2-30s from Apps Script. Falls back to live if the
-  // CDN payload is unreachable or older than 60 min.
+  // Static CDN mirror, written by refresh-portal-data.yml. Fetches in ~100ms
+  // against 5-50s from Apps Script. The workflow asks for every 15 minutes but
+  // GitHub Actions cron is best-effort: measured gaps between runs on this repo
+  // are 118-332 minutes, so treat the mirror as roughly hourly at best and let
+  // CDN_STALE_MINUTES decide when a copy is too old to paint.
   const CDN_BASE='https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/';
   const CDN_STALE_MINUTES=150;
   // Per-type override. 150 min suits slow-moving catalogs (store, publications),
@@ -265,19 +267,20 @@ function Portal(){
   async function fetchCdnOrLive(type, onRevalidate){
     const maxAge=CDN_STALE_BY_TYPE[type]||CDN_STALE_MINUTES;
     // Google's Apps Script edge intermittently answers with a 7.9KB HTML 404
-    // instead of JSON (measured ~1 call in 4). One retry turns that from a
-    // silent stick-on-stale-data into a blip.
+    // instead of JSON. Measured over 27 calls on 2026-09-23: 9 failed, a 33%
+    // rate. Two attempts would still leave 11% of loads broken, so this takes
+    // three, which puts it near 4%. Backoff is short because the failure is
+    // the edge refusing the request, not the script being busy.
     const live = async () => {
-      for(let attempt=0;attempt<2;attempt++){
+      const backoff=[0,800,2500];
+      for(let attempt=0;attempt<backoff.length;attempt++){
+        if(backoff[attempt]) await new Promise(r=>setTimeout(r,backoff[attempt]));
         const rr = await fetch(SCRIPT_URL + '?type=' + type, { cache: 'no-store' });
         const body = await rr.text();
         if(rr.ok && body.charAt(0)==='{') return JSON.parse(body);
-        if(attempt===0){
-          console.warn('['+type+'] live returned '+rr.status+' '+(body.charAt(0)==='<'?'HTML':'unparseable')+', retrying');
-          await new Promise(r=>setTimeout(r,1200));
-        }
+        console.warn('['+type+'] live returned '+rr.status+' '+(body.charAt(0)==='<'?'HTML':'unparseable')+' (attempt '+(attempt+1)+'/'+backoff.length+')');
       }
-      throw new Error('live fetch returned a non-JSON response twice');
+      throw new Error('live fetch returned a non-JSON response '+backoff.length+' times');
     };
     try{
       const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);
@@ -338,14 +341,25 @@ function Portal(){
   // confirmed right away instead of waiting out the warm cycle.
   const refreshModeration=useCallback(async()=>{
     setModRefreshing(true);
-    try{
-      const r=await fetch(SCRIPT_URL+'?type=moderation&refresh=1',{cache:'no-store'});
-      const body=await r.text();
-      if(body.charAt(0)!=='{') throw new Error('non-JSON response');
-      const j=JSON.parse(body);
-      if(j.error) throw new Error(j.error);
-      applyModeration(j);
-    }catch(e){ console.warn('[moderation] manual refresh failed:',e.message); }
+    // Same three-attempt shape as live() above — at a 33% edge failure rate a
+    // single-shot Refresh would do nothing one press in three, which is the
+    // worst possible behaviour for the button you reach for when the count
+    // looks wrong.
+    const backoff=[0,800,2500];
+    for(let attempt=0;attempt<backoff.length;attempt++){
+      try{
+        if(backoff[attempt]) await new Promise(r=>setTimeout(r,backoff[attempt]));
+        const r=await fetch(SCRIPT_URL+'?type=moderation&refresh=1',{cache:'no-store'});
+        const body=await r.text();
+        if(!r.ok||body.charAt(0)!=='{') throw new Error('HTTP '+r.status+' '+(body.charAt(0)==='<'?'HTML':'unparseable'));
+        const j=JSON.parse(body);
+        if(j.error) throw new Error(j.error);
+        applyModeration(j);
+        break;
+      }catch(e){
+        console.warn('[moderation] refresh attempt '+(attempt+1)+'/'+backoff.length+' failed:',e.message);
+      }
+    }
     setModRefreshing(false);
   },[applyModeration]);
 

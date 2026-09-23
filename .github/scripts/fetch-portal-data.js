@@ -12,10 +12,14 @@
 //     frontends can display freshness and detect stale data.
 //
 // Only endpoints listed in ENDPOINTS are mirrored. Deliberately excluded:
-//   - moderation, events, my_events, youtube (submissions) — admin/PII
-//   - announcements, templates, drupal_pages, drupal_files — may include
-//     internal-only info; can be added later if we decide they're safe.
+//   - events, my_events — per-user edit views; caching them across users
+//     would leak one person's event into another's edit form.
 //   - Write endpoints (POST for submissions/edits) — stay live.
+//
+// The repo is public, so nothing here may carry data the calendar feed does
+// not already publish. youtube (submissions) qualifies: the only personal
+// field is the submitter's email, which the calendar feed already exposes as
+// contactEmail.
 
 const fs = require('fs');
 const path = require('path');
@@ -60,7 +64,15 @@ function fetchWithRedirect(url, opts = {}) {
 }
 
 async function fetchEndpoint(type) {
-  const url = `${APPS_SCRIPT_URL}?type=${encodeURIComponent(type)}&refresh=1`;
+  // No &refresh=1. Forcing a cache bypass made Apps Script rebuild the payload
+  // from scratch on every call, and for the heavy endpoints that runs long
+  // enough that Google's edge gives up and hands back its 7,912-byte HTML 404
+  // — calendar failed all four attempts that way (185s burned, mirror left
+  // 6.5 hours stale). Every type below except commons and web_stats is kept
+  // warm by the Apps Script warmCache trigger every 10 minutes, and web_stats
+  // is never cached at all, so reading the warm copy costs at most 10 minutes
+  // of freshness against a mirror that only refreshes hourly.
+  const url = `${APPS_SCRIPT_URL}?type=${encodeURIComponent(type)}`;
   const backoffs = [0, 5000, 10000, 20000];
   let lastErr = null;
 

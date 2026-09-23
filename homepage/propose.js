@@ -34,6 +34,20 @@ const norm = x => strip(x || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
    writes a space as %20, the file list writes it as a space, and the
    two forms never matched until both sides went through here. */
 const dec = u => { try { return decodeURIComponent(String(u || '')); } catch (e) { return String(u || ''); } };
+/* A DATE CELL'S SORT KEY, or null when the words are not a date.
+   Written onto the cell as data-order so DataTables sorts the column
+   chronologically instead of alphabetically — see the searchtable
+   rule. Local parts rather than toISOString: a date parsed at local
+   midnight in a negative offset turns into the previous day in UTC. */
+const sortKey = (text) => {
+  const t = String(text).replace(/\s*\([^)]*\)\s*$/, '').trim();
+  if (!t || !/\d/.test(t)) return null;
+  const d = new Date(t);
+  if (isNaN(d.getTime())) return null;
+  const p = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+};
+
 const SIZES = (() => {
   try {
     const raw = require('./cache/image-sizes.json');
@@ -4673,24 +4687,63 @@ function propose(node, audit, index, opts = {}) {
   if (opts.searchtable !== false) {
     let n = 0, dated = 0;
     html = html.replace(/<table\b([^>]*)>([\s\S]*?)<\/table>/gi, (m, attrs, body) => {
-      if (/\btables\b|\btablessortdesc\b/.test(attrs)) return m;
+      const already = /\btables\b|\btablessortdesc\b/.test(attrs);
+      if (/\btablessortdesc\b/.test(attrs)) return m;
       const rows = (body.match(/<tr[\s>]/gi) || []).length - (/<thead[\s>]/i.test(body) ? 1 : 0);
-      if (rows < 15) return m;
-      n++;
+      if (!already && rows < 15) return m;
+      if (!already) n++;
       /* The first column's cells, header excepted. */
       const trs = [...body.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)];
       const firstCells = trs.slice(1)
         .map(r => (r[1].match(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/i) || [, ''])[1])
         .map(t => strip(t).replace(/\s+/g, ' ').trim())
         .filter(Boolean);
-      const parses = firstCells.filter(t => !isNaN(Date.parse(t))).length;
+      const parses = firstCells.filter(t => sortKey(t)).length;
       const byDate = firstCells.length >= 3 && parses >= firstCells.length * 0.8;
+      /* A TABLE THE AUTHOR ALREADY MARKED is here for the date test
+         and for nothing else. They asked for a search box; they did
+         not choose an order, and a date column that opens on its
+         oldest row is the same fault whoever typed the class. If its
+         dates do not sort it is left exactly as written. */
+      if (already && !byDate) return m;
       if (byDate) dated++;
       const hook = byDate ? 'tablessortdesc' : 'tables';
-      const withClass = /class="/.test(attrs)
-        ? attrs.replace(/class="/, `class="${hook} `)
+      let withClass = /class="/.test(attrs)
+        ? attrs.replace(/\btables\b\s*/, '').replace(/class="/, `class="${hook} `)
         : attrs + ` class="${hook}"`;
-      return `<table${withClass}>${body}</table>`;
+      /* An author's own data-page-length is dropped with ours: the
+         theme never reads it. */
+      withClass = withClass.replace(/\s*data-page-length="[^"]*"/gi, '').replace(/class="\s+/, 'class="');
+      /* AND THE DATES GET A SORT KEY. The class alone is not enough:
+         DataTables works out a column's type from its contents, and
+         its date detector refuses anything that is not already
+         numeric — so "December 11, 2025" is read as a STRING and
+         sorted alphabetically by month name. Measured in the browser
+         on the State Board's meetings: December, November, October,
+         September, May, March, June, July, January… which is worse
+         than no sort at all, and it is what this rule would have
+         shipped on eleven of the fourteen.
+         data-order on the cell is the library's own answer: it reads
+         the key and ignores the words. With one written on every date
+         cell the same table came back December 11, December 1,
+         November 13, October 9, September 10, September 8 — and the
+         type detected as `date` rather than `string`.
+         The key is built from local parts rather than toISOString, so
+         a date parsed at local midnight cannot slip back a day. A
+         trailing "(Special)" comes off before parsing and stays on
+         the page. */
+      let out = body;
+      if (byDate) {
+        out = body.replace(/<tr\b[^>]*>[\s\S]*?<\/tr>/gi, (row, at) => {
+          if (/<th[\s>]/i.test(row)) return row;
+          return row.replace(/<td\b([^>]*)>([\s\S]*?)<\/td>/i, (cm, cAttrs, inner) => {
+            if (/\sdata-order=/i.test(cAttrs)) return cm;
+            const k = sortKey(strip(inner).replace(/\s+/g, ' ').trim());
+            return k ? `<td${cAttrs} data-order="${k}">${inner}</td>` : cm;
+          });
+        });
+      }
+      return `<table${withClass}>${out}</table>`;
     });
     if (n) decisions.push({ id: 'searchtable', on: true, label: 'Let a long table be searched',
       why: `${n} table${n > 1 ? 's run' : ' runs'} to fifteen rows or more, so finding one row means reading every row. The theme already loads the search behaviour on every page and switches it on for any table marked this way — 26 tables across the site already are, including the contact directory. It adds a search box, a length menu and a pager, and makes the column headings sortable; ten rows show at a time, which is the library's own default.${dated ? ` ${dated} of them open on the most recent row, because the first column is a date that sorts — the rest are left in the order they were written.` : ' Nothing is reordered until someone asks.'}`,
