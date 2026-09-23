@@ -959,7 +959,7 @@
   .modal h3 { font-family: var(--font-display); font-weight: 800; font-size: clamp(24px, 3.4vw, 32px); line-height: 1.1; letter-spacing: -0.015em; color: var(--ink); margin: 6px 0 10px; text-wrap: balance; }
   /* Navy rather than the slate --ink-2. This is the paragraph people read. */
   .modal .m-desc { font-size: 15px; line-height: 1.65; color: var(--ink); margin: 0 0 24px; }
-  .modal .m-facts { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 20px 22px; background: var(--navy); color: var(--warm-white); border-radius: 6px; margin-bottom: 24px; }
+  .modal .m-facts { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 20px 22px; background: var(--navy); color: var(--warm-white); border-radius: 6px; margin-bottom: 16px; }
   .modal .m-facts svg { stroke: var(--steel-soft) !important; }
   .modal .m-facts strong { color: var(--steel-soft) !important; }
   /* The values (date, venue, audience, contact) are the thing people are
@@ -984,9 +984,10 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    /* The contact name above is 15px display type; 4px left the address
-       crowding it while still reading as a separate line. */
-    margin-top: 8px;
+    /* The name above is a block with its own 15px line box, which already
+       carries leading below the baseline. Any margin here stacks on top of
+       that, so this stays at 0 and the visible gap is the leading alone. */
+    margin-top: 0;
     font-family: var(--font-body);
     font-size: 13px;
     font-weight: 500;
