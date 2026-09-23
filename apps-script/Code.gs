@@ -3477,13 +3477,58 @@ function getEventsAdminToken() {
 /** Force-refresh the calendar's cached JSON.
  *  Run manually from the Apps Script editor after publishing a batch
  *  of edits (or trigger from a Sheet onEdit).                    */
+// Chunked entries are spread across baseKey + '_meta' and baseKey + '_pN', so
+// removing baseKey on its own leaves them intact. That is the second time this
+// purge has silently done nothing: first the v1_* rename, then chunking.
+function chunkedCacheRemove(cache, baseKey) {
+  var keys = [baseKey, baseKey + '_meta'];
+  for (var i = 0; i < CHUNK_MAX; i++) keys.push(baseKey + '_p' + i);
+  try { cache.removeAll(keys); } catch (e) {}
+}
+
 function purgeCalendarCache() {
   var cache = CacheService.getScriptCache();
-  // Actual keys the router writes (v1_* were leftovers from a previous naming
-  // scheme — this function was a no-op for months, which is why users saw
-  // events staying stale ~5 min after edits).
-  cache.removeAll(['portal_calendar_30', 'portal_events_30', 'portal_moderation_30']);
+  ['portal_calendar_30', 'portal_events_30', 'portal_moderation_30']
+    .forEach(function(k) { chunkedCacheRemove(cache, k); });
   Logger.log('Calendar cache purged.');
+}
+
+/**  Installable onEdit handler for the EventSubmissions sheet.
+ *
+ *   Without this, an edit to the sheet waits out the calendar's 2400s cache
+ *   before the portal's background revalidate can even see it, and waits out
+ *   the GitHub Actions mirror (measured 118-332 min between runs) before the
+ *   first paint carries it. Dropping the cache on edit means the next read
+ *   rebuilds from the sheet, so a change shows up on the next page load
+ *   rather than hours later.
+ *
+ *   Runs on every cell edit, so it stays cheap: no rebuild here, just an
+ *   eviction. The next reader pays the rebuild once.                 */
+function onCalendarSheetEdit(e) {
+  try {
+    var name = e && e.range && e.range.getSheet().getName();
+    if (name !== 'EventSubmissions') return;
+    purgeCalendarCache();
+  } catch (err) {
+    Logger.log('onCalendarSheetEdit failed: ' + err.message);
+  }
+}
+
+/**  Run once from the editor to attach onCalendarSheetEdit to the sheet.
+ *   The script is standalone rather than container-bound, so a simple
+ *   onEdit(e) would never fire; this needs an installable trigger.   */
+function installSheetEditTrigger() {
+  var sheetId = PropertiesService.getScriptProperties().getProperty('CACHE_SHEET_ID');
+  if (!sheetId) { Logger.log('No CACHE_SHEET_ID set'); return; }
+  var existing = ScriptApp.getProjectTriggers().filter(function(t) {
+    return t.getHandlerFunction() === 'onCalendarSheetEdit';
+  });
+  if (existing.length) { Logger.log('Trigger already installed.'); return; }
+  ScriptApp.newTrigger('onCalendarSheetEdit')
+    .forSpreadsheet(sheetId)
+    .onEdit()
+    .create();
+  Logger.log('Installed onCalendarSheetEdit trigger.');
 }
 
 
