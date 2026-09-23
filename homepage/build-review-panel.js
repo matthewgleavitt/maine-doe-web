@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — the page review panel
- * Version: 2026-09-23-a  ·  Last edited: 2026-09-23 02:10
+ * Version: 2026-09-23-b  ·  Last edited: 2026-09-23 17:10
  *
  *   node build-review-panel.js
  *   then open http://localhost:8791/review/
@@ -138,6 +138,18 @@ aside input,aside select{width:100%;padding:7px 9px;margin-bottom:6px;border:1px
 .item.sel{background:rgba(66,195,247,.16);box-shadow:inset 3px 0 0 var(--teal)}
 .item b{display:block;font-weight:600;color:#fff}
 .item small{color:#8fa6b8;font-size:11.5px}
+/* THE PATH HAS TO END SOMEWHERE THE EYE CAN SEE. The row used one
+   separator and one colour for the alias and the counts after it, so
+   "/learning/earlychildhood/pkexpansiongrant · 946w · 3 sections"
+   read as a path with /sections on the end of it — Matt tried to open
+   it and got a 404. The alias keeps the text colour; everything after
+   it is dimmer and on a line of its own — side by side they still ran
+   together whenever the path was long enough to wrap the sidebar,
+   which is most of them. 225 rows carry a section count and every one
+   of them read that way. */
+.item small .path{display:block;color:#b9c7d3;word-break:break-all}
+.item small .meta{display:block;margin-top:2px;color:#6b8094}
+.item small .meta i{font-style:normal;opacity:.55;margin:0 5px}
 .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle;background:#5b7health}
 .s-none{background:#4a6478}.s-approved{background:#3ec98a}.s-flagged{background:#f0b400}.s-skipped{background:#6d5a4a}.s-delete{background:#8a2e13}.s-moved{background:#c2410c}
 .addnote{display:flex;gap:8px;margin-top:10px}
@@ -525,10 +537,11 @@ function renderList() {
       + (moved ? ' <span class="moved">edited since you approved it</span>' : '')
       + (openNotes(r.alias) ? ' <span class="notecount">' + openNotes(r.alias) + ' note' + (openNotes(r.alias) > 1 ? 's' : '') + '</span>' : '')
       + '</b>'
-      + '<small>' + esc(r.alias) + ' · ' + r.words + 'w'
-      + (r.sections ? ' · ' + r.sections + ' sections' : '')
-      + (r.outline ? ' · outline' : '') + (r.stale ? ' · ' + r.stale : '')
-      + (r.safe ? '' : ' · UNSAFE') + '</small></div>';
+      + '<small><span class="path">' + esc(r.alias) + '</span><span class="meta">'
+      + r.words + 'w'
+      + (r.sections ? '<i>·</i>' + r.sections + ' sections' : '')
+      + (r.outline ? '<i>·</i>outline' : '') + (r.stale ? '<i>·</i>' + r.stale : '')
+      + (r.safe ? '' : '<i>·</i>UNSAFE') + '</span></small></div>';
   }).join('') || '<div class="empty">nothing matches</div>';
 }
 

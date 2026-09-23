@@ -259,28 +259,35 @@ function Portal(){
   // CDN_STALE_MINUTES decide when a copy is too old to paint.
   const CDN_BASE='https://raw.githubusercontent.com/matthewgleavitt/maine-doe-web/main/data/';
   const CDN_STALE_MINUTES=150;
-  // Per-type override. 150 min suits slow-moving catalogs (store, publications),
-  // but the moderation queue is a worklist people act on minute to minute — an
-  // hour-old count there is worse than no count, so it gets a tight budget and
-  // usually falls through to live.
-  const CDN_STALE_BY_TYPE={ moderation:10 };
+  // Every type paints from the mirror. An earlier version gave moderation a
+  // 10-minute budget so a stale count could never show, which in practice
+  // pushed the one worklist in the portal onto the live Apps Script path.
+  // Measured on 2026-09-23 that path failed 8 of 14 calls and ran to 60s, so
+  // the tight budget traded a slightly stale number for frequently no number
+  // at all. Paint the mirror, then correct it from live in the background.
+
+  // Background revalidation is invisible and the payloads are small, so a type
+  // that needs to be right can afford more attempts than one that just needs
+  // to be present. At the measured ~50% per-call failure rate, three attempts
+  // leave ~12% of loads uncorrected and five leave ~3%.
+  const LIVE_ATTEMPTS_BY_TYPE={ moderation:5 };
+  const LIVE_ATTEMPTS_DEFAULT=3;
   async function fetchCdnOrLive(type, onRevalidate){
-    const maxAge=CDN_STALE_BY_TYPE[type]||CDN_STALE_MINUTES;
+    const maxAge=CDN_STALE_MINUTES;
     // Google's Apps Script edge intermittently answers with a 7.9KB HTML 404
-    // instead of JSON. Measured over 27 calls on 2026-09-23: 9 failed, a 33%
-    // rate. Two attempts would still leave 11% of loads broken, so this takes
-    // three, which puts it near 4%. Backoff is short because the failure is
-    // the edge refusing the request, not the script being busy.
+    // instead of JSON rather than routing to the script at all. Backoff is
+    // short because the failure is the edge refusing the request, not the
+    // script being busy.
     const live = async () => {
-      const backoff=[0,800,2500];
-      for(let attempt=0;attempt<backoff.length;attempt++){
-        if(backoff[attempt]) await new Promise(r=>setTimeout(r,backoff[attempt]));
+      const attempts=LIVE_ATTEMPTS_BY_TYPE[type]||LIVE_ATTEMPTS_DEFAULT;
+      for(let attempt=0;attempt<attempts;attempt++){
+        if(attempt) await new Promise(r=>setTimeout(r,Math.min(800*attempt,3000)));
         const rr = await fetch(SCRIPT_URL + '?type=' + type, { cache: 'no-store' });
         const body = await rr.text();
         if(rr.ok && body.charAt(0)==='{') return JSON.parse(body);
-        console.warn('['+type+'] live returned '+rr.status+' '+(body.charAt(0)==='<'?'HTML':'unparseable')+' (attempt '+(attempt+1)+'/'+backoff.length+')');
+        console.warn('['+type+'] live returned '+rr.status+' '+(body.charAt(0)==='<'?'HTML':'unparseable')+' (attempt '+(attempt+1)+'/'+attempts+')');
       }
-      throw new Error('live fetch returned a non-JSON response '+backoff.length+' times');
+      throw new Error('live fetch returned a non-JSON response '+attempts+' times');
     };
     try{
       const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);
@@ -341,14 +348,14 @@ function Portal(){
   // confirmed right away instead of waiting out the warm cycle.
   const refreshModeration=useCallback(async()=>{
     setModRefreshing(true);
-    // Same three-attempt shape as live() above — at a 33% edge failure rate a
-    // single-shot Refresh would do nothing one press in three, which is the
-    // worst possible behaviour for the button you reach for when the count
-    // looks wrong.
-    const backoff=[0,800,2500];
-    for(let attempt=0;attempt<backoff.length;attempt++){
+    // Same attempt budget as live() above. At the measured ~50% edge failure
+    // rate a single-shot Refresh would do nothing every other press, which is
+    // the worst possible behaviour for the button you reach for precisely
+    // when the count looks wrong.
+    const attempts=LIVE_ATTEMPTS_BY_TYPE.moderation||LIVE_ATTEMPTS_DEFAULT;
+    for(let attempt=0;attempt<attempts;attempt++){
       try{
-        if(backoff[attempt]) await new Promise(r=>setTimeout(r,backoff[attempt]));
+        if(attempt) await new Promise(r=>setTimeout(r,Math.min(800*attempt,3000)));
         const r=await fetch(SCRIPT_URL+'?type=moderation&refresh=1',{cache:'no-store'});
         const body=await r.text();
         if(!r.ok||body.charAt(0)!=='{') throw new Error('HTTP '+r.status+' '+(body.charAt(0)==='<'?'HTML':'unparseable'));
@@ -357,7 +364,7 @@ function Portal(){
         applyModeration(j);
         break;
       }catch(e){
-        console.warn('[moderation] refresh attempt '+(attempt+1)+'/'+backoff.length+' failed:',e.message);
+        console.warn('[moderation] refresh attempt '+(attempt+1)+'/'+attempts+' failed:',e.message);
       }
     }
     setModRefreshing(false);

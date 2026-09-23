@@ -838,6 +838,7 @@
    "target set by destination: 2",
    "empty list items removed: 1",
    "redundant bold inside a heading removed: 1",
+   "line breaks loose inside a list removed: 1",
    "action links marked: 2"
   ],
   "flags": [
@@ -2388,6 +2389,7 @@
    "images released from inline dimensions: 4",
    "emphasis removed from inside a link: 1",
    "bare spans unwrapped: 1",
+   "line breaks loose inside a list removed: 1",
    "action links marked: 10",
    "space moved out of a link: 1"
   ],
@@ -10047,7 +10049,9 @@
   "changed": "2026-04-06T22:58:01+00:00",
   "words": 634,
   "bytes": 4506,
-  "fixes": [],
+  "fixes": [
+   "line breaks loose inside a list removed: 1"
+  ],
   "flags": [
    "no section-header device"
   ],
@@ -15830,6 +15834,7 @@
    "empty paragraphs removed: 1",
    "drupal entity attrs stripped: 32",
    "empty list items removed: 1",
+   "line breaks loose inside a list removed: 1",
    "action links marked: 7"
   ],
   "flags": [
@@ -19077,6 +19082,7 @@
    "b/i to strong/em: 2",
    "target set by destination: 4",
    "redundant bold inside a heading removed: 1",
+   "line breaks loose inside a list removed: 1",
    "action links marked: 6",
    "format labels chipped: 3",
    "space moved out of a link: 1"
@@ -24405,118 +24411,6 @@
   },
   "opening": "The following information is from Small Area Income &amp; Poverty Estimates (SAIPE).",
   "openingChars": 84
- },
- {
-  "alias": "/learning/earlychildhood/pkexpansiongrant/2021",
-  "title": "Pre-Kindergarten Expansion Grants (2021-2026)",
-  "changed": "2026-04-06T23:12:08+00:00",
-  "words": 976,
-  "bytes": 121658,
-  "fixes": [
-   "bare email linked: 1",
-   "empty paragraphs removed: 3",
-   "b/i to strong/em: 42",
-   "cell padding handed back to the stylesheet: 216",
-   "inline layout styles stripped: 499",
-   "default-value styles dropped: 686",
-   "loose text wrapped in a paragraph: 121",
-   "elements that are not HTML: 4",
-   "paragraph inside a table cell unwrapped: 172",
-   "tables normalised to the house shape: 4",
-   "zero-width spaces removed: 131",
-   "spans of one removed: 4",
-   "excel column widths removed: 3",
-   "table cells released from pasted heights: 111",
-   "title row lifted out of a table: 3",
-   "first row of a table made its header row: 4",
-   "table cells released from fixed pixel widths: 212",
-   "style attributes that declare nothing removed: 2",
-   "inline styles removed from spans: 126",
-   "row colours handed back to the striping rule: 212",
-   "bare spans unwrapped: 1294",
-   "line breaks at the edge of a block removed: 1",
-   "accordion titles linked: 4",
-   "accordion container added: 1"
-  ],
-  "flags": [
-   "no section-header device",
-   "inline style= remains"
-  ],
-  "contentSafe": true,
-  "headings": [
-   {
-    "l": 3,
-    "t": "Grant Funds from Maine Jobs and Recovery Plan Support Expansion of Public Pre-K",
-    "bh": false
-   },
-   {
-    "l": 2,
-    "t": "Pre-K Expansion Grantees by Grant Rounds",
-    "bh": false
-   }
-  ],
-  "outline": [
-   {
-    "i": 0,
-    "issue": "jumps h1 to h3",
-    "text": "Grant Funds from Maine Jobs and Recovery Plan Support Expansion of Public Pre-K"
-   }
-  ],
-  "components": {
-   "cards": 0,
-   "cardHeaders": 0,
-   "cardTitles": 0,
-   "accordions": 4,
-   "tables": 4,
-   "dataTables": 0,
-   "contactCube": 0,
-   "jumbotron": 0,
-   "dcNote": 0,
-   "blockheads": 0,
-   "videos": 0,
-   "images": 0,
-   "buttons": 0
-  },
-  "access": {
-   "imagesNoAlt": 0,
-   "vagueLinkText": [],
-   "emptyLinks": 0,
-   "tablesNoScope": 0,
-   "multipleH1": 0,
-   "inlineColour": 463
-  },
-  "links": {
-   "internal": [],
-   "files": [],
-   "external": [],
-   "mailto": [],
-   "safelinks": [],
-   "anchors": []
-  },
-  "age": {
-   "changed": "2026-04-06T23:12:08+00:00",
-   "yearsMentioned": [
-    2021,
-    2022,
-    2023,
-    2024,
-    2025,
-    2026
-   ],
-   "newestYear": 2026,
-   "yearsBehind": 0,
-   "schoolYears": [
-    "2021-2026",
-    "2022-23",
-    "2023-24",
-    "2024-25",
-    "2025-26",
-    "2022-24"
-   ],
-   "unfinishedPhrases": []
-  },
-  "opening": "Grant Funds from Maine Jobs and Recovery Plan Support Expansion of Public Pre-K",
-  "openingChars": 79
  },
  {
   "alias": "/learning/earlychildhood/publicpreschool/assessment",
@@ -46300,6 +46194,7 @@
    "empty list items removed: 1",
    "loose text wrapped in a paragraph: 1",
    "redundant bold inside a heading removed: 1",
+   "line breaks loose inside a list removed: 1",
    "video wrapped: 2",
    "action links marked: 2",
    "space moved out of a link: 1"
@@ -48139,6 +48034,7 @@
    "paragraph unwrapped inside a card header: 2",
    "margin utilities removed from card headers: 2",
    "bare spans unwrapped: 2",
+   "line breaks loose inside a list removed: 1",
    "video wrapped: 1",
    "space moved out of a link: 1"
   ],
@@ -50654,6 +50550,7 @@
    "paragraph unwrapped inside a card header: 1",
    "margin utilities removed from card headers: 1",
    "emphasis removed from inside a link: 4",
+   "line breaks loose inside a list removed: 3",
    "action links marked: 10",
    "accordion titles linked: 5"
   ],
@@ -51254,6 +51151,7 @@
    "hard spaces at the edge of a list item removed: 7",
    "paragraph inside a list item unwrapped: 1",
    "redundant bold inside a heading removed: 1",
+   "line breaks loose inside a list removed: 1",
    "trailing breaks removed from headings: 1",
    "Word artifacts stripped: 7",
    "action links marked: 22",
@@ -58084,6 +57982,7 @@
    "table cells released from fixed pixel widths: 14",
    "double line break split into paragraphs: 1",
    "bare spans unwrapped: 7",
+   "line breaks loose inside a list removed: 1",
    "line breaks at the edge of a block removed: 4",
    "trailing breaks removed from headings: 3",
    "action links marked: 19",
@@ -60478,6 +60377,7 @@
    "redundant bold inside a heading removed: 1",
    "empty divs removed: 1",
    "paragraph unwrapped inside a card header: 9",
+   "line breaks loose inside a list removed: 2",
    "action links marked: 4",
    "space moved out of a link: 1",
    "blockhead heading level normalised to h2: 1"
@@ -78064,6 +77964,7 @@
    "empty divs removed: 1",
    "paragraph unwrapped inside a card header: 1",
    "margin utilities removed from card headers: 1",
+   "line breaks loose inside a list removed: 1",
    "action links marked: 1"
   ],
   "flags": [
@@ -78187,6 +78088,7 @@
    "redundant bold inside a heading removed: 1",
    "paragraph unwrapped inside a card header: 6",
    "margin utilities removed from card headers: 6",
+   "line breaks loose inside a list removed: 1",
    "action links marked: 7",
    "format labels chipped: 2"
   ],
@@ -79848,6 +79750,7 @@
    "paragraph unwrapped inside a card header: 2",
    "margin utilities removed from card headers: 2",
    "emphasis removed from inside a link: 2",
+   "line breaks loose inside a list removed: 1",
    "action links marked: 53",
    "format labels chipped: 5",
    "format chip moved out of the link: 4",
@@ -80915,6 +80818,7 @@
    "loose text wrapped in a paragraph: 8",
    "redundant bold inside a heading removed: 1",
    "paragraph unwrapped inside a card header: 8",
+   "line breaks loose inside a list removed: 2",
    "line breaks at the edge of a block removed: 1",
    "action links marked: 23"
   ],
@@ -83154,9 +83058,9 @@
  {
   "alias": "/learning/multilinguallearner/pl",
   "title": "Multilingual Programs Professional Learning",
-  "changed": "2026-09-15T14:59:03+00:00",
+  "changed": "2026-09-23T14:38:03+00:00",
   "words": 485,
-  "bytes": 8580,
+  "bytes": 8595,
   "fixes": [
    "empty paragraphs removed: 1",
    "drupal entity attrs stripped: 4",
@@ -83258,7 +83162,7 @@
    "anchors": []
   },
   "age": {
-   "changed": "2026-09-15T14:59:03+00:00",
+   "changed": "2026-09-23T14:38:03+00:00",
    "yearsMentioned": [
     2026,
     2027
@@ -85777,6 +85681,7 @@
   "fixes": [
    "loose text wrapped in a paragraph: 1",
    "tables normalised to the house shape: 1",
+   "line breaks loose inside a list removed: 1",
    "action links marked: 1"
   ],
   "flags": [
@@ -86346,6 +86251,7 @@
    "paragraph unwrapped inside a card header: 2",
    "emphasis removed from inside a link: 1",
    "bare spans unwrapped: 4",
+   "line breaks loose inside a list removed: 1",
    "trailing breaks removed from headings: 1",
    "whitespace at the edge of a heading: 1",
    "body h1 to blockhead h2: 2",

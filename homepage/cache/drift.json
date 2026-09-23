@@ -1,13 +1,19 @@
 {
- "checkedAt": "2026-09-23T14:28:15.913Z",
- "snapshotAt": "2026-09-23T13:27:46.591Z",
+ "checkedAt": "2026-09-23T14:50:54.495Z",
+ "snapshotAt": "2026-09-23T14:28:20.616Z",
  "edited": [
   {
-   "alias": "/cert/authority",
-   "id": "4f769406-800e-4e78-a8d9-2c5b8d631202",
-   "title": "Certification - Forms & Resources "
+   "alias": "/learning/multilinguallearner/pl",
+   "id": "d2e1c1f2-5b30-46e1-9a0b-86e83612c6e5",
+   "title": "Multilingual Programs Professional Learning"
   }
  ],
  "added": [],
- "removed": []
+ "removed": [
+  {
+   "alias": "/learning/earlychildhood/pkexpansiongrant/2021",
+   "id": "8ca4567c-794a-4422-8e44-f94ab54a32f5",
+   "title": "Pre-Kindergarten Expansion Grants (2021-2026)"
+  }
+ ]
 }
