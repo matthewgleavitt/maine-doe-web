@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Maine DOE — propose the new body HTML for a page
- * Version: 2026-09-23-c  ·  Last edited: 2026-09-23 16:20
+ * Version: 2026-09-23-d  ·  Last edited: 2026-09-23 19:55
  *
  *   const { propose } = require('./propose.js');
  *   const { html, notes, decisions } = propose(node, audit, index);
@@ -2084,12 +2084,27 @@ function propose(node, audit, index, opts = {}) {
      btn-block is Bootstrap's own class and the stylesheet already
      knows it — a full-width button reads its label from the left edge
      with the mark at the right. The banner's own action is left out;
-     it is sized to itself by design. */
+     it is sized to itself by design.
+
+     A LIST INSTEAD OF true NAMES THE BUTTONS THAT GET IT.
+     { "fullbtn": ["Check out the resources"] }
+     Matt, on /learning/multilinguallearner/pl, where one of the two
+     buttons sits beside a floated picture: a button at the column's
+     full width cannot fit next to a float, so its line box is pushed
+     below the picture and the page gains a band of white between the
+     end of the text and the button. Sized to its label it stays on
+     the last line of the prose, beside the image, and the white goes.
+     So "full width" is a decision per button on a page like this one,
+     not per page. A string matches the button's label, ignoring case
+     and punctuation; anything not named keeps its own width. */
   if (opts.fullbtn) {
     let n = 0;
-    html = html.replace(/<a\b([^>]*\bclass="([^"]*)"[^>]*)>/gi, (m, all, cls) => {
+    const only = Array.isArray(opts.fullbtn)
+      ? opts.fullbtn.map(x => norm(x)).filter(Boolean) : null;
+    html = html.replace(/<a\b([^>]*\bclass="([^"]*)"[^>]*)>([\s\S]*?)<\/a>/gi, (m, all, cls, label) => {
       if (!/(?:^|\s)btn(?:\s|$)/.test(cls)) return m;
       if (/\bbtn-block\b/.test(cls) || /\bbtn-cta\b/.test(cls)) return m;
+      if (only && !only.includes(norm(label))) return m;
       n++;
       return m.replace('class="' + cls + '"', 'class="' + cls + ' btn-block"');
     });
@@ -3382,6 +3397,7 @@ function propose(node, audit, index, opts = {}) {
      versions. A phrase that is not found is reported rather than
      silently ignored — a typo in an instruction should not look like
      a completed edit. */
+  if (process.env.DUMP && alias === process.env.DUMP) require('fs').writeFileSync('/tmp/dump.html', html);
   if (opts.replace) {
     for (const [from, to] of Object.entries(opts.replace)) {
       if (!html.includes(from)) { notes.push(`Edit skipped — "${from.slice(0, 60)}" is not on this page.`); continue; }
