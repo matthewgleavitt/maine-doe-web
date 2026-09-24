@@ -2184,6 +2184,7 @@ body.page-node-type-multi-column-page #block-doe-content li.doe-item:not(:has(br
 body.page-node-type-multi-column-page #block-doe-content p.doe-item:not(:has(br)) > a:first-child {
   font-size: inherit;
   font-weight: 400;
+  font-family: inherit;
 }
 body.page-node-type-multi-column-page #block-doe-content a {
   overflow-wrap: break-word;

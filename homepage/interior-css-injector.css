@@ -5526,14 +5526,19 @@ body.page-node-type-multi-column-page #block-doe-content p.doe-item > a:first-ch
    Your ED 279" and then "January 22, 2026" in smaller, lighter type
    on the same line. That reads as a heading with small print after
    it rather than as one line.
-   A link inside a sentence takes the sentence's size and weight. It
-   keeps the colour, the underline and the chevron, which are what
-   say it goes somewhere; only the title sizing comes off. The rows
-   that do put the description underneath keep the title. */
+   A link inside a sentence takes the sentence's size, weight AND
+   FACE. The face matters as much as the size: the title treatment
+   sets the link in League Spartan while the sentence around it is
+   Helvetica Neue, so even at a matched size the link reads as a
+   different kind of text dropped into the line. It keeps the colour,
+   the underline and the chevron, which are what say it goes
+   somewhere; only the title treatment comes off. The rows that do
+   put the description underneath keep the title. */
 body.page-node-type-multi-column-page #block-doe-content li.doe-item:not(:has(br)) > a:first-child,
 body.page-node-type-multi-column-page #block-doe-content p.doe-item:not(:has(br)) > a:first-child {
   font-size: inherit;
   font-weight: 400;
+  font-family: inherit;
 }
 
 /* ── THE SAME MARK ON A LINK THAT CARRIES A DESCRIPTION ──────────

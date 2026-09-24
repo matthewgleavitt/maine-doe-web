@@ -633,15 +633,24 @@ const FIXES = [
      outline of that page meets "$8,474". It is the same instinct as
      the bold line used for emphasis, in the one place where the
      structure is already explicit.
-     The words stay and the tag goes. The cell keeps any alignment it
-     was given, because that is the author laying out a table rather
-     than sizing text. 62 of these across 11 pages. */
+     The words stay and the tag goes, and each becomes a paragraph.
+     THE PARAGRAPH IS NOT OPTIONAL. /learning/II/PL/PBLs has one cell
+     holding six h6 lines — a list of what the approaches have in
+     common. Dropping the tags and leaving the words bare ran all six
+     into a single run-on line, which loses the structure even though
+     every word survives. As paragraphs they stay six lines; and where
+     a cell holds nothing but the one heading, the later steps take
+     the paragraph straight back off, so the common case still comes
+     out as plain text in the cell.
+     The cell keeps any alignment it was given, because that is the
+     author laying out a table rather than sizing text. 62 of these
+     across 11 pages. */
   ['headings inside table cells unwrapped', (h) => {
     let n = 0;
     h = h.replace(/<(t[dh])\b([^>]*)>([\s\S]*?)<\/\1>/gi, (m, tag, attrs, inner) => {
       if (!/<h[1-6]\b/i.test(inner)) return m;
       const out = inner.replace(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/gi, (hm, lv, text) => {
-        n++; return text.trim();
+        n++; return '<p>' + text.trim() + '</p>';
       });
       return `<${tag}${attrs}>${out}</${tag}>`;
     });

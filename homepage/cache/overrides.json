@@ -484,5 +484,15 @@
       "Check out the resources"
     ],
     "_why": "Matt, 23 Sep: the top button runs the full width, the WIDA picture moves above the prose so the text wraps around it, the two workshop headings are headings over their lists rather than rows in one, and the WIDA button sizes to its label so it sits beside the picture on the last line of the text instead of being pushed below it."
+  },
+  "/funding/gpa/eps/resources": {
+    "replace": {
+      "<strong>FY 2026-27</strong>": "<strong>FY26-27</strong>",
+      "<strong>FY 2025-26</strong>": "<strong>FY25-26</strong>",
+      "<strong>FY 2024-25</strong>": "<strong>FY24-25</strong>",
+      "<strong>FY 2023-24</strong>": "<strong>FY23-24</strong>",
+      "<strong>FY 2022-23</strong>": "<strong>FY22-23</strong>"
+    },
+    "_why": "Matt, 23 Sep: the rate table writes its years the shorthand way — FY26-27, not the hybrid \"FY 2026-27\". The list above it already writes Fiscal Year 2026-2027 in full, which is the other convention; those two are the only ones."
   }
 }

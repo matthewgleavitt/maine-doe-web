@@ -1872,9 +1872,15 @@ function chunkedCacheGet(cache, baseKey) {
   return out;
 }
 
+// Removes every key a chunkedCachePut writes. baseKey itself is included
+// because a payload small enough to skip chunking is stored there directly,
+// and purgeCalendarCache has to clear both shapes. removeAll is one call
+// rather than CHUNK_MAX+2, and the guard keeps a cache hiccup from throwing
+// out of a caller that is only trying to invalidate.
 function chunkedCacheRemove(cache, baseKey) {
-  cache.remove(baseKey + '_meta');
-  for (var i = 0; i < CHUNK_MAX; i++) cache.remove(baseKey + '_p' + i);
+  var keys = [baseKey, baseKey + '_meta'];
+  for (var i = 0; i < CHUNK_MAX; i++) keys.push(baseKey + '_p' + i);
+  try { cache.removeAll(keys); } catch (e) {}
 }
 
 
@@ -3477,15 +3483,6 @@ function getEventsAdminToken() {
 /** Force-refresh the calendar's cached JSON.
  *  Run manually from the Apps Script editor after publishing a batch
  *  of edits (or trigger from a Sheet onEdit).                    */
-// Chunked entries are spread across baseKey + '_meta' and baseKey + '_pN', so
-// removing baseKey on its own leaves them intact. That is the second time this
-// purge has silently done nothing: first the v1_* rename, then chunking.
-function chunkedCacheRemove(cache, baseKey) {
-  var keys = [baseKey, baseKey + '_meta'];
-  for (var i = 0; i < CHUNK_MAX; i++) keys.push(baseKey + '_p' + i);
-  try { cache.removeAll(keys); } catch (e) {}
-}
-
 function purgeCalendarCache() {
   var cache = CacheService.getScriptCache();
   ['portal_calendar_30', 'portal_events_30', 'portal_moderation_30']
@@ -3509,9 +3506,73 @@ function onCalendarSheetEdit(e) {
     var name = e && e.range && e.range.getSheet().getName();
     if (name !== 'EventSubmissions') return;
     purgeCalendarCache();
+    requestMirrorRefresh();
   } catch (err) {
     Logger.log('onCalendarSheetEdit failed: ' + err.message);
   }
+}
+
+/**  Ask GitHub Actions to rebuild the static mirror.
+ *
+ *   Purging the cache alone only fixes the LIVE endpoint. The portal and the
+ *   calendar paint from the CDN mirror first and correct from live in the
+ *   background, so until the mirror is rebuilt a sheet edit shows up a beat
+ *   late at best, and not at all if the revalidate fails. The mirror's own
+ *   cron is best-effort and has been measured 118-214 minutes apart, so it
+ *   cannot be relied on to notice.
+ *
+ *   Debounced to one dispatch every MIRROR_MIN_GAP_MS. Editing a row touches
+ *   several cells and each one fires this trigger; without the gap a single
+ *   row edit would queue a handful of workflow runs.
+ *
+ *   Needs GITHUB_TOKEN in Script Properties: a fine-grained PAT scoped to
+ *   this repo with Actions: read and write. Absent that, this is a no-op and
+ *   the mirror simply waits for its cron, which is the behaviour before this
+ *   existed.                                                          */
+var MIRROR_MIN_GAP_MS = 5 * 60 * 1000;
+
+function requestMirrorRefresh() {
+  var props = PropertiesService.getScriptProperties();
+  var token = props.getProperty('GITHUB_TOKEN');
+  if (!token) return;   // not configured; nothing to do
+
+  var last = parseInt(props.getProperty('MIRROR_LAST_DISPATCH') || '0', 10);
+  if (Date.now() - last < MIRROR_MIN_GAP_MS) return;
+  props.setProperty('MIRROR_LAST_DISPATCH', String(Date.now()));
+
+  try {
+    var resp = UrlFetchApp.fetch(
+      'https://api.github.com/repos/matthewgleavitt/maine-doe-web/actions/workflows/refresh-portal-data.yml/dispatches',
+      {
+        method: 'post',
+        contentType: 'application/json',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          Accept: 'application/vnd.github+json'
+        },
+        payload: JSON.stringify({ ref: 'main' }),
+        muteHttpExceptions: true
+      }
+    );
+    var code = resp.getResponseCode();
+    // 204 No Content is the success case for a workflow dispatch.
+    if (code !== 204) {
+      Logger.log('Mirror refresh dispatch returned ' + code + ': ' + resp.getContentText().slice(0, 200));
+    } else {
+      Logger.log('Mirror refresh requested.');
+    }
+  } catch (err) {
+    Logger.log('Mirror refresh dispatch failed: ' + err.message);
+  }
+}
+
+/**  Run from the editor to purge the caches and rebuild the mirror in one go,
+ *   for when you have made a batch of edits and want them out now rather than
+ *   waiting on the debounce.                                          */
+function refreshEverythingNow() {
+  purgeCalendarCache();
+  PropertiesService.getScriptProperties().deleteProperty('MIRROR_LAST_DISPATCH');
+  requestMirrorRefresh();
 }
 
 /**  Run once from the editor to attach onCalendarSheetEdit to the sheet.

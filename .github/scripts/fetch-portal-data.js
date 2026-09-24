@@ -126,6 +126,32 @@ async function main() {
       const took = Date.now() - started;
       summary.push({ type, ok: true, bytes: size, ms: took });
       console.log(`  ✓ ${type.padEnd(18)} ${size.toString().padStart(7)}b  ${took}ms`);
+
+      // The submission form needs to offer the programs and focus areas
+      // actually in use, but its only source for them was a hardcoded array
+      // that drifted every time one was renamed in the sheet. Derive them
+      // from the calendar we just fetched and write a small file the form can
+      // read without auth. Nothing new is requested from Apps Script.
+      if (type === 'calendar' && Array.isArray(data.events)) {
+        const distinct = (field) =>
+          [...new Set(data.events.map((e) => (e[field] || '').trim()).filter(Boolean))]
+            .sort((a, b) => a.localeCompare(b));
+        const lists = {
+          _fetched: wrapped._fetched,
+          _description:
+            'Distinct programInitiative and focusArea values in use on the calendar, ' +
+            'derived from calendar.json. Read by the event submission form to populate ' +
+            'its dropdowns so they cannot drift from the sheet.',
+          programs: distinct('programInitiative'),
+          focusAreas: distinct('focusArea'),
+        };
+        const listsPath = path.join(DATA_DIR, 'lists.json');
+        fs.writeFileSync(listsPath, JSON.stringify(lists));
+        console.log(
+          `  ✓ ${'lists'.padEnd(18)} ${fs.statSync(listsPath).size.toString().padStart(7)}b  ` +
+          `${lists.programs.length} programs, ${lists.focusAreas.length} focus areas`
+        );
+      }
     } catch (e) {
       summary.push({ type, ok: false, error: e.message });
       console.log(`  ✗ ${type.padEnd(18)} ${e.message}`);
